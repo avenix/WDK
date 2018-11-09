@@ -5,6 +5,7 @@ classdef RangeAnnotationsPlotter < handle
         LineWidth = 3;
         SegmentHeight = 10;
         FontSize = 18;
+        TextSegmentDistance = 10;
     end
     
     properties (Access = public)
@@ -53,7 +54,7 @@ classdef RangeAnnotationsPlotter < handle
                 [0 0],'Color',color,'LineWidth',obj.LineWidth);
             
             textPosition = floor(double(rangeAnnotation.startSample + rangeAnnotation.endSample)/2);
-            segmentTextHandle = text(plotAxes,textPosition,2, classStr,'FontSize',obj.FontSize);
+            segmentTextHandle = text(plotAxes,textPosition,-obj.TextSegmentDistance, classStr,'FontSize',obj.FontSize);
             
             set(segmentTextHandle, 'Clipping', 'on');
             segmentTextHandle.Tag = int2str(rangeAnnotation.startSample);
