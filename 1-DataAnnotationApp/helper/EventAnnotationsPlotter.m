@@ -37,7 +37,7 @@ classdef EventAnnotationsPlotter < handle
             if ~obj.annotationsMap.isKey(peakX)
                 eventAnnotation = EventAnnotation(peakX,class);
                 [peakSymbolHandle,peakTextHandle] = obj.plotPeak(plotAxes,peakX,peakY,class);
-                obj.annotationsMap(peakX) = VideoAnnotatorPeakPlotHandle(eventAnnotation,peakSymbolHandle,peakTextHandle);
+                obj.annotationsMap(peakX) = DataAnnotatorPeakPlotHandle(eventAnnotation,peakSymbolHandle,peakTextHandle);
             end
         end
                    
@@ -98,7 +98,7 @@ classdef EventAnnotationsPlotter < handle
         %adds an object so the map knows it's storing these objects
         function initAnnotationsMap(obj)
             eventAnnotation = EventAnnotation(uint32(1),uint8(1));
-            demoPeak = VideoAnnotatorPeakPlotHandle(eventAnnotation,1,1);
+            demoPeak = DataAnnotatorPeakPlotHandle(eventAnnotation,1,1);
             obj.annotationsMap = containers.Map(uint32(1),demoPeak);
             remove(obj.annotationsMap,1);
         end

@@ -1,3 +1,0 @@
-legSwingUp
-legSwingDown
-synchronisation

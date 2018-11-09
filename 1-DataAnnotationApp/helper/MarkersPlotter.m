@@ -14,7 +14,7 @@ classdef MarkersPlotter < handle
             
             visibleStr = MarkersPlotter.getVisibleStr(visible);
             nMarkers = length(markers);
-            obj.markerHandles = repmat(VideoAnnotatorMarkerHandle,1,nMarkers);
+            obj.markerHandles = repmat(DataAnnotatorMarkerHandle,1,nMarkers);
             
             markerHeights = ylim(plotAxes);
             
@@ -23,7 +23,7 @@ classdef MarkersPlotter < handle
                 color = obj.markerColors(marker.label);
                 lineWidth = obj.markerLineWidths(marker.label);
                 
-                markerHandle = VideoAnnotatorMarkerHandle();
+                markerHandle = DataAnnotatorMarkerHandle();
                 
                 markerHandle.lineHandle = line(plotAxes,[marker.sample, marker.sample],...
                     [markerHeights(1) markerHeights(2)],...

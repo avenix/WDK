@@ -137,13 +137,15 @@ classdef AnnotationsLoader < handle
         end
         
         function writeEventAnnotationsToFile(obj, fileID, eventAnnotations)
-            for i = 1 : length(eventAnnotations)-1
-                annotation = eventAnnotations(i);
+            if ~isempty(eventAnnotations)
+                for i = 1 : length(eventAnnotations)-1
+                    annotation = eventAnnotations(i);
+                    obj.writeEventAnnotationToFile(fileID,annotation);
+                    fprintf(fileID, '\n');
+                end
+                annotation = eventAnnotations(end);
                 obj.writeEventAnnotationToFile(fileID,annotation);
-                fprintf(fileID, '\n');
             end
-            annotation = eventAnnotations(end);
-            obj.writeEventAnnotationToFile(fileID,annotation);
         end
         
         function writeEventAnnotationToFile(obj,fileID, annotation)
@@ -153,13 +155,15 @@ classdef AnnotationsLoader < handle
         
         
         function writeRangeAnnotationsToFile(obj, fileID, rangeAnnotations)
-            for i = 1 : length(rangeAnnotations)-1
-                annotation = rangeAnnotations(i);
+            if ~isempty(rangeAnnotations)
+                for i = 1 : length(rangeAnnotations)-1
+                    annotation = rangeAnnotations(i);
+                    obj.writeRangeAnnotationToFile(fileID,annotation);
+                    fprintf(fileID, '\n');
+                end
+                annotation = rangeAnnotations(end);
                 obj.writeRangeAnnotationToFile(fileID,annotation);
-                fprintf(fileID, '\n');
             end
-            annotation = rangeAnnotations(end);
-            obj.writeRangeAnnotationToFile(fileID,annotation);
         end
         
         function writeRangeAnnotationToFile(obj, fileID, annotation)

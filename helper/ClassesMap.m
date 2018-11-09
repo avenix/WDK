@@ -18,21 +18,28 @@ classdef ClassesMap < handle
     methods (Access = public)
         function obj = ClassesMap()
             obj.classesList = obj.loadClassesFile();
-            obj.numClasses = length(obj.classesList);
-            obj.createClassesMap(obj.classesList);
-            obj.synchronisationClass = obj.idxOfClassWithString('synchronisation');
+            if ~isempty(obj.classesList)
+                obj.numClasses = length(obj.classesList);
+                obj.createClassesMap(obj.classesList);
+                obj.synchronisationClass = obj.idxOfClassWithString('synchronisation');
+            end
         end
         
         function valid = isValidLabel(obj,labelStr)
+        
             valid = isKey(obj.classesMap,labelStr);
-        end 
+        end
         
         function classStr = stringForClassAtIdx(obj,idx)
             classStr = obj.classesList{idx};
         end
         
         function idx = idxOfClassWithString(obj,classStr)
-            idx = obj.classesMap(classStr);
+            if isempty(obj.classesMap)
+                idx = [];
+            else
+                idx = obj.classesMap(classStr);
+            end
         end
     end
     
@@ -43,7 +50,7 @@ classdef ClassesMap < handle
             
             [fileID,~] = fopen(Constants.classesPath);
             if (fileID < 0)
-                fprintf('file not found: %s\n',fileName);
+                fprintf('file not found: %s\n',Constants.classesPath);
                 classesList = [];
             else
                 startRow = 1;
@@ -56,8 +63,10 @@ classdef ClassesMap < handle
         end
         
         function createClassesMap(obj,classesList)
-            nClasses = length(classesList);
-            obj.classesMap = containers.Map(classesList,uint8(1:nClasses));
+            if ~isempty(classesList)
+                nClasses = length(classesList);
+                obj.classesMap = containers.Map(classesList,uint8(1:nClasses));
+            end
         end
     end
 end

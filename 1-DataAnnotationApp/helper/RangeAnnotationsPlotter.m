@@ -59,7 +59,7 @@ classdef RangeAnnotationsPlotter < handle
             segmentTextHandle.Tag = int2str(rangeAnnotation.startSample);
             segmentTextHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
             
-            annotationHandle = VideoAnnotatorRangePlotHandle(rangeAnnotation,...
+            annotationHandle = DataAnnotatorRangePlotHandle(rangeAnnotation,...
                 segmentStartHandle,segmentEndHandle,segmentMainHandle,...
                 segmentTextHandle);
             
@@ -125,7 +125,7 @@ classdef RangeAnnotationsPlotter < handle
         
         function initAnnotationsMap(obj)
             rangeAnnotation = RangeAnnotation(uint32(1),uint32(1),uint8(1));
-            demoAnnotation = VideoAnnotatorRangePlotHandle(rangeAnnotation,1,1,1,1);
+            demoAnnotation = DataAnnotatorRangePlotHandle(rangeAnnotation,1,1,1,1);
             obj.annotationsMap = containers.Map(uint32(1),demoAnnotation);
             remove(obj.annotationsMap,1);
         end
