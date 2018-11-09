@@ -1,11 +1,8 @@
 # Wearables Development Toolkit
 
-This toolkit facilitates the development of wearable device applications. Most wearable device applications follow the Activity Recognition Chain:
+This toolkit facilitates the development of wearable device applications. Most wearable device applications follow the Activity Recognition Chain.
 
-![Activity Recognition Chain](images/ARC.png)
-
-*Note: Check my Matlab tutorial on the Activity Recognition Chain for wearables: <https://github.com/avenix/ARC-Tutorial/>
-*
+*Note: Check my Matlab tutorial on the Activity Recognition Chain for wearables: <https://github.com/avenix/ARC-Tutorial/>*
 
 The usual activities a developer of a wearable device application will have to engage in are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
 
@@ -17,7 +14,7 @@ The usual activities a developer of a wearable device application will have to e
 
 Once you have collected data you can use the *DataLoaderApp* in *0-DataLoader* to do a first check on the data and convert it to Matlab's binary format, used by the rest of the toolkit. 
 
-![DataLoaderApp](images/0-DataLoaderApp)
+![DataLoaderApp](images/0-DataLoaderApp.png)
 
 *Note: the DataLoader can load files in comma separated format.*
 *Note: by default, the DataLoaderApp will load data files from the ./data/rawdata/ directory*
@@ -33,6 +30,13 @@ It might be hard to annotate time series data without a reference data. Therefor
 *Note: by default, the DataAnnotationApp will load annotation files from the ./data/annotations/ directory. Saved annotation files will be stored in the ./ directory*.
 *Note: markers in .edl format will be read from the ./data/markers directory*.
 
+## Application Development
+
+Most wearable device applications follow the Activity Recognition Chain:
+![Activity Recognition Chain](images/ARC.png)
+
+### Preprocessing
+to come...
 
 ## Setup
 * install Matlab
