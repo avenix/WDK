@@ -68,20 +68,6 @@ classdef DataLoaderApp < handle
             obj.plotAxes.Visible = 'Off';
         end
         
-        function loadData(obj)
-            fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
-            fileExtension = Helper.getFileExtension(fileName);
-            if strcmp(fileExtension, ".mat")
-                [obj.data, obj.columnNames] = obj.dataLoader.loadData(fileName);
-            elseif strcmp(fileExtension, ".bin")
-                fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
-                [obj.data, obj.columnNames] = obj.dataLoader.loadBinaryData(fileName);
-            elseif strcmp(fileExtension, ".txt")
-                fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
-                [obj.data, obj.columnNames] = obj.dataLoader.loadTextData(fileName);
-            end
-        end
-
         function plotData(obj)
             if isempty(obj.data)
                 if ~isempty(obj.plotHandle)
@@ -112,9 +98,12 @@ classdef DataLoaderApp < handle
         
         function handleSelectionChanged(obj,~,~)
             obj.updateFileName();
-            
         end
         
+        function loadData(obj)
+            fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
+            [obj.data, obj.columnNames] = obj.dataLoader.loadAnyDataFile(fileName);
+        end
         
         %ui  
         function updateFileName(obj)
@@ -168,6 +157,7 @@ classdef DataLoaderApp < handle
                 obj.data = [];
                 obj.columnNames = [];
             end
+            
             
             obj.loadData();
             obj.updateEndText();

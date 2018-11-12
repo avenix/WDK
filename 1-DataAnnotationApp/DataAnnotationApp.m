@@ -138,7 +138,7 @@ classdef DataAnnotationApp < handle
         
         function loadData(obj)
             fileName = obj.getDataFileName();
-            [obj.data, obj.columnNames] = obj.dataLoader.loadData(fileName);
+            [obj.data, obj.columnNames] = obj.dataLoader.loadAnyDataFile(fileName);
         end
         
         function loadMarkers(obj)

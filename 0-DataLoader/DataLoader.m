@@ -41,6 +41,19 @@ classdef DataLoader < handle
             end 
         end
         
+        function [data, columnNames] = loadAnyDataFile(obj,fileName)
+            fileExtension = Helper.getFileExtension(fileName);
+            if strcmp(fileExtension, ".mat")
+                [data, columnNames] = obj.loadData(fileName);
+            elseif strcmp(fileExtension, ".txt")
+                [data, columnNames] = obj.loadTextData(fileName);
+            else
+                fprintf('DataLoader - unrecognized file extension\n');
+                data = [];
+                columnNames = [];
+            end
+        end
+        
         function [data, columnNames] = loadData(~,fileName)
             
             fileName = sprintf('%s/%s',Constants.dataPath,fileName);
