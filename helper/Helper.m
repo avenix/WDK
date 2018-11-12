@@ -8,17 +8,31 @@ classdef Helper < handle
         end
         
         function files = listFilesInDirectory(directory,extensions)
-            fileStructs = [];
+            nExtensions = length(extensions);
+            filesCount = 0;
+            nFiles = Helper.numberOfFilesInDirectory(directory,extensions);
+            files = cell(1,nFiles);
+            
+            for i = 1 : nExtensions
+                extension = extensions{i};
+                filesStructs = dir(fullfile(directory, extension));
+                for j = 1 : length(filesStructs)
+                    file = filesStructs(j);
+                    filesCount = filesCount + 1;
+                    files{filesCount} = file.name;
+                end
+            end
+
+        end
+        
+        function nFiles = numberOfFilesInDirectory(directory,extensions)
+            nFiles = 0;
+            
             nExtensions = length(extensions);
             for i = 1 : nExtensions
                 extension = extensions{i};
-                fileStructs = [fileStructs dir(fullfile(directory, extension))];
-            end
-
-            nFiles = length(fileStructs);
-            files = cell(1,nFiles);
-            for i = 1 : nFiles
-                files{i} = fileStructs(i).name;
+                filesStructs = dir(fullfile(directory, extension));
+                nFiles = nFiles + length(filesStructs);
             end
         end
         
