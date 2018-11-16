@@ -4,6 +4,7 @@ classdef DataLoader < handle
     properties (Access = private)
         annotationsLoader;
         classesMap;
+        labelingStrategiesLoader;
     end
 
     methods (Access = public)
@@ -103,6 +104,29 @@ classdef DataLoader < handle
             
             markerFileName = sprintf('%s/%s',Constants.markersPath,markerFileName);
             markers = markersLoader.loadMarkers(markerFileName);
+        end
+        
+        function labelingStrategies = loadAllLabelingStrategies(obj)
+            fileNames = Helper.listLabelingStrategies();
+            nLabelingStrategies = length(fileNames);
+            labelingStrategies = cell(1,nLabelingStrategies);
+            
+            obj.lazyInitLabelingStrategiesLoader();
+            
+            for i = 1 : nLabelingStrategies
+                fileName = fileNames{i};
+                fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
+                labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
+                labelingStrategies{i} = labelingStrategy;
+            end
+        end
+    end
+    
+    methods (Access = private)
+        function lazyInitLabelingStrategiesLoader(obj)
+            if isempty(obj.labelingStrategiesLoader)
+                obj.labelingStrategiesLoader = LabelingStrategyLoader();
+            end
         end
     end
     

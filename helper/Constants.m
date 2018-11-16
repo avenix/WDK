@@ -7,6 +7,7 @@ classdef Constants < handle
         markersPath = './data/markers';
         dataPath = './data/rawdata';
         precomputedPath = './data/precomputed';
+        labelingStrategiesPath = './data/labeling';
         synchronisationClassStr = 'synchronisation';
         SynchronisatonMarker = 3;
     end

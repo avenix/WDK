@@ -2,6 +2,7 @@ classdef ClassesMap < handle
     
     properties (Access = public, Constant)
         kInvalidClass = -1;
+        synchronisationStr = 'synchronisation';
     end
     
     properties (Access = public)
@@ -21,7 +22,7 @@ classdef ClassesMap < handle
             if ~isempty(obj.classesList)
                 obj.numClasses = length(obj.classesList);
                 obj.createClassesMap(obj.classesList);
-                obj.synchronisationClass = obj.idxOfClassWithString('synchronisation');
+                obj.synchronisationClass = obj.numClasses+1;
             end
         end
         
@@ -38,7 +39,12 @@ classdef ClassesMap < handle
             if isempty(obj.classesMap)
                 idx = [];
             else
+                if ~isKey(obj.classesMap,classStr)
+                    fprintf('ClassesMap Error class %s not defined\n',classStr);
+                    idx = [];
+                else
                 idx = obj.classesMap(classStr);
+                end
             end
         end
     end
@@ -66,6 +72,7 @@ classdef ClassesMap < handle
             if ~isempty(classesList)
                 nClasses = length(classesList);
                 obj.classesMap = containers.Map(classesList,uint8(1:nClasses));
+                obj.classesMap(ClassesMap.synchronisationStr) = uint8(nClasses+1);
             end
         end
     end

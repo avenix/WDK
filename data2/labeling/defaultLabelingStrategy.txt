@@ -1,0 +1,12 @@
+#Other
+pass
+shortSprint
+longSprint
+jogging
+joggingJumping
+kickBody
+kickGround
+bounce
+clap
+ballPickUp
+armRotation

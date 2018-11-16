@@ -36,6 +36,12 @@ classdef Helper < handle
             end
         end
         
+        function files = listLabelingStrategies()
+            
+            files = Helper.listFilesInDirectory(Constants.labelingStrategiesPath, {'*.txt'});
+            
+        end
+        
         function files = listDataFiles(extensions)
             if (nargin == 0)
                 extensions = {'*.mat'};
@@ -269,6 +275,16 @@ classdef Helper < handle
             for i = 2 : numAnnotationDetectors
                 annotationDetector = annotationDetectors{i};
                 text = sprintf('%s\n%s',text,annotationDetector.type);
+            end
+        end
+        
+        
+        function text = generatePeakDetectorNames(peakDetectors)
+            numPeakDetectors = length(peakDetectors);
+            text = peakDetectors{1}.type;
+            for i = 2 : numPeakDetectors
+                peakDetector = peakDetectors{i};
+                text = sprintf('%s\n%s',text,peakDetector.type);
             end
         end
         
