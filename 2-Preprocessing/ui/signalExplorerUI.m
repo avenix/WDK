@@ -22,7 +22,7 @@ function varargout = signalExplorerUI(varargin)
 
 % Edit the above text to modify the response to help signalExplorerUI
 
-% Last Modified by GUIDE v2.5 16-Nov-2018 16:35:03
+% Last Modified by GUIDE v2.5 17-Nov-2018 20:46:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -475,19 +475,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in groupingStrategiesList.
-function groupingStrategiesList_Callback(hObject, eventdata, handles)
-% hObject    handle to groupingStrategiesList (see GCBO)
+% --- Executes on selection change in groupStrategiesList.
+function groupStrategiesList_Callback(hObject, eventdata, handles)
+% hObject    handle to groupStrategiesList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns groupingStrategiesList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from groupingStrategiesList
+% Hints: contents = cellstr(get(hObject,'String')) returns groupStrategiesList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from groupStrategiesList
 
 
 % --- Executes during object creation, after setting all properties.
-function groupingStrategiesList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to groupingStrategiesList (see GCBO)
+function groupStrategiesList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to groupStrategiesList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

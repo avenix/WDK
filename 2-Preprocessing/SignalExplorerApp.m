@@ -33,10 +33,10 @@ classdef SignalExplorerApp < handle
         segmentationStrategies;
         currentSegmentationStrategy;
                 
-        %grouping
-        groupingStrings = {'default','good/bad','grouped'};
-        groupingStrategies;
-        currentGrouping = 2;
+        %group
+        groupStrings = {'default','good/bad','grouped'};
+        groupStrategies;
+        currentGroup = 2;
         
         %ui plotting
         plotAxes;
@@ -58,8 +58,8 @@ classdef SignalExplorerApp < handle
             
             obj.segmentationStrategies = {ManualSegmentation, EventSegmentation};
             obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
-                        
-            obj.groupingStrategies = dataLoader.loadAllLabelingStrategies();
+
+            obj.groupStrategies = dataLoader.loadAllLabelingStrategies();
             
             obj.segmentsLabeler = SegmentsLabeler();
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
@@ -142,8 +142,8 @@ classdef SignalExplorerApp < handle
         end
         
         function fillLabelingStrategiesList(obj)
-            groupingStrategiesCellArray = Helper.listLabelingStrategies();
-            obj.uiHandles.groupingStrategiesList.String = Helper.cellArrayToString(groupingStrategiesCellArray);
+            groupStrategiesCellArray = Helper.listLabelingStrategies();
+            obj.uiHandles.groupStrategiesList.String = Helper.cellArrayToString(groupStrategiesCellArray);
         end
         
         function fillSignalComputersList(obj)
@@ -151,7 +151,7 @@ classdef SignalExplorerApp < handle
         end
         
         function fillSignalsList(obj)
-            obj.uiHandles.signalsList.String = Helper.convertToString(obj.signals);
+            obj.uiHandles.signalsList.String = Helper.arrayToString(obj.signals);
         end
         
         function updateSelectedSignalComputer(obj)
@@ -258,11 +258,11 @@ classdef SignalExplorerApp < handle
         
         function labelingStrategy = getCurrentLabelingStrategy(obj)
             labelingStrategyIdx = obj.getSelectedLabelingIdx();
-            labelingStrategy = obj.groupingStrategies{labelingStrategyIdx};
+            labelingStrategy = obj.groupStrategies{labelingStrategyIdx};
         end
         
         function idx = getSelectedLabelingIdx(obj)
-            idx = obj.uiHandles.groupingStrategiesList.Value;
+            idx = obj.uiHandles.groupStrategiesList.Value;
         end
         
         function value = getSameScale(obj)
@@ -333,7 +333,7 @@ classdef SignalExplorerApp < handle
                     signal = data(:,selectedSignals);
                     filteredData = filterComputer.compute(signal);
                     
-                    filteredSegment = Segment(segment.file,filteredData,segment.class,segment.peakIdx);
+                    filteredSegment = Segment(segment.file,filteredData,segment.class,segment.eventIdx);
                     segmentsArray(j) = filteredSegment;
                 end
                 obj.filteredSegments{i} = segmentsArray;

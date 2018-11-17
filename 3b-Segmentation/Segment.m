@@ -5,18 +5,18 @@ classdef Segment < handle
         file %TODO see if we can remove
         window
         class
-        peakIdx
+        eventIdx
         startSample;
         endSample;
     end
     
     methods
-        function obj = Segment(file,window,class,peakIdx)
+        function obj = Segment(file,window,class,eventIdx)
             if nargin > 3 %enable initialisation with no params
                 obj.file = file;
                 obj.window = window;
                 obj.class = class;
-                obj.peakIdx = peakIdx;
+                obj.eventIdx = eventIdx;
             end
         end
     end

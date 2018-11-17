@@ -1,4 +1,4 @@
-#Other
+#null
 pass
 shortSprint
 longSprint

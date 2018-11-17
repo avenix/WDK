@@ -1,37 +1,23 @@
-#Dive Right
+#Relevant
 diveLowRight
 diveHighRight
 diveStandLowRight
 diveStandHighRight
 shortDiveRight
-            
-#Dive Left
 diveLowLeft
 diveHighLeft
 diveStandLowLeft
 diveStandHighLeft
 shortDiveLeft
-            
-#Catch Hand
 catchHand
-            
-#Catch Body
 catchBody
-            
-#Catch Ground
 catchGround
-            
-#Jump Catch
 jumpCatchStand
 jumpCatchRun
-            
-#Throw High
 throwHigh
-            
-#Throw Low
 throwLow
             
-#Other
+#null
 pass
 shortSprint
 longSprint

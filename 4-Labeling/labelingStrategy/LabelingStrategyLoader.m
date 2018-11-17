@@ -25,9 +25,9 @@ classdef LabelingStrategyLoader < handle
                 dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
                 
                 nGroups = obj.countNumberOfGroups(dataArray{1});
-                classGroupings = obj.parseClassGrouping(dataArray{1},nGroups);
+                classGroups = obj.parseClassGroup(dataArray{1},nGroups);
                 
-                labelingStrategy = ClassLabelingStrategy(classGroupings);
+                labelingStrategy = ClassLabelingStrategy(classGroups);
                 
                 fclose(fileID);
             end
@@ -44,20 +44,20 @@ classdef LabelingStrategyLoader < handle
             end
         end
         
-        function classGroupings = parseClassGrouping(~,dataArray,nGroups)
-            classGroupings = repmat(ClassGrouping,1,nGroups);
+        function classGroups = parseClassGroup(~,dataArray,nGroups)
+            classGroups = repmat(ClassGroup,1,nGroups);
             
-            currentClassGrouping = classGroupings(1);
+            currentClassGroup = classGroups(1);
             groupCount = 0;
             nRows = length(dataArray);
             for i = 1 : nRows
                 row = dataArray{i};
                 if contains(row,'#')
+                    currentClassGroup = ClassGroup(row(2:end));
                     groupCount = groupCount + 1;
-                    currentClassGrouping = classGroupings(groupCount);
-                    currentClassGrouping.labelName = row(2:end);
+                    classGroups(groupCount) = currentClassGroup;
                 else
-                    currentClassGrouping.addGroupedClass(row);
+                    currentClassGroup.addGroupedClass(row);
                 end
             end
         end

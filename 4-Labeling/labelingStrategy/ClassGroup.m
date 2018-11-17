@@ -1,23 +1,23 @@
-classdef ClassGrouping < handle
+classdef ClassGroup < handle
     properties
         labelName;
-        groupingsMap;
+        groupsMap;
     end
         
     methods
-        function obj = ClassGrouping(labelName)
-            if nargin > 1
+        function obj = ClassGroup(labelName)
+            if nargin > 0
                 obj.labelName = labelName;
             end
-            obj.groupingsMap = containers.Map();
+            obj.groupsMap = containers.Map();
         end
         
         function [] = addGroupedClass(obj, className)
-            obj.groupingsMap(className) = 1;
+            obj.groupsMap(className) = 1;
         end
         
         function result = containsString(obj,className)
-            result = isKey(obj.groupingsMap,className);
+            result = isKey(obj.groupsMap,className);
         end
     end
 end

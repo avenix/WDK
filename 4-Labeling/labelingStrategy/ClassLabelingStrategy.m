@@ -1,6 +1,6 @@
 %this class is used to define how a class in the peaks file is mapped to a
-%class for the classification. We will test different strategies (grouping all the dives,
-%grouping all the throws, etc the  depending on the results we get with the
+%class for the classification. We will test different strategies (group all the dives,
+%group all the throws, etc the  depending on the results we get with the
 %classification
 
 classdef ClassLabelingStrategy < handle
@@ -18,10 +18,10 @@ classdef ClassLabelingStrategy < handle
     
     methods (Access = public)
         
-        function obj = ClassLabelingStrategy(classGroupings)
+        function obj = ClassLabelingStrategy(classGroups)
             obj.defaultClassesMap = ClassesMap();
             if nargin > 0
-                obj.generateClassesMap(classGroupings);
+                obj.generateClassesMap(classGroups);
                 strIdx = Helper.findStringInCellArray(obj.classNames,Constants.nullClassGroupStr);
                 if strIdx > 0
                     obj.nullClass = strIdx;
@@ -62,23 +62,23 @@ classdef ClassLabelingStrategy < handle
     end
     
     methods (Access = private)
-        function generateClassesMap(obj,classGroupings)
-            nGroups = length(classGroupings);
+        function generateClassesMap(obj,classGroups)
+            nGroups = length(classGroups);
             obj.classNames = cell(1,nGroups);
             
-            isClassCovered = obj.computeIsClassCovered(classGroupings);
+            isClassCovered = obj.computeIsClassCovered(classGroups);
             classCount = obj.mapUncoveredClasses(isClassCovered);
             
             for i = 1 : nGroups
                 classCount = classCount + 1;
-                classGrouping = classGroupings(i);
-                classesInGroup = keys(classGrouping.groupingsMap);
+                classGroup = classGroups(i);
+                classesInGroup = keys(classGroup.groupsMap);
                 for j = 1 : length(classesInGroup)
                     classStr = classesInGroup{j};
                     classIdx = obj.defaultClassesMap.idxOfClassWithString(classStr);
                     obj.classesMap(classIdx) = classCount;
                 end
-                obj.classNames{classCount} = classGrouping.labelName;
+                obj.classNames{classCount} = classGroup.labelName;
             end
             obj.numClasses = classCount;
             %obj.checkCorrectClassesMap();
@@ -106,14 +106,14 @@ classdef ClassLabelingStrategy < handle
             end
         end
         
-        function isClassCovered = computeIsClassCovered(obj,classGroupings)
+        function isClassCovered = computeIsClassCovered(obj,classGroups)
             
-            nGroups = length(classGroupings);
+            nGroups = length(classGroups);
             nClasses = obj.defaultClassesMap.numClasses;
             isClassCovered = false(1,nClasses);
             for i = 1 : nGroups
-                classGrouping = classGroupings(i);
-                classesInGroup = keys(classGrouping.groupingsMap);
+                classGroup = classGroups(i);
+                classesInGroup = keys(classGroup.groupsMap);
                 for j = 1 : length(classesInGroup)
                     classStr = classesInGroup{j};
                     classIdx = obj.defaultClassesMap.idxOfClassWithString(classStr);

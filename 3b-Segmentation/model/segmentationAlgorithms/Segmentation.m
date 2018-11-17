@@ -49,7 +49,7 @@ classdef (Abstract) Segmentation < handle
             for i = 1 : nSegments
                 eventLocation = eventLocations(i);
                 segment = Segment();
-                segment.peakIdx = eventLocation;
+                segment.eventIdx = eventLocation;
                 segment.startSample = eventLocation - obj.segmentSizeLeft;
                 segment.endSample =  eventLocation + obj.segmentSizeRight;
                 segment.window = data(segment.startSample:segment.endSample,:);

@@ -13,7 +13,7 @@ classdef SegmentsLabeler < handle
                 segments = segmentCells{i};
                 manualAnnotation = obj.manualAnnotations(i);
                 
-                labels = labeler.label([segments.peakIdx],manualAnnotation.eventAnnotations);
+                labels = labeler.label([segments.eventIdx],manualAnnotation.eventAnnotations);
                 
                 for j = 1 : length(segments)
                     segment = segments(j);

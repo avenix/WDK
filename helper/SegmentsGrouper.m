@@ -27,7 +27,7 @@ classdef SegmentsGrouper < handle
                     segment = fileSegments(i);
                     if segment.class ~= obj.classesMap.synchronisationClass
                         label = labelingStrategy.labelForClass(segment.class);
-                        newSegment = Segment(segment.file,segment.window,label,segment.peakIdx);
+                        newSegment = Segment(segment.file,segment.window,label,segment.eventIdx);
                         counter = segmentCounterPerClass(newSegment.class);
                         counter = counter + 1;
                         segmentCounterPerClass(newSegment.class) = counter;

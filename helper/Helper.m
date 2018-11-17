@@ -121,7 +121,7 @@ classdef Helper < handle
             end
         end
         
-        function text = convertToString(numbers)
+        function text = arrayToString(numbers)
             if isempty(numbers)
                 text = "";
             else
