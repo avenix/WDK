@@ -5,7 +5,6 @@ classdef DataLoaderApp < handle
     end
     
     properties (Access = private)
-        
         %UI
         uiHandles;
         figureHandle;

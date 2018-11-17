@@ -1,8 +1,6 @@
 classdef LabelingStrategyLoader < handle
         
     methods (Access = public)
-        function obj = LabelingStrategyLoader()
-        end
         
         function labelingStrategy = loadLabelingStrategy(obj, fileName)
             labelingStrategy = obj.parseLabelingStrategyFile(fileName);

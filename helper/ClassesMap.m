@@ -32,7 +32,11 @@ classdef ClassesMap < handle
         end
         
         function classStr = stringForClassAtIdx(obj,idx)
-            classStr = obj.classesList{idx};
+            if idx == obj.synchronisationClass
+                classStr = obj.synchronisationStr;
+            else
+                classStr = obj.classesList{idx};
+            end
         end
         
         function idx = idxOfClassWithString(obj,classStr)

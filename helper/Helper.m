@@ -66,7 +66,6 @@ classdef Helper < handle
             fileName = sprintf('%s-hand.txt',fileName);
         end
         
-        
         function fileName = removeFileExtension(dataFileName)
             n = length(dataFileName);
             periodIdx = strfind(flip(dataFileName),'.');
@@ -84,7 +83,7 @@ classdef Helper < handle
             end
         end
         
-        %% Data Management
+        %% Conversion methods
         function array = cellArray2FlatArray(cellArray)
             
             n = Helper.nElementsInCellArray(cellArray);
@@ -97,6 +96,48 @@ classdef Helper < handle
                 array(currentIdx:currentIdx + nLocal - 1) = cellArray{i};
                 currentIdx = currentIdx + nLocal;
             end
+        end
+        
+        function cellArray = propertyArrayToCellArray(propertyArray)
+            numProperties = length(propertyArray);
+                cellArray = cell(numProperties,2);
+            for i = 1 : numProperties
+                property = propertyArray(i);
+                cellArray{i,1} = property.name;
+                cellArray{i,2} = property.value;
+            end
+        end
+        
+        function str = cellArrayToString(cellArray)
+            if isempty(cellArray)
+                str = "";
+            else
+                str = cellArray{1};
+                nCells = length(cellArray);
+                for i = 2 : nCells
+                    columnName = cellArray{i};
+                    str = sprintf('%s\n%s',str,columnName);
+                end
+            end
+        end
+        
+        function text = convertToString(numbers)
+            if isempty(numbers)
+                text = "";
+            else
+                n = length(numbers);
+                text = num2str(numbers(1));
+                for i = 2 : n
+                    numStr = num2str(numbers(i));
+                    text = sprintf('%s\n%s',text,numStr);
+                end
+            end
+        end
+        
+        %% Helper methods
+           
+        function idx = findStringInCellArray(strings,string)
+            idx = find(contains(strings,string));
         end
         
         function n = nElementsInCellArray(cellArray)
@@ -114,20 +155,6 @@ classdef Helper < handle
             tableVariables = table.Properties.VariableNames;
             table = array2table(tableArray);
             table.Properties.VariableNames = tableVariables;
-        end
-        
-        %% Helper methods
-        function str = cellArrayToString(cellArray)
-            if isempty(cellArray)
-                str = "";
-            else
-                str = cellArray{1};
-                nCells = length(cellArray);
-                for i = 2 : nCells
-                    columnName = cellArray{i};
-                    str = sprintf('%s\n%s',str,columnName);
-                end
-            end
         end
         
         function missingPoints = findMissingPoints(data)
@@ -204,11 +231,12 @@ classdef Helper < handle
                 end
             end
         end
+        
         function [result] = isPointContainedInSegment(point, segmentStarting, segmentEnding)
             result = (point <= segmentEnding && point >= segmentStarting);
         end
         
-        function [b,c]=findInSorted(x,range)
+        function [b,c] = findInSorted(x,range)
             A=range(1);
             B=range(end);
             a=1;
@@ -256,19 +284,6 @@ classdef Helper < handle
             end
         end
         
-        function text = convertToString(numbers)
-            if isempty(numbers)
-                text = "";
-            else
-                n = length(numbers);
-                text = num2str(numbers(1));
-                for i = 2 : n
-                    numStr = num2str(numbers(i));
-                    text = sprintf('%s\n%s',text,numStr);
-                end
-            end
-        end
-        
         function text = generateAnnotationDetectorNames(annotationDetectors)
             numAnnotationDetectors = length(annotationDetectors);
             text = annotationDetectors{1}.type;
@@ -276,8 +291,7 @@ classdef Helper < handle
                 annotationDetector = annotationDetectors{i};
                 text = sprintf('%s\n%s',text,annotationDetector.type);
             end
-        end
-        
+        end 
         
         function text = generatePeakDetectorNames(peakDetectors)
             numPeakDetectors = length(peakDetectors);
@@ -300,14 +314,5 @@ classdef Helper < handle
             end
         end
         
-        function cellArray = propertyArrayToCellArray(propertyArray)
-            numProperties = length(propertyArray);
-                cellArray = cell(numProperties,2);
-            for i = 1 : numProperties
-                property = propertyArray(i);
-                cellArray{i,1} = property.name;
-                cellArray{i,2} = property.value;
-            end
-        end
     end
 end

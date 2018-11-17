@@ -31,7 +31,7 @@ throwHigh
 #Throw Low
 throwLow
             
-#Other
+#null
 pass
 shortSprint
 longSprint

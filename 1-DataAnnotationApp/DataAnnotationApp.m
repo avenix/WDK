@@ -262,7 +262,9 @@ classdef DataAnnotationApp < handle
         end
  
         function populateClassesList(obj)
-            obj.uiHandles.classesList.String = obj.classesMap.classesList;
+            classes = obj.classesMap.classesList;
+            classes{end+1} = obj.classesMap.synchronisationStr;
+            obj.uiHandles.classesList.String = classes;
         end
         
         function deleteAllMarkers(obj)

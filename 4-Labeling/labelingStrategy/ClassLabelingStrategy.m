@@ -22,6 +22,12 @@ classdef ClassLabelingStrategy < handle
             obj.defaultClassesMap = ClassesMap();
             if nargin > 0
                 obj.generateClassesMap(classGroupings);
+                strIdx = Helper.findStringInCellArray(obj.classNames,Constants.nullClassGroupStr);
+                if strIdx > 0
+                    obj.nullClass = strIdx;
+                else
+                    obj.nullClass = obj.numClasses + 1;
+                end
             end
         end
     

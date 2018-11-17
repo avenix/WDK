@@ -17,7 +17,7 @@ classdef SegmentsLabeler < handle
                 
                 for j = 1 : length(segments)
                     segment = segments(j);
-                    segment.label = labels(j);
+                    segment.class = labels(j);
                 end
             end
         end

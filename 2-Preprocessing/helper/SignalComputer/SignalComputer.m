@@ -29,17 +29,11 @@ classdef SignalComputer < Computer
     
     methods (Static)
         
-        function energyComputer = EnergyComputer2()
+        function energyComputer = EnergyComputer()
             functionHandle = @(x) x(:,1).^2 + x(:,2).^2 + x(:,3).^2;
             energyComputer = SignalComputer('E',functionHandle);
         end
-        
-        %future: remove this energy computer
-        function energyComputer = EnergyComputer()
-            functionHandle = @(x)x(:,15).^2+x(:,16).^2 + x(:,17).^2;
-            energyComputer = SignalComputer('E',functionHandle);
-        end
-        
+                
         function energyComputer = NoOpComputer()
             functionHandle = @(x)x;
             energyComputer = SignalComputer('NoOp',functionHandle);

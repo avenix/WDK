@@ -121,7 +121,7 @@ classdef SignalExplorerApp < handle
             obj.signalComputers = {SignalComputer.NoOpComputer(),...
             lowPassFilterComputer, ...
             highPassFilterComputer,...
-            s1computer,s2computer,SignalComputer.EnergyComputer2()};
+            s1computer,s2computer,SignalComputer.EnergyComputer()};
         
             obj.signalComputerStrings = {'NoOpComputer',...
                 'LowPassFilter',...
@@ -361,7 +361,7 @@ classdef SignalExplorerApp < handle
             
             axisSelector = AxisSelectorComputer();
             axisSelector.axis = [15 16 17];
-            energyComputer = SignalComputer.EnergyComputer2();
+            energyComputer = SignalComputer.EnergyComputer();
             
             compositeComputer.computers = {axisSelector, energyComputer};
         end
@@ -375,7 +375,9 @@ classdef SignalExplorerApp < handle
                 obj.currentSegmentationStrategy.peakDetector = obj.currentPeakDetector;
                 
                 obj.currentSegmentationStrategy.signalComputer = obj.getDefaultAutomaticSegmentationPreprocessor();
-                obj.segmentsLoader.segmentsLabeler = obj.segmentsLabeler; 
+                obj.segmentsLabeler.labelingStrategy = obj.getCurrentLabelingStrategy();
+                obj.segmentsLoader.segmentsLabeler = obj.segmentsLabeler;
+
             else
                 
                 obj.currentSegmentationStrategy.manualAnnotations = obj.annotations;
@@ -448,6 +450,7 @@ classdef SignalExplorerApp < handle
         function handleAutomaticSegmentationCheckBoxChanged(obj,~,~)
             if obj.uiHandles.automaticSegmentationCheckBox.Value == 1
                 obj.currentSegmentationStrategy = obj.segmentationStrategies{2};
+                
                 obj.isManualPeakDetector = false;
                 obj.updatePeakDetectionTables();
             end

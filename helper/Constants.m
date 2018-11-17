@@ -9,6 +9,7 @@ classdef Constants < handle
         precomputedPath = './data/precomputed';
         labelingStrategiesPath = './data/labeling';
         synchronisationClassStr = 'synchronisation';
+        nullClassGroupStr = 'null';
         SynchronisatonMarker = 3;
     end
 end

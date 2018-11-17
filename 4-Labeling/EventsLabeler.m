@@ -12,7 +12,7 @@ classdef EventsLabeler < handle
         end
         
         function labels = label(obj,detectedEvents, eventAnnotations)
-            if isempty(obj.labelingStrategy)
+            if ~isempty(obj.labelingStrategy)
                 classes = obj.labelWithEventAnnotations(detectedEvents,eventAnnotations);
                 labels = obj.labelingStrategy.labelsForClasses(classes);
             end
