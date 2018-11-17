@@ -22,7 +22,7 @@ function varargout = DataAnnotationUI(varargin)
 
 % Edit the above text to modify the response to help DataAnnotationUI
 
-% Last Modified by GUIDE v2.5 09-Nov-2018 19:33:59
+% Last Modified by GUIDE v2.5 17-Nov-2018 21:48:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -243,3 +243,12 @@ function addRangeAnnotationButton_Callback(hObject, eventdata, handles)
 % hObject    handle to addRangeAnnotationButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in peaksCheckBox.
+function peaksCheckBox_Callback(hObject, eventdata, handles)
+% hObject    handle to peaksCheckBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of peaksCheckBox

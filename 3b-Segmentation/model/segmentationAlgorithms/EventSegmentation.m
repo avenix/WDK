@@ -1,15 +1,15 @@
 classdef EventSegmentation < Segmentation
     
     properties
-        peakDetector;
+        eventDetector;
         signalComputer;
     end
     
     methods (Access = public)
         
-        function obj = EventSegmentation(peakDetector)
+        function obj = EventSegmentation(eventDetector)
             if nargin == 1
-                obj.peakDetector = peakDetector;
+                obj.eventDetector = eventDetector;
             end
         end
         
@@ -20,13 +20,13 @@ classdef EventSegmentation < Segmentation
         %returns unlabelled segments
         function segments = segment(obj,data)
             signal = obj.signalComputer.compute(data);
-            events = obj.peakDetector.detectPeaks(signal);
+            events = obj.eventDetector.detectPeaks(signal);
             segments = obj.computeSegmentsBasedOnEvents(events,data);
         end
         
         function str = toString(obj)
-            peakDetectorStr = obj.peakDetector.toString();
-            str = sprintf('%s_%d_%d',peakDetectorStr,obj.segmentSizeLeft,obj.segmentSizeRight);
+            eventDetectorStr = obj.eventDetector.toString();
+            str = sprintf('%s_%d_%d',eventDetectorStr,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
     end    
 end

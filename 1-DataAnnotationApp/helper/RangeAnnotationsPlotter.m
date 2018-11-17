@@ -67,10 +67,10 @@ classdef RangeAnnotationsPlotter < handle
             obj.annotationsMap(rangeAnnotation.startSample) = annotationHandle;
         end
         
-        function modifyAnnotationToClass(obj,peakKey,class)
-            if isKey(obj.annotationsMap,peakKey)
+        function modifyAnnotationToClass(obj,key,class)
+            if isKey(obj.annotationsMap,key)
                 
-                annotation = obj.annotationsMap(peakKey);
+                annotation = obj.annotationsMap(key);
                 
                 if annotation.annotation.label ~= class
                     annotation.annotation.label = class;
@@ -111,8 +111,8 @@ classdef RangeAnnotationsPlotter < handle
             annotationsArray = repmat(RangeAnnotation,1,nAnnotations);
             
             for i = 1 : nAnnotations
-                peakKey = annotationKeys{i};
-                annotationHandle = obj.annotationsMap(peakKey);
+                key = annotationKeys{i};
+                annotationHandle = obj.annotationsMap(key);
                 annotationsArray(i) = annotationHandle.annotation;
             end
         end

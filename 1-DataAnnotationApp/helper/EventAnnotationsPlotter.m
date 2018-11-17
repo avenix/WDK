@@ -26,51 +26,51 @@ classdef EventAnnotationsPlotter < handle
         function plotAnnotations(obj, plotAxes, eventAnnotations, signal)
             for i = 1 : length(eventAnnotations)
                 eventAnnotation = eventAnnotations(i);
-                peakX = eventAnnotation.sample;
-                peakY = signal(peakX);
-                peakClass = eventAnnotation.label;
-                obj.addAnnotation(plotAxes,peakX,peakY,peakClass);
+                x = eventAnnotation.sample;
+                y = signal(x);
+                class = eventAnnotation.label;
+                obj.addAnnotation(plotAxes,x,y,class);
             end
         end
         
-        function addAnnotation(obj, plotAxes, peakX, peakY, class)
-            if ~obj.annotationsMap.isKey(peakX)
-                eventAnnotation = EventAnnotation(peakX,class);
-                [peakSymbolHandle,peakTextHandle] = obj.plotPeak(plotAxes,peakX,peakY,class);
-                obj.annotationsMap(peakX) = DataAnnotatorPeakPlotHandle(eventAnnotation,peakSymbolHandle,peakTextHandle);
+        function addAnnotation(obj, plotAxes, x, y, class)
+            if ~obj.annotationsMap.isKey(x)
+                eventAnnotation = EventAnnotation(x,class);
+                [symbolHandle,textHandle] = obj.plotPeak(plotAxes,x,y,class);
+                obj.annotationsMap(x) = DataAnnotatorEventPlotHandle(eventAnnotation,symbolHandle,textHandle);
             end
         end
                    
-        function modifyAnnotationToClass(obj,peakKey,class)
-            if isKey(obj.annotationsMap,peakKey)
+        function modifyAnnotationToClass(obj,annotationKey,class)
+            if isKey(obj.annotationsMap,annotationKey)
                 
-                annotation = obj.annotationsMap(peakKey);
+                annotation = obj.annotationsMap(annotationKey);
                 
                 if annotation.annotation.label ~= class
                     color = obj.AnnotationColor;
                     
                     annotation.annotation.label = class;
-                    annotation.peakSymbolUI.Color = color;
+                    annotation.sampleSymbolUI.Color = color;
                     annotation.textSymbolUI.String = obj.classesMap.stringForClassAtIdx(class);
                 end
             end
         end
         
-        function deleteAnnotationAtSampleIdx(obj,peakTs)
-            peakKey = uint32(peakTs);
-            if obj.annotationsMap.isKey(peakKey)
-                peakPlotHandle = obj.annotationsMap(peakKey);
-                obj.deletePeakPlotHandle(peakPlotHandle);
-                obj.annotationsMap.remove(peakKey);
+        function deleteAnnotationAtSampleIdx(obj,sampleIdx)
+            key = uint32(sampleIdx);
+            if obj.annotationsMap.isKey(key)
+                plotHandle = obj.annotationsMap(key);
+                obj.deletePlotHandle(plotHandle);
+                obj.annotationsMap.remove(key);
             end
         end
         
         function clearAnnotations(obj)
             if ~isempty(obj.annotationsMap)
-                peakPlotHandles = values(obj.annotationsMap);
-                for i = 1 : length(peakPlotHandles)
-                    peakPlotHandle = peakPlotHandles{i};
-                    obj.deletePeakPlotHandle(peakPlotHandle);
+                plotHandles = values(obj.annotationsMap);
+                for i = 1 : length(plotHandles)
+                    plotHandle = plotHandles{i};
+                    obj.deletePlotHandle(plotHandle);
                 end
                 remove(obj.annotationsMap, keys(obj.annotationsMap));
             end
@@ -82,8 +82,8 @@ classdef EventAnnotationsPlotter < handle
             annotationsArray = repmat(EventAnnotation,1,nAnnotations);
             
             for i = 1 : nAnnotations
-                peakKey = annotationKeys{i};
-                annotationHandle = obj.annotationsMap(peakKey);
+                key = annotationKeys{i};
+                annotationHandle = obj.annotationsMap(key);
                 annotationsArray(i) = annotationHandle.annotation;
             end
         end
@@ -98,25 +98,25 @@ classdef EventAnnotationsPlotter < handle
         %adds an object so the map knows it's storing these objects
         function initAnnotationsMap(obj)
             eventAnnotation = EventAnnotation(uint32(1),uint8(1));
-            demoPeak = DataAnnotatorPeakPlotHandle(eventAnnotation,1,1);
+            demoPeak = DataAnnotatorEventPlotHandle(eventAnnotation,1,1);
             obj.annotationsMap = containers.Map(uint32(1),demoPeak);
             remove(obj.annotationsMap,1);
         end
         
-        function [peakSymbolHandle,peakTextHandle] = plotPeak(obj, plotAxes, peakX, peakY, class)
+        function [symbolHandle,textHandle] = plotPeak(obj, plotAxes, x, y, class)
             
             classStr = obj.classesMap.stringForClassAtIdx(class);
             color = obj.AnnotationColor;
-            peakSymbolHandle = plot(plotAxes,peakX,peakY,'*','Color',color);
-            peakTextHandle = text(plotAxes,double(peakX),double(peakY), classStr);
-            set(peakTextHandle, 'Clipping', 'on');
-            peakTextHandle.Tag = int2str(peakX);
-            peakTextHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
+            symbolHandle = plot(plotAxes,x,y,'*','Color',color);
+            textHandle = text(plotAxes,double(x),double(y), classStr);
+            set(textHandle, 'Clipping', 'on');
+            textHandle.Tag = int2str(x);
+            textHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
         end
         
-        function deletePeakPlotHandle(~,peakPlotHandle)
-            delete(peakPlotHandle.peakSymbolUI);
-            delete(peakPlotHandle.textSymbolUI);
+        function deletePlotHandle(~,plotHandle)
+            delete(plotHandle.sampleSymbolUI);
+            delete(plotHandle.textSymbolUI);
         end
     end
 end

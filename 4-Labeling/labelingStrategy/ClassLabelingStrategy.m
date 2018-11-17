@@ -1,7 +1,3 @@
-%this class is used to define how a class in the peaks file is mapped to a
-%class for the classification. We will test different strategies (group all the dives,
-%group all the throws, etc the  depending on the results we get with the
-%classification
 
 classdef ClassLabelingStrategy < handle
     

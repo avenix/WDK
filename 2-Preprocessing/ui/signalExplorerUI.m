@@ -22,7 +22,7 @@ function varargout = signalExplorerUI(varargin)
 
 % Edit the above text to modify the response to help signalExplorerUI
 
-% Last Modified by GUIDE v2.5 17-Nov-2018 20:46:11
+% Last Modified by GUIDE v2.5 17-Nov-2018 22:09:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -388,19 +388,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in peakDetectorsList.
-function peakDetectorsList_Callback(hObject, eventdata, handles)
-% hObject    handle to peakDetectorsList (see GCBO)
+% --- Executes on selection change in eventDetectorsList.
+function eventDetectorsList_Callback(hObject, eventdata, handles)
+% hObject    handle to eventDetectorsList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns peakDetectorsList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from peakDetectorsList
+% Hints: contents = cellstr(get(hObject,'String')) returns eventDetectorsList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from eventDetectorsList
 
 
 % --- Executes during object creation, after setting all properties.
-function peakDetectorsList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to peakDetectorsList (see GCBO)
+function eventDetectorsList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to eventDetectorsList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

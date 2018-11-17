@@ -1,7 +1,6 @@
 classdef DataAnnotationApp < handle
     
     properties (Constant)
-        NMaxPeaks = 500;
         FindPeaksRadius = 50;
         AutoFindPeakRadius = 100;
         SamplingFrequency = 200;
@@ -44,6 +43,7 @@ classdef DataAnnotationApp < handle
         plotHandles;
         
         %ui state
+        isSelectingPeaks = 0;
         showingMarkers = 1;
     end
     
@@ -62,17 +62,17 @@ classdef DataAnnotationApp < handle
             obj.rangeAnnotationsPlotter.delegate = obj;
             
             obj.currentFile = 1;
-            obj.state = DataAnnotatorState.kAddPeaksMode;
-            
+            obj.state = DataAnnotatorState.kAddMode;
+                        
             obj.loadUI();
         end
              
         function handleAnnotationClicked(obj,source,~)
             tag = str2double(source.Tag);
-            if obj.state == DataAnnotatorState.kDeletePeaksMode
+            if obj.state == DataAnnotatorState.kDeleteMode
                 obj.eventAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
                 obj.rangeAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
-            elseif obj.state == DataAnnotatorState.kModifyPeaksMode
+            elseif obj.state == DataAnnotatorState.kModifyMode
                 currentClass = obj.uiHandles.classesList.Value;
                 obj.eventAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
                 obj.rangeAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
@@ -93,6 +93,7 @@ classdef DataAnnotationApp < handle
             obj.uiHandles.findButton.Callback = @obj.handleFindPeaksClicked;
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
             obj.uiHandles.addRangeAnnotationButton.Callback = @obj.handleAddRangeClicked;
+            obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
             
             obj.resetUI();
             obj.loadPlotAxes();
@@ -105,6 +106,7 @@ classdef DataAnnotationApp < handle
         
         function resetUI(obj)
             obj.uiHandles.loadDataTextbox.String = "";
+            obj.updateSelectingPeaksCheckbox();
         end
         
         function loadAll(obj)
@@ -251,10 +253,14 @@ classdef DataAnnotationApp < handle
             peakIdx = obj.findPeakIdxNearLocation(x);
             
             if peakIdx > 0
-                y = obj.magnitude(peakIdx);
-                currentClass = obj.getSelectedClass();
-                obj.eventAnnotationsPlotter.addAnnotation(obj.plotAxes,peakIdx,y,currentClass);
+                obj.addSampleAtLocation(peakIdx);
             end
+        end
+        
+        function addSampleAtLocation(obj,x)
+            y = obj.magnitude(x);
+            currentClass = obj.getSelectedClass();
+            obj.eventAnnotationsPlotter.addAnnotation(obj.plotAxes,x,y,currentClass);
         end
         
         function updateLoadDataTextbox(obj,~,~)
@@ -325,8 +331,8 @@ classdef DataAnnotationApp < handle
         end
         
         function loadAnnotations(obj)
-            peaksFileName = obj.getAnnotationsFileName();
-            obj.annotationSet = obj.dataLoader.loadAnnotations(peaksFileName);
+            fileName = obj.getAnnotationsFileName();
+            obj.annotationSet = obj.dataLoader.loadAnnotations(fileName);
         end
         
         function plotAnnotations(obj)
@@ -368,6 +374,14 @@ classdef DataAnnotationApp < handle
             obj.uiHandles.signalComputerList.String = str;
         end
 
+        function updateSelectingPeaksCheckbox(obj)
+            obj.uiHandles.peaksCheckBox.Value = obj.isSelectingPeaks;
+        end
+        
+        function shouldSelectPeaks = getShouldSelectPeaks(obj)
+            shouldSelectPeaks = obj.uiHandles.peaksCheckBox.Value;
+        end
+        
         %% Handles
         function outputTxt = handleUserClick(obj,src,~)
             pos = get(src,'Position');
@@ -379,8 +393,12 @@ classdef DataAnnotationApp < handle
             
             fprintf('%d\n',x);
             
-            if obj.state == DataAnnotatorState.kAddPeaksMode
-                obj.addPeakAtLocation(x);
+            if obj.state == DataAnnotatorState.kAddMode
+                if obj.isSelectingPeaks
+                    obj.addPeakAtLocation(x);
+                else
+                    obj.addSampleAtLocation(x);
+                end
             elseif obj.state == DataAnnotatorState.kSelectSamplesMode
                 obj.selectSampleAtLocation(x);
             end
@@ -422,17 +440,21 @@ classdef DataAnnotationApp < handle
             end
             
             switch obj.uiHandles.stateButtonGroup.SelectedObject
-                case (obj.uiHandles.addPeaksRadio)
-                    obj.state = DataAnnotatorState.kAddPeaksMode;
-                case (obj.uiHandles.modifyPeaksRadio)
-                    obj.state = DataAnnotatorState.kModifyPeaksMode;
+                case (obj.uiHandles.addRadio)
+                    obj.state = DataAnnotatorState.kAddMode;
+                case (obj.uiHandles.modifyRadio)
+                    obj.state = DataAnnotatorState.kModifyMode;
                     cursorModeHandle.Enable = 'off';
-                case (obj.uiHandles.deletePeaksRadio)
-                    obj.state = DataAnnotatorState.kDeletePeaksMode;
+                case (obj.uiHandles.deleteRadio)
+                    obj.state = DataAnnotatorState.kDeleteMode;
                     cursorModeHandle.Enable = 'off';
                 case (obj.uiHandles.selectRangeRadio)
                     obj.state = DataAnnotatorState.kSelectSamplesMode;
             end
+        end
+        
+        function handleSelectingPeaksSelected(obj,~,~)
+            obj.isSelectingPeaks = obj.getShouldSelectPeaks();
         end
         
         function handleFindPeaksClicked(obj,~,~)
@@ -489,8 +511,7 @@ classdef DataAnnotationApp < handle
             eventAnnotations = obj.annotationSet.eventAnnotations;
             for i = 1 : length(eventAnnotations)
                 manualAnnotation = eventAnnotations(i);
-                peakLabel = manualAnnotation.label;
-                if peakLabel == obj.classesMap.synchronisationClass
+                if manualAnnotation.label == obj.classesMap.synchronisationClass
                     firstSynchronisatonSample = manualAnnotation.sample;
                     break;
                 end
@@ -502,8 +523,7 @@ classdef DataAnnotationApp < handle
             eventAnnotations = obj.annotationSet.eventAnnotations;
             for i = length(eventAnnotations) : -1 : 1
                 manualAnnotation = eventAnnotations(i);
-                peakLabel = manualAnnotation.label;
-                if peakLabel == obj.classesMap.synchronisationClass
+                if manualAnnotation.label == obj.classesMap.synchronisationClass
                     lastSynchronisatonSample = manualAnnotation.sample;
                     break;
                 end

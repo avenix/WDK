@@ -2,6 +2,7 @@ classdef SignalComputer < Computer
     properties
         name;
         functionHandle;
+        expectedNumInputSignals;
     end
     
     methods (Access = public)
@@ -11,10 +12,18 @@ classdef SignalComputer < Computer
                 obj.name = name;
                 obj.functionHandle = functionHandle;
             end
+            obj.expectedNumInputSignals = [];
         end
         
         function computedSignal = compute(obj,signal)
-            computedSignal = obj.functionHandle(signal);
+            numInputSignals = size(signal,2);
+            if numInputSignals ~= obj.expectedNumInputSignals
+                fprintf('SignalComputer %s - wrong input size: %d, should be: %d\n',...
+                    obj.toString(),numInputSignals,obj.expectedNumInputSignals);
+                computedSignal = [];
+            else
+                computedSignal = obj.functionHandle(signal);
+            end
         end
         
         function str = toString(obj)
@@ -32,11 +41,12 @@ classdef SignalComputer < Computer
         function energyComputer = EnergyComputer()
             functionHandle = @(x) x(:,1).^2 + x(:,2).^2 + x(:,3).^2;
             energyComputer = SignalComputer('E',functionHandle);
+            energyComputer.expectedNumInputSignals = 3;
         end
                 
-        function energyComputer = NoOpComputer()
+        function signalComputer = NoOpComputer()
             functionHandle = @(x)x;
-            energyComputer = SignalComputer('NoOp',functionHandle);
+            signalComputer = SignalComputer('NoOp',functionHandle);
         end
         
         function signalComputers = DefaultSignalComputers()

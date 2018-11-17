@@ -23,10 +23,10 @@ classdef SignalExplorerApp < handle
         currentSignalComputerVariables;
         
         %detection (only for automatic)
-        isManualPeakDetector;
-        peakDetectors;
-        currentPeakDetector;
-        currentPeakDetectorVariables;
+        isManualEventDetector;
+        eventDetectors;
+        currentEventDetector;
+        currentEventDetectorVariables;
         
         %segmentation
         currentSegmentsCreator;
@@ -64,10 +64,10 @@ classdef SignalExplorerApp < handle
             obj.segmentsLabeler = SegmentsLabeler();
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
             
-            obj.isManualPeakDetector = true;
+            obj.isManualEventDetector = true;
             
             obj.loadSignalComputers();
-            obj.loadPeakDetectors();
+            obj.loadEventDetectors();
             obj.loadUI();
             obj.resetUI();
         end
@@ -84,14 +84,14 @@ classdef SignalExplorerApp < handle
             
             obj.uiHandles.manualSegmentationCheckBox.Callback = @obj.handleManualSegmentationCheckBoxChanged;
             obj.uiHandles.automaticSegmentationCheckBox.Callback = @obj.handleAutomaticSegmentationCheckBoxChanged;
-            obj.uiHandles.peakDetectorsList.Callback = @obj.handlePeakDetectorSelected;
+            obj.uiHandles.eventDetectorsList.Callback = @obj.handleEventDetectorSelected;
             
             obj.fillLabelingStrategiesList();
             obj.fillSignalComputersList();
-            obj.updatePeakDetectorsList();
+            obj.updateEventDetectorsList();
             
             obj.updateSignalComputerVariablesTable();
-            obj.updatePeakDetectionTables();
+            obj.updateEventDetectionTables();
         end
         
         function resetUI(obj)
@@ -128,9 +128,9 @@ classdef SignalExplorerApp < handle
                 'HighPassFilter','S1','S2','E'};
         end
         
-        function loadPeakDetectors(obj)
-            simplifiedPeakDetector = SimplifiedPeakDetector();
-            obj.peakDetectors = {simplifiedPeakDetector};
+        function loadEventDetectors(obj)
+            simplePeakDetector = SimplePeakDetector();
+            obj.eventDetectors = {simplePeakDetector};
         end
         
         function loadPlotAxes(obj)
@@ -152,16 +152,6 @@ classdef SignalExplorerApp < handle
         
         function fillSignalsList(obj)
             obj.uiHandles.signalsList.String = Helper.arrayToString(obj.signals);
-        end
-        
-        function updateSelectedSignalComputer(obj)
-            signalComputer = obj.getCurrentSignalComputer();
-            obj.currentSignalComputerVariables = signalComputer.getEditableProperties();
-        end
-        
-        function updatePeakDetectorsList(obj)
-            obj.uiHandles.peakDetectorsList.String = Helper.generatePeakDetectorNames(obj.peakDetectors);
-            obj.uiHandles.peakDetectorsList.Value = 1;
         end
         
         function plotData(obj)
@@ -214,8 +204,8 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.signalComputerVariablesTable.Data = Helper.propertyArrayToCellArray(obj.currentSignalComputerVariables);
         end
         
-        function updatePeakSelectionVariablesTable(obj)
-            obj.uiHandles.peakDetectorVariablesTable.Data = Helper.propertyArrayToCellArray(obj.currentPeakDetectorVariables);
+        function updateEventSelectionVariablesTable(obj)
+            obj.uiHandles.eventDetectorVariablesTable.Data = Helper.propertyArrayToCellArray(obj.currentEventDetectorVariables);
         end
         
         function signalComputer = getCurrentSignalComputer(obj)
@@ -223,9 +213,9 @@ classdef SignalExplorerApp < handle
             signalComputer = obj.signalComputers{idx};
         end
         
-        function peakDetector = getCurrentPeakDetector(obj)
-            idx = obj.uiHandles.peakDetectorsList.Value;
-            peakDetector = obj.peakDetectors{idx};
+        function eventDetector = getCurrentEventDetector(obj)
+            idx = obj.uiHandles.eventDetectorsList.Value;
+            eventDetector = obj.eventDetectors{idx};
         end
         
         function resetGroupsLabel(obj)
@@ -287,16 +277,26 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.classesList.Value = 1:length(obj.groupedSegments);
         end
         
-        function updatePeakDetectionTables(obj)
-            if obj.isManualPeakDetector
-                obj.uiHandles.peakDetectorsList.Visible = 'Off';
-                obj.uiHandles.peakDetectorVariablesTable.Visible = 'Off';
+        function updateEventDetectionTables(obj)
+            if obj.isManualEventDetector
+                obj.uiHandles.eventDetectorsList.Visible = 'Off';
+                obj.uiHandles.eventDetectorVariablesTable.Visible = 'Off';
             else
-                obj.uiHandles.peakDetectorsList.Visible = 'On';
-                obj.uiHandles.peakDetectorVariablesTable.Visible = 'On';
-                obj.updatePeakDetectorFromUI();
-                obj.updatePeakSelectionVariablesTable();
+                obj.uiHandles.eventDetectorsList.Visible = 'On';
+                obj.uiHandles.eventDetectorVariablesTable.Visible = 'On';
+                obj.updateEventDetectorFromUI();
+                obj.updateEventSelectionVariablesTable();
             end
+        end
+        
+        function updateSelectedSignalComputer(obj)
+            signalComputer = obj.getCurrentSignalComputer();
+            obj.currentSignalComputerVariables = signalComputer.getEditableProperties();
+        end
+        
+        function updateEventDetectorsList(obj)
+            obj.uiHandles.eventDetectorsList.String = Helper.generatePeakDetectorNames(obj.eventDetectors);
+            obj.uiHandles.eventDetectorsList.Value = 1;
         end
         
         %methods
@@ -340,9 +340,9 @@ classdef SignalExplorerApp < handle
             end
         end
         
-        function updatePeakDetectorFromUI(obj)
-            obj.currentPeakDetector = obj.getCurrentPeakDetector();
-            obj.currentPeakDetectorVariables = obj.currentPeakDetector.getEditableProperties();
+        function updateEventDetectorFromUI(obj)
+            obj.currentEventDetector = obj.getCurrentEventDetector();
+            obj.currentEventDetectorVariables = obj.currentEventDetector.getEditableProperties();
         end
         
         function updateSignalsList(obj)
@@ -372,7 +372,7 @@ classdef SignalExplorerApp < handle
             
             if isa(obj.currentSegmentationStrategy,'EventSegmentation')
 
-                obj.currentSegmentationStrategy.peakDetector = obj.currentPeakDetector;
+                obj.currentSegmentationStrategy.eventDetector = obj.currentEventDetector;
                 
                 obj.currentSegmentationStrategy.signalComputer = obj.getDefaultAutomaticSegmentationPreprocessor();
                 obj.segmentsLabeler.labelingStrategy = obj.getCurrentLabelingStrategy();
@@ -402,9 +402,9 @@ classdef SignalExplorerApp < handle
         end
         
         %handles  
-        function handlePeakDetectorSelected(obj,~,~)
-            obj.updatePeakDetectorFromUI();
-            obj.updatePeakDetectionTables();
+        function handleEventDetectorSelected(obj,~,~)
+            obj.updateEventDetectorFromUI();
+            obj.updateEventDetectionTables();
         end
 
         function handleLoadClicked(obj,~,~)
@@ -440,10 +440,10 @@ classdef SignalExplorerApp < handle
         function handleManualSegmentationCheckBoxChanged(obj,~,~)
             if obj.uiHandles.manualSegmentationCheckBox.Value == 1
                 obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
-                obj.currentPeakDetector = [];
-                obj.currentPeakDetectorVariables = [];
-                obj.isManualPeakDetector = true;
-                obj.updatePeakDetectionTables();
+                obj.currentEventDetector = [];
+                obj.currentEventDetectorVariables = [];
+                obj.isManualEventDetector = true;
+                obj.updateEventDetectionTables();
             end
         end
         
@@ -451,8 +451,8 @@ classdef SignalExplorerApp < handle
             if obj.uiHandles.automaticSegmentationCheckBox.Value == 1
                 obj.currentSegmentationStrategy = obj.segmentationStrategies{2};
                 
-                obj.isManualPeakDetector = false;
-                obj.updatePeakDetectionTables();
+                obj.isManualEventDetector = false;
+                obj.updateEventDetectionTables();
             end
         end
         

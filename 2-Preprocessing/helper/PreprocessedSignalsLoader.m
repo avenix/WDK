@@ -12,7 +12,7 @@ classdef PreprocessedSignalsLoader < handle
             end
         end
         
-        %returns a cell array of arrays of peaks
+        %returns a cell array of arrays of processed data files
         function data = loadOrCreateData(obj)
             preprocessorStr = obj.preprocessor.toString();
             fullFileName = sprintf('data/precomputed/2-preprocessed_%s.mat',preprocessorStr);
