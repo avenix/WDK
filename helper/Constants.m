@@ -6,7 +6,7 @@ classdef Constants < handle
         annotationsPath = './data/annotations';
         markersPath = './data/markers';
         dataPath = './data/rawdata';
-        precomputedPath = './data/precomputed';
+        precomputedPath = './data/cache';
         labelingStrategiesPath = './data/labeling';
         synchronisationClassStr = 'synchronisation';
         nullClassGroupStr = 'null';

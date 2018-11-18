@@ -1,4 +1,0 @@
-legSwingSides
-legSwingDown
-walking
-synchronisation

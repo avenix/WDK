@@ -8,7 +8,7 @@ classdef SegmentsLoader < handle
         %returns a cell array of arrays of segments
         function segments = loadOrCreateSegments(obj)
             segmentationAlgorithmStr = obj.segmentsCreator.toString();
-            fullFileName = sprintf('data/precomputed/3-segments_%s.mat',segmentationAlgorithmStr);
+            fullFileName = sprintf('%s/3-segments_%s.mat',Constants.precomputedPath,segmentationAlgorithmStr);
             if exist(fullFileName,'File') == 2
                 segments = load(fullFileName,'segments');
                 segments = segments.segments;
