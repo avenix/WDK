@@ -29,7 +29,6 @@ classdef RangeAnnotationsPlotter < handle
         end
         
         function plotAnnotations(obj, plotAxes, rangeAnnotations)
-            %TODO
             for i = 1 : length(rangeAnnotations)
                 rangeAnnotation = rangeAnnotations(i);
                 obj.plotAnnotation(plotAxes,rangeAnnotation);

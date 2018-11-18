@@ -140,7 +140,7 @@ classdef DataAnnotationApp < handle
         
         function loadData(obj)
             fileName = obj.getDataFileName();
-            [obj.data, obj.columnNames] = obj.dataLoader.loadAnyDataFile(fileName);
+            [obj.data, obj.columnNames] = obj.dataLoader.loadData(fileName);
         end
         
         function loadMarkers(obj)
@@ -495,7 +495,6 @@ classdef DataAnnotationApp < handle
        
 
         %% Helper methods
-        
         function idx = findIdxOfValue(~,valueArray,startIdx,value)
             idx = uint32(-1);
             for i = startIdx : length(valueArray)

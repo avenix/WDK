@@ -1,7 +1,7 @@
 classdef AxisSelectorComputer < Computer
     
     properties (Access = public)
-        axis;
+        axes;
     end
     
     methods (Access = public)
@@ -10,7 +10,7 @@ classdef AxisSelectorComputer < Computer
         end
         
         function computedSignal = compute(obj,signal)
-            computedSignal = signal(:,obj.axis);
+            computedSignal = signal(:,obj.axes);
         end
         
         function str = toString(~)
@@ -18,7 +18,7 @@ classdef AxisSelectorComputer < Computer
         end
         
         function editableProperties = getEditableProperties(obj)
-            editableProperties = [Property('axis',array2JSON(obj.axis))];
+            editableProperties = [Property('axes',array2JSON(obj.axes))];
         end
     end
 end

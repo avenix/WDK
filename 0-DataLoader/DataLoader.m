@@ -42,10 +42,11 @@ classdef DataLoader < handle
             end 
         end
         
-        function [data, columnNames] = loadAnyDataFile(obj,fileName)
+        function [data, columnNames] = loadData(obj,fileName)
             fileExtension = Helper.getFileExtension(fileName);
+            fileName = sprintf('%s/%s',Constants.dataPath,fileName);
             if strcmp(fileExtension, ".mat")
-                [data, columnNames] = obj.loadData(fileName);
+                [data, columnNames] = obj.loadDataFileWithFullPath(fileName);
             elseif strcmp(fileExtension, ".txt")
                 [data, columnNames] = obj.loadTextData(fileName);
             else
@@ -54,13 +55,7 @@ classdef DataLoader < handle
                 columnNames = [];
             end
         end
-        
-        function [data, columnNames] = loadData(~,fileName)
-            
-            fileName = sprintf('%s/%s',Constants.dataPath,fileName);
-            [data, columnNames] = DataLoader.loadDataFileWithFullPath(fileName);
-        end
-        
+                
         function [data, columnNames] = loadTextData(~,fileName)
             
             if exist(fileName, 'file') == 2

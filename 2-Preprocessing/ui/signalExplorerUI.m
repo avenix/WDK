@@ -22,7 +22,7 @@ function varargout = signalExplorerUI(varargin)
 
 % Edit the above text to modify the response to help signalExplorerUI
 
-% Last Modified by GUIDE v2.5 17-Nov-2018 22:09:30
+% Last Modified by GUIDE v2.5 18-Nov-2018 08:19:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -488,6 +488,52 @@ function groupStrategiesList_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function groupStrategiesList_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to groupStrategiesList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in preprocessingSignalsList.
+function preprocessingSignalsList_Callback(hObject, eventdata, handles)
+% hObject    handle to preprocessingSignalsList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns preprocessingSignalsList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from preprocessingSignalsList
+
+
+% --- Executes during object creation, after setting all properties.
+function preprocessingSignalsList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to preprocessingSignalsList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in preprocessingSignalComputerList.
+function preprocessingSignalComputerList_Callback(hObject, eventdata, handles)
+% hObject    handle to preprocessingSignalComputerList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns preprocessingSignalComputerList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from preprocessingSignalComputerList
+
+
+% --- Executes during object creation, after setting all properties.
+function preprocessingSignalComputerList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to preprocessingSignalComputerList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
