@@ -12,9 +12,17 @@ classdef SegmentsCreator < handle
             segments = obj.segment(dataFiles);
         end
         
-        function str = toString(obj)
+        function str = toString(obj,recursive)
+            if nargin == 1
+                recursive = false;
+            end
+            
+            str = "";
+            if recursive
+                str = obj.preprocessedSignalsLoader.preprocessor.toString();
+            end
             segmentationAlgorithmStr = obj.segmentationAlgorithm.toString();
-            str = sprintf('%s',segmentationAlgorithmStr);
+            str = sprintf("%s_%s",str,segmentationAlgorithmStr);
         end
     end
     

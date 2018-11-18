@@ -15,7 +15,7 @@ classdef SimplePeakDetector < PeakDetector
     methods  (Access = public)
         
         function obj = SimplePeakDetector()
-            obj.type = 'simple';
+            obj.type = 'simplePeakDetector';
             obj.resetVariables();
         end
         

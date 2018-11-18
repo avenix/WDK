@@ -1,4 +1,5 @@
 classdef SegmentsLoader < handle
+    
     properties (Access = public)
         segmentsCreator;
         segmentsLabeler;
@@ -7,7 +8,8 @@ classdef SegmentsLoader < handle
     methods (Access = public)
         %returns a cell array of arrays of segments
         function segments = loadOrCreateSegments(obj)
-            segmentationAlgorithmStr = obj.segmentsCreator.toString();
+            
+            segmentationAlgorithmStr = obj.segmentsCreator.toString(true);
             fullFileName = sprintf('%s/3-segments_%s.mat',Constants.precomputedPath,segmentationAlgorithmStr);
             if exist(fullFileName,'File') == 2
                 segments = load(fullFileName,'segments');

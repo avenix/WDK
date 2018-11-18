@@ -1,9 +1,11 @@
 classdef PreprocessedSignalsLoader < handle
+    
     properties (Access = public)
         preprocessor;
     end
 
     methods (Access = public)
+        
         function obj = PreprocessedSignalsLoader(preprocessor)
             if nargin == 1
                 obj.preprocessor = preprocessor;
@@ -28,10 +30,6 @@ classdef PreprocessedSignalsLoader < handle
             end
         end
 
-        function str = toString(obj)
-            signalPreprocessorStr = obj.preprocessor.toString();
-            str = sprintf('%s_%s',signalPreprocessorStr);
-        end
     end
     
     methods (Access = private)
