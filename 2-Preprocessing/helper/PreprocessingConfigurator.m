@@ -1,13 +1,13 @@
 %this class retrieves a preprocessing algorithm from the UI
 classdef PreprocessingConfigurator < handle
-    
-    properties (Access = public)
+
+    properties (Access = private)
+        %data
+        columnNames;
+        
+        %computers
         signalComputers;
         signalComputerStrings;
-    end
-    
-    properties (Access = private)
-        columnNames;
         
         %ui
         signalsList;

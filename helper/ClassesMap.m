@@ -16,16 +16,20 @@ classdef ClassesMap < handle
         classesMap;
     end
     
-    methods (Access = public)
-        function obj = ClassesMap()
-            obj.classesList = obj.loadClassesFile();
-            if ~isempty(obj.classesList)
-                obj.numClasses = length(obj.classesList);
-                obj.createClassesMap(obj.classesList);
-                obj.synchronisationClass = obj.numClasses+1;
+    methods(Static)
+        % Concrete implementation.  See Singleton superclass.
+        function obj = instance()
+            persistent uniqueInstance
+            if isempty(uniqueInstance)
+                obj = ClassesMap();
+                uniqueInstance = obj;
+            else
+                obj = uniqueInstance;
             end
         end
-        
+    end
+    
+    methods (Access = public)
         function valid = isValidLabel(obj,labelStr)
         
             valid = isKey(obj.classesMap,labelStr);
@@ -56,6 +60,20 @@ classdef ClassesMap < handle
     
     methods (Access = private)
         
+      % Guard the constructor against external invocation.  We only want
+      % to allow a single instance of this class.  See description in
+      % Singleton superclass.
+      function obj = ClassesMap()
+          
+            obj.classesList = obj.loadClassesFile();
+            if ~isempty(obj.classesList)
+                obj.numClasses = length(obj.classesList);
+                obj.createClassesMap(obj.classesList);
+                obj.synchronisationClass = obj.numClasses+1;
+            end
+            
+      end
+      
         function classesList = loadClassesFile(~)
             
             [fileID,~] = fopen(Constants.classesPath);

@@ -10,7 +10,7 @@ classdef DataLoader < handle
     methods (Access = public)
         
         function obj = DataLoader()
-            obj.classesMap = ClassesMap();
+            obj.classesMap = ClassesMap.instance();
         end
         
         function saveData(~,dataTable,fileName)

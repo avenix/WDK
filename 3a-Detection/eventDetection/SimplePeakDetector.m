@@ -1,4 +1,4 @@
-classdef SimplePeakDetector < PeakDetector
+classdef SimplePeakDetector < EventDetector
     
     properties (Constant)            
         %kBestPeakHeight = single(180);
@@ -34,7 +34,7 @@ classdef SimplePeakDetector < PeakDetector
             editableProperties = [minPeakHeightProperty,minPeakDistanceProperty];
         end
         
-        function peakLocations = detectPeaks(obj,signal)
+        function peakLocations = detectEvents(obj,signal)
             
             WINDOW_SIZE = int32(501);
 

@@ -6,7 +6,7 @@ classdef AnnotationsLoader < handle
     
     methods (Access = public)
         function obj = AnnotationsLoader()
-            obj.classesMap = ClassesMap();
+            obj.classesMap = ClassesMap.instance();
         end
         
         function annotationSet = loadAnnotations(obj, fileName)

@@ -3,12 +3,14 @@ classdef EventsLabeler < handle
     properties (Access = public)
         labelingStrategy;
         tolerance = 10;
+        classesMap;
     end
     
     methods (Access = public)
         
         function obj = EventsLabeler(labelingStrategy)
             obj.labelingStrategy = labelingStrategy;
+            obj.classesMap = ClassesMap.instance();
         end
         
         function labels = label(obj,detectedEvents, eventAnnotations)
@@ -17,6 +19,11 @@ classdef EventsLabeler < handle
                 labels = obj.labelingStrategy.labelsForClasses(classes);
             end
         end
+        
+        function invalidIdxs = getInvalidLabels(obj,labels)
+            invalidIdxs = (labels == ClassesMap.kInvalidClass | labels == obj.classesMap.synchronisationClass);
+        end
+        
     end
     
     methods (Access = private)
@@ -24,22 +31,23 @@ classdef EventsLabeler < handle
         function  labels = labelWithEventAnnotations(obj,detectedEvents,eventAnnotations)
             detectedEvents = sort(detectedEvents);
             
-            nSegments = length(detectedEvents);
-            labels = zeros(1,nSegments);
+            nEvents = length(detectedEvents);
+            labels = zeros(1,nEvents);
             
-            for currentSegment = 1 : nSegments
+            for i = 1 : nEvents
                 
-                detectedEventLocation = detectedEvents(currentSegment);
+                detectedEventLocation = detectedEvents(i);
                 annotationIdx = EventsLabeler.findIdxOfSampleNearEventAnnotations(detectedEventLocation,eventAnnotations,obj.tolerance);
                 
                 if annotationIdx > 0
                     eventAnnotation = eventAnnotations(annotationIdx);
-                    labels(currentSegment) = eventAnnotation.label;
+                    labels(i) = eventAnnotation.label;
                 else
-                    labels(currentSegment) = obj.labelingStrategy.nullClass;
+                    labels(i) = obj.labelingStrategy.nullClass;
                 end
             end
         end
+        
     end
     
     methods (Static)

@@ -58,7 +58,6 @@ classdef SignalExplorerApp < handle
             
             obj.annotations = obj.dataLoader.loadAllAnnotations();
             
-            
             obj.preprocessedSignalsLoader = PreprocessedSignalsLoader();
             obj.segmentsLoader = SegmentsLoader();
             obj.currentSegmentsCreator = SegmentsCreator();
@@ -87,7 +86,7 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.createButton.Callback = @obj.handleLoadClicked;
             obj.uiHandles.groupButton.Callback = @obj.handleGroupClicked;
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
-                        
+
             obj.uiHandles.manualSegmentationCheckBox.Callback = @obj.handleManualSegmentationCheckBoxChanged;
             obj.uiHandles.automaticSegmentationCheckBox.Callback = @obj.handleAutomaticSegmentationCheckBoxChanged;
             obj.uiHandles.eventDetectorsList.Callback = @obj.handleEventDetectorSelected;
@@ -125,7 +124,6 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnWidth = {60,40};
         end
         
-
         function loadEventDetectors(obj)
             simplePeakDetector = SimplePeakDetector();
             obj.eventDetectors = {simplePeakDetector};
@@ -175,7 +173,6 @@ classdef SignalExplorerApp < handle
                 axis tight;
                 %set(obj.axesHandles(i),'style','tight');
             end
-            
             
             if obj.getSameScale() == 1
                 linkaxes(obj.axesHandles,'xy');

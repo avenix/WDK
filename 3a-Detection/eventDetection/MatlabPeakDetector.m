@@ -1,4 +1,4 @@
-classdef MatlabPeakDetector < PeakDetector
+classdef MatlabPeakDetector < EventDetector
     
     properties (Constant)            
         kBestPeakHeight = single(180);
@@ -32,7 +32,7 @@ classdef MatlabPeakDetector < PeakDetector
             editableProperties = [minPeakHeightProperty,minPeakDistanceProperty];
         end
         
-        function peakLocations = detectPeaks(obj,signal)
+        function peakLocations = detectEvents(obj,signal)
             [~,peakLocations] = findpeaks(signal,'MinPeakHeight',obj.minPeakHeight,'MinPeakDistance',obj.minPeakDistance);
             peakLocations = uint32(peakLocations);
         end

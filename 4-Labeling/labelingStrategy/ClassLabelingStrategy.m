@@ -15,7 +15,7 @@ classdef ClassLabelingStrategy < handle
     methods (Access = public)
         
         function obj = ClassLabelingStrategy(classGroups)
-            obj.defaultClassesMap = ClassesMap();
+            obj.defaultClassesMap = ClassesMap.instance();
             if nargin > 0
                 obj.generateClassesMap(classGroups);
                 strIdx = Helper.findStringInCellArray(obj.classNames,Constants.nullClassGroupStr);

@@ -78,7 +78,7 @@ classdef Helper < handle
             fileNames = cell(nFiles,1);
             for fileIdx = 1 : nFiles
                 dataFileName = dataFileNames{fileIdx};
-                fileNameNoExtension = Helper.removeDataFileExtension(dataFileName);
+                fileNameNoExtension = Helper.removeFileExtension(dataFileName);
                 fileNames{fileIdx} = fileNameNoExtension;
             end
         end
@@ -296,12 +296,12 @@ classdef Helper < handle
             end
         end 
         
-        function text = generatePeakDetectorNames(peakDetectors)
-            numPeakDetectors = length(peakDetectors);
-            text = peakDetectors{1}.type;
-            for i = 2 : numPeakDetectors
-                peakDetector = peakDetectors{i};
-                text = sprintf('%s\n%s',text,peakDetector.type);
+        function text = generateEventDetectorNames(eventDetectors)
+            numEventDetectors = length(eventDetectors);
+            text = eventDetectors{1}.type;
+            for i = 2 : numEventDetectors
+                eventDetector = eventDetectors{i};
+                text = sprintf('%s\n%s',text,eventDetector.type);
             end
         end
         

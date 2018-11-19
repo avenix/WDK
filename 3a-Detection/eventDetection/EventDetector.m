@@ -1,11 +1,11 @@
-%each peak finder approach should return an array of peaks
-classdef (Abstract) PeakDetector < handle
+%each event detector approach should return an array of indices
+classdef (Abstract) EventDetector < handle
     properties
         type;
     end
     
     methods (Abstract)
-        peakLocations = detectPeaks(obj,data);
+        eventLocations = detectEvents(obj,data);
         [] = resetVariables(obj);
         str = toString(obj);
     end
