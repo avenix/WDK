@@ -23,7 +23,7 @@ classdef ManualSegmentation < Segmentation
         end
         
         function str = toString(obj)
-            str = sprintf('manual_%d_%d',obj.segmentSizeLeft,obj.segmentSizeRight);
+            str = sprintf('manual%d%d',obj.segmentSizeLeft,obj.segmentSizeRight);
         end
     end
 end

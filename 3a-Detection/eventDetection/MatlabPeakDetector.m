@@ -23,7 +23,7 @@ classdef MatlabPeakDetector < PeakDetector
         end
         
         function str = toString(obj)
-            str = sprintf('%s_%d_%d%s',obj.type,obj.minPeakHeight,obj.minPeakDistance);
+            str = sprintf('%s%d%d',obj.type,obj.minPeakHeight,obj.minPeakDistance);
         end
         
         function editableProperties = getEditableProperties(obj)

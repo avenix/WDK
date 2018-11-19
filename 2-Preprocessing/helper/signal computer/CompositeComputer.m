@@ -22,17 +22,21 @@ classdef CompositeComputer < Computer
         end
         
         function str = toString(obj)
-            str = obj.computerStringForIdx(1);
-            
-            for i = 2 : length(obj.computers)
-                computerStr = obj.computerStringForIdx(i);
-                if ~isequal(computerStr,"")
-                    str = sprintf('%s_%s',str,computerStr);
+            if isempty(obj.computers)
+                str = "";
+            else
+                str = obj.computerStringForIdx(1);
+                
+                for i = 2 : length(obj.computers)
+                    computerStr = obj.computerStringForIdx(i);
+                    if ~isequal(computerStr,"")
+                        str = sprintf('%s_%s',str,computerStr);
+                    end
                 end
+                
+                classStrLength = min(CompositeComputer.kMaxSignalLength,length(str));
+                str = str(1:classStrLength);
             end
-            
-            classStrLength = min(CompositeComputer.kMaxSignalLength,length(str));
-            str = str(1:classStrLength);
         end
         
         function editableProperties = getEditableProperties(~)

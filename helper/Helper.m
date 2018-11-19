@@ -121,15 +121,18 @@ classdef Helper < handle
             end
         end
         
-        function text = arrayToString(numbers)
+        function text = arrayToString(numbers,delimiter)
             if isempty(numbers)
                 text = "";
             else
+                if nargin == 1
+                    delimiter = '\n';
+                end
                 n = length(numbers);
                 text = num2str(numbers(1));
                 for i = 2 : n
                     numStr = num2str(numbers(i));
-                    text = sprintf('%s\n%s',text,numStr);
+                    text = sprintf('%s%c%s',text,delimiter,numStr);
                 end
             end
         end

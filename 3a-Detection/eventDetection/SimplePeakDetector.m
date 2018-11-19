@@ -15,7 +15,7 @@ classdef SimplePeakDetector < PeakDetector
     methods  (Access = public)
         
         function obj = SimplePeakDetector()
-            obj.type = 'simplePeakDetector';
+            obj.type = 'simplePeakDet';
             obj.resetVariables();
         end
         
@@ -25,7 +25,7 @@ classdef SimplePeakDetector < PeakDetector
         end
         
         function str = toString(obj)
-            str = sprintf('%s_%d_%d',obj.type,obj.minPeakHeight,obj.minPeakDistance);
+            str = sprintf('%s%d%d',obj.type,obj.minPeakHeight,obj.minPeakDistance);
         end
         
         function editableProperties = getEditableProperties(obj)

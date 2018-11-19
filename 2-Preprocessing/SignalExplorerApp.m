@@ -13,6 +13,7 @@ classdef SignalExplorerApp < handle
         dataLoader;
         
         %data
+        dataAllPlayers;
         segments;
         groupedSegments;
         filteredSegments;
@@ -324,9 +325,11 @@ classdef SignalExplorerApp < handle
             
             obj.updateSegmentationStrategySegmentSizes();
             
+            obj.currentSegmentsCreator.preprocessedSignalsLoader = PreprocessedSignalsLoader();
             if isa(obj.currentSegmentationStrategy,'EventSegmentation')
                 obj.currentSegmentationStrategy.eventDetector = obj.currentEventDetector;
-                obj.currentSegmentationStrategy.signalComputer = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
+                obj.currentSegmentsCreator.preprocessedSignalsLoader.preprocessor = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
+                
                 obj.segmentsLabeler.labelingStrategy = obj.getCurrentLabelingStrategy();
                 obj.segmentsLoader.segmentsLabeler = obj.segmentsLabeler;
             else
@@ -334,7 +337,6 @@ classdef SignalExplorerApp < handle
                 obj.segmentsLoader.segmentsLabeler = [];
             end
             
-            obj.currentSegmentsCreator.preprocessedSignalsLoader = PreprocessedSignalsLoader();
             obj.currentSegmentsCreator.segmentationAlgorithm = obj.currentSegmentationStrategy;
         end
         

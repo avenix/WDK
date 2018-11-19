@@ -2,7 +2,6 @@ classdef EventSegmentation < Segmentation
     
     properties
         eventDetector;
-        signalComputer;
     end
     
     methods (Access = public)
@@ -18,15 +17,14 @@ classdef EventSegmentation < Segmentation
         end
         
         %returns unlabelled segments
-        function segments = segment(obj,data)
-            signal = obj.signalComputer.compute(data);
+        function segments = segment(obj,signal)
             events = obj.eventDetector.detectPeaks(signal);
-            segments = obj.computeSegmentsBasedOnEvents(events,data);
+            segments = obj.computeSegmentsBasedOnEvents(events,signal);
         end
         
         function str = toString(obj)
             eventDetectorStr = obj.eventDetector.toString();
-            str = sprintf('%s_%d_%d',eventDetectorStr,obj.segmentSizeLeft,obj.segmentSizeRight);
+            str = sprintf('%s%d%d',eventDetectorStr,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
     end    
 end

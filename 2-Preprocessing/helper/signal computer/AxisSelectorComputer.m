@@ -13,8 +13,10 @@ classdef AxisSelectorComputer < Computer
             computedSignal = signal(:,obj.axes);
         end
         
-        function str = toString(~)
-            str = 'AxisSelectorComputer';
+        function str = toString(obj)
+            axesStr = Helper.arrayToString(obj.axes);
+            axesStr = strrep(axesStr,'\n','');
+            str = sprintf('AxisSel%s',axesStr);
         end
         
         function editableProperties = getEditableProperties(obj)
