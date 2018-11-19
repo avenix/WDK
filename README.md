@@ -48,11 +48,12 @@ to come...
 * install Matlab
 * `git clone git@github.com:avenix/ARC-Tutorial.git`
 * in Matlab, `addpath(genpath('./'))`
-* run the App in every directory.
+* open the App file in each directory (e.g. *DataAnnotationApp* in *1-DataAnnotation*).
  
 ## References
-You will find more information on Andreas Bulling's article: https://dl.acm.org/citation.cfm?id=2499621
-and a few example applications:
+You will find more information about the human activity recognition on Andreas Bulling's article: https://dl.acm.org/citation.cfm?id=2499621
+
+A few example applications:
 1. https://www.mdpi.com/2414-4088/2/2/27
 2. https://dl.acm.org/citation.cfm?id=3267267
 

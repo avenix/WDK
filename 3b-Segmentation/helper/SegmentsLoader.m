@@ -6,6 +6,7 @@ classdef SegmentsLoader < handle
     end
 
     methods (Access = public)
+        
         %returns a cell array of arrays of segments
         function segments = loadOrCreateSegments(obj)
             
