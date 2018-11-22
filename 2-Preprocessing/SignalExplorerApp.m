@@ -53,7 +53,7 @@ classdef SignalExplorerApp < handle
     
     methods (Access = public)
         function obj = SignalExplorerApp()
-            obj.classesMap = ClassesMap();
+            obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
             
             obj.annotations = obj.dataLoader.loadAllAnnotations();
@@ -284,7 +284,7 @@ classdef SignalExplorerApp < handle
         end
 
         function updateEventDetectorsList(obj)
-            obj.uiHandles.eventDetectorsList.String = Helper.generatePeakDetectorNames(obj.eventDetectors);
+            obj.uiHandles.eventDetectorsList.String = Helper.generateEventDetectorNames(obj.eventDetectors);
             obj.uiHandles.eventDetectorsList.Value = 1;
         end
         

@@ -22,7 +22,7 @@ function varargout = DataAnnotationUI(varargin)
 
 % Edit the above text to modify the response to help DataAnnotationUI
 
-% Last Modified by GUIDE v2.5 17-Nov-2018 21:48:38
+% Last Modified by GUIDE v2.5 22-Nov-2018 11:14:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -252,3 +252,12 @@ function peaksCheckBox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of peaksCheckBox
+
+
+% --- Executes on button press in myCheckbox.
+function myCheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to myCheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of myCheckbox

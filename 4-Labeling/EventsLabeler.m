@@ -15,8 +15,7 @@ classdef EventsLabeler < handle
         
         function labels = label(obj,detectedEvents, eventAnnotations)
             if ~isempty(obj.labelingStrategy)
-                classes = obj.labelWithEventAnnotations(detectedEvents,eventAnnotations);
-                labels = obj.labelingStrategy.labelsForClasses(classes);
+                labels = obj.labelWithEventAnnotations(detectedEvents,eventAnnotations);
             end
         end
         
@@ -41,7 +40,7 @@ classdef EventsLabeler < handle
                 
                 if annotationIdx > 0
                     eventAnnotation = eventAnnotations(annotationIdx);
-                    labels(i) = eventAnnotation.label;
+                    labels(i) = obj.labelingStrategy.labelForClass(eventAnnotation.label);
                 else
                     labels(i) = obj.labelingStrategy.nullClass;
                 end

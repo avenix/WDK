@@ -50,7 +50,7 @@ classdef DataAnnotationApp < handle
     methods (Access = public)
         
         function obj =  DataAnnotationApp()
-            obj.classesMap = ClassesMap();
+            obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
             obj.signalComputers = [SignalComputer.NoOpComputer, SignalComputer.EnergyComputer()];
             obj.markersPlotter = MarkersPlotter();
@@ -82,6 +82,7 @@ classdef DataAnnotationApp < handle
     
     methods (Access = private)
 
+        %% methods
         function loadUI(obj)
             obj.uiHandles = guihandles(DataAnnotationUI);
             
@@ -350,6 +351,15 @@ classdef DataAnnotationApp < handle
         end
         
         
+        function computeMagnitude(obj)
+            signalComputer = obj.getSelectedSignalComputer();
+            if ~isempty(signalComputer)
+                signalIdxs = obj.getSelectedSignals();
+                signals = obj.data(:,signalIdxs);
+                obj.magnitude = signalComputer.compute(signals);
+            end
+        end
+        
         %% UI
         function class = getSelectedClass(obj)
             class = uint8(obj.uiHandles.classesList.Value);
@@ -409,15 +419,6 @@ classdef DataAnnotationApp < handle
             obj.loadAll();
             obj.updateLoadDataTextbox();
             obj.updateSignalsList();
-        end
-        
-        function computeMagnitude(obj)
-            signalComputer = obj.getSelectedSignalComputer();
-            if ~isempty(signalComputer)
-                signalIdxs = obj.getSelectedSignals();
-                signals = obj.data(:,signalIdxs);
-                obj.magnitude = signalComputer.compute(signals);
-            end
         end
         
         function handleVisualizeClicked(obj,~,~)

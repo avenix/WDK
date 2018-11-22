@@ -46,13 +46,17 @@ classdef (Abstract) Segmentation < handle
         function segments = createSegmentsWithEventLocations(obj,eventLocations,data)
             nSegments = length(eventLocations);
             segments = repmat(Segment,1,nSegments);
+            nSamples = length(data);
             for i = 1 : nSegments
                 eventLocation = eventLocations(i);
                 segment = Segment();
                 segment.eventIdx = eventLocation;
-                segment.startSample = eventLocation - obj.segmentSizeLeft;
-                segment.endSample =  eventLocation + obj.segmentSizeRight;
+                segment.startSample = max(1,eventLocation - obj.segmentSizeLeft);
+                segment.endSample =  min(nSamples, eventLocation + obj.segmentSizeRight);
                 segment.window = data(segment.startSample:segment.endSample,:);
+                if isempty(segment.window)
+                    fprintf('empty\n');
+                end
                 segments(i) = segment;
             end
         end

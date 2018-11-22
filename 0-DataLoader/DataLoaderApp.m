@@ -101,7 +101,7 @@ classdef DataLoaderApp < handle
         
         function loadData(obj)
             fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
-            [obj.data, obj.columnNames] = obj.dataLoader.loadAnyDataFile(fileName);
+            [obj.data, obj.columnNames] = obj.dataLoader.loadData(fileName);
         end
         
         %ui  

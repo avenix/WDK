@@ -100,7 +100,6 @@ classdef DetectionTestbedApp < handle
             obj.uiHandles.showMissedCheckbox.Callback = @obj.handleShowMissedToggled;
             obj.uiHandles.showBadEventsCheckbox.Callback = @obj.handleShowBadEventsToggled;
             obj.uiHandles.eventDetectionList.Callback = @obj.handleEventDetectionChanged;
-            obj.uiHandles.groupStrategiesList.Callback = @obj.handleGroupStrategyChanged;
             
             obj.uiHandles.filesList.String = obj.fileNames;
             
@@ -362,15 +361,12 @@ classdef DetectionTestbedApp < handle
             obj.updateVariablesTable();
         end
         
-        function handleGroupStrategyChanged(obj,~,~)
-            obj.currentLabelingStrategy = obj.getCurrentLabelingStrategy();
-            obj.resultsComputer.labelingStrategy = obj.currentLabelingStrategy;
-        end
-        
         function handleComputeButtonClicked(obj,~,~)
             
             obj.emptyResultLabels();
             obj.cleanPlot();
+            
+            obj.currentLabelingStrategy = obj.getCurrentLabelingStrategy();
             
             obj.loadPreprocessedData();
             
@@ -381,6 +377,7 @@ classdef DetectionTestbedApp < handle
             tolerance = obj.getTolerance();
             obj.computeDetectionResults(tolerance);
             obj.computeDetectionStatistics();
+            
         end
         
         
