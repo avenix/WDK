@@ -72,7 +72,6 @@ classdef (Abstract) Segmentation < handle
     
     methods (Access = private)
         
-        
         function addDataToSegments(obj,segments)
             
             nFiles = length(segments);

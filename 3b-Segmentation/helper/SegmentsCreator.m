@@ -28,5 +28,4 @@ classdef SegmentsCreator < handle
         end
     end
     
-    
 end

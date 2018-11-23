@@ -270,7 +270,6 @@ classdef SignalExplorerApp < handle
                 obj.uiHandles.eventDetectorsList.Visible = 'Off';
                 obj.uiHandles.eventDetectorVariablesTable.Visible = 'Off';
             else
-                
                 obj.uiHandles.peakDetectorsLabel.Visible = 'On';
                 obj.uiHandles.preprocessingLabel.Visible = 'On';
                 obj.uiHandles.preprocessingSignalComputerVariablesTable.Visible = 'On';

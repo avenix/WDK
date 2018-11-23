@@ -51,7 +51,7 @@ classdef Helper < handle
         end
         
         function files = listAnnotationFiles()
-            files = Helper.listFilesInDirectory('./data/annotations', {'*.txt'});
+            files = Helper.listFilesInDirectory(Constants.annotationsPath, {'*.txt'});
         end
         
         function fileName = addAnnotationsFileExtension(fileName)

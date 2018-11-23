@@ -81,8 +81,8 @@ classdef DataLoaderApp < handle
         end
         
         function populateFileNamesList(obj)
-            files = [dir(fullfile('./data/rawData', '*.mat'));...
-                dir(fullfile('./data/rawData', '*.txt'))];
+            files = [dir(fullfile(Constants.dataPath, '*.mat'));...
+                dir(fullfile(Constants.dataPath, '*.txt'))];
             
             nFiles = length(files);
             filesStr = cell(1,nFiles);
