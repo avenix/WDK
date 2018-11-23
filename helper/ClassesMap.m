@@ -48,7 +48,7 @@ classdef ClassesMap < handle
                 idx = [];
             else
                 if ~isKey(obj.classesMap,classStr)
-                    fprintf('ClassesMap Error class %s not defined\n',classStr);
+                    fprintf('%s: %s\n',Constants.kUndefinedClassError,classStr);
                     idx = [];
                 else
                 idx = obj.classesMap(classStr);

@@ -77,14 +77,15 @@ classdef ClassLabelingStrategy < handle
                 obj.classNames{classCount} = classGroup.labelName;
             end
             obj.numClasses = classCount;
-            %obj.checkCorrectClassesMap();
+            
+            obj.checkCorrectClassesMap();
         end
         
         function checkCorrectClassesMap(obj)
             for i = 1 : length(obj.classesMap)
                 class = obj.classesMap(i);
                 if class <= 0
-                    fprintf('GroupedClassLabeling - Warning: class %d is not mapped correctly\n',class);
+                    fprintf('%s: %d\n',Constants.kIncorretlyMappedClassWarning,class);
                 end
             end
         end

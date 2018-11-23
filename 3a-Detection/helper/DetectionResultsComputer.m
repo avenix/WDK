@@ -16,7 +16,7 @@ classdef DetectionResultsComputer < handle
         %returns an array of DetectionResults (one for each file)
         function detectionResults = computeDetectionResults(obj,eventsCellArray,annotationsCellArray)
             if isempty(obj.labelingStrategy)
-                fprintf('Warning - DetectionResultsComputer - calling computeDetectionResults but labelingStrategy not set\n');
+                fprintf('%s\n',Constants.kLabelingStrategyNotSetWarning);
             else
                 
                 nCells = length(eventsCellArray);

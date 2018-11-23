@@ -96,7 +96,7 @@ classdef AnnotationsLoader < handle
                         rangeAnnotations(rangeCounter) = RangeAnnotation(startSample,endSample,label);
                         rangeCounter = rangeCounter + 1;
                     else
-                        fprintf('Error. Invalid annotation class: %s\n',classString);
+                        fprintf('%s: %s\n',Constants.kInvalidAnnotationClassError,classString);
                         rangeAnnotations = [];
                         break;
                     end
@@ -128,7 +128,7 @@ classdef AnnotationsLoader < handle
                         eventAnnotations(eventCounter) = EventAnnotation(ts,class);
                         eventCounter = eventCounter + 1;
                     else
-                        fprintf('Error. Invalid annotation class: %s\n',classString);
+                        fprintf('%s: %s\n',Constants.kInvalidAnnotationClassError,classString);
                         eventAnnotations = [];
                         break;
                     end

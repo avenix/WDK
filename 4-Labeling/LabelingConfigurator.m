@@ -34,7 +34,7 @@ classdef LabelingConfigurator < handle
             obj.labelingStrategies = dataLoader.loadAllLabelingStrategies();
             
             if isempty(obj.labelingStrategies)
-                fprintf('Error - no labeling strategy available\n');
+                fprintf('%s\n',Constants.kNoLabelingStrategyAvailableError);
             end
         end
         

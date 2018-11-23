@@ -90,7 +90,7 @@ classdef DetectionTestbedApp < handle
                 obj.uiHandles.signalComputerVariablesTable);
             
             obj.labelingConfigurator = LabelingConfigurator(...
-                obj.uiHandles.groupStrategiesList);
+                obj.uiHandles.labelingStrategiesList);
             
             obj.resetUI();
             
