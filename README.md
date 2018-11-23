@@ -108,11 +108,30 @@ bands, maximum spectral frequency ), wavelet analysis, mean crossing rate.
 * in Matlab, `addpath(genpath('./'))`
 * open the App file in each directory (e.g. *DataAnnotationApp* in *1-DataAnnotation*).
  
+ ## Getting started
+1. Place your data files (.txt or .mat) in the *./data/rawdata/* directory
+2. If the files are in *.txt* format, you might want to convert them to a binary format with the *DataLoaderApp*
+3. Define your classes in the *classes.txt* file. 
+4. Open the *DataAnnotationApp* to annotate your data. Annotations created with the App should be copied into the *./data/annotations*
+5. Sometimes we will want to group annotations for the data analysis. For example, we might want to consider events annotated as *low jump*, *mid jump* and *high jump* as a *jump* for a first data analysis. This can be achieved by defining a labeling strategy. A labeling strategy maps annotations made to groups, which is provided in the following *.txt* format: 
+```
+#Group1 
+class1
+class2
+class3
+
+#Group2
+class4
+class5
+```
+Note that you dont need to assign every class to a group. A class which is left ungrouped will be assigned to its own group automatically. Ensure that the classes you provide have been defined in the *./data/classes.txt* file and that no class belongs to two groups at the same time. Place your labeling strategy files in the *./data/labeling/*
+6. The WDK offers a Matlab App to support you in each stage of the development your wearable applications. Check in each directory for the App file.
+ 
  ## Troubleshooting
 
 > 'Error - no labeling strategy available'.
 
-Check the *./data/labeling/* directory. There might be no *.txt* file containing a mapping of classes.
+Check the *./data/labeling/* directory. There might be no *.txt* file containing a labeling strategy.
 
 > 'Error. Invalid annotation class'. 
 
@@ -125,6 +144,8 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a cl
  > 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
  
  The current version of the *FeatureSelector* uses the mRMR algorithm to select the most relevant features. The mRMR algorithm will fail if every value of a feature is the same.
+ 
+Furthermore, the data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
  
 ## References
 You will find more information about the human activity recognition on Andreas Bulling's article: https://dl.acm.org/citation.cfm?id=2499621

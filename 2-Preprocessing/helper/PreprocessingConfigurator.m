@@ -60,6 +60,11 @@ classdef PreprocessingConfigurator < handle
             
             computer = CompositeComputer({axisSelector, signalComputer});
         end
+        
+        function updateSignalsList(obj)
+            str = Helper.cellArrayToString(obj.columnNames);
+            obj.signalsList.String = str;
+        end
     end
     
     methods (Access = private)

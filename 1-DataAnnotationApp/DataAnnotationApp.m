@@ -22,7 +22,7 @@ classdef DataAnnotationApp < handle
         columnNames;
         
         %signal computers
-        signalComputers;
+        preprocessingConfigurator;
                 
         %annotations
         annotationSet;
@@ -52,7 +52,6 @@ classdef DataAnnotationApp < handle
         function obj =  DataAnnotationApp()
             obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
-            obj.signalComputers = [SignalComputer.NoOpComputer, SignalComputer.EnergyComputer()];
             obj.markersPlotter = MarkersPlotter();
             
             obj.eventAnnotationsPlotter = EventAnnotationsPlotter(obj.classesMap);
@@ -102,7 +101,11 @@ classdef DataAnnotationApp < handle
             obj.populateFileNamesList();
             obj.populateClassesList();
             
-            obj.fillSignalsComputerList();
+            obj.preprocessingConfigurator = PreprocessingConfigurator(...
+                obj.uiHandles.signalsList,...
+                obj.uiHandles.signalComputerList,...
+                obj.uiHandles.signalComputerVariablesTable);
+            
         end
         
         function resetUI(obj)
@@ -167,7 +170,8 @@ classdef DataAnnotationApp < handle
         function plotData(obj)
             if ~isempty(obj.data)
                 hold(obj.plotAxes,'on');
-                selectedSignals = obj.getSelectedSignals();
+                
+                selectedSignals = obj.preprocessingConfigurator.getSelectedSignalIdxs();
                 nSignals = length(selectedSignals);
                 obj.plotHandles = cell(1,nSignals+1);
                 
@@ -352,36 +356,16 @@ classdef DataAnnotationApp < handle
         
         
         function computeMagnitude(obj)
-            signalComputer = obj.getSelectedSignalComputer();
+            signalComputer = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
+            
             if ~isempty(signalComputer)
-                signalIdxs = obj.getSelectedSignals();
-                signals = obj.data(:,signalIdxs);
-                obj.magnitude = signalComputer.compute(signals);
+                obj.magnitude = signalComputer.compute(obj.data);
             end
         end
         
         %% UI
         function class = getSelectedClass(obj)
             class = uint8(obj.uiHandles.classesList.Value);
-        end
-        
-        function selectedSignals = getSelectedSignals(obj)
-            selectedSignals = obj.uiHandles.signalsList.Value;
-        end
-        
-        function signalComputer = getSelectedSignalComputer(obj)
-            signalComputerIdx = obj.uiHandles.signalComputerList.Value;
-            signalComputer = obj.signalComputers(signalComputerIdx);
-        end
-        
-        function updateSignalsList(obj)
-            str = Helper.cellArrayToString(obj.columnNames);
-            obj.uiHandles.signalsList.String = str;
-        end
-        
-        function fillSignalsComputerList(obj)
-            str = Helper.generateSignalComputerNames(obj.signalComputers);
-            obj.uiHandles.signalComputerList.String = str;
         end
 
         function updateSelectingPeaksCheckbox(obj)
@@ -418,7 +402,6 @@ classdef DataAnnotationApp < handle
             obj.deleteAll();
             obj.loadAll();
             obj.updateLoadDataTextbox();
-            obj.updateSignalsList();
         end
         
         function handleVisualizeClicked(obj,~,~)
