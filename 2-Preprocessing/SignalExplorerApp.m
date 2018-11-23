@@ -245,7 +245,7 @@ classdef SignalExplorerApp < handle
         function value = getSameScale(obj)
             value = obj.uiHandles.sameScaleCheckBox.Value;
         end
-                
+
         function updateGroupsList(obj)
             labelingStrategy = obj.getCurrentLabelingStrategy();
             classesStr = cell(1,length(obj.groupedSegments));
@@ -370,7 +370,6 @@ classdef SignalExplorerApp < handle
             obj.resetGroupsLabel();
             if ~isempty(obj.segments)
                 segmentsGrouper = SegmentsGrouper();
-                segmentsGrouper.classesMap = obj.classesMap;
                 labelingStrategy = obj.getCurrentLabelingStrategy();
 
                 obj.groupedSegments = segmentsGrouper.groupSegments(obj.segments,labelingStrategy);

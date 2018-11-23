@@ -1,7 +1,6 @@
 classdef SegmentsCreator < handle
     
     properties (Access = public)
-        data;
         preprocessedSignalsLoader;
         segmentationAlgorithm;
     end
@@ -12,8 +11,7 @@ classdef SegmentsCreator < handle
         %algorithm applied on the preprocessed data
         function segments = createSegments(obj)
             dataFiles = obj.preprocessedSignalsLoader.loadOrCreateData();
-            segments = obj.segment(dataFiles);
-            obj.addDataToSegments(segments);
+            segments = obj.segmentationAlgorithm.segmentFiles(dataFiles);
         end
         
         function str = toString(obj,recursive)
@@ -30,35 +28,5 @@ classdef SegmentsCreator < handle
         end
     end
     
-    methods (Access = private)
-        
-        function segments = segment(obj,dataFiles)
-            nFiles = length(dataFiles);
-            segments = cell(1,nFiles);
-            
-            for i = 1 : nFiles
-                dataFile = dataFiles{i};
-               segments{i} = obj.segmentationAlgorithm.segment(dataFile);
-            end
-        end
-        
-        function addDataToSegments(obj,segments)
-            if isempty(obj.data)
-                dataLoader = DataLoader();
-                obj.data = dataLoader.loadAllDataFiles();
-            end
-            
-            nFiles = length(segments);
-            for i = 1 : nFiles
-                segmentsCurrentFile = segments{i};
-                dataCurrentFile = obj.data{i};
-                for j = 1 : length(segmentsCurrentFile)
-                    segment = segmentsCurrentFile(j);
-                    segment.window = dataCurrentFile(segment.startSample:segment.endSample,:);
-                end
-                %segments{i} = segmentPreprocessedData;
-            end
-            
-        end
-    end
+    
 end

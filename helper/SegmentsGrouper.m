@@ -1,14 +1,19 @@
 classdef SegmentsGrouper < handle
         
-    properties (Access = public)
+    properties (Access = private)
         classesMap;
     end
     
     methods (Access = public)
         
+        function obj = SegmentsGrouper()
+            obj.classesMap = ClassesMap.instance();
+        end
+        
         %takes input from ManualSegmentsLoader.loadSegments()
         %returns cell array. In each cell i, contains segments of class i
         function groupedSegments = groupSegments(obj,segments,labelingStrategy)
+            
             nClasses = labelingStrategy.numClasses;
             groupedSegments = cell(nClasses,1);
             
@@ -25,7 +30,7 @@ classdef SegmentsGrouper < handle
                 fileSegments = segments{currentFile};
                 for i = 1 : length(fileSegments)
                     segment = fileSegments(i);
-                    if segment.class ~= obj.classesMap.synchronisationClass
+                    if segment.class ~= obj.classesMap.synchronisationClass && segment.class ~= ClassesMap.kInvalidClass
                         label = labelingStrategy.labelForClass(segment.class);
                         newSegment = Segment(segment.file,segment.window,label,segment.eventIdx);
                         counter = segmentCounterPerClass(newSegment.class);
@@ -85,7 +90,7 @@ classdef SegmentsGrouper < handle
                 fileSegments = segments{currentFile};
                 for i = 1 : length(fileSegments)
                     segment = fileSegments(i);
-                    if segment.class ~= obj.classesMap.synchronisationClass
+                    if (segment.class ~= obj.classesMap.synchronisationClass && segment.class ~= ClassesMap.kInvalidClass)
                         label = labelingStrategy.labelForClass(segment.class);
                         nSegmentsPerClass(label) = nSegmentsPerClass(label) + 1;
                     end

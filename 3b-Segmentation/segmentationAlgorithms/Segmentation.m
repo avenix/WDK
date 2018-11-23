@@ -8,17 +8,35 @@ classdef (Abstract) Segmentation < handle
     properties (Access = public)
         segmentSizeLeft;
         segmentSizeRight;
+        data;%set from outside, otherwise lazily loaded
     end
     
-    methods (Abstract)
+    methods (Abstract, Access = public)
         segments = segment(obj,data);
+        
         str = toString(obj);
+    end
+    
+    methods (Abstract, Access = protected)
+        segmentsPerFile = createSegmentsPerFile(obj,dataFiles);
     end
     
     methods (Access = public)
         
         function obj = Segmentation()
             obj.resetVariables();
+        end
+        
+        function segmentsPerFile = segmentFiles(obj,dataFiles)
+            
+            segmentsPerFile = obj.createSegmentsPerFile(dataFiles);
+            
+            if isempty(obj.data)
+                dataLoader = DataLoader();
+                obj.data = dataLoader.loadAllDataFiles();
+            end
+            
+            obj.addDataToSegments(segmentsPerFile);
         end
         
         function resetVariables(obj)
@@ -28,38 +46,57 @@ classdef (Abstract) Segmentation < handle
     end
     
     methods (Access = protected)
-        function segments = computeSegmentsBasedOnEvents(obj,eventLocations, data)
-            numSamples = size(data,1);
-            segmentStartings = eventLocations - obj.segmentSizeLeft;
-            segmentEndings = eventLocations + obj.segmentSizeRight;
-            isValidSegment = (segmentStartings >= 1) | (segmentEndings <= numSamples);
-            eventLocations = eventLocations(isValidSegment);
-            
-            segments = obj.createSegmentsWithEventLocations(eventLocations,data);
-        end
-        
-        function [segmentStarting, segmentEnding] = computeSegmentForPeak(obj,peakLocation)
-            segmentStarting = peakLocation - uint32(obj,obj.segmentSizeLeft);
-            segmentEnding = peakLocation + uint32(obj,obj.segmentSizeRight);
-        end
-        
-        function segments = createSegmentsWithEventLocations(obj,eventLocations,data)
-            nSegments = length(eventLocations);
-            segments = repmat(Segment,1,nSegments);
+        function segments = createSegmentsWithEvents(obj,eventLocations, data)
+            numValidSegments = obj.countNumValidSegments(eventLocations,data);
+            segments = repmat(Segment,1,numValidSegments);
             nSamples = length(data);
-            for i = 1 : nSegments
+            segmentsCounter = 0;
+            
+            for i = 1 : length(eventLocations)
                 eventLocation = eventLocations(i);
-                segment = Segment();
-                segment.eventIdx = eventLocation;
-                segment.startSample = max(1,eventLocation - obj.segmentSizeLeft);
-                segment.endSample =  min(nSamples, eventLocation + obj.segmentSizeRight);
-                segment.window = data(segment.startSample:segment.endSample,:);
-                if isempty(segment.window)
-                    fprintf('empty\n');
+                startSample = int32(eventLocation) - int32(obj.segmentSizeLeft);
+                endSample = int32(eventLocation) + int32(obj.segmentSizeRight);
+                
+                if startSample > 0 && endSample <= nSamples
+                    segment = Segment();
+                    segment.eventIdx = eventLocation;
+                    segment.startSample = uint32(startSample);
+                    segment.endSample = uint32(endSample);
+                    segment.window = data(segment.startSample:segment.endSample,:);
+                    segmentsCounter = segmentsCounter + 1;
+                    segments(segmentsCounter) = segment;
                 end
-                segments(i) = segment;
             end
         end
     end
     
+    methods (Access = private)
+        
+        
+        function addDataToSegments(obj,segments)
+            
+            nFiles = length(segments);
+            for i = 1 : nFiles
+                segmentsCurrentFile = segments{i};
+                dataCurrentFile = obj.data{i};
+                for j = 1 : length(segmentsCurrentFile)
+                    segment = segmentsCurrentFile(j);
+                    segment.window = dataCurrentFile(segment.startSample:segment.endSample,:);
+                end
+            end
+        end
+        
+        function numValidSegments = countNumValidSegments(obj,eventLocations,data)
+            nSamples = length(data);
+            numValidSegments = 0;
+            for i = 1 : length(eventLocations)
+                eventLocation = eventLocations(i);
+                startSample = int32(eventLocation) - int32(obj.segmentSizeLeft);
+                endSample = int32(eventLocation) + int32(obj.segmentSizeRight);
+                if startSample > 0 && endSample <= nSamples
+                    numValidSegments = numValidSegments + 1;
+                end
+            end
+        end
+    end
 end
