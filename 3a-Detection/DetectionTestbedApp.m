@@ -7,35 +7,34 @@ classdef DetectionTestbedApp < handle
     properties (Access = private)
         
         currentFile;
-        currentEventDetector;
-        currentEventDetectorVariables;
-        
-        %data loading
-        preprocessedSignalsLoader;
-        
         %data
         eventsLoader;
         fileEnergies;
         fileNames;
-        
-        %group strategies
-        groupStrategies;
-        currentLabelingStrategy;
-            
-        %event detection
-        eventDetectors;
-        eventsPerFile;
         annotationsPerFile;
-        eventDetectorVariables;
         
+        %preprocessing
+        preprocessedSignalsLoader;
+        
+        %detection
+        eventDetectorConfigurator;
+        eventsPerFile;
+        
+        %labeling strategies
+        labelingConfigurator;
+        currentLabelingStrategy;
+                    
         %results
         resultsComputer;
         resultsPerFile;
-                
+
         %ui state
         showingGoodEvents;
         showingMissedEvents;
         showingBadEvents;
+        goodEventHandles;
+        missedEventHandles;
+        badEventHandles;
         
         %ui plotting
         preprocessingConfigurator;
@@ -44,11 +43,6 @@ classdef DetectionTestbedApp < handle
         energyPlotHandle;
         uiHandles;
         axesHandles;
-        
-        %event handles
-        goodEventHandles;
-        missedEventHandles;
-        badEventHandles;
     end
     
     methods (Access = public)
@@ -58,37 +52,25 @@ classdef DetectionTestbedApp < handle
             obj.preprocessedSignalsLoader = PreprocessedSignalsLoader();
             obj.eventsLoader.preprocessedSignalsLoader = obj.preprocessedSignalsLoader;
             
-            dataLoader = DataLoader();
-            obj.groupStrategies = dataLoader.loadAllLabelingStrategies();
+            obj.showingGoodEvents = true;
+            obj.showingMissedEvents = true;
+            obj.showingBadEvents = true;
+            obj.currentFile = 1;
             
-            if isempty(obj.groupStrategies)
-                fprintf('Error - no labeling strategy available\n');
-            else
-                obj.currentLabelingStrategy = obj.groupStrategies{1};
-                
-                obj.showingGoodEvents = true;
-                obj.showingMissedEvents = true;
-                obj.showingBadEvents = true;
-                obj.currentFile = 1;
-                
-                obj.loadEventDetectors();
-                obj.annotationsPerFile = dataLoader.loadAllAnnotations();
-                
-                %obj.loadAnnotations();
-                
-                listedFiles = Helper.listDataFiles();
-                obj.fileNames = Helper.removeDataFileExtensionForFiles(listedFiles);
-                
-                obj.loadUI();
-                
-                obj.currentEventDetector = obj.getSelectedEventDetector();
-                
-                obj.updateSelectedEventDetector();
-                obj.updateVariablesTable();
-            end
+            dataLoader = DataLoader();
+            obj.annotationsPerFile = dataLoader.loadAllAnnotations();
+            
+            dataFiles = Helper.listDataFiles();
+            obj.fileNames = Helper.removeDataFileExtensionForFiles(dataFiles);
+            
+            obj.loadUI();
+            
+            obj.eventDetectorConfigurator = EventDetectorConfigurator(...
+                obj.uiHandles.eventDetectorList...
+                ,obj.uiHandles.eventDetectorVariablesTable);
+            
         end
         
-                
         function loadUI(obj)
             obj.uiHandles = guihandles(detectionTestbedUI);
             obj.loadPlotAxes();
@@ -99,26 +81,24 @@ classdef DetectionTestbedApp < handle
             obj.uiHandles.showDetectedCheckbox.Callback = @obj.handleShowDetectedToggled;
             obj.uiHandles.showMissedCheckbox.Callback = @obj.handleShowMissedToggled;
             obj.uiHandles.showBadEventsCheckbox.Callback = @obj.handleShowBadEventsToggled;
-            obj.uiHandles.eventDetectionList.Callback = @obj.handleEventDetectionChanged;
             
             obj.uiHandles.filesList.String = obj.fileNames;
-            
             
             obj.preprocessingConfigurator = PreprocessingConfigurator(...
                 obj.uiHandles.signalsList,...
                 obj.uiHandles.signalComputersList,...
                 obj.uiHandles.signalComputerVariablesTable);
             
+            obj.labelingConfigurator = LabelingConfigurator(...
+                obj.uiHandles.groupStrategiesList);
+            
             obj.resetUI();
             
-            obj.fillLabelingStrategiesList();
-            obj.fillEventDetectionList();
         end
         
         function resetUI(obj)
             obj.uiHandles.segmentsDescriptionLabel.String = "";
             obj.uiHandles.classsList.String = [];
-            %obj.uiHandles.signalComputersList.Value = [];
             obj.uiHandles.filtersText.String = "";
             obj.uiHandles.perFileResultsText.String = "";
             obj.uiHandles.perClassResultsText.String = "";
@@ -131,12 +111,8 @@ classdef DetectionTestbedApp < handle
             obj.uiHandles.filesList.Value = 1;
             obj.uiHandles.groupStrategiesList.Value = 1;
             
-            obj.uiHandles.variablesTable.ColumnName = {'Variable','Value'};
-            obj.uiHandles.variablesTable.ColumnWidth = {100,50};
-        end
-        
-        function loadEventDetectors(obj)
-            obj.eventDetectors = {SimplePeakDetector,MatlabPeakDetector};
+            obj.uiHandles.eventDetectorVariablesTable.ColumnName = {'Variable','Value'};
+            obj.uiHandles.eventDetectorVariablesTable.ColumnWidth = {100,50};
         end
         
         function loadPreprocessedData(obj)
@@ -145,21 +121,6 @@ classdef DetectionTestbedApp < handle
             obj.fileEnergies = obj.preprocessedSignalsLoader.loadOrCreateData();
         end
         
-        %{
-        function loadAnnotations(obj)
-            
-            obj.annotationFileNames = Helper.listAnnotationFiles();
-            nFiles = length(obj.annotationFileNames);
-            obj.eventAnnotationsPerFile = cell(1,nFiles);
-            dataLoader = DataLoader();
-            for fileIdx = 1 : nFiles
-                annotationFile = obj.annotationFileNames{fileIdx};
-                annotationSet = dataLoader.loadAnnotations(annotationFile);
-                
-                obj.eventAnnotationsPerFile(fileIdx) = {annotationSet.eventAnnotations};
-            end
-        end
-%}
         function loadPlotAxes(obj)
             obj.plotAxes = axes(obj.uiHandles.figure1);
             obj.plotAxes.Units = 'characters';
@@ -167,37 +128,7 @@ classdef DetectionTestbedApp < handle
             obj.plotAxes.Visible = 'On';
         end
         
-        function fillLabelingStrategiesList(obj)
-            groupStrategiesCellArray = Helper.listLabelingStrategies();
-            obj.uiHandles.groupStrategiesList.String = Helper.cellArrayToString(groupStrategiesCellArray);
-        end
-        
-        function fillEventDetectionList(obj)
-            obj.uiHandles.eventDetectionList.String = Helper.generateEventDetectorNames(obj.eventDetectors);
-            obj.uiHandles.eventDetectionList.Value = 1;
-        end
-        
-        
         %ui
-        function labelingStrategy = getCurrentLabelingStrategy(obj)
-            labelingStrategyIdx = obj.getSelectedLabelingIdx();
-            labelingStrategy = obj.groupStrategies{labelingStrategyIdx};
-        end
-        
-        function idx = getSelectedLabelingIdx(obj)
-            idx = obj.uiHandles.groupStrategiesList.Value;
-        end
-        
-        function updateSelectedEventDetector(obj)
-            idx = obj.uiHandles.eventDetectionList.Value;
-            obj.currentEventDetector = obj.eventDetectors{idx};
-            obj.currentEventDetectorVariables = obj.currentEventDetector.getEditableProperties();
-        end
-        
-        function eventDetector = getSelectedEventDetector(obj)
-            idx = obj.uiHandles.eventDetectionList.Value;
-            eventDetector = obj.eventDetectors{idx};
-        end
         
         function tolerance = getTolerance(obj)
             toleranceStr = obj.uiHandles.toleranceTextBox.String;
@@ -253,16 +184,11 @@ classdef DetectionTestbedApp < handle
             cla(obj.plotAxes,'reset');
             
         end
-        
-        function updateVariablesTable(obj)
-            obj.uiHandles.variablesTable.Data = Helper.propertyArrayToCellArray(obj.currentEventDetectorVariables);
-        end
-        
+
         %methods
         function events = loadEvents(obj)
-            obj.createEventDetectorWithUIParameters();
-            %obj.eventsLoader.signalPreprocessor = obj.preprocessingConfigurator.getCurrentSignalComputer();
-            obj.eventsLoader.eventDetector = obj.currentEventDetector;
+            eventDetector = obj.eventDetectorConfigurator.createEventDetectorWithUIParameters();
+            obj.eventsLoader.eventDetector = eventDetector;
             events = obj.eventsLoader.loadOrCreateEvents();
         end
         
@@ -338,16 +264,6 @@ classdef DetectionTestbedApp < handle
             obj.updateClassResultLabels(aggregatedClassResults);
         end
         
-        function createEventDetectorWithUIParameters(obj)
-            
-            data = obj.uiHandles.variablesTable.Data;
-            for i = 1 : length(data)
-                variableName = data{i,1};
-                variableValue = data{i,2};
-                setExpression = sprintf('obj.currentEventDetector.%s=%d;',variableName,variableValue);
-                eval(setExpression);
-            end
-        end
         
         function saveEvents(obj)
             events = obj.eventsPerFile{1};
@@ -356,31 +272,21 @@ classdef DetectionTestbedApp < handle
         
         
         %handles
-        function handleEventDetectionChanged(obj,~,~)
-            obj.updateSelectedEventDetector();
-            obj.updateVariablesTable();
-        end
-        
         function handleComputeButtonClicked(obj,~,~)
-            
             obj.emptyResultLabels();
             obj.cleanPlot();
             
-            obj.currentLabelingStrategy = obj.getCurrentLabelingStrategy();
+            obj.currentLabelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
+            obj.resultsComputer.labelingStrategy = obj.currentLabelingStrategy;
             
             obj.loadPreprocessedData();
-            
             obj.eventsPerFile = obj.loadEvents();
-            
-            obj.resultsComputer.labelingStrategy = obj.currentLabelingStrategy;
             
             tolerance = obj.getTolerance();
             obj.computeDetectionResults(tolerance);
             obj.computeDetectionStatistics();
-            
         end
-        
-        
+
         function handleSaveEventsButtonClicked(obj,~,~)
             obj.saveEvents();
         end

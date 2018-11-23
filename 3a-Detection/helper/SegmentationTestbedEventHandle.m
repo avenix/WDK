@@ -17,8 +17,8 @@ classdef SegmentationTestbedEventHandle < handle
         end
         
         function setVisible(obj,visible)
-            obj.peakSymbolHandle.Visible = obj.visibleStringss{visible+1};
-            obj.peakTextHandle.Visible = obj.visibleStringss{visible+1};
+            obj.symbolHandle.Visible = obj.visibleStringss{visible+1};
+            obj.textHandle.Visible = obj.visibleStringss{visible+1};
         end
     end
 end

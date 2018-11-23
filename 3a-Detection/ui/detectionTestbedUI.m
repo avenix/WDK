@@ -22,7 +22,7 @@ function varargout = detectionTestbedUI(varargin)
 
 % Edit the above text to modify the response to help detectionTestbedUI
 
-% Last Modified by GUIDE v2.5 19-Nov-2018 18:11:01
+% Last Modified by GUIDE v2.5 23-Nov-2018 14:46:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -367,19 +367,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in eventDetectionList.
-function eventDetectionList_Callback(hObject, eventdata, handles)
-% hObject    handle to eventDetectionList (see GCBO)
+% --- Executes on selection change in eventDetectorList.
+function eventDetectorList_Callback(hObject, eventdata, handles)
+% hObject    handle to eventDetectorList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns eventDetectionList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from eventDetectionList
+% Hints: contents = cellstr(get(hObject,'String')) returns eventDetectorList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from eventDetectorList
 
 
 % --- Executes during object creation, after setting all properties.
-function eventDetectionList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to eventDetectionList (see GCBO)
+function eventDetectorList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to eventDetectorList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -450,19 +450,19 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on selection change in groupStrategiesList.
-function groupStrategiesList_Callback(hObject, eventdata, handles)
-% hObject    handle to groupStrategiesList (see GCBO)
+% --- Executes on selection change in labelingStrategiesList.
+function labelingStrategiesList_Callback(hObject, eventdata, handles)
+% hObject    handle to labelingStrategiesList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns groupStrategiesList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from groupStrategiesList
+% Hints: contents = cellstr(get(hObject,'String')) returns labelingStrategiesList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from labelingStrategiesList
 
 
 % --- Executes during object creation, after setting all properties.
-function groupStrategiesList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to groupStrategiesList (see GCBO)
+function labelingStrategiesList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to labelingStrategiesList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

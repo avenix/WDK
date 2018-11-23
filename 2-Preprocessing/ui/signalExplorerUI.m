@@ -22,7 +22,7 @@ function varargout = signalExplorerUI(varargin)
 
 % Edit the above text to modify the response to help signalExplorerUI
 
-% Last Modified by GUIDE v2.5 18-Nov-2018 08:19:31
+% Last Modified by GUIDE v2.5 23-Nov-2018 14:48:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -181,19 +181,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in signalsList.
-function signalsList_Callback(hObject, eventdata, handles)
-% hObject    handle to signalsList (see GCBO)
+% --- Executes on selection change in signalsListVisualization.
+function signalsListVisualization_Callback(hObject, eventdata, handles)
+% hObject    handle to signalsListVisualization (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns signalsList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from signalsList
+% Hints: contents = cellstr(get(hObject,'String')) returns signalsListVisualization contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from signalsListVisualization
 
 
 % --- Executes during object creation, after setting all properties.
-function signalsList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to signalsList (see GCBO)
+function signalsListVisualization_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to signalsListVisualization (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -388,19 +388,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in eventDetectorsList.
-function eventDetectorsList_Callback(hObject, eventdata, handles)
-% hObject    handle to eventDetectorsList (see GCBO)
+% --- Executes on selection change in eventDetectorList.
+function eventDetectorList_Callback(hObject, eventdata, handles)
+% hObject    handle to eventDetectorList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns eventDetectorsList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from eventDetectorsList
+% Hints: contents = cellstr(get(hObject,'String')) returns eventDetectorList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from eventDetectorList
 
 
 % --- Executes during object creation, after setting all properties.
-function eventDetectorsList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to eventDetectorsList (see GCBO)
+function eventDetectorList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to eventDetectorList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -429,19 +429,19 @@ function automaticSegmentationCheckBox_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of automaticSegmentationCheckBox
 
 
-% --- Executes on selection change in signalComputersList.
-function signalComputersList_Callback(hObject, eventdata, handles)
-% hObject    handle to signalComputersList (see GCBO)
+% --- Executes on selection change in signalComputersListVisualization.
+function signalComputersListVisualization_Callback(hObject, eventdata, handles)
+% hObject    handle to signalComputersListVisualization (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns signalComputersList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from signalComputersList
+% Hints: contents = cellstr(get(hObject,'String')) returns signalComputersListVisualization contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from signalComputersListVisualization
 
 
 % --- Executes during object creation, after setting all properties.
-function signalComputersList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to signalComputersList (see GCBO)
+function signalComputersListVisualization_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to signalComputersListVisualization (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -475,19 +475,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in groupStrategiesList.
-function groupStrategiesList_Callback(hObject, eventdata, handles)
-% hObject    handle to groupStrategiesList (see GCBO)
+% --- Executes on selection change in labelingStrategiesList.
+function labelingStrategiesList_Callback(hObject, eventdata, handles)
+% hObject    handle to labelingStrategiesList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns groupStrategiesList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from groupStrategiesList
+% Hints: contents = cellstr(get(hObject,'String')) returns labelingStrategiesList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from labelingStrategiesList
 
 
 % --- Executes during object creation, after setting all properties.
-function groupStrategiesList_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to groupStrategiesList (see GCBO)
+function labelingStrategiesList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to labelingStrategiesList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

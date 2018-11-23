@@ -18,7 +18,7 @@ classdef EventSegmentation < Segmentation
         
         %returns unlabelled segments
         function segments = segment(obj,signal)
-            events = obj.eventDetector.detectPeaks(signal);
+            events = obj.eventDetector.detectEvents(signal);
             segments = obj.createSegmentsWithEvents(events,signal);
         end
         
