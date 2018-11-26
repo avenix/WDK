@@ -13,7 +13,9 @@ classdef LabelingConfigurator < handle
         
         function obj = LabelingConfigurator(labelingStrategiesList)
             obj.labelingStrategiesList = labelingStrategiesList;
-            obj.loadLabelingStrategies();
+            
+            dataLoader = DataLoader();
+            obj.labelingStrategies = dataLoader.loadAllLabelingStrategies();
             obj.fillLabelingStrategiesList();
         end
         
@@ -27,15 +29,6 @@ classdef LabelingConfigurator < handle
         
         function idx = getSelectedLabelingIdx(obj)
             idx = obj.labelingStrategiesList.Value;
-        end
-        
-        function loadLabelingStrategies(obj)
-            dataLoader = DataLoader();
-            obj.labelingStrategies = dataLoader.loadAllLabelingStrategies();
-            
-            if isempty(obj.labelingStrategies)
-                fprintf('%s\n',Constants.kNoLabelingStrategyAvailableError);
-            end
         end
         
         function fillLabelingStrategiesList(obj)

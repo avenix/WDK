@@ -22,7 +22,7 @@ function varargout = signalExplorerUI(varargin)
 
 % Edit the above text to modify the response to help signalExplorerUI
 
-% Last Modified by GUIDE v2.5 23-Nov-2018 14:48:08
+% Last Modified by GUIDE v2.5 24-Nov-2018 10:31:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -411,22 +411,22 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in manualSegmentationCheckBox.
+% --- Executes on button press in manualSegmentationRadio.
 function manualSegmentationCheckBox_Callback(hObject, eventdata, handles)
-% hObject    handle to manualSegmentationCheckBox (see GCBO)
+% hObject    handle to manualSegmentationRadio (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of manualSegmentationCheckBox
+% Hint: get(hObject,'Value') returns toggle state of manualSegmentationRadio
 
 
-% --- Executes on button press in automaticSegmentationCheckBox.
-function automaticSegmentationCheckBox_Callback(hObject, eventdata, handles)
-% hObject    handle to automaticSegmentationCheckBox (see GCBO)
+% --- Executes on button press in automaticSegmentationRadio.
+function automaticSegmentationRadio_Callback(hObject, eventdata, handles)
+% hObject    handle to automaticSegmentationRadio (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of automaticSegmentationCheckBox
+% Hint: get(hObject,'Value') returns toggle state of automaticSegmentationRadio
 
 
 % --- Executes on selection change in signalComputersListVisualization.

@@ -1,10 +1,8 @@
 classdef SimplePeakDetector < EventDetector
     
     properties (Constant)            
-        %kBestPeakHeight = single(180);
-        %kBestMinPeakDistance = int32(200);
-        kBestPeakHeight = single(120);
-        kBestMinPeakDistance = int32(80);
+        kBestPeakHeight = single(160);
+        kBestMinPeakDistance = int32(100);
     end
     
     properties

@@ -12,9 +12,10 @@ classdef Constants < handle
         nullClassGroupStr = 'null';
         SynchronisatonMarker = 3;
         
-        kNoLabelingStrategyAvailableError = 'Error - no labeling strategy available';
+        kNoLabelingStrategyAvailableError = 'Error - no labeling strategy file found';
         kInvalidAnnotationClassError = 'Error - invalid annotation class';
         kUndefinedClassError = 'Error - class not defined';
+        kInvalidInputSegmentError = 'Error - FeatureExtractor - input segment has different amount of columns than expected';
         
         kLabelingStrategyNotSetWarning = 'Warning - DetectionResultsComputer - calling computeDetectionResults but labelingStrategy not set'
         kIncorretlyMappedClassWarning = 'Warning - GroupedClassLabeling - class is not mapped correctly';

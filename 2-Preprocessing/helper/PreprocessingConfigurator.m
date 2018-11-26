@@ -58,7 +58,7 @@ classdef PreprocessingConfigurator < handle
             axisSelector = AxisSelectorComputer();
             axisSelector.axes = selectedSignals;
             
-            computer = CompositeComputer({axisSelector, signalComputer});
+            computer = SequentialComputer({axisSelector, signalComputer});
         end
         
         function updateSignalsList(obj)

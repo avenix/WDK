@@ -6,7 +6,10 @@ classdef AxisSelectorComputer < Computer
     
     methods (Access = public)
         
-        function obj = AxisSelectorComputer()
+        function obj = AxisSelectorComputer(axes)
+            if nargin > 0
+                obj.axes = axes;
+            end
         end
         
         function computedSignal = compute(obj,signal)
@@ -20,7 +23,7 @@ classdef AxisSelectorComputer < Computer
         end
         
         function editableProperties = getEditableProperties(obj)
-            editableProperties = [Property('axes',array2JSON(obj.axes))];
+            editableProperties = Property('axes',array2JSON(obj.axes));
         end
     end
 end

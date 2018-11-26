@@ -5,6 +5,7 @@ classdef ClassLabelingStrategy < handle
         numClasses;
         classNames = {};
         nullClass;
+        name;
     end
     
     properties(Access = private)

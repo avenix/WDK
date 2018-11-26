@@ -1,8 +1,16 @@
-  classdef FeatureExtractor3 < handle
-            
+  classdef FeatureExtractor < handle
+
+    properties (Access = public, Constant)
+        kNumExpectedInputSignals = 18;
+        kSignalNames = {'lax','lay','laz','GravX','GravY','GravZ','MA'};
+        kMiddlePartStart = 200;
+        kMiddlePartEnd = 350;
+    end
+    
     properties (Access = public)
         nFeatures;
         featureNames;
+        signalComputer;
     end
     
     properties (Access = private)
@@ -12,28 +20,39 @@
     
     methods (Access = public)
         
-        function obj = FeatureExtractor3()
-            segment = rand(500,6);
+        function obj = FeatureExtractor()
+            obj.signalComputer = obj.createSignalComputer();
+            
+            segment = rand(451,FeatureExtractor.kNumExpectedInputSignals);
             [~,obj.featureNames] = obj.extractFeaturesForSegment(segment);
             obj.nFeatures = length(obj.featureNames);
         end
-
+        
         function [featureVector, featureNames] = extractFeaturesForSegment(obj,segment)
+            if size(segment,2) ~= FeatureExtractor.kNumExpectedInputSignals
+                fprintf('%s. Is %d, should be: %d\n',...
+                    Constants.kInvalidInputSegmentError,size(segment,2),...
+                    FeatureExtractor.kNumInputSignals);
+                featureVector = [];
+                featureNames = [];
+            else
+                segment = obj.signalComputer.compute(segment);
+                accelerationMagnitude = single(segment(:,1).^2 + segment(:,2).^2 + segment(:,3).^2);
+                segment = [segment, accelerationMagnitude];
+                clear accelerationMagnitude;
+                [featureVector, featureNames] = obj.computeFeaturesForSegment(segment);
+            end
+        end
+    end
+    
+    methods (Access = private)
+        
+        function [featureVector, featureNames] = computeFeaturesForSegment(obj,segment)
             
-            %% Calculate additional signals.            
-            signalNames = {'Ax','Ay','Az','GravX','GravY','GravZ','MA'};
-            
-            accelerationMagnitude = single(segment(:,1).^2 + segment(:,2).^2 + segment(:,3).^2);
-            segment = [segment, accelerationMagnitude];
-            clear accelerationMagnitude;
-            
-            %Seperate halfs -> auc, zrc and peak analysis:
-            middlePartStart = 180;
-            middlePartEnd = 360;
-            
-            leftPart = segment(1:middlePartStart-1, :);
-            middlePart = segment(middlePartStart:middlePartEnd, :);
-            rightPart = segment(middlePartEnd+1:end, :);
+            %Seperate halfs
+            leftPart = segment(1:FeatureExtractor.kMiddlePartStart-1, :);
+            middlePart = segment(FeatureExtractor.kMiddlePartStart:FeatureExtractor.kMiddlePartEnd, :);
+            rightPart = segment(FeatureExtractor.kMiddlePartEnd+1:end, :);
 
             %% Extract features               
             featureVector = zeros(1,obj.nFeatures);
@@ -44,19 +63,17 @@
                 for currentSignal = 1 : size(segment,2)
                     featureExtractorHandle = obj.featureExtractors{currentFeature};
                     featureVector(featureCounter) = featureExtractorHandle(double(leftPart(:,currentSignal)));
-                    featureNames(featureCounter) = obj.convertFeatureToString(featureExtractorHandle,currentSignal,signalNames,'left');
+                    featureNames(featureCounter) = obj.convertFeatureToString(featureExtractorHandle,currentSignal,'left');
                     featureCounter = featureCounter + 1;
-                    
                     
                     featureExtractorHandle = obj.featureExtractors{currentFeature};
                     featureVector(featureCounter) = featureExtractorHandle(double(middlePart(:,currentSignal)));
-                    featureNames(featureCounter) = obj.convertFeatureToString(featureExtractorHandle,currentSignal,signalNames,'middle');
+                    featureNames(featureCounter) = obj.convertFeatureToString(featureExtractorHandle,currentSignal,'middle');
                     featureCounter = featureCounter + 1;
-                    
                     
                     featureExtractorHandle = obj.featureExtractors{currentFeature};
                     featureVector(featureCounter) = featureExtractorHandle(double(rightPart(:,currentSignal)));
-                    featureNames(featureCounter) = obj.convertFeatureToString(featureExtractorHandle,currentSignal,signalNames,'right');
+                    featureNames(featureCounter) = obj.convertFeatureToString(featureExtractorHandle,currentSignal,'right');
                     featureCounter = featureCounter + 1;
                 end
             end
@@ -79,15 +96,15 @@
             %zero crossing: only for ax,ay,az,gx,gy,gz
             for currentSignal = 1 : size(segment,2)-1
                 featureVector(featureCounter) = zrc(leftPart(:,currentSignal));
-                featureNames(featureCounter) = obj.convertFeatureToString(@zrc,currentSignal,signalNames,'left');
+                featureNames(featureCounter) = obj.convertFeatureToString(@zrc,currentSignal,'left');
                 featureCounter = featureCounter + 1;
                 
                 featureVector(featureCounter) = zrc(middlePart(:,currentSignal));
-                featureNames(featureCounter) = obj.convertFeatureToString(@zrc,currentSignal,signalNames,'middle');
+                featureNames(featureCounter) = obj.convertFeatureToString(@zrc,currentSignal,'middle');
                 featureCounter = featureCounter + 1;
                 
                 featureVector(featureCounter) = zrc(rightPart(:,currentSignal));
-                featureNames(featureCounter) = obj.convertFeatureToString(@zrc,currentSignal,signalNames,'right');
+                featureNames(featureCounter) = obj.convertFeatureToString(@zrc,currentSignal,'right');
                 featureCounter = featureCounter + 1;
             end
             
@@ -111,7 +128,7 @@
             for i = 1 : size(corrCoeffResult,1)-1%exclude magnitude
                 for j = i + 1 : size(corrCoeffResult,2)-1
                     featureVector(featureCounter) = corrCoeffResult(i,j);
-                    featureNames(featureCounter) = obj.getCorrelationFeatureString(i,j,'corr',signalNames);
+                    featureNames(featureCounter) = obj.getCorrelationFeatureString(i,j,'corr');
                     featureCounter = featureCounter + 1;
                 end
             end
@@ -121,7 +138,7 @@
             for i = 1 : size(segment,2)-1
                 for j = i + 1 : size(segment,2)-1
                     featureVector(featureCounter) = maxCrossCorr(segment(:,i),segment(:,j));
-                    featureNames(featureCounter) = obj.getCorrelationFeatureString(i,j,'xcorr',signalNames);
+                    featureNames(featureCounter) = obj.getCorrelationFeatureString(i,j,'xcorr');
                     featureCounter = featureCounter + 1;
                 end
             end
@@ -142,23 +159,45 @@
             featureVector(featureCounter) = sum(segment(:,7));
             featureNames(featureCounter) = {'energyAM'};
         end
+        
+        function signalComputer = createSignalComputer(~)
+            laxSelector = AxisSelectorComputer(15);
+            laySelector = AxisSelectorComputer(16);
+            lazSelector = AxisSelectorComputer(17);
+            
+            axSelector = AxisSelectorComputer(3);
+            aySelector = AxisSelectorComputer(4);
+            azSelector = AxisSelectorComputer(5);
+            
+            gravxSelector = SimultaneousComputer({axSelector,laxSelector});
+            gravySelector = SimultaneousComputer({aySelector,laySelector});
+            gravzSelector = SimultaneousComputer({azSelector,lazSelector});
+            
+            subtraction = SignalComputer.SubtractionComputer();
+            
+            gravxComputer = SequentialComputer({gravxSelector,subtraction});
+            gravyComputer = SequentialComputer({gravySelector,subtraction});
+            gravzComputer = SequentialComputer({gravzSelector,subtraction});
+            
+            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer});
+        end
     end
     
-    methods (Access = private)
-        
-        function [featureString] = getCorrelationFeatureString(~,row,col, correlationType, signalNames)
-            signalName1 = signalNames(row);
-            signalName2 = signalNames(col);
+    methods (Static, Access = private)
+        function [featureString] = getCorrelationFeatureString(row,col, correlationType)
+            signalName1 = FeatureExtractor.kSignalNames(row);
+            signalName2 = FeatureExtractor.kSignalNames(col);
             featureString = sprintf('%s%s%s',correlationType,signalName1{1},signalName2{1});
             featureString = {featureString};
         end
         
-        function [featureString] = convertFeatureToString(~,featureExtractorHandle,signalIdx, signalNames,part)
-            signalName = signalNames(signalIdx);
+        function [featureString] = convertFeatureToString(featureExtractorHandle,signalIdx,part)
+            signalName = FeatureExtractor.kSignalNames(signalIdx);
             featureString = sprintf('%s%s_%s',func2str(featureExtractorHandle),signalName{1},part);
             featureString = {featureString};
         end
     end
+    
   end
 
 

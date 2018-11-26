@@ -1,4 +1,4 @@
-classdef CompositeComputer < Computer
+classdef (Abstract) CompositeComputer < Computer
     
     properties (Constant)
         kMaxSignalLength = 20;
@@ -8,6 +8,10 @@ classdef CompositeComputer < Computer
         computers;
     end
     
+    properties (Access = public, Abstract) 
+        type;
+    end
+    
     methods (Access = public)
         function obj = CompositeComputer(computers)
             if nargin > 0
@@ -15,19 +19,13 @@ classdef CompositeComputer < Computer
             end
         end
         
-        function signal = compute(obj,signal)
-            for i = 1 : length(obj.computers)
-                signal = obj.computers{i}.compute(signal);
-            end
-        end
-        
         function str = toString(obj)
             if isempty(obj.computers)
                 str = "";
             else
-                str = obj.computerStringForIdx(1);
+                str = obj.type;
                 
-                for i = 2 : length(obj.computers)
+                for i = 1 : length(obj.computers)
                     computerStr = obj.computerStringForIdx(i);
                     if ~isequal(computerStr,"")
                         str = sprintf('%s_%s',str,computerStr);

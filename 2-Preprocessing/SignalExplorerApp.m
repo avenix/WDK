@@ -73,9 +73,8 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.groupButton.Callback = @obj.handleGroupClicked;
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
 
-            obj.uiHandles.manualSegmentationCheckBox.Callback = @obj.handleManualSegmentationCheckBoxChanged;
-            obj.uiHandles.automaticSegmentationCheckBox.Callback = @obj.handleAutomaticSegmentationCheckBoxChanged;
-            obj.uiHandles.eventDetectorsList.Callback = @obj.handleEventDetectorSelected;
+            obj.uiHandles.manualSegmentationRadio.Callback = @obj.handleManualSegmentationRadioChanged;
+            obj.uiHandles.automaticSegmentationRadio.Callback = @obj.handleAutomaticSegmentationRadioChanged;
             
             obj.preprocessingConfigurator = PreprocessingConfigurator(...
                 obj.uiHandles.preprocessingSignalsList,...
@@ -104,8 +103,8 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.groupsLabel.String = "";
             obj.uiHandles.classesList.String = "";
              
-            obj.uiHandles.manualSegmentationCheckBox.Value = 1;
-            obj.uiHandles.automaticSegmentationCheckBox.Value = 0;
+            obj.uiHandles.manualSegmentationRadio.Value = 1;
+            obj.uiHandles.automaticSegmentationRadio.Value = 0;
             
             obj.uiHandles.signalComputerVariablesTable.ColumnName = {'Variable','Value'};
             obj.uiHandles.signalComputerVariablesTable.ColumnWidth = {60,40};
@@ -292,11 +291,6 @@ classdef SignalExplorerApp < handle
         end
         
         %handles  
-        function handleEventDetectorSelected(obj,~,~)
-            obj.updateEventDetectorFromUI();
-            obj.updateEventDetectionTables();
-        end
-
         function handleLoadClicked(obj,~,~)
             obj.resetSegmentsLabel();
             obj.resetGroupsLabel();
@@ -325,18 +319,16 @@ classdef SignalExplorerApp < handle
             end
         end
         
-        function handleManualSegmentationCheckBoxChanged(obj,~,~)
-            if obj.uiHandles.manualSegmentationCheckBox.Value == 1
+        function handleManualSegmentationRadioChanged(obj,~,~)
+            if obj.uiHandles.manualSegmentationRadio.Value == 1
                 obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
-                obj.currentEventDetector = [];
-                obj.currentEventDetectorVariables = [];
                 obj.isManualEventDetector = true;
-                obj.updateEventDetectionTables();
+                obj.updateEventDetectionTablesVisibility();
             end
         end
         
-        function handleAutomaticSegmentationCheckBoxChanged(obj,~,~)
-            if obj.uiHandles.automaticSegmentationCheckBox.Value == 1
+        function handleAutomaticSegmentationRadioChanged(obj,~,~)
+            if obj.uiHandles.automaticSegmentationRadio.Value == 1
                 obj.currentSegmentationStrategy = obj.segmentationStrategies{2};
                 
                 obj.isManualEventDetector = false;

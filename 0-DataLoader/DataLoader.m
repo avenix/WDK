@@ -12,7 +12,7 @@ classdef DataLoader < handle
         function obj = DataLoader()
             obj.classesMap = ClassesMap.instance();
         end
-        
+
         function saveData(~,dataTable,fileName)
             fileName = sprintf('%s.mat',fileName);
             varName = 'dataTable';
@@ -103,16 +103,23 @@ classdef DataLoader < handle
         
         function labelingStrategies = loadAllLabelingStrategies(obj)
             fileNames = Helper.listLabelingStrategies();
-            nLabelingStrategies = length(fileNames);
-            labelingStrategies = cell(1,nLabelingStrategies);
             
-            obj.lazyInitLabelingStrategiesLoader();
-            
-            for i = 1 : nLabelingStrategies
-                fileName = fileNames{i};
-                fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
-                labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
-                labelingStrategies{i} = labelingStrategy;
+            if isempty(fileNames)
+                fprintf('%s\n',Constants.kNoLabelingStrategyAvailableError);
+            else
+                
+                nLabelingStrategies = length(fileNames);
+                labelingStrategies = cell(1,nLabelingStrategies);
+                
+                obj.lazyInitLabelingStrategiesLoader();
+                
+                for i = 1 : nLabelingStrategies
+                    fileName = fileNames{i};
+                    fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
+                    labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
+                    labelingStrategy.name = Helper.removeFileExtension(fileName);
+                    labelingStrategies{i} = labelingStrategy;
+                end
             end
         end
     end
