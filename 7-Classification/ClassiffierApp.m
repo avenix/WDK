@@ -71,7 +71,11 @@ classdef ClassiffierApp < handle
             obj.segmentsLabeler = SegmentsLabeler();
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
             
-            obj.tableCreator = TableCreator();
+            signalComputer = obj.createDefaultSignalComputer();
+            featureExtractor = FeatureExtractor(signalComputer);
+            featureExtractor.computeFeatureNames();
+            obj.tableCreator = TableCreator(featureExtractor);
+            
             obj.tableCreator.segmentsLoader = obj.segmentsLoader;
             
             obj.dataNormalizer = DataNormalizer();
@@ -91,7 +95,7 @@ classdef ClassiffierApp < handle
     end
     
     methods (Access = private)
-        
+
         function loadUI(obj)
             
             obj.uiHandles = guihandles(classifierAppUI);
@@ -606,6 +610,28 @@ classdef ClassiffierApp < handle
     end
     
     methods (Static, Access = private)
+        
+        function signalComputer = createDefaultSignalComputer()
+            laxSelector = AxisSelectorComputer(15);
+            laySelector = AxisSelectorComputer(16);
+            lazSelector = AxisSelectorComputer(17);
+            
+            axSelector = AxisSelectorComputer(3);
+            aySelector = AxisSelectorComputer(4);
+            azSelector = AxisSelectorComputer(5);
+            
+            gravxSelector = SimultaneousComputer({axSelector,laxSelector});
+            gravySelector = SimultaneousComputer({aySelector,laySelector});
+            gravzSelector = SimultaneousComputer({azSelector,lazSelector});
+            
+            subtraction = SignalComputer.SubtractionComputer();
+            
+            gravxComputer = SequentialComputer({gravxSelector,subtraction});
+            gravyComputer = SequentialComputer({gravySelector,subtraction});
+            gravzComputer = SequentialComputer({gravzSelector,subtraction});
+            
+            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer});
+        end
         
         function table = groupTable(table,labelingStrategy)
             if ~isempty(table)

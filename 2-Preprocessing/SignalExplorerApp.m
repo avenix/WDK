@@ -111,6 +111,9 @@ classdef SignalExplorerApp < handle
             
             obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnName = {'Variable','Value'};
             obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnWidth = {60,40};
+            
+            obj.uiHandles.signalComputerVariablesTableVisualization.ColumnName = {'Variable','Value'};
+            obj.uiHandles.signalComputerVariablesTableVisualization.ColumnWidth = {60,40};
         end
         
         function loadPlotAxes(obj)

@@ -1,6 +1,6 @@
 # Wearables Development Toolkit
 
-This toolkit facilitates the development of wearable device applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
+The Warables Development Toolkit facilitates the development of wearable device applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
 
 ![Activity Recognition Chain Development](images/ARCDevelopment.png)
 
@@ -42,7 +42,29 @@ Most wearable device applications follow the Activity Recognition Chain:
 ![Activity Recognition Chain](images/ARC.png)
 
 ### Preprocessing
-to come...
+
+The *SignalExplorerApp* can be used to display and compare the different classes to each other, as well as the effects of several signal processing methods.
+
+
+Currently, the following signal processing methods are supported:
+
+Filters:
+- HighPassFilter: Butterworth high-pass filter
+- LowPassFilter: Butterworth low-pass filter
+
+Energy:
+- EnergyComputer: [Energy](http://www.sciweavers.org/tex2img.php?eq=E%28x_i%29%20%3D%20%20a_x%28x_i%29%5E2%20%2B%20a_y%28x_i%29%5E2%20%2B%20a_z%28x_i%29%5E2&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+- NormComputer: [Norm](http://www.sciweavers.org/tex2img.php?eq=E%28x_i%29%20%3D%20%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20%2B%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20%2B%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+- S1Computer: computes ![S1](http://www.sciweavers.org/tex2img.php?eq=S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%20%5Cfrac%7Bmax%28x%2Bi%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20%2B%20max%28x_i-x_%7Bi%2B1%7D%2Cx_i-x_%7Bi%2B2%7D%2C...%2Cx_i-x_%7Bi%2Bk%7D%29%7D%7B2%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+- S2Computer: computes ![S2](http://www.sciweavers.org/tex2img.php?eq=S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%20%5Cfrac%7B%5Cfrac%7Bmax%28x%2Bi%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20%2B%20%5Cfrac%7Bmax%28x_i-x_%7Bi%2B1%7D%2Cx_i-x_%7Bi%2B2%7D%2C...%2Cx_i-x_%7Bi%2Bk%7D%29%7D%7Bk%7D%7D%7B2%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+
+[comment]: <> E(x_i) =  \left| a_x(x_i) \right| + \left| a_y(x_i) \right| + \left| a_z(x_i) \right|
+[comment]: <> E(x_i) =  a_x(x_i)^2 + a_y(x_i)^2 + a_z(x_i)^2
+[comment]: <> S_1(k,i,X_i,T) =  \frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k}) + max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{2}
+[comment]: <> S_2(k,i,X_i,T) =  \frac{\frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k})}{k} + \frac{max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{k}}{2}
+
+Helpers
+- 
 
 ### Feature Extraction
 
@@ -126,6 +148,10 @@ class5
 ```
 Note that you dont need to assign every class to a group. A class which is left ungrouped will be assigned to its own group automatically. Ensure that the classes you provide have been defined in the *./data/classes.txt* file and that no class belongs to two groups at the same time. Place your labeling strategy files in the *./data/labeling/*
 6. The WDK offers a Matlab App to support you in each stage of the development your wearable applications. Check in each directory for the App file.
+
+## Tipps
+
+* The default data paths can be changed from the *Constants* class.  
  
  ## Troubleshooting
 
@@ -153,6 +179,8 @@ You will find more information about the human activity recognition on Andreas B
 A few example applications:
 1. https://www.mdpi.com/2414-4088/2/2/27
 2. https://dl.acm.org/citation.cfm?id=3267267
+
+* [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
 
 ## Contact
 Juan Haladjian

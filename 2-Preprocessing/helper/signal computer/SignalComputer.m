@@ -43,7 +43,13 @@ classdef SignalComputer < Computer
             energyComputer = SignalComputer('E',functionHandle);
             energyComputer.expectedNumInputSignals = 3;
         end
-                
+             
+        function normComputer = NormComputer()
+            functionHandle = @(x) abs(x(:,1)) + abs(x(:,2)) + abs(x(:,3));
+            normComputer = SignalComputer('Norm',functionHandle);
+            normComputer.expectedNumInputSignals = 3;
+        end
+        
         function signalComputer = NoOpComputer()
             functionHandle = @(x)x;
             signalComputer = SignalComputer('NoOp',functionHandle);

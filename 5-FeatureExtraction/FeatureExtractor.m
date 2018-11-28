@@ -1,7 +1,6 @@
   classdef FeatureExtractor < handle
 
     properties (Access = public, Constant)
-        kNumExpectedInputSignals = 18;
         kSignalNames = {'lax','lay','laz','GravX','GravY','GravZ','MA'};
         kMiddlePartStart = 200;
         kMiddlePartEnd = 350;
@@ -11,6 +10,7 @@
         nFeatures;
         featureNames;
         signalComputer;
+        numExpectedInputSignals = 18;
     end
     
     properties (Access = private)
@@ -20,23 +20,29 @@
     
     methods (Access = public)
         
-        function obj = FeatureExtractor()
-            obj.signalComputer = obj.createSignalComputer();
-            
-            segment = rand(451,FeatureExtractor.kNumExpectedInputSignals);
+        function obj = FeatureExtractor(signalComputer)
+            if nargin > 0
+                obj.signalComputer = signalComputer;
+            end
+        end
+        
+        function computeFeatureNames(obj)
+            segment = rand(451,obj.numExpectedInputSignals);
             [~,obj.featureNames] = obj.extractFeaturesForSegment(segment);
             obj.nFeatures = length(obj.featureNames);
         end
         
         function [featureVector, featureNames] = extractFeaturesForSegment(obj,segment)
-            if size(segment,2) ~= FeatureExtractor.kNumExpectedInputSignals
+            if size(segment,2) ~= obj.numExpectedInputSignals
                 fprintf('%s. Is %d, should be: %d\n',...
                     Constants.kInvalidInputSegmentError,size(segment,2),...
-                    FeatureExtractor.kNumInputSignals);
+                    obj.numExpectedInputSignals);
                 featureVector = [];
                 featureNames = [];
             else
-                segment = obj.signalComputer.compute(segment);
+                if ~isempty(obj.signalComputer)
+                    segment = obj.signalComputer.compute(segment);
+                end
                 accelerationMagnitude = single(segment(:,1).^2 + segment(:,2).^2 + segment(:,3).^2);
                 segment = [segment, accelerationMagnitude];
                 clear accelerationMagnitude;
@@ -158,28 +164,6 @@
             
             featureVector(featureCounter) = sum(segment(:,7));
             featureNames(featureCounter) = {'energyAM'};
-        end
-        
-        function signalComputer = createSignalComputer(~)
-            laxSelector = AxisSelectorComputer(15);
-            laySelector = AxisSelectorComputer(16);
-            lazSelector = AxisSelectorComputer(17);
-            
-            axSelector = AxisSelectorComputer(3);
-            aySelector = AxisSelectorComputer(4);
-            azSelector = AxisSelectorComputer(5);
-            
-            gravxSelector = SimultaneousComputer({axSelector,laxSelector});
-            gravySelector = SimultaneousComputer({aySelector,laySelector});
-            gravzSelector = SimultaneousComputer({azSelector,lazSelector});
-            
-            subtraction = SignalComputer.SubtractionComputer();
-            
-            gravxComputer = SequentialComputer({gravxSelector,subtraction});
-            gravyComputer = SequentialComputer({gravySelector,subtraction});
-            gravzComputer = SequentialComputer({gravzSelector,subtraction});
-            
-            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer});
         end
     end
     
