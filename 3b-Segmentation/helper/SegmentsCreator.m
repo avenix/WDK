@@ -23,8 +23,14 @@ classdef SegmentsCreator < handle
             if recursive
                 str = obj.preprocessedSignalsLoader.preprocessor.toString();
             end
+            
             segmentationAlgorithmStr = obj.segmentationAlgorithm.toString();
-            str = sprintf("%s_%s",str,segmentationAlgorithmStr);
+            
+            if isempty(str)
+                str = segmentationAlgorithmStr;
+            else
+                str = sprintf("%s_%s",str,segmentationAlgorithmStr);
+            end
         end
     end
     

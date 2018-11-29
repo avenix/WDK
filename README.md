@@ -170,9 +170,10 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a cl
  > 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
  
  The current version of the *FeatureSelector* uses the mRMR algorithm to select the most relevant features. The mRMR algorithm will fail if every value of a feature is the same.
- 
-Furthermore, the data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
- 
+
+* The data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
+* Double-check that the *./data/annotations/* directory contains an annotation file for each data file in *./data/rawdata/*.  
+
 ## References
 You will find more information about the human activity recognition on Andreas Bulling's article: https://dl.acm.org/citation.cfm?id=2499621
 
@@ -181,6 +182,7 @@ A few example applications:
 2. https://dl.acm.org/citation.cfm?id=3267267
 
 * [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
+* [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
 
 ## Contact
 Juan Haladjian

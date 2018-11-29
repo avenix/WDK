@@ -16,8 +16,7 @@ classdef PreprocessedSignalsLoader < handle
         
         %returns a cell array of arrays of processed data files
         function data = loadOrCreateData(obj)
-            preprocessorStr = obj.preprocessor.toString();
-            fullFileName = sprintf('%s/2-preprocessed_%s.mat',Constants.precomputedPath,preprocessorStr);
+            fullFileName = obj.getFullFileName();
             if exist(fullFileName,'File') == 2
                 data = load(fullFileName,'data');
                 data = data.data;
@@ -33,6 +32,16 @@ classdef PreprocessedSignalsLoader < handle
     end
     
     methods (Access = private)
+        function fullFileName = getFullFileName(obj)
+            
+            preprocessorStr = obj.preprocessor.toString();
+            if isempty(preprocessorStr)
+                fullFileName = sprintf('%s/2-preprocessed.mat',Constants.precomputedPath);
+            else
+                fullFileName = sprintf('%s/2-preprocessed_%s.mat',Constants.precomputedPath,preprocessorStr);
+            end
+        end
+        
         function preprocessedData = preprocess(obj,dataFiles)
             nFiles = length(dataFiles);
             preprocessedData = cell(1,nFiles);

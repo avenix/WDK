@@ -7,7 +7,9 @@ classdef DetectionTestbedApp < handle
     properties (Access = private)
         
         currentFile;
+        
         %data
+        dataLoader;
         eventsLoader;
         fileEnergies;
         fileNames;
@@ -47,6 +49,7 @@ classdef DetectionTestbedApp < handle
     
     methods (Access = public)
         function obj = DetectionTestbedApp()
+            obj.dataLoader = DataLoader();
             obj.eventsLoader = EventsLoader();
             obj.resultsComputer = DetectionResultsComputer();
             obj.preprocessedSignalsLoader = PreprocessedSignalsLoader();
@@ -57,8 +60,7 @@ classdef DetectionTestbedApp < handle
             obj.showingBadEvents = true;
             obj.currentFile = 1;
             
-            dataLoader = DataLoader();
-            obj.annotationsPerFile = dataLoader.loadAllAnnotations();
+            obj.annotationsPerFile = obj.dataLoader.loadAllAnnotations();
             
             dataFiles = Helper.listDataFiles();
             obj.fileNames = Helper.removeDataFileExtensionForFiles(dataFiles);
@@ -264,12 +266,12 @@ classdef DetectionTestbedApp < handle
             obj.updateClassResultLabels(aggregatedClassResults);
         end
         
-        
         function saveEvents(obj)
-            events = obj.eventsPerFile{1};
-            obj.eventsLoader.saveEvents(events,'events.txt');
+            
+            currentFileIdx = obj.uiHandles.filesList.Value;
+            events = obj.eventsPerFile{currentFileIdx};
+            obj.dataLoader.saveEvents(events,Constants.kDetectedEventsFileName);
         end
-        
         
         %handles
         function handleComputeButtonClicked(obj,~,~)

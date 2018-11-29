@@ -1,18 +1,17 @@
-classdef TableCreator < handle
+classdef FeaturesTableLoader < handle
     
     properties (Access = public)
-        fileName = 'featureTables';
         segmentsLoader;
+        featureExtractor;
     end
     
     properties (Access = private)
-        featureExtractor;
         classesMap;
     end
     
     methods (Access = public)
         
-        function obj = TableCreator(featureExtractor)
+        function obj = FeaturesTableLoader(featureExtractor)
             obj.classesMap = ClassesMap.instance();
             obj.segmentsLoader = SegmentsLoader();
             if nargin > 0 
@@ -23,7 +22,7 @@ classdef TableCreator < handle
         %loads or creates a TableSet
         function tableSet = loadAllTables(obj)
             segmentsStr = obj.segmentsLoader.segmentsCreator.toString(true);
-            fullFileName = sprintf('%s/%s_%s.mat',Constants.precomputedPath, obj.fileName,segmentsStr);
+            fullFileName = sprintf('%s/4-features_%s.mat',Constants.precomputedPath,segmentsStr);
             if exist(fullFileName,'File') == 2
                 tableStruct = load(fullFileName);
                 tableSet = TableSet(tableStruct.myTables);
@@ -53,7 +52,7 @@ classdef TableCreator < handle
                     
                     segmentsCounter = segmentsCounter + 1;
                     
-                    featureVectors(segmentsCounter,1:nFeatures) = obj.featureExtractor.extractFeaturesForSegment(segment.window);
+                    featureVectors(segmentsCounter,1:nFeatures) = obj.featureExtractor.extractFeaturesForSegment(segment);
                     
                     if ~isempty(segment.class)
                         featureVectors(segmentsCounter,nColumns) = segment.class;

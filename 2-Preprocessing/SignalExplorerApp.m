@@ -183,7 +183,7 @@ classdef SignalExplorerApp < handle
         end
         
         function updateSegmentsLabel(obj)
-            str = sprintf('%d segments.',length(obj.segments));
+            str = sprintf('%d files.',length(obj.segments));
             obj.uiHandles.segmentsDescriptionLabel.String = str;
         end
          

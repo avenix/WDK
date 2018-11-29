@@ -12,6 +12,12 @@ classdef Constants < handle
         nullClassGroupStr = 'null';
         SynchronisatonMarker = 3;
         
+        kTrainDataFileName = 'trainData.txt';
+        kTestDataFileName = 'testData.txt';
+        kNormalisationFileName = 'normalisationValues.txt';
+        kDetectedEventsFileName = 'detetedEvents.txt';
+        
+        
         kNoLabelingStrategyAvailableError = 'Error - no labeling strategy file found';
         kInvalidAnnotationClassError = 'Error - invalid annotation class';
         kUndefinedClassError = 'Error - class not defined';

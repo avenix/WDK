@@ -52,7 +52,7 @@ classdef SignalComputer < Computer
         
         function signalComputer = NoOpComputer()
             functionHandle = @(x)x;
-            signalComputer = SignalComputer('NoOp',functionHandle);
+            signalComputer = SignalComputer('',functionHandle);
         end
         
         function signalComputer = SubtractionComputer()

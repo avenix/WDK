@@ -1,5 +1,6 @@
+%UI for creating feature tables, running feature selection, classifying and
+%exporting. The entire ARC chain can be selected
 classdef ClassiffierApp < handle
-    %UI for creating tables, running feature selection, classifying and exporting
     
     properties (Access = private)
         %file names
@@ -36,9 +37,10 @@ classdef ClassiffierApp < handle
         %labeling
         labelingConfigurator;
         labelingConfiguratorRegrouping;
+        defaultLabelingStrategy;
         
         %helpers
-        tableCreator;
+        featuresTableLoader;
         dataNormalizer;
         trainer;
         confusionMatrixPlotter;
@@ -58,8 +60,10 @@ classdef ClassiffierApp < handle
             
             obj.fileNames = Helper.listDataFiles();
             
-            dataLoader = DataLoader();
-            obj.annotations = dataLoader.loadAllAnnotations();
+            obj.dataLoader = DataLoader();
+            obj.annotations = obj.dataLoader.loadAllAnnotations();
+            
+            obj.defaultLabelingStrategy = ClassLabelingStrategy();
             
             obj.segmentsLoader = SegmentsLoader();
             obj.currentSegmentsCreator = SegmentsCreator();
@@ -74,9 +78,9 @@ classdef ClassiffierApp < handle
             signalComputer = obj.createDefaultSignalComputer();
             featureExtractor = FeatureExtractor(signalComputer);
             featureExtractor.computeFeatureNames();
-            obj.tableCreator = TableCreator(featureExtractor);
+            obj.featuresTableLoader = FeaturesTableLoader(featureExtractor);
             
-            obj.tableCreator.segmentsLoader = obj.segmentsLoader;
+            obj.featuresTableLoader.segmentsLoader = obj.segmentsLoader;
             
             obj.dataNormalizer = DataNormalizer();
             obj.featureSelector = FeatureSelector();
@@ -267,8 +271,7 @@ classdef ClassiffierApp < handle
         function printTable(obj,table)
             if ~isempty(table)
                 printer = StatisticsPrinter();
-                labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
-                printer.printTableStatistics(table, labelingStrategy, 0);
+                printer.printTableStatistics(table, obj.defaultLabelingStrategy, 0);
             end
         end
         
@@ -315,25 +318,31 @@ classdef ClassiffierApp < handle
         end
         
         function exportTrainData(obj)
-            if obj.uiHandles.exportNormalTableRadio.Value == 1
+            table = obj.groupedTrainTable;
+            if isempty(table)
                 table = obj.trainTable;
-            else
-                table = obj.groupedTrainTable;
             end
-            
-            tableToExport = ClassiffierApp.convertTableToExport(table);
-            obj.exportTable(tableToExport,'trainData.csv');
+            if ~isempty(table)
+                tableToExport = ClassiffierApp.convertTableToExport(table);
+                obj.exportTable(tableToExport,Constants.kTrainDataFileName);
+            end
         end
         
         function exportTestData(obj)
-            if obj.uiHandles.exportNormalTableRadio.Value == 1
+            table = obj.groupedTestTable;
+            if isempty(table)
                 table = obj.testTable;
-            else
-                table = obj.groupedTestTable;
             end
             
-            tableToExport = ClassiffierApp.convertTableToExport(table);
-            obj.exportTable(tableToExport,'testData.csv');
+            if ~isempty(table)
+                tableToExport = ClassiffierApp.convertTableToExport(table);
+                obj.exportTable(tableToExport,Constants.kTestDataFileName);
+            end
+        end
+        
+        function table = convertLabelsToText(obj,table)
+            labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
+            table.label = labelingStrategy.labelsToString(table.label+1)';
         end
         
         function exportTable(obj,table,fileName)
@@ -341,26 +350,31 @@ classdef ClassiffierApp < handle
                 if obj.uiHandles.exportTextLabelsRadio.Value == 1
                     table = obj.convertLabelsToText(table);
                 end
-                obj.tableExporter.exportTable(table,fileName);
+                
+                if obj.uiHandles.matlabFormatCheckbox.Value == 1
+                    obj.dataLoader.saveData(table,fileName);
+                else
+                    obj.tableExporter.exportTable(table,fileName);
+                end
             end
-        end
-        
-        function table = convertLabelsToText(obj,table)
-            labelingStrategy = obj.getCurrentLabelingStrategy();
-            table.label = labelingStrategy.labelsToString(table.label)';
         end
         
         function exportNormalisationValues(obj)
             selectedFeatureIdxs = obj.featureSelector.bestFeatures;
+            
             means = obj.dataNormalizer.means(selectedFeatureIdxs);
             stds = obj.dataNormalizer.stds(selectedFeatureIdxs);
-            
             normalisationValues = array2table([means' stds']);
+            
             normalisationValues.Properties.VariableNames = {'means','deviations'};
             normalisationValuesArray = table2array(normalisationValues);
             transposedNormalisationValues = array2table(normalisationValuesArray.');
             transposedNormalisationValues.Properties.RowNames = normalisationValues.Properties.VariableNames;
-            obj.tableExporter.exportTable(transposedNormalisationValues,'normalisationValues.txt');
+            
+            featureExtractor = obj.featuresTableLoader.featureExtractor;
+            transposedNormalisationValues.Properties.VariableNames = featureExtractor.featureNames(selectedFeatureIdxs);
+            
+            obj.tableExporter.exportTable(transposedNormalisationValues,Constants.kNormalisationFileName);
         end
         
         
@@ -448,8 +462,9 @@ classdef ClassiffierApp < handle
         
         function updateBestFeaturesText(obj)
             featuresStr = '';
-            for i = 1 : length(obj.featureSelector.bestFeatures)
-                featureIdx = obj.featureSelector.bestFeatures(i);
+            selectedFeatures = obj.featureSelector.selectedFeatureIdxs;
+            for i = 1 : length(selectedFeatures)
+                featureIdx = selectedFeatures(i);
                 featuresStr = sprintf('%s %d,',featuresStr,featureIdx);
             end
             
@@ -488,15 +503,7 @@ classdef ClassiffierApp < handle
             
             obj.updateCurrentSegmentsCreator();
             
-            %TODO check this
-            
-            %obj.tableCreator.segmentsLoader.segmentationAlgorithm.segmentSizeLeft = obj.getLefSegmentSize();
-            %obj.tableCreator.segmentsLoader.segmentationAlgorithm.segmentSizeRight = obj.getRightSegmentSize();
-            
-            %TODO: do this dynamically over the UI
-            %obj.tableCreator.segmentsLoader.preprocessingAlgorithm = accelAndGravityComputer;
-            
-            obj.tableSet = obj.tableCreator.loadAllTables();
+            obj.tableSet = obj.featuresTableLoader.loadAllTables();
             
             obj.trainTable = obj.createTableWithFilesInList(obj.uiHandles.trainList);
             obj.testTable = obj.createTableWithFilesInList(obj.uiHandles.testList);
@@ -531,7 +538,6 @@ classdef ClassiffierApp < handle
         function handlePrintGroupedTestTableClicked(obj,~,~)
             obj.printGroupedTable(obj.groupedTestTable);
         end
-        
                 
         function handleFindFeaturesClicked(obj,~,~)
             if ~isempty(obj.groupedTrainTable)
@@ -570,11 +576,14 @@ classdef ClassiffierApp < handle
         function handleClassifyClicked(obj,~,~)
             
             if ~isempty(obj.groupedTrainTable) && ~isempty(obj.groupedTestTable)
+                
                 cla(obj.confusionMatrixAxes);
                 
                 obj.trainer.train(obj.groupedTrainTable);
+                
                 predictedLabels = obj.trainer.test(obj.groupedTestTable);
                 obj.computeConfusionMatrix(predictedLabels,obj.groupedTestTable.label);
+                
                 labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
                 obj.plotConfusionMatrix(obj.confusionMatrix,labelingStrategy);
             end

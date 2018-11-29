@@ -11,15 +11,19 @@ classdef ConfusionMatrixPlotter < handle
             
             % plotting the colors
             imagesc(confpercent);
-            title(sprintf('Accuracy: %.2f%%', 100*trace(confmat)/sum(confmat(:))));
+            accuracy = 100*trace(confmat)/sum(confmat(:));
+            title(sprintf('Accuracy: %.2f%%',accuracy));
             xlabel('Predicted Class'); ylabel('True Class');
             
             % set the colormap
             colormap(flipud(gray));
             
             % Create strings from the matrix values and remove spaces
+            nanIdxs = isnan(confpercent);
+            confpercent(nanIdxs) = 0;
             textStrings = num2str([confpercent(:), confmat(:)], '%.1f%%\n%d\n');
             textStrings = strtrim(cellstr(textStrings));
+            %textStrings(nanIdxs) = '-';
             
             % Create x and y coordinates for the strings and plot them
             [x,y] = meshgrid(1:numlabels);

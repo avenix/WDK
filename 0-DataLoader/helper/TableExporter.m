@@ -1,11 +1,12 @@
 classdef TableExporter < handle
     
+    properties (Access = public)
+        writeVariableNames = true;
+        writeRowNames = false;
+        delimiter = ',';
+    end
+    
     methods (Access = public)
-        function obj = TableExporter()
-            %addpath(genpath('../'));
-            %fileNames = {'1-lukas'};
-            %obj.testExportTableForFileNames(fileNames);
-        end
         
         function testExportTableForFileNames(obj,fileNames)
             
@@ -18,8 +19,8 @@ classdef TableExporter < handle
             obj.exportTable(table);
         end
         
-        function exportTable(~,table,fileName)
-            writetable(table,fileName,'Delimiter',',');
+        function exportTable(obj,table,fileName)
+            writetable(table,fileName,'Delimiter',obj.delimiter,'WriteVariableNames',obj.writeVariableNames,'WriteRowNames',obj.writeRowNames);
         end
     end
 end

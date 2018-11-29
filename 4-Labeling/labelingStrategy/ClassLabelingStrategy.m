@@ -17,14 +17,15 @@ classdef ClassLabelingStrategy < handle
         
         function obj = ClassLabelingStrategy(classGroups)
             obj.defaultClassesMap = ClassesMap.instance();
-            if nargin > 0
-                obj.generateClassesMap(classGroups);
-                strIdx = Helper.findStringInCellArray(obj.classNames,Constants.nullClassGroupStr);
-                if strIdx > 0
-                    obj.nullClass = strIdx;
-                else
-                    obj.nullClass = obj.numClasses + 1;
-                end
+            if nargin == 0 
+                classGroups = [];
+            end
+            obj.generateClassesMap(classGroups);
+            strIdx = Helper.findStringInCellArray(obj.classNames,Constants.nullClassGroupStr);
+            if strIdx > 0
+                obj.nullClass = strIdx;
+            else
+                obj.nullClass = obj.numClasses + 1;
             end
         end
     
@@ -41,9 +42,9 @@ classdef ClassLabelingStrategy < handle
         end
         
         function labels = labelsForClasses(obj, classes)
-            
-            labels = zeros(length(classes),1);
-            for i = 1 : length(classes)
+            nClasses = length(classes);
+            labels = zeros(nClasses,1);
+            for i = 1 : nClasses
                 class = classes(i);
                 labels(i) = obj.labelForClass(class);
             end
@@ -81,7 +82,7 @@ classdef ClassLabelingStrategy < handle
             
             obj.checkCorrectClassesMap();
         end
-        
+
         function checkCorrectClassesMap(obj)
             for i = 1 : length(obj.classesMap)
                 class = obj.classesMap(i);
@@ -90,7 +91,7 @@ classdef ClassLabelingStrategy < handle
                 end
             end
         end
-    
+
         function classCount = mapUncoveredClasses(obj,isClassCovered)
             nClasses = obj.defaultClassesMap.numClasses;
             obj.classesMap = uint8(zeros(1,nClasses));
@@ -103,19 +104,21 @@ classdef ClassLabelingStrategy < handle
                 end
             end
         end
-        
+
         function isClassCovered = computeIsClassCovered(obj,classGroups)
             
-            nGroups = length(classGroups);
             nClasses = obj.defaultClassesMap.numClasses;
             isClassCovered = false(1,nClasses);
-            for i = 1 : nGroups
-                classGroup = classGroups(i);
-                classesInGroup = keys(classGroup.groupsMap);
-                for j = 1 : length(classesInGroup)
-                    classStr = classesInGroup{j};
-                    classIdx = obj.defaultClassesMap.idxOfClassWithString(classStr);
-                    isClassCovered(classIdx) = true;
+            if ~isempty(classGroups)
+                nGroups = length(classGroups);
+                for i = 1 : nGroups
+                    classGroup = classGroups(i);
+                    classesInGroup = keys(classGroup.groupsMap);
+                    for j = 1 : length(classesInGroup)
+                        classStr = classesInGroup{j};
+                        classIdx = obj.defaultClassesMap.idxOfClassWithString(classStr);
+                        isClassCovered(classIdx) = true;
+                    end
                 end
             end
         end

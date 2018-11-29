@@ -27,33 +27,36 @@
         end
         
         function computeFeatureNames(obj)
-            segment = rand(451,obj.numExpectedInputSignals);
+            window = rand(451,obj.numExpectedInputSignals);
+            segment = Segment(1,window,1,1);
             [~,obj.featureNames] = obj.extractFeaturesForSegment(segment);
             obj.nFeatures = length(obj.featureNames);
         end
         
         function [featureVector, featureNames] = extractFeaturesForSegment(obj,segment)
-            if size(segment,2) ~= obj.numExpectedInputSignals
+            dataArray = segment.window;
+            if size(dataArray,2) ~= obj.numExpectedInputSignals
                 fprintf('%s. Is %d, should be: %d\n',...
-                    Constants.kInvalidInputSegmentError,size(segment,2),...
+                    Constants.kInvalidInputSegmentError,size(dataArray,2),...
                     obj.numExpectedInputSignals);
                 featureVector = [];
                 featureNames = [];
             else
                 if ~isempty(obj.signalComputer)
-                    segment = obj.signalComputer.compute(segment);
+                    dataArray = obj.signalComputer.compute(dataArray);
                 end
-                accelerationMagnitude = single(segment(:,1).^2 + segment(:,2).^2 + segment(:,3).^2);
-                segment = [segment, accelerationMagnitude];
+                accelerationMagnitude = single(dataArray(:,1).^2 + dataArray(:,2).^2 + dataArray(:,3).^2);
+                dataArray = [dataArray, accelerationMagnitude];
                 clear accelerationMagnitude;
-                [featureVector, featureNames] = obj.computeFeaturesForSegment(segment);
+                [featureVector, featureNames] = obj.extractFeaturesForArray(dataArray);
+                
             end
         end
     end
     
     methods (Access = private)
         
-        function [featureVector, featureNames] = computeFeaturesForSegment(obj,segment)
+        function [featureVector, featureNames] = extractFeaturesForArray(obj,segment)
             
             %Seperate halfs
             leftPart = segment(1:FeatureExtractor.kMiddlePartStart-1, :);
@@ -164,6 +167,10 @@
             
             featureVector(featureCounter) = sum(segment(:,7));
             featureNames(featureCounter) = {'energyAM'};
+            %featureCounter = featureCounter + 1;
+            
+            %featureVector(featureCounter) = segment.peakIdx;
+            %featureNames(featureCounter) = {'ts'};
         end
     end
     

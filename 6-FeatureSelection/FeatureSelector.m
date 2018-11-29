@@ -1,6 +1,6 @@
 classdef FeatureSelector < handle
-    properties
-         bestFeatures = [58, 278, 119, 292, 16, 59, 5, 37, 155, 17, 56, 121, 215, 142, 35, 251, 167, 133, 13, 38];
+    properties (Access = public)
+         selectedFeatureIdxs = [58, 278, 119, 292, 16, 59, 5, 37, 155, 17, 56, 121, 215, 142, 35, 251, 167, 133, 13, 38];
     end
     
     methods (Access = public)
@@ -9,7 +9,7 @@ classdef FeatureSelector < handle
         end
 
         function table = selectFeaturesForTable(obj,table)
-            table = table(:,[obj.bestFeatures width(table)]);
+            table = table(:,[obj.selectedFeatureIdxs width(table)]);
         end
         
         %discretizedPredictors will crash if the table contained NaN values
@@ -23,12 +23,12 @@ classdef FeatureSelector < handle
             predictors = predictors(:,predictors(1,:) >= 0);
             responses = table.label-1;
             
-            obj.bestFeatures = mrmr_mid_d(predictors, responses, maxNFeatures);
+            obj.selectedFeatureIdxs = mrmr_mid_d(predictors, responses, maxNFeatures);
         end
         
         function bestFeatures = getBestNFeatures(obj, n)
-            n = min(n,length(obj.bestFeatures));
-            bestFeatures = obj.bestFeatures(1:n);
+            n = min(n,length(obj.selectedFeatureIdxs));
+            bestFeatures = obj.selectedFeatureIdxs(1:n);
         end
         
         function printFeatures(~, selectedFeatureIndices, featureNames)

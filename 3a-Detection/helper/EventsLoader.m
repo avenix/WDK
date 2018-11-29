@@ -20,27 +20,9 @@ classdef EventsLoader < handle
                 save(fullFileName,'events');
             end
         end
-        
-        function savePeaks(obj,peaksArray, fileName)
-            
-            fileID = fopen(fileName,'w');
-            
-            for i = 1 : length(peaksArray)-1
-                peak = peaksArray(i);
-                obj.printPeakToFile(fileID,peak);
-                fprintf(fileID, '\n');
-            end
-            peak = peaksArray(end);
-            obj.printPeakToFile(fileID,peak);
-            fclose(fileID);
-        end
     end
     
     methods (Access = private)
-        
-        function printPeakToFile(~,fileID, peak)
-            fprintf(fileID, '%d',peak);
-        end
         
         function events = detectEvents(obj, dataFiles)
             nFiles = length(dataFiles);

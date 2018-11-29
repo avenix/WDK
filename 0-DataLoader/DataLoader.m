@@ -94,6 +94,20 @@ classdef DataLoader < handle
             obj.annotationsLoader.saveAnnotations(annotationsSet,annotationsFileName);
         end
         
+        function saveEvents(obj,events, fileName)
+            
+            fileID = fopen(fileName,'w');
+            
+            for i = 1 : length(events)-1
+                event = events(i);
+                DataLoader.printEventToFile(fileID,event);
+                fprintf(fileID, '\n');
+            end
+            event = events(end);
+            obj.printEventToFile(fileID,event);
+            fclose(fileID);
+        end
+        
         function markers = loadMarkers(~,markerFileName)
             markersLoader = MarkersLoader();
             
@@ -144,7 +158,11 @@ classdef DataLoader < handle
                 data = [];
             end
         end
-                
+        
+        function printEventToFile(fileID, event)
+            fprintf(fileID, '%d',event);
+        end
+        
         function printRawData(fileHandle, sample)
             for i = 1 : length(sample)-1
                 fprintf(fileHandle,'%d\t',sample(i));
