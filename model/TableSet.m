@@ -10,12 +10,12 @@ classdef TableSet < handle
             obj.tables = tables;
         end
         
-        function table = tableForIndices(obj,indices)
+        function table = mergedTableForIndices(obj,indices)
             selectedTables = obj.tables(indices);
             table = obj.mergeTables(selectedTables);
         end
         
-        function table = tableAll(obj)
+        function table = mergedTables(obj)
             table = obj.mergeTables(obj.tables);
         end
         
@@ -31,7 +31,7 @@ classdef TableSet < handle
         end
         
         function labels = getAllLabels(obj)
-            table = obj.tableAll();
+            table = obj.mergedTables();
             labels = table.label;
         end
     end

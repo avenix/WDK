@@ -56,7 +56,7 @@ classdef SignalComputer < Computer
         end
         
         function signalComputer = SubtractionComputer()
-            functionHandle = @(x)x(:,2)-x(:,1);
+            functionHandle = @(x)x(:,1)-x(:,2);
             signalComputer = SignalComputer('Subtraction',functionHandle);
             signalComputer.expectedNumInputSignals = 2;
         end

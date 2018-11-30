@@ -91,6 +91,8 @@ classdef DetectionTestbedApp < handle
                 obj.uiHandles.signalComputersList,...
                 obj.uiHandles.signalComputerVariablesTable);
             
+            obj.preprocessingConfigurator.setDefaultColumnNames();
+            
             obj.labelingConfigurator = LabelingConfigurator(...
                 obj.uiHandles.labelingStrategiesList);
             

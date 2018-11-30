@@ -15,6 +15,7 @@ classdef SignalExplorerApp < handle
         segments;
         groupedSegments;
         filteredSegments;
+        columnNames;
         
         %preprocessing
         preprocessingConfigurator;
@@ -81,10 +82,14 @@ classdef SignalExplorerApp < handle
                 obj.uiHandles.preprocessingSignalComputerList,...
                 obj.uiHandles.preprocessingSignalComputerVariablesTable);
             
+            obj.preprocessingConfigurator.setDefaultColumnNames();
+            
             obj.preprocessingConfiguratorVisualization = PreprocessingConfigurator(...
                 obj.uiHandles.signalsListVisualization,...
                 obj.uiHandles.signalComputersListVisualization,...
                 obj.uiHandles.signalComputerVariablesTableVisualization);
+            
+            obj.preprocessingConfiguratorVisualization.setDefaultColumnNames();
             
             obj.eventDetectorConfigurator = EventDetectorConfigurator(...
                 obj.uiHandles.eventDetectorList...

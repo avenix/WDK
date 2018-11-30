@@ -37,7 +37,6 @@ classdef FeaturesTableLoader < handle
         %creates a single table from a set of segments
         function table = createTable(obj,segments)
             
-            
             nSegments = length(segments);
             nFeatures = obj.featureExtractor.nFeatures;
             shouldCreateLabelColumn = obj.areSegmentsLabeled(segments);

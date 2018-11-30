@@ -4,11 +4,7 @@ classdef SimultaneousComputer < CompositeComputer
     end
     
     methods (Access = public)
-        %{
-        function obj = SimultaneousComputer()
-            obj.type = ''
-        end
-        %}
+
         function outputSignal = compute(obj,signal)
             n = size(signal,1);
             m = length(obj.computers);

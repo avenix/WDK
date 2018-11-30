@@ -131,7 +131,7 @@ classdef DataAnnotationApp < handle
             obj.plotAxes = axes(obj.uiHandles.figure1);
             obj.plotAxes.Units = 'characters';
             obj.plotAxes.Position  = [35 4 270 57];
-            obj.plotAxes.Visible = 'Off';
+            obj.plotAxes.Visible = 'On';
         end
         
         function setUserClickHandle(obj)
@@ -401,6 +401,8 @@ classdef DataAnnotationApp < handle
         function handleLoadDataClicked(obj,~,~)
             obj.deleteAll();
             obj.loadAll();
+            
+            obj.preprocessingConfigurator.setColumnNames(obj.columnNames);
             obj.updateLoadDataTextbox();
         end
         

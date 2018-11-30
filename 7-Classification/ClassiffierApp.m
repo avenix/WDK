@@ -41,7 +41,7 @@ classdef ClassiffierApp < handle
         
         %helpers
         featuresTableLoader;
-        dataNormalizer;
+        featureNormalizer;
         trainer;
         confusionMatrixPlotter;
         tableExporter;
@@ -82,7 +82,7 @@ classdef ClassiffierApp < handle
             
             obj.featuresTableLoader.segmentsLoader = obj.segmentsLoader;
             
-            obj.dataNormalizer = DataNormalizer();
+            obj.featureNormalizer = FeatureNormalizer();
             obj.featureSelector = FeatureSelector();
             obj.trainer = Trainer();
             obj.confusionMatrixPlotter = ConfusionMatrixPlotter();
@@ -134,11 +134,12 @@ classdef ClassiffierApp < handle
             %deployment
             obj.uiHandles.exportButton.Callback = @obj.handleExportClicked;
             
-            
             obj.preprocessingConfigurator = PreprocessingConfigurator(...
                 obj.uiHandles.preprocessingSignalsList,...
                 obj.uiHandles.preprocessingSignalComputerList,...
                 obj.uiHandles.preprocessingSignalComputerVariablesTable);
+            
+            obj.preprocessingConfigurator.setDefaultColumnNames();
             
             obj.eventDetectorConfigurator = EventDetectorConfigurator(...
                 obj.uiHandles.eventDetectorList...
@@ -253,7 +254,7 @@ classdef ClassiffierApp < handle
             table = [];
             if ~isempty(selectedFileIdxs)
                 fileIdxs = obj.getGlobalFileIdxs(list);
-                table = obj.tableSet.tableForIndices(fileIdxs);
+                table = obj.tableSet.mergedTableForIndices(fileIdxs);
             end
         end
         
@@ -287,13 +288,13 @@ classdef ClassiffierApp < handle
             %normalise features
             if obj.uiHandles.shouldNormalizeFeaturesCheck.Value == 1 && ~isempty(obj.groupedTrainTable)
                 
-                obj.dataNormalizer.fit(obj.groupedTrainTable);
+                obj.featureNormalizer.fit(obj.groupedTrainTable);
                 
-                %obj.dataNormalizer.fitDefaultValues();
-                obj.groupedTrainTable = obj.dataNormalizer.normalize(obj.groupedTrainTable);
+                %obj.featureNormalizer.fitDefaultValues();
+                obj.groupedTrainTable = obj.featureNormalizer.normalize(obj.groupedTrainTable);
             end
             if ~isempty(obj.groupedTestTable)
-                obj.groupedTestTable = obj.dataNormalizer.normalize(obj.groupedTestTable);
+                obj.groupedTestTable = obj.featureNormalizer.normalize(obj.groupedTestTable);
             end
         end
         
@@ -310,7 +311,9 @@ classdef ClassiffierApp < handle
         end
         
         function computeConfusionMatrix(obj,predictedLabels,shouldBeLabels)
-            obj.confusionMatrix = confusionmat(shouldBeLabels,predictedLabels);
+            labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
+            nClasses = labelingStrategy.numClasses;
+            obj.confusionMatrix = confusionmat(shouldBeLabels,predictedLabels,'Order',1:nClasses);
         end
         
         function plotConfusionMatrix(obj,confusionMatrix,labelingStrategy)
@@ -360,10 +363,10 @@ classdef ClassiffierApp < handle
         end
         
         function exportNormalisationValues(obj)
-            selectedFeatureIdxs = obj.featureSelector.bestFeatures;
+            selectedFeatureIdxs = obj.featureSelector.selectedFeatureIdxs;
             
-            means = obj.dataNormalizer.means(selectedFeatureIdxs);
-            stds = obj.dataNormalizer.stds(selectedFeatureIdxs);
+            means = obj.featureNormalizer.means(selectedFeatureIdxs);
+            stds = obj.featureNormalizer.stds(selectedFeatureIdxs);
             normalisationValues = array2table([means' stds']);
             
             normalisationValues.Properties.VariableNames = {'means','deviations'};
@@ -581,7 +584,8 @@ classdef ClassiffierApp < handle
                 
                 obj.trainer.train(obj.groupedTrainTable);
                 
-                predictedLabels = obj.trainer.test(obj.groupedTestTable);
+                predictors = obj.groupedTestTable(:,1:end-1);
+                predictedLabels = obj.trainer.test(predictors);
                 obj.computeConfusionMatrix(predictedLabels,obj.groupedTestTable.label);
                 
                 labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
@@ -615,7 +619,6 @@ classdef ClassiffierApp < handle
                 obj.exportNormalisationValues();
             end
         end
-        
     end
     
     methods (Static, Access = private)
@@ -629,9 +632,15 @@ classdef ClassiffierApp < handle
             aySelector = AxisSelectorComputer(4);
             azSelector = AxisSelectorComputer(5);
             
-            gravxSelector = SimultaneousComputer({axSelector,laxSelector});
-            gravySelector = SimultaneousComputer({aySelector,laySelector});
-            gravzSelector = SimultaneousComputer({azSelector,lazSelector});
+            multiplier = ConstantMultiplicationComputer(0.1);
+            
+            scaledAxComputer = SequentialComputer({axSelector,multiplier});
+            scaledAyComputer = SequentialComputer({aySelector,multiplier});
+            scaledAzComputer = SequentialComputer({azSelector,multiplier});
+            
+            gravxSelector = SimultaneousComputer({scaledAxComputer,laxSelector});
+            gravySelector = SimultaneousComputer({scaledAyComputer,laySelector});
+            gravzSelector = SimultaneousComputer({scaledAzComputer,lazSelector});
             
             subtraction = SignalComputer.SubtractionComputer();
             

@@ -26,12 +26,25 @@ classdef PreprocessingConfigurator < handle
             
             obj.signalComputersList.Callback = @obj.handleSelectedSignalComputerChanged;
             
-            obj.loadColumnNames();
             obj.loadSignalComputers();
             
-            obj.fillSignalsList();
             obj.fillSignalComputersList();
             obj.updateSignalComputerVariablesTable();
+        end
+        
+        function setDefaultColumnNames(obj)
+            dataLoader = DataLoader();
+            dataFiles = Helper.listDataFiles();
+            if ~isempty(dataFiles)
+                fileName = dataFiles{1};
+                [~, obj.columnNames] = dataLoader.loadData(fileName);
+            end
+            obj.fillSignalsList();
+        end
+        
+        function setColumnNames(obj,columnNames)
+            obj.columnNames = columnNames;
+            obj.fillSignalsList();
         end
         
         function signalComputer = getCurrentSignalComputer(obj)
@@ -94,16 +107,7 @@ classdef PreprocessingConfigurator < handle
         
         function fillsignalList(obj)
             obj.signalsList.String = obj.columnNames;
-        end
-        
-        function loadColumnNames(obj)
-            dataLoader = DataLoader();
-            dataFiles = Helper.listDataFiles();
-            if ~isempty(dataFiles)
-                fileName = dataFiles{1};
-                [~, obj.columnNames] = dataLoader.loadData(fileName);
-            end
-        end
+        end        
         
         function loadSignalComputers(obj)
             

@@ -12,8 +12,8 @@ classdef Constants < handle
         nullClassGroupStr = 'null';
         SynchronisatonMarker = 3;
         
-        kTrainDataFileName = 'trainData.txt';
-        kTestDataFileName = 'testData.txt';
+        kTrainDataFileName = 'trainData';
+        kTestDataFileName = 'testData';
         kNormalisationFileName = 'normalisationValues.txt';
         kDetectedEventsFileName = 'detetedEvents.txt';
         

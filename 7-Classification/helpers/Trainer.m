@@ -5,20 +5,7 @@ classdef Trainer < handle
     end
     
     methods (Access = public)
-        function obj = Trainer()
-            %obj.testTrainer();
-            
-        end
-        
-        function testTrainer(obj)
-            
-            tableImporter = TableImporter();
-            table = tableImporter.importTable('featuresTable.txt');
-            predictors = table(1:end,1:end-1);
-            response = table(1:end,end);
-            obj.train(predictors,response);
-        end
-        
+
         function train(obj,table)
             predictors = table(:,1:end-1);
             response = table(:,end);
@@ -33,16 +20,10 @@ classdef Trainer < handle
                 response, ...
                 'Learners', template, ...
                 'Coding', 'onevsone');
-            
-            % Create the result struct with predict function
-            %predictorExtractionFcn = @(t) t(:, predictorNames);
-            %svmPredictFcn = @(x) predict(obj.classifier, x);
-            %obj.classifier.predictFcn = @(x) svmPredictFcn(predictorExtractionFcn(x));
         end
         
         function labels = test(obj,table)
-            predictors = table(:,1:end-1);
-            labels = predict(obj.classifier,predictors);
+            labels = predict(obj.classifier,table);
         end
     end
 end

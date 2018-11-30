@@ -9,7 +9,7 @@ classdef EventsLoader < handle
         function events = loadOrCreateEvents(obj)
             signalPreprocessorStr = obj.preprocessedSignalsLoader.preprocessor.toString();
             peakDetectorStr = obj.eventDetector.toString();
-            fullFileName = sprintf('%s/3a-events%s_%s.mat',Constants.precomputedPath,signalPreprocessorStr,peakDetectorStr);
+            fullFileName = sprintf('%s/3a-events_%s_%s.mat',Constants.precomputedPath,signalPreprocessorStr,peakDetectorStr);
             if exist(fullFileName,'File') == 2
                 events = load(fullFileName,'events');
                 events = events.events;
