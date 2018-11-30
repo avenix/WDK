@@ -39,6 +39,8 @@ classdef DetectionTestbedApp < handle
         badEventHandles;
         
         %ui plotting
+        
+        eventsPlotter;
         preprocessingConfigurator;
         figureHandle;
         plotAxes;
@@ -54,6 +56,7 @@ classdef DetectionTestbedApp < handle
             obj.resultsComputer = DetectionResultsComputer();
             obj.preprocessedSignalsLoader = PreprocessedSignalsLoader();
             obj.eventsLoader.preprocessedSignalsLoader = obj.preprocessedSignalsLoader;
+            obj.eventsPlotter = DetectionTestbedEventsPlotter();
             
             obj.showingGoodEvents = true;
             obj.showingMissedEvents = true;
@@ -82,7 +85,7 @@ classdef DetectionTestbedApp < handle
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeButtonClicked;
             obj.uiHandles.showDetectedCheckbox.Callback = @obj.handleShowDetectedToggled;
             obj.uiHandles.showMissedCheckbox.Callback = @obj.handleShowMissedToggled;
-            obj.uiHandles.showBadEventsCheckbox.Callback = @obj.handleShowBadEventsToggled;
+            obj.uiHandles.showBadCheckbox.Callback = @obj.handleShowBadEventsToggled;
             
             obj.uiHandles.filesList.String = obj.fileNames;
             
@@ -204,7 +207,6 @@ classdef DetectionTestbedApp < handle
         end
         
         function plotEnergy(obj)
-            
             energy = obj.fileEnergies{obj.currentFile};
             obj.energyPlotHandle = plot(obj.plotAxes,energy);
         end
@@ -212,9 +214,10 @@ classdef DetectionTestbedApp < handle
         function plotEvents(obj)
             currentFileResults = obj.resultsPerFile(obj.currentFile);
             
-            obj.goodEventHandles = obj.plotEventsInColor(currentFileResults.goodEvents,'green');
-            obj.missedEventHandles = obj.plotEventsInColor(currentFileResults.missedEvents,[1,0.5,0]);
-            obj.badEventHandles = obj.plotEventsInColor(currentFileResults.badEvents,'red');
+            energy = obj.fileEnergies{obj.currentFile};
+            obj.goodEventHandles = obj.eventsPlotter.plotEventsInColor(obj.plotAxes,currentFileResults.goodEvents,'green',energy);
+            obj.missedEventHandles = obj.eventsPlotter.plotEventsInColor(obj.plotAxes,currentFileResults.missedEvents,[1,0.5,0],energy);
+            obj.badEventHandles = obj.eventsPlotter.plotEventsInColor(obj.plotAxes, currentFileResults.badEvents,'red',energy);
             
             if ~obj.showingGoodEvents
                 obj.toggleEventsVisibility(obj.goodEventHandles,false);
@@ -226,26 +229,6 @@ classdef DetectionTestbedApp < handle
             
             if ~obj.showingBadEvents
                 obj.toggleEventsVisibility(obj.badEventHandles,false);
-            end
-        end
-        
-        function eventHandles = plotEventsInColor(obj,events,color)
-            eventHandles = [];
-            nEvents = length(events);
-            if nEvents > 0
-                eventHandles = repmat(SegmentationTestbedEventHandle(), 1, nEvents);
-                energy = obj.fileEnergies{obj.currentFile};
-                for i = 1 : length(events)
-                    event = events(i);
-                    eventX = event.sample;
-                    eventY = energy(eventX);
-                    label = event.label;
-                    classStr = obj.currentLabelingStrategy.classNames{label};
-                    symbolHandle = plot(obj.plotAxes,eventX,eventY,'*','Color',color);
-                    textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr);
-                    eventHandle = SegmentationTestbedEventHandle(symbolHandle,textHandle);
-                    eventHandles(i) = eventHandle;
-                end
             end
         end
         
@@ -297,6 +280,7 @@ classdef DetectionTestbedApp < handle
         
         function handleVisualizeButtonClicked(obj,~,~)
             if ~isempty(obj.eventsPerFile)
+                obj.eventsPlotter.labelingStrategy = obj.currentLabelingStrategy;
                 obj.currentFile = obj.uiHandles.filesList.Value;
                 obj.cleanPlot();
                 obj.plotEnergy();

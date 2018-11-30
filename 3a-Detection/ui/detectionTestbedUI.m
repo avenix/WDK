@@ -22,7 +22,7 @@ function varargout = detectionTestbedUI(varargin)
 
 % Edit the above text to modify the response to help detectionTestbedUI
 
-% Last Modified by GUIDE v2.5 23-Nov-2018 14:46:56
+% Last Modified by GUIDE v2.5 30-Nov-2018 14:15:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -156,13 +156,13 @@ function visualizeButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in showBadPeaksCheckbox.
-function showBadPeaksCheckbox_Callback(hObject, eventdata, handles)
-% hObject    handle to showBadPeaksCheckbox (see GCBO)
+% --- Executes on button press in showBadCheckbox.
+function showBadCheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to showBadCheckbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of showBadPeaksCheckbox
+% Hint: get(hObject,'Value') returns toggle state of showBadCheckbox
 
 
 % --- Executes on button press in showDetectedCheckbox.

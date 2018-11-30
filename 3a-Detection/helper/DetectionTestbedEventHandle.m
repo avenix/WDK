@@ -1,5 +1,6 @@
-classdef SegmentationTestbedEventHandle < handle
+classdef DetectionTestbedEventHandle < handle
     properties
+        detectedEvent;
         symbolHandle;
         textHandle;
     end
@@ -8,9 +9,10 @@ classdef SegmentationTestbedEventHandle < handle
         visibleStringss = {'off','on'};
     end
     
-    methods
-        function obj = SegmentationTestbedEventHandle(symbolHandle, textHandle)
-            if nargin > 1
+    methods (Access = public)
+        function obj = DetectionTestbedEventHandle(detectedEvent,symbolHandle, textHandle)
+            if nargin > 0
+                obj.detectedEvent = detectedEvent;
                 obj.symbolHandle = symbolHandle;
                 obj.textHandle = textHandle;
             end
