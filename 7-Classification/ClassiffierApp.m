@@ -75,9 +75,10 @@ classdef ClassiffierApp < handle
             obj.segmentsLabeler = SegmentsLabeler();
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
             
-            signalComputer = obj.createDefaultSignalComputer();
-            featureExtractor = FeatureExtractor(signalComputer);
-            featureExtractor.computeFeatureNames();
+            signalComputer = FeatureExtractor2.createDefaultSignalComputer();
+            featureComputers = FeatureExtractor2.createDefaultFeatureExtractors();
+            featureExtractor = FeatureExtractor2(signalComputer,featureComputers);
+            %featureNames = featureExtractor.computeFeatureNames();
             obj.featuresTableLoader = FeaturesTableLoader(featureExtractor);
             
             obj.featuresTableLoader.segmentsLoader = obj.segmentsLoader;
@@ -364,20 +365,21 @@ classdef ClassiffierApp < handle
         
         function exportNormalisationValues(obj)
             selectedFeatureIdxs = obj.featureSelector.selectedFeatureIdxs;
-            
-            means = obj.featureNormalizer.means(selectedFeatureIdxs);
-            stds = obj.featureNormalizer.stds(selectedFeatureIdxs);
-            normalisationValues = array2table([means' stds']);
-            
-            normalisationValues.Properties.VariableNames = {'means','deviations'};
-            normalisationValuesArray = table2array(normalisationValues);
-            transposedNormalisationValues = array2table(normalisationValuesArray.');
-            transposedNormalisationValues.Properties.RowNames = normalisationValues.Properties.VariableNames;
-            
-            featureExtractor = obj.featuresTableLoader.featureExtractor;
-            transposedNormalisationValues.Properties.VariableNames = featureExtractor.featureNames(selectedFeatureIdxs);
-            
-            obj.tableExporter.exportTable(transposedNormalisationValues,Constants.kNormalisationFileName);
+            if ~isempty(obj.featureNormalizer.means)
+                means = obj.featureNormalizer.means(selectedFeatureIdxs);
+                stds = obj.featureNormalizer.stds(selectedFeatureIdxs);
+                normalisationValues = array2table([means' stds']);
+                
+                normalisationValues.Properties.VariableNames = {'means','deviations'};
+                normalisationValuesArray = table2array(normalisationValues);
+                transposedNormalisationValues = array2table(normalisationValuesArray.');
+                transposedNormalisationValues.Properties.RowNames = normalisationValues.Properties.VariableNames;
+                
+                featureExtractor = obj.featuresTableLoader.featureExtractor;
+                transposedNormalisationValues.Properties.VariableNames = featureExtractor.featureNames(selectedFeatureIdxs);
+                
+                obj.tableExporter.exportTable(transposedNormalisationValues,Constants.kNormalisationFileName);
+            end
         end
         
         
@@ -622,35 +624,7 @@ classdef ClassiffierApp < handle
     end
     
     methods (Static, Access = private)
-        
-        function signalComputer = createDefaultSignalComputer()
-            laxSelector = AxisSelectorComputer(15);
-            laySelector = AxisSelectorComputer(16);
-            lazSelector = AxisSelectorComputer(17);
-            
-            axSelector = AxisSelectorComputer(3);
-            aySelector = AxisSelectorComputer(4);
-            azSelector = AxisSelectorComputer(5);
-            
-            multiplier = ConstantMultiplicationComputer(0.1);
-            
-            scaledAxComputer = SequentialComputer({axSelector,multiplier});
-            scaledAyComputer = SequentialComputer({aySelector,multiplier});
-            scaledAzComputer = SequentialComputer({azSelector,multiplier});
-            
-            gravxSelector = SimultaneousComputer({scaledAxComputer,laxSelector});
-            gravySelector = SimultaneousComputer({scaledAyComputer,laySelector});
-            gravzSelector = SimultaneousComputer({scaledAzComputer,lazSelector});
-            
-            subtraction = SignalComputer.SubtractionComputer();
-            
-            gravxComputer = SequentialComputer({gravxSelector,subtraction});
-            gravyComputer = SequentialComputer({gravySelector,subtraction});
-            gravzComputer = SequentialComputer({gravzSelector,subtraction});
-            
-            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer});
-        end
-        
+
         function table = groupTable(table,labelingStrategy)
             if ~isempty(table)
                 table.label = labelingStrategy.labelsForClasses(table.label);

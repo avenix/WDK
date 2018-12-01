@@ -95,17 +95,18 @@ classdef DataLoader < handle
         end
         
         function saveEvents(obj,events, fileName)
-            
-            fileID = fopen(fileName,'w');
-            
-            for i = 1 : length(events)-1
-                event = events(i);
-                DataLoader.printEventToFile(fileID,event);
-                fprintf(fileID, '\n');
+            if ~isempty(events) && ~isempty(fileName)
+                fileID = fopen(fileName,'w');
+                
+                for i = 1 : length(events)-1
+                    event = events(i);
+                    DataLoader.printEventToFile(fileID,event);
+                    fprintf(fileID, '\n');
+                end
+                event = events(end);
+                obj.printEventToFile(fileID,event);
+                fclose(fileID);
             end
-            event = events(end);
-            obj.printEventToFile(fileID,event);
-            fclose(fileID);
         end
         
         function markers = loadMarkers(~,markerFileName)

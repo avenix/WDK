@@ -38,7 +38,7 @@ classdef FeaturesTableLoader < handle
         function table = createTable(obj,segments)
             
             nSegments = length(segments);
-            nFeatures = obj.featureExtractor.nFeatures;
+            nFeatures = obj.featureExtractor.getNFeatures();
             shouldCreateLabelColumn = obj.areSegmentsLabeled(segments);
             nColumns = nFeatures + int32(shouldCreateLabelColumn);
             featureVectors = zeros(nSegments,nColumns);
@@ -61,7 +61,7 @@ classdef FeaturesTableLoader < handle
             
             table = array2table(featureVectors(1:segmentsCounter,:));
             if shouldCreateLabelColumn
-                table.Properties.VariableNames = [obj.featureExtractor.featureNames, 'label'];
+                table.Properties.VariableNames = [obj.featureExtractor.getFeatureNames(), 'label'];
             end
         end
     end

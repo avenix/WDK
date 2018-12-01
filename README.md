@@ -43,7 +43,7 @@ Most wearable device applications follow the Activity Recognition Chain:
 
 ### Preprocessing
 
-The *SignalExplorerApp* can be used to display and compare the different classes to each other, as well as the effects of several signal processing methods.
+The *SignalExplorerApp* can be used to display and compare the different classes to each other, as well as the effects of different signal processing methods. After a preprocessing and segmentation strategy have been chosen, the *SignalExplorerApp* plots every segment of each selected class on top of each other. 
 
 
 Currently, the following signal processing methods are supported:
@@ -53,53 +53,36 @@ Filters:
 - LowPassFilter: Butterworth low-pass filter
 
 Energy:
-- EnergyComputer: [Energy](http://www.sciweavers.org/tex2img.php?eq=E%28x_i%29%20%3D%20%20a_x%28x_i%29%5E2%20%2B%20a_y%28x_i%29%5E2%20%2B%20a_z%28x_i%29%5E2&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
-- NormComputer: [Norm](http://www.sciweavers.org/tex2img.php?eq=E%28x_i%29%20%3D%20%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20%2B%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20%2B%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
-- S1Computer: computes ![S1](http://www.sciweavers.org/tex2img.php?eq=S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%20%5Cfrac%7Bmax%28x%2Bi%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20%2B%20max%28x_i-x_%7Bi%2B1%7D%2Cx_i-x_%7Bi%2B2%7D%2C...%2Cx_i-x_%7Bi%2Bk%7D%29%7D%7B2%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
-- S2Computer: computes ![S2](http://www.sciweavers.org/tex2img.php?eq=S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%20%5Cfrac%7B%5Cfrac%7Bmax%28x%2Bi%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20%2B%20%5Cfrac%7Bmax%28x_i-x_%7Bi%2B1%7D%2Cx_i-x_%7Bi%2B2%7D%2C...%2Cx_i-x_%7Bi%2Bk%7D%29%7D%7Bk%7D%7D%7B2%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+- EnergyComputer: [Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)
+- NormComputer: [Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)
+- S1Computer: computes ![S1](https://latex.codecogs.com/gif.latex?S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)
+- S2Computer: computes ![S2](https://latex.codecogs.com/gif.latex?S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7B%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20&plus;%20%5Cfrac%7Bmax%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7Bk%7D%7D%7B2%7D)
 
-[comment]: <> E(x_i) =  \left| a_x(x_i) \right| + \left| a_y(x_i) \right| + \left| a_z(x_i) \right|
-[comment]: <> E(x_i) =  a_x(x_i)^2 + a_y(x_i)^2 + a_z(x_i)^2
-[comment]: <> S_1(k,i,X_i,T) =  \frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k}) + max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{2}
-[comment]: <> S_2(k,i,X_i,T) =  \frac{\frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k})}{k} + \frac{max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{k}}{2}
+[//]: #  (E(x_i) =  a_x(x_i)^2 + a_y(x_i)^2 + a_z(x_i)^2)
+[//]: #  (E(x_i) =  \left| a_x(x_i) \right| + \left| a_y(x_i) \right| + \left| a_z(x_i) \right|)
+[//]: #  (S_1(k,i,X_i,T) =  \frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k}) + max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{2})
+[//]: #  (S_2(k,i,X_i,T) =  \frac{\frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k})}{k} + \frac{max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{k}}{2})
 
-Helpers
-- 
+
 
 ### Feature Extraction
 
 The *FeatureExtractor* class extracts the following time-domain features:
 
-- statistical feature: mean, std, var, max, min, corr 
-- Cross correlation: a measure of the similarity between two waveforms. It
-calculates the dot product between the signal and a shifted version of
-another signal.
-- Correlaton coefficients (also called Pearson correlation coefficients): cov(x,y) / (std(x)*std(y)
-- DC component: the first component of the frequency domain representation
-of a signal
-- SVM: signal vector magnitude (normalized). The sum of the magnitude. Calculated for
-acceleration and rotation
-- SMA: Signal Magnitude Area. Similar to AUC, but easier to compute and
-includes all three components x,y,z. Computed for Acceleration and
-Rotation.
-- quantile(signal,n): the cutpoints dividing a set of values into n+1 segments.
-quantile(signal,2) sorts the values in the signal and dividides them in three groups
-and returns the two cutpoints separating the three groups
-- entropy: gives an indication of the amount of information in a signal.
-More information less entropy. Flipping a coin has high entropy of 1. If there
-is 100 / 0% probability that an event will occur, the entropy is 0.
-- kurtosis: describes the tailedness of the distribution of values in the
-signal
-- skewness: describes the distribution of values with respect to the mean. A
-positive skewness indicates that most values in the segment are concentrated at
-the left of the distribution and there is a tail on the right
-- IQR: interquartile range. The difference between the median of Q3 and Q1 where Q3 and Q1 are
-intervals separated by the median of the dataset. Indicates variability in
-the signal.
+- Statistical features: mean, standard deviation, variance, maximum, minimum, correlation.
+- Cross correlation: a measure of the similarity between two waveforms. It calculates the dot product between the signal and a shifted version of another signal.
+- Correlaton coefficients (also called Pearson correlation coefficients): cov(x,y) / (std(x)*std(y).
+- DC component: the first component of the frequency domain representation of a signal.
+- SVM: signal vector magnitude (normalized). The sum of the magnitude.
+- SMA: Signal Magnitude Area. Similar to AUC, but easier to compute.
+- quantile(signal,n): the cutpoints dividing a set of values into n+1 segments. quantile(signal,2) sorts the values in the signal and dividides them in three groups and returns the two cutpoints separating the three groups.
+- entropy: gives an indication of the amount of information in a signal. More information leads to less entropy. Flipping a coin has high entropy of 1. If there is 100 / 0% probability that an event will occur, the entropy is 0.
+- kurtosis: describes the tailedness of the distribution of values in the signal.
+- skewness: describes the distribution of values with respect to the mean. A positive skewness indicates that most values in the segment are concentrated at the left of the distribution and there is a tail on the right.
+- IQR: interquartile range. The difference between the median of Q3 and Q1 where Q3 and Q1 are intervals separated by the median of the dataset. Indicates variability in the signal.
 - MAD: mean absolute deviation.
 - AAV: average absolute acceleration variation.
-- trapz: The area under the signal's curve integrated numerically with the t
-trapezoid method
+- trapz: The area under the signal's curve integrated numerically with the trapezoid method
 - ZRC: zero crossing rate: how often a signal crosses the 0 threshold:
 TODO. Check the zero crossing using the mean as sample
 - RMS: root mean square
@@ -107,20 +90,14 @@ TODO. Check the zero crossing using the mean as sample
 
 and the following frequency-domain features:
 
-- spectral spread: indicates the variance in the distribution of
-frequencies
+- spectral spread: indicates the variance in the distribution of frequencies.
 - spectral centroid: Indicates where the "center of mass" of the spectrum is located.
-- spectral flatness: provides a way to quantify how noise-like a sound is.
-white noise has peaks in all frequencies making its spectrum look flat
-- spectral entropy: indicates how chaotic / how much informatiomn there is
-in the frequency distribution
+- spectral flatness: provides a way to quantify how noise-like a sound is. White noise has peaks in all frequencies making its spectrum look flat.
+- spectral entropy: indicates how chaotic / how much informatiomn there is in the frequency distribution.
 - spectral energy: the energy of the frequency domain (sum of squared values of dft coefficients).
-- spectral density: the probability distribution of the spectrum. Not a
-feature but a transformation that can result in other features.
+- spectral density: the probability distribution of the spectrum. Not a feature but a transformation that can result in other features.
 
-Coming soon: Frequency domain features (maximum frequency, value and ratio,
-spectral entropy, 10 cepstral coefficients, Fourier transform: coefficients grouped in four logarithmic
-bands, maximum spectral frequency ), wavelet analysis, mean crossing rate.
+Coming soon: Frequency domain features (maximum frequency, value and ratio, spectral entropy, 10 cepstral coefficients, Fourier transform: coefficients grouped in four logarithmic bands, maximum spectral frequency ), wavelet analysis, mean crossing rate.
 
 *Note: use the extractFeatures() method of the FeatureExtractor. This method receives a *Segment* as input and returns i) an array of features and ii) an array with the name of each feature in i)*.
 

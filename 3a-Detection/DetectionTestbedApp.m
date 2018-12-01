@@ -189,7 +189,6 @@ classdef DetectionTestbedApp < handle
         function cleanPlot(obj)
             cla(obj.plotAxes);
             cla(obj.plotAxes,'reset');
-            
         end
 
         %methods
@@ -252,10 +251,11 @@ classdef DetectionTestbedApp < handle
         end
         
         function saveEvents(obj)
-            
-            currentFileIdx = obj.uiHandles.filesList.Value;
-            events = obj.eventsPerFile{currentFileIdx};
-            obj.dataLoader.saveEvents(events,Constants.kDetectedEventsFileName);
+            if ~isempty(obj.eventsPerFile)
+                currentFileIdx = obj.uiHandles.filesList.Value;
+                events = obj.eventsPerFile{currentFileIdx};
+                obj.dataLoader.saveEvents(events,Constants.kDetectedEventsFileName);
+            end
         end
         
         %handles
