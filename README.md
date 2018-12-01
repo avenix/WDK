@@ -53,16 +53,10 @@ Filters:
 - LowPassFilter: Butterworth low-pass filter
 
 Energy:
-- EnergyComputer: [Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)
-- NormComputer: [Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)
+- EnergyComputer: ![Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)
+- NormComputer: ![Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)
 - S1Computer: computes ![S1](https://latex.codecogs.com/gif.latex?S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)
 - S2Computer: computes ![S2](https://latex.codecogs.com/gif.latex?S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7B%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20&plus;%20%5Cfrac%7Bmax%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7Bk%7D%7D%7B2%7D)
-
-[//]: #  (E(x_i) =  a_x(x_i)^2 + a_y(x_i)^2 + a_z(x_i)^2)
-[//]: #  (E(x_i) =  \left| a_x(x_i) \right| + \left| a_y(x_i) \right| + \left| a_z(x_i) \right|)
-[//]: #  (S_1(k,i,X_i,T) =  \frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k}) + max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{2})
-[//]: #  (S_2(k,i,X_i,T) =  \frac{\frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k})}{k} + \frac{max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{k}}{2})
-
 
 
 ### Feature Extraction
