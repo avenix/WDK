@@ -2,7 +2,6 @@ classdef SignalComputer < Computer
     properties
         name;
         functionHandle;
-        expectedNumInputSignals;
     end
     
     methods (Access = public)

@@ -19,26 +19,30 @@ Once you have data available for analysis, you can use the *DataLoaderApp* in *0
 
 ## Data Annotation
 
-To train the wearable application to recognize a specific pattern and to test whether it works as expected, you need to annotate the data you collected. The *DataAnnotationApp* offers functionality to annotate time series data.  Depending on your application, you will want to annotate sudden events or activities that have a duration in time. The *DataAnnotationApp* supports both kinds of annotations.
+An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *DataAnnotationApp* offers functionality to annotate time series data. Depending on the particular application, you will want to annotate specific events or activities that have a duration in time. The *DataAnnotationApp* supports both kinds of annotations.
 
-It might be hard to annotate time series data without a reference. The *DataAnnotationApp* can import and display reference markers on top of the time series data. Currently, the *DataAnnotationApp* supports markers created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format.
+It might be cumbersome to annotate time series data without a reference. The *DataAnnotationApp* can import and display markers on top of the time series data. Currently, the *DataAnnotationApp* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the Timeline, timelines, export, Timeline markers to .EDL..., as shown in the image below:
 
-In order to display markers on top of the time series data, the markers need to be aligned (synchronised) to the time series data. In order to do this, your markers *.edl* file should contain a marker in green color in the beginning and another one in the end of the file. These markers will be automatically matched to the first and last annotation with the label *synchronisaton'. This is the typical annotation flow:
+![DaVinciResolve](images/1-markers.png)
+
+Before the markers can be displayed properly on top of the time series data, they need to be synchronised to the time series data. In order to do this, the *.edl* file should contain a marker in green color in the beginning and another one in the end of the file. These markers will be automatically matched to the first and last annotation labeled as *synchronisaton'. This is the typical annotation flow:
 
 1. Annotate the video using DaVinci Resolve. Use a green marker to annotate a special event, ideally in the beginning and end of the file. (e.g. the user shakes the sensor three times in front of the camera).
-2. Export the markers to an *.edl* file. This can be done by: right click on the Timeline, timelines, export, Timeline markers to .EDL...
-3. Copy the markers to the *data/markers/* directory.
+2. Export the markers to an *.edl* file.
+3. Copy the *.edl* file to the *data/markers/* directory.
 4. Open the *DataAnnotationApp* and annotate the special events using the *synchronisation* class.
-5. Reopen the *DataAnnotationApp*. This time the markers should be properly aligned with the data. You can now use  these markers to annotate the rest of the data.
+5. Reopen the *DataAnnotationApp*. This time the markers should be properly aligned with the data.
+6. Annotate the time series data.
 
 ![Data Annotation App](images/1-DataAnnotationApp.png)
 
 *Note: by default, the DataAnnotationApp will load annotation files from the ./data/annotations/ directory. Saved annotation files will be stored in the root './' directory*.
 *Note: markers in .edl format will be read from the ./data/markers directory*.
+*Note: in order to be able to annotate a data set, the classes should have previously been defined in the ./data/classes.txt file*
 
 ## Application Development
 
-Most wearable device applications follow the Activity Recognition Chain:
+Most wearable device applications execute a chain of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain:
 ![Activity Recognition Chain](images/ARC.png)
 
 ### Preprocessing
@@ -122,7 +126,7 @@ Note that you dont need to assign every class to a group. A class which is left 
 
 ## Tipps
 
-* The default data paths can be changed from the *Constants* class.  
+* The default data paths can be changed in the *Constants* class.  
  
  ## Troubleshooting
 

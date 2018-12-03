@@ -11,8 +11,8 @@ classdef QuantileComputer < Computer
             end
         end
         
-        function signal = compute(obj,data)
-            signal = quantile(data(:,currentSignal),obj.numQuantileParts);
+        function result = compute(obj,data)
+            result = quantile(data,obj.numQuantileParts);
         end
         
         function str = toString(obj)

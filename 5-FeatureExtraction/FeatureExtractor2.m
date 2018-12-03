@@ -27,15 +27,30 @@
         end
         
         function nFeatures = getNFeatures(obj)
-            nFeatures = length(obj.featureComputers);
+            nFeatures = 0;
+            
+            for i = 1 : length(obj.featureComputers)
+                featureComputer = obj.featureComputers(i);
+                nFeatures = nFeatures + featureComputer.getNFeatures();
+            end
         end
         
         function featureNames = getFeatureNames(obj)
             nFeatures = obj.getNFeatures();
             featureNames = cell(1,nFeatures);
-            for i = 1 : nFeatures
+            featureCounter = 0;
+            for i = 1 : length(obj.featureComputers)
                 featureComputer = obj.featureComputers(i);
-                featureNames{i} = featureComputer.toString();
+                str = featureComputer.toString();
+                nSubFeatures = featureComputer.getNFeatures();
+                if nSubFeatures == 1
+                    featureNames{featureCounter + 1} = str;
+                else
+                    for j = 1 : nSubFeatures
+                        featureNames{featureCounter + j} = sprintf('%s_%d',str,j);
+                    end
+                end
+                featureCounter = featureCounter + nSubFeatures;
             end
         end
     end
@@ -45,10 +60,13 @@
         function featureVector = extractFeaturesForData(obj,data)
             nFeatures = obj.getNFeatures();
             featureVector = zeros(1,nFeatures);
+            featureCounter = 1;
             for i = 1 : length(obj.featureComputers)
                 featureComputer = obj.featureComputers(i);
-                feature = featureComputer.compute(data);
-                featureVector(i) = feature;
+                features = featureComputer.compute(data);
+                nSubFeatures = length(features);
+                featureVector(featureCounter:featureCounter + nSubFeatures-1) = features;
+                featureCounter = featureCounter + nSubFeatures;
             end
         end
     end
@@ -59,7 +77,7 @@
             
             nSignalComputers = length(signalComputers);
             
-            kDefaultNumSignals = 6;
+            kDefaultNumSignals = 7;
             kDefaultSegmentSize = 451;
             
             kMiddlePartStart = 200;
@@ -84,12 +102,8 @@
                 for currentSignal = 1 : kDefaultNumSignals
                     
                     for currentRange = 1 : nSegmentRanges
-                        
-                        featureComputer = FeatureComputer(signalComputer);
-                        featureComputer.signalAxis = currentSignal;
                         range = segmentRanges(currentRange);
-                        
-                        featureComputer.range = range;
+                        featureComputer = FeatureComputer(signalComputer,currentSignal,range);
                         
                         featureExtractorCounter = featureExtractorCounter + 1;
                         featureComputers(featureExtractorCounter) = featureComputer;
@@ -102,12 +116,13 @@
 
             for currentSignal = 1 : kDefaultNumSignals
                 featureComputer = FeatureComputer(quantileComputer,currentSignal,kDefaultRange);
+                featureComputer.numOutputSignals = 4;
                 featureExtractorCounter = featureExtractorCounter + 1;
                 featureComputers(featureExtractorCounter) = featureComputer;
             end
             
             %zrc
-            zeroCrossingComputer = SignalComputer(@zrc,"zrc");
+            zeroCrossingComputer = SignalComputer("zrc",@zrc);
             for currentSignal = 1 : kDefaultNumSignals-1
                 
                 for currentRange = 1 : nSegmentRanges
@@ -119,19 +134,30 @@
             end
             
             %sma acceleration
-            smaComputer = SignalComputer(@sma,'sma');
-            featureComputer = FeatureComputer(smaComputer);
-            featureComputer.signalAxis = 1:3;
-            featureComputer.range = kDefaultRange;
+            smaComputer = SignalComputer('smaAccel',@sma);
+            featureComputer = FeatureComputer(smaComputer,1:3,kDefaultRange);
+            featureExtractorCounter = featureExtractorCounter + 1;
+            featureComputers(featureExtractorCounter) = featureComputer;
+            
+            
+            %sma gravity
+            smaComputer = SignalComputer('smaGrav',@sma);
+            featureComputer = FeatureComputer(smaComputer,4:6,kDefaultRange);
+            featureExtractorCounter = featureExtractorCounter + 1;
+            featureComputers(featureExtractorCounter) = featureComputer;
+            
+            %svm
+            smaComputer = SignalComputer('svmEnergy',@svmFeature);
+            featureComputer = FeatureComputer(smaComputer,7,kDefaultRange);
             featureExtractorCounter = featureExtractorCounter + 1;
             featureComputers(featureExtractorCounter) = featureComputer;
             
             %energy
             energyAxes = [1,2,3,7];
-            energyComputer = SignalComputer(@energy,"energy");
+            energyComputer = SignalComputer("energy",@energy);
             for currentSignal = 1 : length(energyAxes)
-                featureComputer = FeatureComputer(energyComputer);
-                featureComputer.signalAxis = energyAxes(currentSignal);
+                signalAxis = energyAxes(currentSignal);
+                featureComputer = FeatureComputer(energyComputer,signalAxis,kDefaultRange);
                 featureExtractorCounter = featureExtractorCounter + 1;
                 featureComputers(featureExtractorCounter) = featureComputer;
             end
@@ -179,7 +205,11 @@
             gravyComputer = SequentialComputer({gravySelector,subtraction});
             gravzComputer = SequentialComputer({gravzSelector,subtraction});
             
-            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer});
+            energySelector = SimultaneousComputer({laxSelector,laxSelector,laxSelector});
+            
+            energyComputer = SequentialComputer({energySelector, SignalComputer.EnergyComputer()});
+            
+            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer, energyComputer});
         end 
     end
   end

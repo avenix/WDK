@@ -1,5 +1,9 @@
 classdef (Abstract) Computer < handle
     
+    properties (Access = public)
+        expectedNumInputSignals;
+    end
+    
     methods (Abstract)
         computedSignal = compute(obj,signal);
         str = toString(obj);
