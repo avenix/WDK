@@ -2,6 +2,7 @@ classdef EventAnnotationsPlotter < handle
     
     properties (Access = public,Constant)
         AnnotationColor = 'blue';
+        AnnotationFont = 14;
     end
     
     properties (Access = public)
@@ -108,7 +109,7 @@ classdef EventAnnotationsPlotter < handle
             classStr = obj.classesMap.stringForClassAtIdx(class);
             color = obj.AnnotationColor;
             symbolHandle = plot(plotAxes,x,y,'*','Color',color);
-            textHandle = text(plotAxes,double(x),double(y), classStr);
+            textHandle = text(plotAxes,double(x),double(y), classStr,'FontSize',EventAnnotationsPlotter.AnnotationFont);
             set(textHandle, 'Clipping', 'on');
             textHandle.Tag = int2str(x);
             textHandle.ButtonDownFcn = @obj.handleAnnotationClicked;

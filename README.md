@@ -10,17 +10,35 @@ The Warables Development Toolkit facilitates the development of wearable device 
 
 ## Setup
 
-The WDK requires the installation of the following toolboxes:
+* install Matlab. 
+* `git clone git@github.com:avenix/ARC-Tutorial.git`
+* in Matlab, `addpath(genpath('./'))`
+* enjoy the Apps in each directory (e.g. *DataAnnotationApp* in *1-DataAnnotation/*).
 
-- Signal Processing Toolbox, see image below:
+The WDK requires the installation of the Signal Processing Toolbox:
 
 ![Activity Recognition Chain Development](images/DSP.png)
 
 *Note: When running the toolkit for the first time, ensure the Constants.m file points to the right data/ directory.*
 
+### Data Structure
+
+The *Constants.m* file defines the following path constants:
+
+```
+classesPath = './data/classes.txt';
+annotationsPath = './data/annotations';
+markersPath = './data/markers';
+dataPath = './data/rawdata';
+precomputedPath = './data/cache';
+labelingStrategiesPath = './data/labeling';
+```
+- Make sure these paths point to the right directory in your filesystem.
+- List the classes of your particular application in the *classes.txt* file.
+
 ## Data Collection
 
-Once you have data available for analysis, you can use the *DataLoaderApp* in *0-DataLoader* to do a first check on the data and convert it to Matlab's binary format, used by the rest of the toolkit. 
+Once you have data available for analysis, you can use the *DataLoaderApp* in *0-DataLoader* to do a first check on the data and convert it to Matlab's binary format, used by the rest of the toolkit.
 
 ![DataLoaderApp](images/0-DataLoaderApp.png)
 
@@ -59,7 +77,6 @@ Most wearable device applications execute a chain of computations in order to de
 
 The *SignalExplorerApp* can be used to display and compare the different classes to each other, as well as the effects of different signal processing methods. After a preprocessing and segmentation strategy have been chosen, the *SignalExplorerApp* plots every segment of each selected class on top of each other. 
 
-
 Currently, the following signal processing methods are supported:
 
 Filters:
@@ -87,7 +104,7 @@ The *FeatureExtractor* class extracts the following time-domain features:
 - entropy: gives an indication of the amount of information in a signal. More information leads to less entropy. Flipping a coin has high entropy of 1. If there is 100 / 0% probability that an event will occur, the entropy is 0.
 - kurtosis: describes the tailedness of the distribution of values in the signal.
 - skewness: describes the distribution of values with respect to the mean. A positive skewness indicates that most values in the segment are concentrated at the left of the distribution and there is a tail on the right.
-- IQR: interquartile range. The difference between the median of Q3 and Q1 where Q3 and Q1 are intervals separated by the median of the dataset. Indicates variability in the signal.
+- IQR: interquartile range. The difference between the median of Q3 and Q1 where Q3 and Q1 are intervals separated by the median of the data set. Indicates variability in the signal.
 - MAD: mean absolute deviation.
 - AAV: average absolute acceleration variation.
 - trapz: The area under the signal's curve integrated numerically with the trapezoid method
@@ -108,12 +125,6 @@ and the following frequency-domain features:
 Coming soon: Frequency domain features (maximum frequency, value and ratio, spectral entropy, 10 cepstral coefficients, Fourier transform: coefficients grouped in four logarithmic bands, maximum spectral frequency ), wavelet analysis, mean crossing rate.
 
 *Note: use the extractFeatures() method of the FeatureExtractor. This method receives a *Segment* as input and returns i) an array of features and ii) an array with the name of each feature in i)*.
-
-## Setup
-* install Matlab
-* `git clone git@github.com:avenix/ARC-Tutorial.git`
-* in Matlab, `addpath(genpath('./'))`
-* open the App file in each directory (e.g. *DataAnnotationApp* in *1-DataAnnotation*).
  
  ## Getting started
 1. Place your data files (.txt or .mat) in the *./data/rawdata/* directory

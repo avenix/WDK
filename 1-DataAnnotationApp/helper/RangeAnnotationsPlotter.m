@@ -4,8 +4,8 @@ classdef RangeAnnotationsPlotter < handle
         AnnotationColor = 'black';
         LineWidth = 3;
         SegmentHeight = 10;
-        FontSize = 18;
-        TextSegmentDistance = 10;
+        FontSize = 20;
+        TextSegmentDistance = 5;
     end
     
     properties (Access = public)

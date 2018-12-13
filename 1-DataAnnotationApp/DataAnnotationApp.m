@@ -50,6 +50,7 @@ classdef DataAnnotationApp < handle
     methods (Access = public)
         
         function obj =  DataAnnotationApp()
+
             obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
             obj.markersPlotter = MarkersPlotter();
