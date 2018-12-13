@@ -148,21 +148,23 @@ classdef DataAnnotationApp < handle
         end
         
         function loadMarkers(obj)
-            markersFileName = obj.getMarkersFileName();
-            obj.markers = obj.dataLoader.loadMarkers(markersFileName);
-            
-            if ~isempty(obj.markers)
-                x1 = obj.findFirstSynchronisationMarker();
-                x2 = obj.findLastSynchronisationMarker();
-                y1 = obj.findFirstSynchronisationSample();
-                y2 = obj.findLastSynchronisationSample();
+            if ~isempty(obj.annotationSet)
+                markersFileName = obj.getMarkersFileName();
+                obj.markers = obj.dataLoader.loadMarkers(markersFileName);
                 
-                a = double(y2-y1) / (x2-x1);
-                
-                for i = 1 : length(obj.markers)
-                    currentMarker = obj.markers(i);
-                    currentMarker.sample = a * (currentMarker.sample - x1) + y1;
-                    obj.markers(i) = currentMarker;
+                if ~isempty(obj.markers)
+                    x1 = obj.findFirstSynchronisationMarker();
+                    x2 = obj.findLastSynchronisationMarker();
+                    y1 = obj.findFirstSynchronisationSample();
+                    y2 = obj.findLastSynchronisationSample();
+                    
+                    a = double(y2-y1) / (x2-x1);
+                    
+                    for i = 1 : length(obj.markers)
+                        currentMarker = obj.markers(i);
+                        currentMarker.sample = a * (currentMarker.sample - x1) + y1;
+                        obj.markers(i) = currentMarker;
+                    end
                 end
             end
         end

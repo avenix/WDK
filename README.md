@@ -7,6 +7,15 @@ The Warables Development Toolkit facilitates the development of wearable device 
  This Toolkit offers different tools for each of these activities.
 
 *Note: Check my Matlab tutorial on the Activity Recognition Chain for wearables: <https://github.com/avenix/ARC-Tutorial/>*
+
+## Setup
+
+The WDK requires the installation of the following toolboxes:
+
+- Signal Processing Toolbox, see image below:
+
+![Activity Recognition Chain Development](images/DSP.png)
+
 *Note: When running the toolkit for the first time, ensure the Constants.m file points to the right data/ directory.*
 
 ## Data Collection
