@@ -72,10 +72,7 @@
     end
     
     methods (Static)
-        function featureComputers = createDefaultFeatureExtractors()
-            signalComputers = FeatureExtractor2.createDefaultFeatureExtractionComputers();
-            
-            nSignalComputers = length(signalComputers);
+        function featureExtractors = createDefaultFeatureExtractors()
             
             kDefaultNumSignals = 7;
             kDefaultSegmentSize = 451;
@@ -91,25 +88,12 @@
             
             nSegmentRanges = length(segmentRanges);
             
-            nFeatureComputers = nSignalComputers * kDefaultNumSignals * nSegmentRanges;
-            featureComputers = repmat(FeatureComputer,1,nFeatureComputers);
-            featureExtractorCounter = 0;
+            statisticalFeatureExtractors = FeatureExtractor2.createStatisticalFeatureExtractors(kDefaultNumSignals,segmentRanges);
+            nStatisticalFeatureExtractors = length(statisticalFeatureExtractors);
             
-            for currentSignalComputer = 1 : nSignalComputers
-                
-                signalComputer = signalComputers(currentSignalComputer);
-                
-                for currentSignal = 1 : kDefaultNumSignals
-                    
-                    for currentRange = 1 : nSegmentRanges
-                        range = segmentRanges(currentRange);
-                        featureComputer = FeatureComputer(signalComputer,currentSignal,range);
-                        
-                        featureExtractorCounter = featureExtractorCounter + 1;
-                        featureComputers(featureExtractorCounter) = featureComputer;
-                    end
-                end
-            end
+            featureExtractors = repmat(FeatureComputer(),1,500);
+            featureExtractors(1:nStatisticalFeatureExtractors) = statisticalFeatureExtractors;
+            featureExtractorCounter = nStatisticalFeatureExtractors;
             
             %quantile
             quantileComputer = QuantileComputer(4);
@@ -118,7 +102,7 @@
                 featureComputer = FeatureComputer(quantileComputer,currentSignal,kDefaultRange);
                 featureComputer.numOutputSignals = 4;
                 featureExtractorCounter = featureExtractorCounter + 1;
-                featureComputers(featureExtractorCounter) = featureComputer;
+                featureExtractors(featureExtractorCounter) = featureComputer;
             end
             
             %zrc
@@ -129,7 +113,7 @@
                     range = segmentRanges(currentRange);
                     featureComputer = FeatureComputer(zeroCrossingComputer,currentSignal,range);
                     featureExtractorCounter = featureExtractorCounter + 1;
-                    featureComputers(featureExtractorCounter) = featureComputer;
+                    featureExtractors(featureExtractorCounter) = featureComputer;
                 end
             end
             
@@ -137,20 +121,19 @@
             smaComputer = SignalComputer('smaAccel',@sma);
             featureComputer = FeatureComputer(smaComputer,1:3,kDefaultRange);
             featureExtractorCounter = featureExtractorCounter + 1;
-            featureComputers(featureExtractorCounter) = featureComputer;
-            
+            featureExtractors(featureExtractorCounter) = featureComputer;
             
             %sma gravity
             smaComputer = SignalComputer('smaGrav',@sma);
             featureComputer = FeatureComputer(smaComputer,4:6,kDefaultRange);
             featureExtractorCounter = featureExtractorCounter + 1;
-            featureComputers(featureExtractorCounter) = featureComputer;
+            featureExtractors(featureExtractorCounter) = featureComputer;
             
             %svm
             smaComputer = SignalComputer('svmEnergy',@svmFeature);
             featureComputer = FeatureComputer(smaComputer,7,kDefaultRange);
             featureExtractorCounter = featureExtractorCounter + 1;
-            featureComputers(featureExtractorCounter) = featureComputer;
+            featureExtractors(featureExtractorCounter) = featureComputer;
             
             %energy
             energyAxes = [1,2,3,7];
@@ -159,9 +142,10 @@
                 signalAxis = energyAxes(currentSignal);
                 featureComputer = FeatureComputer(energyComputer,signalAxis,kDefaultRange);
                 featureExtractorCounter = featureExtractorCounter + 1;
-                featureComputers(featureExtractorCounter) = featureComputer;
+                featureExtractors(featureExtractorCounter) = featureComputer;
             end
 
+            featureExtractors = featureExtractors(1:featureExtractorCounter);
         end
         
         function signalComputers = createDefaultFeatureExtractionComputers()
@@ -177,6 +161,34 @@
                 featureExtractorHandle = featureExtractorHandles{i};
                 featureHandleStr = func2str(featureExtractorHandle);
                 signalComputers(i) = SignalComputer(featureHandleStr,featureExtractorHandle);
+            end
+        end
+        
+        function featureExtractors = createStatisticalFeatureExtractors(numSignals,segmentRanges)
+            
+            signalComputers = FeatureExtractor2.createDefaultFeatureExtractionComputers();
+            nSignalComputers = length(signalComputers);
+            nSegmentRanges = length(segmentRanges);
+            
+            nFeatureComputers = nSignalComputers * numSignals * nSegmentRanges;
+            
+            featureExtractors = repmat(FeatureComputer,1,nFeatureComputers);
+            featureExtractorCounter = 0;
+            
+            for currentSignalComputer = 1 : nSignalComputers
+                
+                signalComputer = signalComputers(currentSignalComputer);
+                
+                for currentSignal = 1 : numSignals
+                    
+                    for currentRange = 1 : nSegmentRanges
+                        range = segmentRanges(currentRange);
+                        featureComputer = FeatureComputer(signalComputer,currentSignal,range);
+                        
+                        featureExtractorCounter = featureExtractorCounter + 1;
+                        featureExtractors(featureExtractorCounter) = featureComputer;
+                    end
+                end
             end
         end
         

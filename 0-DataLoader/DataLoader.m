@@ -77,6 +77,7 @@ classdef DataLoader < handle
             for i = 1 : length(annotationFiles)
                 annotationsFileName = annotationFiles{i};
                 annotationSet = obj.loadAnnotations(annotationsFileName);
+                annotationSet.file = annotationsFileName;
                 annotations(i) = annotationSet;
             end
         end

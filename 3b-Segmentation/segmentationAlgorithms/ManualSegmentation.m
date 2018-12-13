@@ -34,6 +34,11 @@ classdef ManualSegmentation < Segmentation
             for i = 1 : length(segments)
                 segments(i).class = labels(i);
             end
+            
+            %add range annotations
+            rangeAnnotationSegments = obj.createSegmentsWithRangeAnnotations(data);
+            
+            segments = [segments, rangeAnnotationSegments];
         end
         
         function str = toString(obj)
@@ -51,6 +56,22 @@ classdef ManualSegmentation < Segmentation
                 dataFile = dataFiles{i};
                 obj.currentAnnotations = obj.manualAnnotations(i);
                 segmentsPerFile{i} = obj.segment(dataFile);
+            end
+        end
+    end
+    
+    methods (Access = private)
+        function segments = createSegmentsWithRangeAnnotations(obj,data)
+            rangeAnnotations = obj.currentAnnotations.rangeAnnotations;
+            file = obj.manualAnnotations.file;
+            nSegments = length(rangeAnnotations);
+            segments = repmat(Segment,1,nSegments);
+            for i = 1 : length(rangeAnnotations)
+                rangeAnnotation = rangeAnnotations(i);
+                window = data(rangeAnnotation.startSample:rangeAnnotation.endSample,:);
+                segments(i) = Segment(file,window,rangeAnnotation.label,-1);
+                segments(i).startSample = rangeAnnotation.startSample;
+                segments(i).endSample = rangeAnnotation.endSample;
             end
         end
     end

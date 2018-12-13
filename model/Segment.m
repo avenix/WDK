@@ -1,16 +1,15 @@
-%Data around the peak
 classdef Segment < handle
     
-    properties
-        file %TODO see if we can remove
-        window
-        class
-        eventIdx
+    properties (Access = public)
+        file;
+        window;
+        class;
+        eventIdx;
         startSample;
         endSample;
     end
     
-    methods
+    methods (Access = public)
         function obj = Segment(file,window,class,eventIdx)
             if nargin > 3 %enable initialisation with no params
                 obj.file = file;

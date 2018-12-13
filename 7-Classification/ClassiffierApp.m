@@ -387,6 +387,8 @@ classdef ClassiffierApp < handle
         %% UI
         function updateEventDetectionTablesVisibility(obj)
             if obj.isManualEventDetector
+                obj.uiHandles.detectionPanel.Visible = 'Off';
+                obj.uiHandles.preprocessingPanel.Visible = 'Off';
                 obj.uiHandles.detectionLabel.Visible = 'Off';
                 obj.uiHandles.preprocessingLabel.Visible = 'Off';
                 obj.uiHandles.preprocessingSignalComputerVariablesTable.Visible = 'Off';
@@ -395,6 +397,8 @@ classdef ClassiffierApp < handle
                 obj.uiHandles.eventDetectorList.Visible = 'Off';
                 obj.uiHandles.eventDetectorVariablesTable.Visible = 'Off';
             else
+                obj.uiHandles.detectionPanel.Visible = 'On';
+                obj.uiHandles.preprocessingPanel.Visible = 'On';
                 obj.uiHandles.detectionLabel.Visible = 'On';
                 obj.uiHandles.preprocessingLabel.Visible = 'On';
                 obj.uiHandles.preprocessingSignalComputerVariablesTable.Visible = 'On';
