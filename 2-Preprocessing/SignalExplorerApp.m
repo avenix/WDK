@@ -1,7 +1,7 @@
 classdef SignalExplorerApp < handle
-    
+
     properties (Access = private)
-        
+
         %classes
         classesMap;
         annotations;
@@ -132,6 +132,7 @@ classdef SignalExplorerApp < handle
         function plotData(obj)
             obj.clearAxes();
             
+            selectedClassesIdxs = obj.getSelectedClasses();
             labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
             
             nClasses = length(obj.filteredSegments);
@@ -139,8 +140,9 @@ classdef SignalExplorerApp < handle
             subplotN = ceil(nClasses / subplotM);
             
             for i = 1 : nClasses
+                currentClassIdx = selectedClassesIdxs(i);
                 obj.axesHandles(i) = subplot(subplotN,subplotM,i);
-                titleStr = labelingStrategy.classNames{i};
+                titleStr = labelingStrategy.classNames{currentClassIdx};
                 title(titleStr);
                 hold on;
                 segmentsCurrentGroup = obj.filteredSegments{i};
@@ -240,18 +242,23 @@ classdef SignalExplorerApp < handle
             end
         end
         
+        function idxs = getSelectedClasses(obj)
+            idxs = obj.uiHandles.classesList.Value;
+        end
+        
         %methods
         function applySignalComputers(obj)
             
             filterComputer = obj.preprocessingConfiguratorVisualization.createSignalComputerWithUIParameters();
-            selectedClassesIdxs = obj.uiHandles.classesList.Value;
+            selectedClassesIdxs = obj.getSelectedClasses();
             
             nSelectedClasses = length(selectedClassesIdxs);
             
             obj.filteredSegments = cell(1,nSelectedClasses);
             
             for i = 1 : nSelectedClasses
-                segmentsCurrentGroup = obj.groupedSegments{i};
+                currentClassIdx = selectedClassesIdxs(i);
+                segmentsCurrentGroup = obj.groupedSegments{currentClassIdx};
                 segmentsArray = repmat(Segment(),1,length(segmentsCurrentGroup));
 
                 for j = 1 : length(segmentsArray)
