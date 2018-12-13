@@ -58,6 +58,7 @@ classdef ClassiffierApp < handle
     methods (Access = public)
         function obj = ClassiffierApp()
             
+            clear ClassesMap;
             obj.fileNames = Helper.listDataFiles();
             
             obj.dataLoader = DataLoader();

@@ -17,9 +17,13 @@ The Warables Development Toolkit facilitates the development of wearable device 
 
 The WDK requires the installation of the Signal Processing Toolbox:
 
-![Activity Recognition Chain Development](images/DSP.png)
+![Signal Processing Toolbox](images/DSP.png)
 
 *Note: When running the toolkit for the first time, ensure the Constants.m file points to the right data/ directory.*
+
+*Note: to avoid issues with pathing, always stay at the root directory of the repository. You can check your matlab directory as shown in red in the following image* 
+
+![Checking Matlab Path](images/MatlabPath.png)
 
 ### Data Structure
 
@@ -65,7 +69,9 @@ Before the markers can be displayed properly on top of the time series data, the
 ![Data Annotation App](images/1-DataAnnotationApp.png)
 
 *Note: by default, the DataAnnotationApp will load annotation files from the ./data/annotations/ directory. Saved annotation files will be stored in the root './' directory*.
+
 *Note: markers in .edl format will be read from the ./data/markers directory*.
+
 *Note: in order to be able to annotate a data set, the classes should have previously been defined in the ./data/classes.txt file*
 
 ## Application Development
@@ -75,7 +81,7 @@ Most wearable device applications execute a chain of computations in order to de
 
 ### Preprocessing
 
-The *SignalExplorerApp* can be used to display and compare the different classes to each other, as well as the effects of different signal processing methods. After a preprocessing and segmentation strategy have been chosen, the *SignalExplorerApp* plots every segment of each selected class on top of each other. 
+The *SignalExplorerApp* can be used to display and compare the signals corresponding to different classes. The *SignalExplorerApp* can also compute different signal processing methods commonly used on wearable applications. After a preprocessing and segmentation strategy have been chosen, the *SignalExplorerApp* plots every segment of each selected class on top of each other. 
 
 Currently, the following signal processing methods are supported:
 

@@ -44,6 +44,7 @@ classdef SignalExplorerApp < handle
     
     methods (Access = public)
         function obj = SignalExplorerApp()
+            clear ClassesMap;
             obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
             

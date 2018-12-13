@@ -50,6 +50,7 @@ classdef DataAnnotationApp < handle
     methods (Access = public)
         
         function obj =  DataAnnotationApp()
+            clear ClassesMap;
             obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
             obj.markersPlotter = MarkersPlotter();
@@ -114,8 +115,8 @@ classdef DataAnnotationApp < handle
         end
         
         function loadAll(obj)
-                obj.loadData();
-            if obj.classesMap.numClasses > 0
+             obj.loadData();
+            if obj.classesMap.numClasses > 0 && ~isempty(obj.data)
                 obj.loadAnnotations();
                 obj.loadMarkers();
             end
@@ -124,7 +125,11 @@ classdef DataAnnotationApp < handle
         function populateFileNamesList(obj)
             extensions = {'*.mat','*.txt'};
             files = Helper.listDataFiles(extensions);
-            obj.uiHandles.fileNamesList.String = files;
+            if isempty(files)
+                fprintf('%s - DataAnnotationApp',Constants.kNoDataFileFoundWarning);
+            else
+                obj.uiHandles.fileNamesList.String = files;
+            end
         end
         
         function loadPlotAxes(obj)
@@ -143,8 +148,10 @@ classdef DataAnnotationApp < handle
         end
         
         function loadData(obj)
-            fileName = obj.getDataFileName();
-            [obj.data, obj.columnNames] = obj.dataLoader.loadData(fileName);
+            fileName = obj.getCurrentFileName();
+            if ~isempty(fileName)
+                [obj.data, obj.columnNames] = obj.dataLoader.loadData(fileName);
+            end
         end
         
         function loadMarkers(obj)
@@ -318,12 +325,16 @@ classdef DataAnnotationApp < handle
             annotationsFileName = Helper.addAnnotationsFileExtension(fileName);
         end
         
-        function fileName = getDataFileName(obj)
-            fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
+        function fileName = getCurrentFileName(obj)
+            if isempty(obj.uiHandles.fileNamesList.String)
+                fileName = [];
+            else
+                fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
+            end
         end
         
         function fileName = getCurrentFileNameNoExtension(obj)
-            dataFileName = obj.getDataFileName();
+            dataFileName = obj.getCurrentFileName();
             fileName = Helper.removeFileExtension(dataFileName);
         end
         
@@ -404,8 +415,13 @@ classdef DataAnnotationApp < handle
             obj.deleteAll();
             obj.loadAll();
             
+            if ~isempty(obj.columnNames)
             obj.preprocessingConfigurator.setColumnNames(obj.columnNames);
-            obj.updateLoadDataTextbox();
+            end
+            
+            if ~isempty(obj.data)
+                obj.updateLoadDataTextbox();
+            end
         end
         
         function handleVisualizeClicked(obj,~,~)

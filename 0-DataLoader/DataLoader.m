@@ -120,12 +120,12 @@ classdef DataLoader < handle
         function labelingStrategies = loadAllLabelingStrategies(obj)
             fileNames = Helper.listLabelingStrategies();
             
-            if isempty(fileNames)
-                fprintf('%s\n',Constants.kNoLabelingStrategyAvailableError);
-            else
-                
-                nLabelingStrategies = length(fileNames);
-                labelingStrategies = cell(1,nLabelingStrategies);
+            nLabelingStrategies = length(fileNames);
+            labelingStrategies = cell(1,nLabelingStrategies+1);
+            
+            labelingStrategies{1} = ClassLabelingStrategy();
+            
+            if ~isempty(fileNames)          
                 
                 obj.lazyInitLabelingStrategiesLoader();
                 
@@ -134,7 +134,7 @@ classdef DataLoader < handle
                     fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
                     labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
                     labelingStrategy.name = Helper.removeFileExtension(fileName);
-                    labelingStrategies{i} = labelingStrategy;
+                    labelingStrategies{i+1} = labelingStrategy;
                 end
             end
         end

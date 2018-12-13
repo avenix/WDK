@@ -172,6 +172,7 @@ classdef DataLoaderApp < handle
             fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
             dataTable = array2table(obj.data);
             dataTable.Properties.VariableNames = obj.columnNames;
+            fileName = Helper.removeFileExtension(fileName);
             obj.dataLoader.saveData(dataTable,fileName);
         end
         

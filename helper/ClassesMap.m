@@ -1,3 +1,4 @@
+%Singleton class, use instance() to instantiate. 
 classdef ClassesMap < handle
     
     properties (Access = public, Constant)
@@ -17,7 +18,7 @@ classdef ClassesMap < handle
     end
     
     methods(Static)
-        % Concrete implementation.  See Singleton superclass.
+        
         function obj = instance()
             persistent uniqueInstance
             if isempty(uniqueInstance)

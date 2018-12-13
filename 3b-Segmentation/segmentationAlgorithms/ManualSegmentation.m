@@ -50,12 +50,18 @@ classdef ManualSegmentation < Segmentation
         function segmentsPerFile = createSegmentsPerFile(obj,dataFiles)
             
             nFiles = length(dataFiles);
-            segmentsPerFile = cell(1,nFiles);
-            
-            for i = 1 : nFiles
-                dataFile = dataFiles{i};
-                obj.currentAnnotations = obj.manualAnnotations(i);
-                segmentsPerFile{i} = obj.segment(dataFile);
+            nAnnotations = length(obj.manualAnnotations);
+            if nFiles ~= nAnnotations
+                fprintf('%s = ManualSegmentation\n',Constants.kInconsistentAnnotationAndDataFiles);
+                segmentsPerFile = [];
+            else
+                segmentsPerFile = cell(1,nFiles);
+                
+                for i = 1 : nFiles
+                    dataFile = dataFiles{i};
+                    obj.currentAnnotations = obj.manualAnnotations(i);
+                    segmentsPerFile{i} = obj.segment(dataFile);
+                end
             end
         end
     end

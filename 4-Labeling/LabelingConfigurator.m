@@ -32,8 +32,13 @@ classdef LabelingConfigurator < handle
         end
         
         function fillLabelingStrategiesList(obj)
-            groupStrategiesCellArray = Helper.listLabelingStrategies();
-            obj.labelingStrategiesList.String = Helper.cellArrayToString(groupStrategiesCellArray);
+            nLabelingStrategies = length(obj.labelingStrategies);
+            labelingStrategyNames = cell(1,nLabelingStrategies);
+            for i = 1 : nLabelingStrategies
+                labelingStrategy = obj.labelingStrategies{i};
+                labelingStrategyNames{i} = labelingStrategy.name;
+            end
+            obj.labelingStrategiesList.String = Helper.cellArrayToString(labelingStrategyNames);
         end
     end
 end

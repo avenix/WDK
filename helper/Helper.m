@@ -44,7 +44,7 @@ classdef Helper < handle
         
         function files = listDataFiles(extensions)
             if (nargin == 0)
-                extensions = {'*.mat'};
+                extensions = {'*.mat','*.txt'};
             end
             
             files = Helper.listFilesInDirectory(Constants.dataPath, extensions);
@@ -138,7 +138,7 @@ classdef Helper < handle
         end
         
         %% Helper methods
-           
+        
         function idx = findStringInCellArray(strings,string)
             idx = find(contains(strings,string));
         end
