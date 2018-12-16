@@ -18,11 +18,12 @@ classdef Constants < handle
         kDetectedEventsFileName = 'detetedEvents.txt';
         
         
-        kInconsistentAnnotationAndDataFiles = 'Error - the number of annotations is different than the number of data files.';
+        kInconsistentAnnotationAndDataFiles = 'Error - the number of annotations is different than the number of data files';
         kNoLabelingStrategyAvailableError = 'Error - no labeling strategy file found. Double check that Matlabs path and Constants.m file are consistent';
         kInvalidAnnotationClassError = 'Error - invalid annotation class';
         kUndefinedClassError = 'Error - class not defined. Double check that the the strings in the annotations files are defined in the classes file';
         kInvalidInputSegmentError = 'Error - FeatureExtractor - input segment has different amount of columns than expected';
+        kInvalidFilterComputedError = 'Error - Filtered Data is empty. Double-check input parameters passed to a computer';
         
         kNoDataFileFoundWarning = 'Warning - no data file found. Double check that Matlabs path and Constants.m file are consistent';
         kLabelingStrategyNotSetWarning = 'Warning - DetectionResultsComputer - calling computeDetectionResults but labelingStrategy not set'

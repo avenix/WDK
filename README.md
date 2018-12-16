@@ -47,6 +47,7 @@ Once you have data available for analysis, you can use the *DataLoaderApp* in *0
 ![DataLoaderApp](images/0-DataLoaderApp.png)
 
 *Note: the DataLoader can load any file in comma separated format.*
+
 *Note: by default, the DataLoaderApp will load data files from the ./data/rawdata/ directory*
 
 ## Data Annotation
@@ -177,15 +178,17 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a cl
 * Double-check that the *./data/annotations/* directory contains an annotation file for each data file in *./data/rawdata/*.  
 
 ## References
-You will find more information about the human activity recognition on Andreas Bulling's article: https://dl.acm.org/citation.cfm?id=2499621
+You will find more information about the human activity recognition on Andreas Bulling's tutorial: https://dl.acm.org/citation.cfm?id=2499621
 
-A few example applications:
+A few example applications developed with the toolkit:
 1. https://www.mdpi.com/2414-4088/2/2/27
 2. https://dl.acm.org/citation.cfm?id=3267267
 
-* [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
-* [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
+Further references:
+1. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
+2. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
 
 ## Contact
 Juan Haladjian
-haladjia@in.tum.de
+Website: (in.tum.de/~haladjia)
+Email: (haladjia@in.tum.de)

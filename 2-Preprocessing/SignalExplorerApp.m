@@ -36,10 +36,8 @@ classdef SignalExplorerApp < handle
         preprocessingConfiguratorVisualization;
         
         %ui plotting
-        plotAxes;
+        segmentsPlotter;
         uiHandles;
-        axesHandles;
-        colorsPerSignal = {[0,0,1,0.3],[1,0,0,0.3],[1,0,1,0.3]};
     end
     
     methods (Access = public)
@@ -60,6 +58,8 @@ classdef SignalExplorerApp < handle
             obj.segmentsLabeler = SegmentsLabeler();
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
             
+            obj.segmentsPlotter = PreprocessingSegmentsPlotter();
+            
             obj.isManualEventDetector = true;
             
             obj.loadUI();
@@ -69,7 +69,6 @@ classdef SignalExplorerApp < handle
         function loadUI(obj)
             
             obj.uiHandles = guihandles(signalExplorerUI);
-            obj.loadPlotAxes();
             
             obj.uiHandles.createButton.Callback = @obj.handleLoadClicked;
             obj.uiHandles.groupButton.Callback = @obj.handleGroupClicked;
@@ -121,60 +120,16 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.signalComputerVariablesTableVisualization.ColumnName = {'Variable','Value'};
             obj.uiHandles.signalComputerVariablesTableVisualization.ColumnWidth = {60,40};
         end
-        
-        function loadPlotAxes(obj)
-            
-            obj.plotAxes = axes(obj.uiHandles.figure1);
-            obj.plotAxes.Units = 'characters';
-            obj.plotAxes.Position  = [40.0 12 215 65];
-            obj.plotAxes.Visible = 'Off';
-        end
-        
+
         function plotData(obj)
-            obj.clearAxes();
             
             selectedClassesIdxs = obj.getSelectedClasses();
             labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
-            
-            nClasses = length(obj.filteredSegments);
-            subplotM = ceil(sqrt(nClasses));
-            subplotN = ceil(nClasses / subplotM);
-            
-            for i = 1 : nClasses
-                currentClassIdx = selectedClassesIdxs(i);
-                obj.axesHandles(i) = subplot(subplotN,subplotM,i);
-                titleStr = labelingStrategy.classNames{currentClassIdx};
-                title(titleStr);
-                hold on;
-                segmentsCurrentGroup = obj.filteredSegments{i};
-                for j = 1 : length(segmentsCurrentGroup)
-                    segment = segmentsCurrentGroup(j);
-                    data = segment.window;
-                    for signal = 1 : min(size(data,2),3)
-                        plotHandle = plot(data(:,signal),'Color',obj.colorsPerSignal{signal},'LineWidth',0.4);
-                        plotHandle.Color(4) = 0.4;
-                    end
-                end
-                
-                subplotAxes = obj.axesHandles(i);
-                axesPosition = get(subplotAxes,'Position');
-                axesPosition(1) = axesPosition(1) + 0.015;
-                set(subplotAxes,'Position',axesPosition);
-                axis tight;
-                %set(obj.axesHandles(i),'style','tight');
-            end
-            
-            if obj.getSameScale() == 1
-                linkaxes(obj.axesHandles,'xy');
-            end
+            groupNames = labelingStrategy.classNames(selectedClassesIdxs);
+            obj.segmentsPlotter.sameScale = obj.getSameScale();
+            obj.segmentsPlotter.plotSegments(obj.filteredSegments,groupNames);
         end
-        
-        function clearAxes(obj)
-            for i = 1 : length(obj.axesHandles)
-                cla(obj.axesHandles(i));
-            end
-            obj.axesHandles = [];
-        end
+
         
         % ui
         function resetGroupsLabel(obj)
@@ -265,7 +220,6 @@ classdef SignalExplorerApp < handle
                 for j = 1 : length(segmentsArray)
                     segment = segmentsCurrentGroup(j);                    
                     filteredData = filterComputer.compute(segment.window);
-                    
                     filteredSegment = Segment(segment.file,filteredData,segment.class,segment.eventIdx);
                     segmentsArray(j) = filteredSegment;
                 end
@@ -306,6 +260,23 @@ classdef SignalExplorerApp < handle
             obj.segments = obj.segmentsLoader.loadOrCreateSegments();
         end
         
+        function validData = checkValidComputedSegments(obj)
+            validData = true;
+            for i = 1 : length(obj.filteredSegments)
+                segmentsCurrentPlayer = obj.filteredSegments{i};
+                for j = 1 : length(segmentsCurrentPlayer)
+                    segment = segmentsCurrentPlayer(j);
+                    if isempty(segment) || isempty(segment.window)
+                        validData = false;
+                        break;
+                    end
+                end
+                if validData == false
+                    break;
+                end
+            end
+        end
+        
         %handles  
         function handleLoadClicked(obj,~,~)
             obj.resetSegmentsLabel();
@@ -331,7 +302,12 @@ classdef SignalExplorerApp < handle
         function handleVisualizeClicked(obj,~,~)
             if ~isempty(obj.groupedSegments)
                 obj.applySignalComputers();
-                obj.plotData();
+                validData = obj.checkValidComputedSegments();
+                if validData
+                    obj.plotData();
+                else
+                    fprintf('SignalExplorerApp - %s\n',Constants.kInvalidFilterComputedError);
+                end
             end
         end
         

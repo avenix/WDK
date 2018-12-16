@@ -1,39 +1,22 @@
 classdef Plotter
     
-    properties
+    properties (Access = public)
         fontSize = 26;
         figureFrame = [500, 500, 700, 700];
+        lineWidth = 2;
+        currentAxisLimits = 'tight';
     end
     
-    methods
-        function obj = Plotter()
-        end
-        
-        function plotHandles = plotSegments(~,axis,segmentStartings, segmentEndings,yRange)
-            if nargin < 5
-                yRange = 20;
-            end
-            
-            hold(axis,'on');
-            
-            y = [ones(1,length(segmentStartings))*-yRange ; ones(1,length(segmentStartings))*yRange];
-            x = [segmentStartings; segmentStartings];
-            
-            plotHandles = gobjects(2,length(x));
-            plotHandles(1,:) = plot(axis,x,y, 'Color','red');
-            
-            x = [segmentEndings; segmentEndings];
-            plotHandles(2,:) = plot(axis,x,y,'Color','black','LineStyle','-.');
-        end
-        
-        function plotHandles = plotSegment(~,axis,segmentStarting, segmentEnding,yRange)
-            if nargin < 5
-                yRange = 20;
-            end
-            
+    methods (Access = public)
+
+        function plotHandles = plotSegment(obj,axis,segment,yRange)
             plotHandles = zeros(1,2);
-            plotHandles(1) = plot(axis,[segmentStarting segmentStarting],[0 yRange], 'Color','red');
-            plotHandles(2) = plot(axis,[segmentEnding segmentEnding],[0 yRange],'Color','black','LineStyle','-.');
+            
+            plotHandles(1) = plot(axis,[segment.startSample segment.startSample],yRange,...
+                'Color','black','LineStyle','--','LineWidth',obj.lineWidth);
+            
+            plotHandles(2) = plot(axis,[segment.endSample segment.endSample],yRange,...
+                'Color','black','LineStyle','--','LineWidth',obj.lineWidth);
         end
         
         function plotLines(~,axis,segments,yRange)
@@ -45,12 +28,12 @@ classdef Plotter
             
             y = [zeros(1,length(segments)) ; ones(1,length(segments))*yRange];
             x = [segments; segments];
-            plot(axis,x,y, 'Color','red');
+            plot(axis,x,y, 'Color','red','LineWidth',obj.lineWidth);
         end
         
         function plotPeaksInColors(~,peakLocations,peakValues,colors)
             for i = 1 : length(peakLocations)
-                plot(peakLocations(i),peakValues(i),'*','Color',colors{i});
+                plot(peakLocations(i),peakValues(i),'*','Color',colors{i},'LineWidth',obj.lineWidth);
             end
         end
         
@@ -58,14 +41,14 @@ classdef Plotter
             if nargin == 4
                 color = 'green';
             end
-            plot(axis, peakLocations,peakValues,'*','Color',color);
+            plot(axis, peakLocations,peakValues,'*','Color',color,'LineWidth',obj.lineWidth);
         end
         
         function plottedAxis = plotSignal(~,axis,signalX,signalY,color)
             if nargin == 4
                 plottedAxis = plot(axis,signalX,signalY);
             elseif nargin == 5
-                plottedAxis = plot(axis,signalX,signalY,'Color',color);
+                plottedAxis = plot(axis,signalX,signalY,'Color',color,'LineWidth',obj.lineWidth);
             end
         end
         
@@ -88,16 +71,27 @@ classdef Plotter
         function plotHandle = plotSignalBigWithX(obj,x,signal,titleStr,xLabelStr,yLabelStr, frame)
             obj.openFigureWithFrame(frame);
             hold on;
-            plotHandle = plot(x,signal,'Color', 'blue','LineWidth',3);
+            plotHandle = plot(x,signal,'Color', 'blue','LineWidth',3,'LineWidth',obj.lineWidth);
             obj.setAxisAndTitle(titleStr,xLabelStr,yLabelStr);
         end 
         
-        function plotHandle = plotSignalBig(obj,signal,titleStr,xLabelStr,yLabelStr)
-            obj.openDefaultFigure();
+        function [figureHandle, plotHandles] = plotSignalBig(obj,signal,titleStr,xLabelStr,yLabelStr,color)
+            figureHandle = obj.openDefaultFigure();
+            figureAxes = figureHandle.CurrentAxes;
+
             hold on;
             x = (1 : length(signal));
-            plotHandle = plot(x,signal,'Color', 'blue');
-            obj.setAxisAndTitle(titleStr,xLabelStr,yLabelStr);
+            if nargin < 6
+                color = {'blue'};
+            end
+            
+            nColors = length(color);
+            plotHandles = cell(1,nColors);
+            for i = 1 : nColors
+                plotHandles{i} = plot(figureAxes,x,signal(:,i),'Color', color{i},'LineWidth',obj.lineWidth);
+            end
+            
+            obj.setAxisAndTitle(figureAxes,titleStr,xLabelStr,yLabelStr);
         end 
         
         %plots a signal in different colors. The segments are indicated in
@@ -112,7 +106,7 @@ classdef Plotter
             for i = 1 : length(nSamplesPerGroup)
                 nextIdx = nextIdx + nSamplesPerGroup(i) - 1;
                 x = (currentIdx : nextIdx);
-                plot(x,signal(x),'Color',colors{i});
+                plot(x,signal(x),'Color',colors{i},'LineWidth',obj.lineWidth);
                 currentIdx = nextIdx;
             end
             obj.setLegend(labels);
@@ -149,25 +143,26 @@ classdef Plotter
             %set(legendTextHandle,'FontSize',obj.fontSize);
         end
         
-        function setAxisAndTitle(obj,titleStr,xLabelStr,yLabelStr)
-            xlabel(xLabelStr,'FontSize', obj.fontSize);
-            ylabel(yLabelStr,'FontSize', obj.fontSize);
-            title(titleStr,'FontSize', obj.fontSize);
-            set(gca,'FontSize',obj.fontSize);
-            axis tight;
+        function setAxisAndTitle(obj,figureAxes,titleStr,xLabelStr,yLabelStr)
+            xlabel(figureAxes,xLabelStr,'FontSize', obj.fontSize);
+            ylabel(figureAxes,yLabelStr,'FontSize', obj.fontSize);
+            title(figureAxes,titleStr,'FontSize', obj.fontSize);
+            set(figureAxes,'FontSize',obj.fontSize);
+            axis(figureAxes,obj.currentAxisLimits);
         end
         
-        function setAxisAndTitle3D(obj,titleStr,xLabelStr,yLabelStr,zLabelStr)
-            xlabel(xLabelStr,'FontSize', obj.fontSize);
-            ylabel(yLabelStr,'FontSize', obj.fontSize);
-            zlabel(zLabelStr,'FontSize', obj.fontSize);
-            title(titleStr,'FontSize', obj.fontSize);
-            set(gca,'FontSize',obj.fontSize);
-            axis tight;
+        function setAxisAndTitle3D(obj,figureAxes,titleStr,xLabelStr,yLabelStr,zLabelStr)
+            xlabel(figureAxes,xLabelStr,'FontSize', obj.fontSize);
+            ylabel(figureAxes,yLabelStr,'FontSize', obj.fontSize);
+            zlabel(figureAxes,zLabelStr,'FontSize', obj.fontSize);
+            title(figureAxes,titleStr,'FontSize', obj.fontSize);
+            set(figureAxes,'FontSize',obj.fontSize);
+            axis(figureAxes,obj.currentAxisLimits);
         end
         
         function figureHandle = openDefaultFigure(obj)
             figureHandle = figure('Position',obj.figureFrame);
+            axes(figureHandle);
             obj.setDataCursorModeForFigure(figureHandle);
         end
         
@@ -202,7 +197,6 @@ classdef Plotter
         function setDataCursorModeForFigure(obj, figureHandle)
             dataCursorMode = datacursormode(figureHandle);
             dataCursorMode.SnapToDataVertex = 'on';
-            %dataCursorMode.DisplayStyle = 'window';
             dataCursorMode.Enable = 'on';
             set(dataCursorMode,'UpdateFcn',@obj.handleUserClick);
         end
