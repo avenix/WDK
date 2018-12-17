@@ -2,10 +2,12 @@ classdef DetectionTestbedEventsPlotter < handle
     
     properties (Access = public)
         labelingStrategy;
+        textFontSize = 14;
+        symbolColor;
     end
     
     methods (Access = public)
-        function eventHandles = plotEventsInColor(obj,plotAxes,events,color,signal)
+        function eventHandles = plotEvents(obj,plotAxes,events,signal)
             eventHandles = [];
             nEvents = length(events);
             if nEvents > 0
@@ -16,8 +18,8 @@ classdef DetectionTestbedEventsPlotter < handle
                     eventY = signal(eventX);
                     label = event.label;
                     classStr = obj.labelingStrategy.classNames{label};
-                    symbolHandle = plot(plotAxes,eventX,eventY,'*','Color',color);
-                    textHandle = text(plotAxes,double(eventX),double(eventY), classStr);
+                    symbolHandle = plot(plotAxes,eventX,eventY,'*','Color',obj.symbolColor);
+                    textHandle = text(plotAxes,double(eventX),double(eventY), classStr,'FontSize',obj.textFontSize);
                     set(textHandle, 'Clipping', 'on');
                     
                     eventHandle = DetectionTestbedEventHandle(event,symbolHandle,textHandle);

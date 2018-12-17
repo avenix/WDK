@@ -108,20 +108,24 @@ classdef DetectionResultsComputer < handle
 
         function didMissEvent = computeDidMissEvent(obj,detectedEventLocations,annotations)
             nEvents = length(annotations);
-            didMissEvent = false(1,nEvents);
             
-            segmentStartings = detectedEventLocations - obj.tolerance;
-            segmentEndings = detectedEventLocations + obj.tolerance;
-            for i = 1 : length(annotations)
-                annotation = annotations(i);
-                class = annotation.label;
-                if class ~= obj.classesMap.synchronisationClass
-                    label = obj.labelingStrategy.labelForClass(class);
-                    if obj.labelingStrategy.isRelevantLabel(label)
-                        eventLocation = annotation.sample;
-                        contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
-                        if ~contained
-                            didMissEvent(i) = true;
+            if isempty(detectedEventLocations)
+                didMissEvent = true(1,nEvents);
+            else
+                didMissEvent = false(1,nEvents);
+                segmentStartings = detectedEventLocations - obj.tolerance;
+                segmentEndings = detectedEventLocations + obj.tolerance;
+                for i = 1 : length(annotations)
+                    annotation = annotations(i);
+                    class = annotation.label;
+                    if class ~= obj.classesMap.synchronisationClass
+                        label = obj.labelingStrategy.labelForClass(class);
+                        if obj.labelingStrategy.isRelevantLabel(label)
+                            eventLocation = annotation.sample;
+                            contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
+                            if ~contained
+                                didMissEvent(i) = true;
+                            end
                         end
                     end
                 end

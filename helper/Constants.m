@@ -9,7 +9,7 @@ classdef Constants < handle
         precomputedPath = './data/cache';
         labelingStrategiesPath = './data/labeling';
         synchronisationClassStr = 'synchronisation';
-        nullClassGroupStr = 'null';
+        nullClassGroupStr = 'NULL';
         SynchronisatonMarker = 3;
         
         kTrainDataFileName = 'trainData';

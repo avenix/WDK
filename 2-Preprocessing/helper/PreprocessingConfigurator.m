@@ -29,6 +29,7 @@ classdef PreprocessingConfigurator < handle
             obj.loadSignalComputers();
             
             obj.fillSignalComputersList();
+            obj.updateSelectedSignalComputer();
             obj.updateSignalComputerVariablesTable();
         end
         

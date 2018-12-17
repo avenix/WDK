@@ -38,7 +38,7 @@ precomputedPath = './data/cache';
 labelingStrategiesPath = './data/labeling';
 ```
 - Make sure these paths point to the right directory in your filesystem.
-- List the classes of your particular application in the *classes.txt* file.
+- List the classes of your particular application in the *classes.txt* file. These classes are used to annotate the data. You can include relevant and non-relevant classes.
 
 ## Data Collection
 
@@ -149,7 +149,10 @@ class3
 class4
 class5
 ```
-Note that you dont need to assign every class to a group. A class which is left ungrouped will be assigned to its own group automatically. Ensure that the classes you provide have been defined in the *./data/classes.txt* file and that no class belongs to two groups at the same time. Place your labeling strategy files in the *./data/labeling/*
+You dont need to assign every class to a group. A class which is left ungrouped will be assigned to its own group automatically. Ensure that the classes you provide have been defined in the *./data/classes.txt* file and that no class belongs to two groups at the same time. Place your labeling strategy files in the *./data/labeling/*
+
+*Note: If you will annotate irrelevant classes, the labeling strategy should contain group called 'NULL'*
+
 6. The WDK offers a Matlab App to support you in each stage of the development your wearable applications. Check in each directory for the App file.
 
 ## Tipps

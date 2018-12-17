@@ -51,6 +51,8 @@ classdef DetectionTestbedApp < handle
     
     methods (Access = public)
         function obj = DetectionTestbedApp()
+            
+            clear ClassesMap;
             obj.dataLoader = DataLoader();
             obj.eventsLoader = EventsLoader();
             obj.resultsComputer = DetectionResultsComputer();
@@ -174,7 +176,11 @@ classdef DetectionTestbedApp < handle
             for i = 1 : length(nGoodEventsDetectedPerClass)
                 classStr = obj.currentLabelingStrategy.classNames{i};
                 detectedPerClass = nGoodEventsDetectedPerClass(i);
-                detectionRate = 100 * detectedPerClass / nTotalGoodEventsPerClass(i);
+                if nTotalGoodEventsPerClass(i) == 0
+                    detectionRate = 0;
+                else
+                    detectionRate = 100 * detectedPerClass / nTotalGoodEventsPerClass(i);
+                end
                 text = sprintf('%s\n%13s|%d(%3.2f%%)',text,classStr,detectedPerClass,detectionRate);
             end
             text = sprintf('%s\n---------------------------',text);
@@ -214,9 +220,12 @@ classdef DetectionTestbedApp < handle
             currentFileResults = obj.resultsPerFile(obj.currentFile);
             
             energy = obj.fileEnergies{obj.currentFile};
-            obj.goodEventHandles = obj.eventsPlotter.plotEventsInColor(obj.plotAxes,currentFileResults.goodEvents,'green',energy);
-            obj.missedEventHandles = obj.eventsPlotter.plotEventsInColor(obj.plotAxes,currentFileResults.missedEvents,[1,0.5,0],energy);
-            obj.badEventHandles = obj.eventsPlotter.plotEventsInColor(obj.plotAxes, currentFileResults.badEvents,'red',energy);
+            obj.eventsPlotter.symbolColor = 'green';
+            obj.goodEventHandles = obj.eventsPlotter.plotEvents(obj.plotAxes,currentFileResults.goodEvents,energy);
+            obj.eventsPlotter.symbolColor = [1,0.5,0];
+            obj.missedEventHandles = obj.eventsPlotter.plotEvents(obj.plotAxes,currentFileResults.missedEvents,energy);
+            obj.eventsPlotter.symbolColor = 'red';
+            obj.badEventHandles = obj.eventsPlotter.plotEvents(obj.plotAxes, currentFileResults.badEvents,energy);
             
             if ~obj.showingGoodEvents
                 obj.toggleEventsVisibility(obj.goodEventHandles,false);
