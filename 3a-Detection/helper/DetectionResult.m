@@ -40,7 +40,7 @@ classdef DetectionResult < handle
             numTotalEvents = obj.numGoodEvents() + obj.numMissedEvents();
             goodEventRate = 100 * obj.numGoodEvents() / numTotalEvents;
             badEventRate =  obj.numBadEvents() / numTotalEvents;
-            str = sprintf('%6.1f%%|x%.2f(%d)',goodEventRate,badEventRate,obj.numBadEvents());
+            str = sprintf('%7.1f%%|x%.2f(%d)',goodEventRate,badEventRate,obj.numBadEvents());
         end
     end
     

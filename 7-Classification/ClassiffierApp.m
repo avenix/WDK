@@ -34,6 +34,9 @@ classdef ClassiffierApp < handle
         segmentationStrategies;
         currentSegmentationStrategy;
         
+        %ignore
+        ignoreList;
+        
         %labeling
         labelingConfigurator;
         labelingConfiguratorRegrouping;
@@ -155,8 +158,13 @@ classdef ClassiffierApp < handle
             
             obj.updateEventDetectionTablesVisibility();
             
+            obj.loadIgnoreList();
         end
-                
+        
+        function loadIgnoreList(obj)
+            obj.uiHandles.ignoreList.String = Helper.cellArrayToString(obj.defaultLabelingStrategy.classNames);
+        end
+        
         function loadConfusionMatrixAxes(obj)
             obj.confusionMatrixAxes = axes(obj.uiHandles.figure1);
             obj.confusionMatrixAxes.Units = 'characters';
@@ -481,6 +489,9 @@ classdef ClassiffierApp < handle
             obj.uiHandles.featuresText.String = featuresStr;
         end
 
+        function idxs = getIgnoredIdxs(obj)
+            idxs = obj.uiHandles.ignoreList.Value;
+        end
         
         %% handles
         function handleMoveFileRightClicked(obj,~,~)
@@ -512,6 +523,9 @@ classdef ClassiffierApp < handle
         function handleCreateTablesClicked(obj,~,~)
             
             obj.updateCurrentSegmentsCreator();
+            
+            ignoredLabels = obj.getIgnoredIdxs();
+            obj.featuresTableLoader.ignoredLabels = ignoredLabels;
             
             obj.tableSet = obj.featuresTableLoader.loadAllTables();
             

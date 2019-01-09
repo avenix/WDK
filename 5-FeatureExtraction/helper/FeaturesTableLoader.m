@@ -3,6 +3,7 @@ classdef FeaturesTableLoader < handle
     properties (Access = public)
         segmentsLoader;
         featureExtractor;
+        ignoredLabels;
     end
     
     properties (Access = private)
@@ -46,8 +47,8 @@ classdef FeaturesTableLoader < handle
             
             for i = 1 : nSegments
                 segment = segments(i);
-                if isempty(segment.class) || (segment.class ~= obj.classesMap.synchronisationClass ...
-                        && segment.class ~= ClassesMap.kInvalidClass)
+                
+                if  obj.shouldProcessLabel(segment.class)
                     
                     segmentsCounter = segmentsCounter + 1;
                     
@@ -67,6 +68,13 @@ classdef FeaturesTableLoader < handle
     end
     
     methods (Access = private)
+        
+        function b = shouldProcessLabel(obj,label)
+            
+            b = isempty(label) || (label ~= obj.classesMap.synchronisationClass ...
+                        && label ~= ClassesMap.kInvalidClass ...
+                    && ~ismember(label, obj.ignoredLabels));
+        end
         
         function tables = createTables(obj)
             segments = obj.segmentsLoader.loadOrCreateSegments();

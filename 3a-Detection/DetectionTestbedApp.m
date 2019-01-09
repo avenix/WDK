@@ -150,20 +150,20 @@ classdef DetectionTestbedApp < handle
         end
         
         function updateFileResultLabels(obj)
-            text = sprintf("%12s|%7s|%6s\n",'File','Good','Bad');
+            text = sprintf("%13s|%8s|%6s\n",'File','Detected','FP');
             for i = 1 : length(obj.resultsPerFile)
                 fileName = obj.fileNames{i};
                 maxFileNameLength = min(length(fileName),DetectionTestbedApp.kMaxFileNameLength);
                 fileName = fileName(1:maxFileNameLength);
                 fileResults = obj.resultsPerFile(i);
                 fileResultsStr = fileResults.toString();
-                text = sprintf('%s%12s|%s\n',text,fileName,fileResultsStr);
+                text = sprintf('%s%13s|%s\n',text,fileName,fileResultsStr);
             end
             
             text = sprintf('%s------------------------------\n',text);
             aggregatedFilesResults = AggregatedDetectionResults.AggregatedDetectionResultsWithDetectionResults(obj.resultsPerFile);
             aggregatedStatisticsStr = aggregatedFilesResults.toString();
-            resultstext = sprintf('%12s|%s','Total',aggregatedStatisticsStr);
+            resultstext = sprintf('%13s|%s','Total',aggregatedStatisticsStr);
             text = sprintf('%s%s',text,resultstext);
             obj.uiHandles.perFileResultsText.String = text;
         end

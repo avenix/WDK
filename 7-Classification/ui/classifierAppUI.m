@@ -22,7 +22,7 @@ function varargout = classifierAppUI(varargin)
 
 % Edit the above text to modify the response to help classifierAppUI
 
-% Last Modified by GUIDE v2.5 24-Nov-2018 09:54:17
+% Last Modified by GUIDE v2.5 17-Dec-2018 23:17:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -448,6 +448,29 @@ function regroupingLabelingStrategyList_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function regroupingLabelingStrategyList_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to regroupingLabelingStrategyList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in ignoreList.
+function ignoreList_Callback(hObject, eventdata, handles)
+% hObject    handle to ignoreList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns ignoreList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from ignoreList
+
+
+% --- Executes during object creation, after setting all properties.
+function ignoreList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to ignoreList (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

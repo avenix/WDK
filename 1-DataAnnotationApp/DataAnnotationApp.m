@@ -95,7 +95,10 @@ classdef DataAnnotationApp < handle
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
             obj.uiHandles.addRangeAnnotationButton.Callback = @obj.handleAddRangeClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
-            
+
+            %obj.uiHandles.figure1.KeyPressFcn = @obj.handleKeyPressed;
+            obj.uiHandles.figure1.WindowKeyPressFcn = @obj.handleKeyPressed;
+
             obj.resetUI();
             obj.loadPlotAxes();
             obj.setUserClickHandle();
@@ -106,7 +109,6 @@ classdef DataAnnotationApp < handle
                 obj.uiHandles.signalsList,...
                 obj.uiHandles.signalComputerList,...
                 obj.uiHandles.signalComputerVariablesTable);
-            
         end
         
         function resetUI(obj)
@@ -228,11 +230,18 @@ classdef DataAnnotationApp < handle
         end
         
         function selectSampleAtLocation(obj,x)
+            
+            if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
+                obj.deleteRangeSelection();
+            end
+            
             if isempty(obj.rangeSelection)
                 obj.rangeSelection = DataAnnotatorSampleRange(x);
             else
-                obj.rangeSelection.addValue(x);
+                
+            obj.rangeSelection.addValue(x);
             end
+            
             
             obj.updateRangeSelection();
         end
@@ -240,12 +249,8 @@ classdef DataAnnotationApp < handle
         function updateRangeSelection(obj)
             if isempty(obj.rangeSelection)
                 obj.deleteRangeSelection();
-            else
-                if obj.rangeSelection.isValidRange()
-                    obj.plotRangeSelection();
-                else
-                    obj.deleteRangeSelection();
-                end
+            elseif obj.rangeSelection.isValidRange()
+                obj.plotRangeSelection();
             end
         end
         
@@ -303,7 +308,7 @@ classdef DataAnnotationApp < handle
         end
                 
         function addCurrentRange(obj)
-            if ~isempty(obj.rangeSelection)
+            if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
                 label = obj.getSelectedClass();
                 rangeAnnotation = RangeAnnotation(obj.rangeSelection.sample1,...
                     obj.rangeSelection.sample2,label);
@@ -497,7 +502,17 @@ classdef DataAnnotationApp < handle
             obj.addCurrentRange();
         end
        
-
+        function handleKeyPressed(obj, ~, keyData)
+            switch keyData.Character
+                case '+'
+                    zoomHandle = zoom(obj.uiHandles.figure1);
+                    set(zoomHandle,'Enable','on');
+                case '-'
+                    zoomHandle = zoom(obj.uiHandles.figure1);
+                    set(zoomHandle,'Enable','on');
+            end
+        end
+        
         %% Helper methods
         function idx = findIdxOfValue(~,valueArray,startIdx,value)
             idx = uint32(-1);

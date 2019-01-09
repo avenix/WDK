@@ -19,6 +19,7 @@
         end
         
         function featureVector = extractFeaturesForSegment(obj,segment)
+            
             data = segment.window;
             if ~isempty(obj.signalComputer)
                 data = obj.signalComputer.compute(data);
