@@ -1,5 +1,5 @@
 %each segmentation approach should return the starting and ending indices of each segment
-classdef (Abstract) Segmentation < handle
+classdef (Abstract) Segmentation < Computer
     properties (Constant, Access = public)
         kBestSegmentSizeLeft = uint32(250);
         kBestSegmentSizeRight = uint32(200);
@@ -25,6 +25,12 @@ classdef (Abstract) Segmentation < handle
         
         function obj = Segmentation()
             obj.resetVariables();
+        end
+        
+        function editableProperties = getEditableProperties(obj)
+            property1 = Property('segmentSizeLeft',obj.segmentSizeLeft);
+            property2 = Property('segmentSizeRight',obj.segmentSizeRight);
+            editableProperties = [property1,property2];
         end
         
         function segmentsPerFile = segmentFiles(obj,dataFiles)

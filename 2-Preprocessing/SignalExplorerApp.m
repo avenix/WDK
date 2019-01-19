@@ -25,9 +25,9 @@ classdef SignalExplorerApp < handle
         isManualEventDetector;
         
         %segmentation
-        currentSegmentsCreator;
-        segmentationStrategies;
+        segmentationConfigurator;
         currentSegmentationStrategy;
+        currentSegmentsCreator;
         
         %labeling
         labelingConfigurator;
@@ -52,8 +52,7 @@ classdef SignalExplorerApp < handle
             obj.currentSegmentsCreator = SegmentsCreator();
             obj.segmentsLoader.segmentsCreator = obj.currentSegmentsCreator;
             
-            obj.segmentationStrategies = {ManualSegmentation, EventSegmentation};
-            obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
+            %obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
 
             obj.segmentsLabeler = SegmentsLabeler();
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
@@ -70,7 +69,7 @@ classdef SignalExplorerApp < handle
             
             obj.uiHandles = guihandles(signalExplorerUI);
             
-            obj.uiHandles.createButton.Callback = @obj.handleLoadClicked;
+            obj.uiHandles.loadButton.Callback = @obj.handleLoadClicked;
             obj.uiHandles.groupButton.Callback = @obj.handleGroupClicked;
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
 
@@ -95,15 +94,22 @@ classdef SignalExplorerApp < handle
                 obj.uiHandles.eventDetectorList...
                 ,obj.uiHandles.eventDetectorVariablesTable);
             
+            segmentationStrategies = {ManualSegmentation};
+            
+            obj.segmentationConfigurator = SegmentationConfigurator(...
+                segmentationStrategies,...
+                obj.uiHandles.segmentationList...
+                ,obj.uiHandles.segmentationVariablesTable);
+            
+            
             obj.labelingConfigurator = LabelingConfigurator(...
                 obj.uiHandles.labelingStrategiesList);
                 
             obj.updateEventDetectionTablesVisibility();
-            
         end
         
         function resetUI(obj)
-            obj.uiHandles.segmentsDescriptionLabel.String = "";
+            obj.uiHandles.segmentationLabel.String = "";
                           
             obj.uiHandles.groupsLabel.String = "";
             obj.uiHandles.classesList.String = "";
@@ -117,12 +123,14 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnName = {'Variable','Value'};
             obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnWidth = {60,40};
             
+            obj.uiHandles.segmentationVariablesTable.ColumnName = {'Variable','Value'};
+            obj.uiHandles.segmentationVariablesTable.ColumnWidth = {60,40};
+            
             obj.uiHandles.signalComputerVariablesTableVisualization.ColumnName = {'Variable','Value'};
             obj.uiHandles.signalComputerVariablesTableVisualization.ColumnWidth = {60,40};
         end
 
         function plotData(obj)
-            
             selectedClassesIdxs = obj.getSelectedClasses();
             labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
             groupNames = labelingStrategy.classNames(selectedClassesIdxs);
@@ -130,14 +138,21 @@ classdef SignalExplorerApp < handle
             obj.segmentsPlotter.plotSegments(obj.filteredSegments,groupNames);
         end
 
-        
         % ui
+        function includeEvents = getIncludeEvents(obj)
+            includeEvents = obj.uiHandles.includeEventsCheckbox.Value;
+        end
+        
+        function includeRanges = getIncludeRanges(obj)
+            includeRanges = obj.uiHandles.includeRangesCheckbox.Value;
+        end
+        
         function resetGroupsLabel(obj)
             obj.uiHandles.groupsLabel.String = "";
         end
         
         function resetSegmentsLabel(obj)
-            obj.uiHandles.segmentsDescriptionLabel.String = "";
+            obj.uiHandles.segmentationLabel.String = "";
         end
         
         function updateGroupsLabel(obj)
@@ -147,7 +162,7 @@ classdef SignalExplorerApp < handle
         
         function updateSegmentsLabel(obj)
             str = sprintf('%d files.',length(obj.segments));
-            obj.uiHandles.segmentsDescriptionLabel.String = str;
+            obj.uiHandles.segmentationLabel.String = str;
         end
          
         function leftSize = getLeftSize(obj)
@@ -181,20 +196,15 @@ classdef SignalExplorerApp < handle
         function updateEventDetectionTablesVisibility(obj)
             if obj.isManualEventDetector
                 obj.uiHandles.detectionLabel.Visible = 'Off';
-                obj.uiHandles.preprocessingLabel.Visible = 'Off';
-                obj.uiHandles.preprocessingSignalComputerVariablesTable.Visible = 'Off';
-                obj.uiHandles.preprocessingSignalsList.Visible = 'Off';
-                obj.uiHandles.preprocessingSignalComputerList.Visible = 'Off';
-                obj.uiHandles.eventDetectorList.Visible = 'Off';
-                obj.uiHandles.eventDetectorVariablesTable.Visible = 'Off';
+                obj.uiHandles.preprocessingPanel.Visible = 'Off';
+                obj.uiHandles.eventDetectionPanel.Visible = 'Off';
+                obj.uiHandles.annotationsPanel.Visible = 'On';
+                
             else
                 obj.uiHandles.detectionLabel.Visible = 'On';
-                obj.uiHandles.preprocessingLabel.Visible = 'On';
-                obj.uiHandles.preprocessingSignalComputerVariablesTable.Visible = 'On';
-                obj.uiHandles.preprocessingSignalsList.Visible = 'On';
-                obj.uiHandles.preprocessingSignalComputerList.Visible = 'On';
-                obj.uiHandles.eventDetectorList.Visible = 'On';
-                obj.uiHandles.eventDetectorVariablesTable.Visible = 'On';
+                obj.uiHandles.preprocessingPanel.Visible = 'On';
+                obj.uiHandles.eventDetectionPanel.Visible = 'On';
+                obj.uiHandles.annotationsPanel.Visible = 'Off';
             end
         end
         
@@ -228,32 +238,26 @@ classdef SignalExplorerApp < handle
         end
                 
         function updateCurrentSegmentsCreator(obj)
-            
-            obj.updateSegmentationStrategySegmentSizes();
-            
+                        
             obj.currentSegmentsCreator.preprocessedSignalsLoader = PreprocessedSignalsLoader();
+            segmentationAlgorithm = obj.segmentationConfigurator.createSegmentationStrategyWithUIParameters();
+            
             if isa(obj.currentSegmentationStrategy,'EventSegmentation')
                 eventDetector = obj.eventDetectorConfigurator.createEventDetectorWithUIParameters();
-                obj.currentSegmentationStrategy.eventDetector = eventDetector;
+                segmentationAlgorithm.eventDetector = eventDetector;
                 obj.currentSegmentsCreator.preprocessedSignalsLoader.preprocessor = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
                 
                 obj.segmentsLabeler.labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
                 obj.segmentsLoader.segmentsLabeler = obj.segmentsLabeler;
             else
-                obj.currentSegmentationStrategy.manualAnnotations = obj.annotations;
+                segmentationAlgorithm.includeEvents = obj.getIncludeEvents();
+                segmentationAlgorithm.includeRanges = obj.getIncludeRanges();
+                
+                segmentationAlgorithm.manualAnnotations = obj.annotations;
                 obj.segmentsLoader.segmentsLabeler = [];
             end
             
-            obj.currentSegmentsCreator.segmentationAlgorithm = obj.currentSegmentationStrategy;
-        end
-        
-        function updateSegmentationStrategySegmentSizes(obj)
-            
-            segmentLeftSize = obj.getLeftSize();
-            segmentRightSize = obj.getRightSize();
-            
-            obj.currentSegmentationStrategy.segmentSizeLeft = segmentLeftSize;
-            obj.currentSegmentationStrategy.segmentSizeRight = segmentRightSize;
+            obj.currentSegmentsCreator.segmentationAlgorithm = segmentationAlgorithm;
         end
                 
         function loadSegments(obj)
@@ -283,6 +287,7 @@ classdef SignalExplorerApp < handle
             obj.resetGroupsLabel();
             
             obj.updateCurrentSegmentsCreator();
+            
             obj.loadSegments();
             
             obj.updateSegmentsLabel();
@@ -313,18 +318,26 @@ classdef SignalExplorerApp < handle
         
         function handleManualSegmentationRadioChanged(obj,~,~)
             if obj.uiHandles.manualSegmentationRadio.Value == 1
-                obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
+                %obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
                 obj.isManualEventDetector = true;
                 obj.updateEventDetectionTablesVisibility();
+                
+                obj.segmentationConfigurator.segmentationStrategies = {ManualSegmentation};
+                obj.segmentationConfigurator.reloadUI();
             end
         end
         
         function handleAutomaticSegmentationRadioChanged(obj,~,~)
             if obj.uiHandles.automaticSegmentationRadio.Value == 1
-                obj.currentSegmentationStrategy = obj.segmentationStrategies{2};
+                %obj.currentSegmentationStrategy = obj.segmentationStrategies{2};
                 
                 obj.isManualEventDetector = false;
                 obj.updateEventDetectionTablesVisibility();
+                
+                eventDetector = obj.eventDetectorConfigurator.createEventDetectorWithUIParameters();
+                segmentationStrategy = EventSegmentation(eventDetector);
+                obj.segmentationConfigurator.segmentationStrategies = {segmentationStrategy};
+                obj.segmentationConfigurator.reloadUI();
             end
         end
     end

@@ -22,7 +22,7 @@ function varargout = signalExplorerUI(varargin)
 
 % Edit the above text to modify the response to help signalExplorerUI
 
-% Last Modified by GUIDE v2.5 24-Nov-2018 10:31:20
+% Last Modified by GUIDE v2.5 19-Jan-2019 18:09:48
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -542,3 +542,51 @@ function preprocessingSignalComputerList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on selection change in segmentationList.
+function segmentationList_Callback(hObject, eventdata, handles)
+% hObject    handle to segmentationList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns segmentationList contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from segmentationList
+
+
+% --- Executes during object creation, after setting all properties.
+function segmentationList_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to segmentationList (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in loadButton.
+function loadButton_Callback(hObject, eventdata, handles)
+% hObject    handle to loadButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in includeEventsCheckbox.
+function includeEventsCheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to includeEventsCheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of includeEventsCheckbox
+
+
+% --- Executes on button press in includeRangesCheckbox.
+function includeRangesCheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to includeRangesCheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of includeRangesCheckbox

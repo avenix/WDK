@@ -15,6 +15,9 @@
             if nargin > 0
                 obj.signalComputer = signalComputer;
                 obj.featureComputers = featureComputers;
+                
+                FeatureExtractor2.createDefaultFeatureExtractionComputers();
+                
             end
         end
         
@@ -96,6 +99,7 @@
             featureExtractors(1:nStatisticalFeatureExtractors) = statisticalFeatureExtractors;
             featureExtractorCounter = nStatisticalFeatureExtractors;
             
+            %{
             %quantile
             quantileComputer = QuantileComputer(4);
 
@@ -105,6 +109,7 @@
                 featureExtractorCounter = featureExtractorCounter + 1;
                 featureExtractors(featureExtractorCounter) = featureComputer;
             end
+            %}
             
             %zrc
             zeroCrossingComputer = SignalComputer("zrc",@zrc);

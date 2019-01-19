@@ -10,7 +10,8 @@
         nFeatures;
         featureNames;
         signalComputer;
-        numExpectedInputSignals = 18;
+        %numExpectedInputSignals = 18;
+        numExpectedInputSignals = 6;
     end
     
     properties (Access = private)
@@ -20,14 +21,18 @@
     
     methods (Access = public)
         
+        
         function obj = FeatureExtractor(signalComputer)
             if nargin > 0
                 obj.signalComputer = signalComputer;
             end
+            obj.computeFeatureNames();
+            
         end
         
         function computeFeatureNames(obj)
-            window = rand(451,obj.numExpectedInputSignals);
+            %window = rand(451,obj.numExpectedInputSignals);
+            window = rand(451,6);
             segment = Segment(1,window,1,1);
             [~,obj.featureNames] = obj.extractFeaturesForSegment(segment);
             obj.nFeatures = length(obj.featureNames);
@@ -66,7 +71,7 @@
             %% Extract features               
             featureVector = zeros(1,obj.nFeatures);
             featureNames = cell(1,obj.nFeatures);
-                        
+
             featureCounter = 1;
             for currentFeature = 1 : length(obj.featureExtractors)
                 for currentSignal = 1 : size(segment,2)

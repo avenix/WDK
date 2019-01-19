@@ -10,7 +10,7 @@ The Warables Development Toolkit facilitates the development of wearable device 
 
 ## Setup
 
-* install Matlab. 
+* install Matlab 2018b or greater. 
 * `git clone git@github.com:avenix/ARC-Tutorial.git`
 * in Matlab, `addpath(genpath('./'))`
 * enjoy the Apps in each directory (e.g. *DataAnnotationApp* in *1-DataAnnotation/*).
@@ -177,8 +177,14 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a cl
  
  The current version of the *FeatureSelector* uses the mRMR algorithm to select the most relevant features. The mRMR algorithm will fail if every value of a feature is the same.
 
+If Matlab crashes with an error:
+ > 'Too many input arguments'
+ 
+ double-check you are using Matlab 2018b. Matlab changed the way how cell arrays are handled.
+ 
 * The data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
 * Double-check that the *./data/annotations/* directory contains an annotation file for each data file in *./data/rawdata/*.  
+
 
 ## References
 You will find more information about the human activity recognition on Andreas Bulling's tutorial: https://dl.acm.org/citation.cfm?id=2499621

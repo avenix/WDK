@@ -18,7 +18,7 @@ classdef Constants < handle
         kDetectedEventsFileName = 'detetedEvents.txt';
         
         
-        kInconsistentAnnotationAndDataFiles = 'Error - the number of annotations is different than the number of data files';
+        kInconsistentAnnotationAndDataFiles = 'Error - the number of annotation files is different than the number of data files';
         kNoLabelingStrategyAvailableError = 'Error - no labeling strategy file found. Double check that Matlabs path and Constants.m file are consistent';
         kInvalidAnnotationClassError = 'Error - invalid annotation class';
         kUndefinedClassError = 'Error - class not defined. Double check that the the strings in the annotations files are defined in the classes file';

@@ -16,6 +16,10 @@ classdef EventSegmentation < Segmentation
             obj.resetVariables@Segmentation();
         end
         
+        function outData = compute(obj,inData)
+            outData = obj.segment(inData);
+        end
+        
         %returns unlabelled segments
         function segments = segment(obj,signal)
             events = obj.eventDetector.detectEvents(signal);
@@ -23,7 +27,11 @@ classdef EventSegmentation < Segmentation
         end
         
         function str = toString(obj)
-            eventDetectorStr = obj.eventDetector.toString();
+            eventDetectorStr = "detector";
+            if ~isempty(obj.eventDetector)
+                eventDetectorStr = obj.eventDetector.toString();
+            end
+            
             str = sprintf('%s%d%d',eventDetectorStr,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
     end

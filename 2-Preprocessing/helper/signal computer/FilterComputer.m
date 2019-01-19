@@ -46,28 +46,10 @@ classdef FilterComputer < Computer
         end
         
         function editableProperties = getEditableProperties(~)
-            property1 = Property('order',1);
-            property2 = Property('cutoff',20);
+            property1 = Property('order',obj.order);
+            property2 = Property('cutoff',obj.cutoff);
             editableProperties = [property1,property2];
         end
-    end
-    
-    methods (Static)
-        function filters = DefaultFilters()
-            nFilters = 13;
-            filters = repmat(FilterComputer(),2*nFilters,1);
-            
-            for i = 1 : nFilters
-                filter = LowPassFilter(1,i*2);
-                filters(i) = FilterComputer(filter);
-            end
-            
-            for i = 1 : nFilters
-                filter = HighPassFilter(1,i*2);
-                filters(i+nFilters) = FilterComputer(filter);
-            end
-        end
-        
     end
     
 end

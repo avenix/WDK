@@ -1,7 +1,9 @@
 classdef ManualSegmentation < Segmentation
     
-    properties
+    properties (Access = public)
         manualAnnotations;
+        includeEvents;
+        includeRanges;
     end
     
     properties (Access = private)
@@ -12,37 +14,50 @@ classdef ManualSegmentation < Segmentation
     methods (Access = public)
         function obj = ManualSegmentation()
             obj.classesMap = ClassesMap.instance();
+            obj.includeEvents = true;
+            obj.includeRanges = true;
         end
         
         function resetVariables(obj)
             resetVariables@Segmentation(obj);
         end
         
+        function outData = compute(obj,inData)
+            outData = obj.segment(inData);
+        end
+        
         %returns labeled segments
         function segments = segment(obj,data)
-            %eliminate invalid
-            eventAnnotations = obj.currentAnnotations.eventAnnotations;
-            labels = [eventAnnotations.label];
-            validIdxs = (labels ~= obj.classesMap.synchronisationClass & labels ~= ClassesMap.kInvalidClass);
-            labels = labels(validIdxs);
-            eventLocations = [eventAnnotations(validIdxs).sample];
             
-            %create segments
-            segments = obj.createSegmentsWithEvents(eventLocations,data);
-            
-            %label segments
-            for i = 1 : length(segments)
-                segments(i).class = labels(i);
+            if(obj.includeEvents)
+                eventSegments = obj.createManualSegmentsWithEvents(data);
             end
             
-            %add range annotations
-            rangeAnnotationSegments = obj.createSegmentsWithRangeAnnotations(data);
+            if(obj.includeRanges)
+                rangeSegments = obj.createSegmentsWithRangeAnnotations(data);
+            end
             
-            segments = [segments, rangeAnnotationSegments];
+            if(obj.includeEvents && obj.includeRanges)
+                segments = [eventSegments, rangeSegments];
+            elseif(obj.includeEvents && ~obj.includeRanges)
+                segments = eventSegments;
+            else
+                segments = rangeSegments;
+            end
         end
         
         function str = toString(obj)
-            str = sprintf('manual%d%d',obj.segmentSizeLeft,obj.segmentSizeRight);
+            includeEventsStr = "";
+            if(obj.includeEvents) 
+                includeEventsStr = "E";
+            end
+            
+            includeRangesStr = "";
+            if(obj.includeRanges) 
+                includeRangesStr = "R";
+            end
+                
+            str = sprintf('manual%d%d%s%s',obj.segmentSizeLeft,obj.segmentSizeRight,includeEventsStr,includeRangesStr);
         end
     end
     
@@ -67,6 +82,23 @@ classdef ManualSegmentation < Segmentation
     end
     
     methods (Access = private)
+        function segments = createManualSegmentsWithEvents(obj,data)
+            %eliminate invalid
+            eventAnnotations = obj.currentAnnotations.eventAnnotations;
+            labels = [eventAnnotations.label];
+            validIdxs = (labels ~= obj.classesMap.synchronisationClass & labels ~= ClassesMap.kInvalidClass);
+            labels = labels(validIdxs);
+            eventLocations = [eventAnnotations(validIdxs).sample];
+            
+            %create segments
+            segments = obj.createSegmentsWithEvents(eventLocations,data);
+            
+            %label segments
+            for i = 1 : length(segments)
+                segments(i).class = labels(i);
+            end
+        end
+        
         function segments = createSegmentsWithRangeAnnotations(obj,data)
             rangeAnnotations = obj.currentAnnotations.rangeAnnotations;
             file = obj.manualAnnotations.file;
