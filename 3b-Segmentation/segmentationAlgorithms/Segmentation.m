@@ -9,6 +9,7 @@ classdef (Abstract) Segmentation < Computer
         segmentSizeLeft;
         segmentSizeRight;
         data;%set from outside, otherwise lazily loaded
+        type;
     end
     
     methods (Abstract, Access = public)
@@ -86,7 +87,9 @@ classdef (Abstract) Segmentation < Computer
                 dataCurrentFile = obj.data{i};
                 for j = 1 : length(segmentsCurrentFile)
                     segment = segmentsCurrentFile(j);
-                    segment.window = dataCurrentFile(segment.startSample:segment.endSample,:);
+                    if (isempty(segment.window ))
+                        segment.window = dataCurrentFile(segment.startSample:segment.endSample,:);
+                    end
                 end
             end
         end

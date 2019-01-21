@@ -51,7 +51,7 @@ classdef SegmentationConfigurator < handle
             segmentationStrategyNames = cell(1,nSegmentationStrategies);
         
             for i = 1 : nSegmentationStrategies
-                name = obj.segmentationStrategies{i}.toString();
+                name = obj.segmentationStrategies{i}.type;
                 segmentationStrategyNames{i} = name;
             end
             

@@ -139,6 +139,14 @@ classdef Helper < handle
         
         %% Helper methods
         
+        function str = getOnOffStr(isOn)
+            str = 'Off';
+            if(isOn)
+                str = 'On';
+            end
+            
+        end
+        
         function idx = findStringInCellArray(strings,string)
             idx = find(contains(strings,string));
         end

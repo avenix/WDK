@@ -33,6 +33,7 @@ classdef SignalExplorerApp < handle
         labelingConfigurator;
         
         %visualisation
+        visualizationState;
         preprocessingConfiguratorVisualization;
         
         %ui plotting
@@ -52,17 +53,17 @@ classdef SignalExplorerApp < handle
             obj.currentSegmentsCreator = SegmentsCreator();
             obj.segmentsLoader.segmentsCreator = obj.currentSegmentsCreator;
             
-            %obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
-
             obj.segmentsLabeler = SegmentsLabeler();
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
             
-            obj.segmentsPlotter = PreprocessingSegmentsPlotter();
             
             obj.isManualEventDetector = true;
+            obj.visualizationState = SignalExplorerVisualizationState.kOverlappingMode;
             
             obj.loadUI();
             obj.resetUI();
+            
+            obj.segmentsPlotter = PreprocessingSegmentsPlotter(obj.uiHandles.plotPanel);
         end
         
         function loadUI(obj)
@@ -75,6 +76,10 @@ classdef SignalExplorerApp < handle
 
             obj.uiHandles.manualSegmentationRadio.Callback = @obj.handleManualSegmentationRadioChanged;
             obj.uiHandles.automaticSegmentationRadio.Callback = @obj.handleAutomaticSegmentationRadioChanged;
+            
+            obj.uiHandles.plotStyleButtonGroup.SelectionChangedFcn = @obj.handleVisualizationStateChanged;
+            obj.uiHandles.showLinesCheckbox.Callback = @obj.handleShowLinesChanged;
+            
             
             obj.preprocessingConfigurator = PreprocessingConfigurator(...
                 obj.uiHandles.preprocessingSignalsList,...
@@ -118,16 +123,17 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.automaticSegmentationRadio.Value = 0;
             
             obj.uiHandles.signalComputerVariablesTable.ColumnName = {'Variable','Value'};
-            obj.uiHandles.signalComputerVariablesTable.ColumnWidth = {60,40};
+            obj.uiHandles.signalComputerVariablesTable.ColumnWidth = {70,40};
             
             obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnName = {'Variable','Value'};
-            obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnWidth = {60,40};
+            obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnWidth = {70,40};
             
             obj.uiHandles.segmentationVariablesTable.ColumnName = {'Variable','Value'};
-            obj.uiHandles.segmentationVariablesTable.ColumnWidth = {60,40};
+            obj.uiHandles.segmentationVariablesTable.ColumnWidth = {90,40};
             
             obj.uiHandles.signalComputerVariablesTableVisualization.ColumnName = {'Variable','Value'};
-            obj.uiHandles.signalComputerVariablesTableVisualization.ColumnWidth = {60,40};
+            obj.uiHandles.signalComputerVariablesTableVisualization.ColumnWidth = {70,40};
+
         end
 
         function plotData(obj)
@@ -135,10 +141,20 @@ classdef SignalExplorerApp < handle
             labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
             groupNames = labelingStrategy.classNames(selectedClassesIdxs);
             obj.segmentsPlotter.sameScale = obj.getSameScale();
+            if obj.visualizationState == SignalExplorerVisualizationState.kOverlappingMode
+                obj.segmentsPlotter.sequentialSegments = false;
+            else
+                obj.segmentsPlotter.sequentialSegments = true;
+            end
+            
             obj.segmentsPlotter.plotSegments(obj.filteredSegments,groupNames);
         end
 
         % ui
+        function showLines = getShowLinesCheckbox(obj)
+            showLines = obj.uiHandles.showLinesCheckbox.Value;
+        end
+        
         function includeEvents = getIncludeEvents(obj)
             includeEvents = obj.uiHandles.includeEventsCheckbox.Value;
         end
@@ -236,25 +252,25 @@ classdef SignalExplorerApp < handle
                 obj.filteredSegments{i} = segmentsArray;
             end
         end
-                
+
         function updateCurrentSegmentsCreator(obj)
-                        
+
             obj.currentSegmentsCreator.preprocessedSignalsLoader = PreprocessedSignalsLoader();
             segmentationAlgorithm = obj.segmentationConfigurator.createSegmentationStrategyWithUIParameters();
             
-            if isa(obj.currentSegmentationStrategy,'EventSegmentation')
+            if obj.isManualEventDetector 
+                segmentationAlgorithm.includeEvents = obj.getIncludeEvents();
+                segmentationAlgorithm.includeRanges = obj.getIncludeRanges();
+                
+                segmentationAlgorithm.manualAnnotations = obj.annotations;
+                obj.segmentsLoader.segmentsLabeler = [];
+            else
                 eventDetector = obj.eventDetectorConfigurator.createEventDetectorWithUIParameters();
                 segmentationAlgorithm.eventDetector = eventDetector;
                 obj.currentSegmentsCreator.preprocessedSignalsLoader.preprocessor = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
                 
                 obj.segmentsLabeler.labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
                 obj.segmentsLoader.segmentsLabeler = obj.segmentsLabeler;
-            else
-                segmentationAlgorithm.includeEvents = obj.getIncludeEvents();
-                segmentationAlgorithm.includeRanges = obj.getIncludeRanges();
-                
-                segmentationAlgorithm.manualAnnotations = obj.annotations;
-                obj.segmentsLoader.segmentsLabeler = [];
             end
             
             obj.currentSegmentsCreator.segmentationAlgorithm = segmentationAlgorithm;
@@ -283,14 +299,17 @@ classdef SignalExplorerApp < handle
         
         %handles  
         function handleLoadClicked(obj,~,~)
-            obj.resetSegmentsLabel();
-            obj.resetGroupsLabel();
-            
-            obj.updateCurrentSegmentsCreator();
-            
-            obj.loadSegments();
-            
-            obj.updateSegmentsLabel();
+            if(obj.getIncludeEvents || obj.getIncludeRanges)
+                obj.resetSegmentsLabel();
+                obj.resetGroupsLabel();
+                obj.groupedSegments = [];
+                
+                obj.updateCurrentSegmentsCreator();
+
+                obj.loadSegments();
+
+                obj.updateSegmentsLabel();
+            end
         end
         
         function handleGroupClicked(obj,~,~)
@@ -318,7 +337,6 @@ classdef SignalExplorerApp < handle
         
         function handleManualSegmentationRadioChanged(obj,~,~)
             if obj.uiHandles.manualSegmentationRadio.Value == 1
-                %obj.currentSegmentationStrategy = obj.segmentationStrategies{1};
                 obj.isManualEventDetector = true;
                 obj.updateEventDetectionTablesVisibility();
                 
@@ -329,7 +347,6 @@ classdef SignalExplorerApp < handle
         
         function handleAutomaticSegmentationRadioChanged(obj,~,~)
             if obj.uiHandles.automaticSegmentationRadio.Value == 1
-                %obj.currentSegmentationStrategy = obj.segmentationStrategies{2};
                 
                 obj.isManualEventDetector = false;
                 obj.updateEventDetectionTablesVisibility();
@@ -339,6 +356,22 @@ classdef SignalExplorerApp < handle
                 obj.segmentationConfigurator.segmentationStrategies = {segmentationStrategy};
                 obj.segmentationConfigurator.reloadUI();
             end
+        end
+        
+        function handleVisualizationStateChanged(obj,~,~)
+            
+            switch obj.uiHandles.plotStyleButtonGroup.SelectedObject
+                case (obj.uiHandles.overlappingPlotRadio)
+                    obj.visualizationState = SignalExplorerVisualizationState.kOverlappingMode;
+                case (obj.uiHandles.sequentialPlotRadio)
+                    obj.visualizationState = SignalExplorerVisualizationState.kSequentialMode;
+                
+            end
+        end
+        
+        function handleShowLinesChanged(obj,~,~)
+            
+            obj.segmentsPlotter.showVerticalLines = obj.getShowLinesCheckbox();
         end
     end
     

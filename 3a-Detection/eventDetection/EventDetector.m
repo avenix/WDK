@@ -1,6 +1,6 @@
 %each event detector approach should return an array of indices
 classdef (Abstract) EventDetector < handle
-    properties
+    properties (Access = public)
         type;
     end
     

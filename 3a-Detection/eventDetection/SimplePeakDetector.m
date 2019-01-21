@@ -5,7 +5,7 @@ classdef SimplePeakDetector < EventDetector
         kBestMinPeakDistance = int32(100);
     end
     
-    properties
+    properties (Access = public)
         minPeakHeight;
         minPeakDistance;
     end

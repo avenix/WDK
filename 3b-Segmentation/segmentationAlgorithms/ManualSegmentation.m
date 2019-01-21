@@ -16,6 +16,7 @@ classdef ManualSegmentation < Segmentation
             obj.classesMap = ClassesMap.instance();
             obj.includeEvents = true;
             obj.includeRanges = true;
+            obj.type = 'manual';
         end
         
         function resetVariables(obj)

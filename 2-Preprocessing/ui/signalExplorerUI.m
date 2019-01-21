@@ -22,7 +22,7 @@ function varargout = signalExplorerUI(varargin)
 
 % Edit the above text to modify the response to help signalExplorerUI
 
-% Last Modified by GUIDE v2.5 19-Jan-2019 18:09:48
+% Last Modified by GUIDE v2.5 21-Jan-2019 10:24:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -590,3 +590,21 @@ function includeRangesCheckbox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of includeRangesCheckbox
+
+
+% --- Executes on button press in overlappingPlotRadio.
+function overlappingPlotRadio_Callback(hObject, eventdata, handles)
+% hObject    handle to overlappingPlotRadio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of overlappingPlotRadio
+
+
+% --- Executes on button press in showLinesCheckbox.
+function showLinesCheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to showLinesCheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of showLinesCheckbox

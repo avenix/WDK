@@ -9,6 +9,7 @@ classdef EventSegmentation < Segmentation
         function obj = EventSegmentation(eventDetector)
             if nargin == 1
                 obj.eventDetector = eventDetector;
+                obj.type = 'event';
             end
         end
         
