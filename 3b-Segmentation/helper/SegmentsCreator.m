@@ -10,8 +10,8 @@ classdef SegmentsCreator < handle
         %segments the raw data based on a segmentation 
         %algorithm applied on the preprocessed data
         function segments = createSegments(obj)
-            dataFiles = obj.preprocessedSignalsLoader.loadOrCreateData();
-            segments = obj.segmentationAlgorithm.segmentFiles(dataFiles);
+            dataPerFile = obj.preprocessedSignalsLoader.loadOrCreateData();
+            segments = obj.segmentationAlgorithm.segment(dataPerFile);
         end
         
         function str = toString(obj,recursive)

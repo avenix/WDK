@@ -23,6 +23,9 @@ classdef EventsLabeler < handle
             invalidIdxs = (labels == ClassesMap.kInvalidClass | labels == obj.classesMap.synchronisationClass);
         end
         
+        function b = isValidLabel(obj,label)
+            b = ~(label == ClassesMap.kInvalidClass || label == obj.classesMap.synchronisationClass);
+        end
     end
     
     methods (Access = private)

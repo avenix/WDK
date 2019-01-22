@@ -23,12 +23,43 @@ classdef ManualSegmentation < Segmentation
             resetVariables@Segmentation(obj);
         end
         
-        function outData = compute(obj,inData)
-            outData = obj.segment(inData);
+        %returns labeled segments
+        function segments = segment(obj,dataFiles)
+            
+            nFiles = length(dataFiles);
+            nAnnotations = length(obj.manualAnnotations);
+            if nFiles ~= nAnnotations
+                fprintf('%s = ManualSegmentation\n',Constants.kInconsistentAnnotationAndDataFiles);
+                segments = [];
+            else
+                segments = cell(1,nFiles);
+                
+                for i = 1 : nFiles
+                    dataFile = dataFiles{i};
+                    obj.currentAnnotations = obj.manualAnnotations(i);
+                    segments{i} = obj.segmentFile(dataFile);
+                end
+            end
         end
         
-        %returns labeled segments
-        function segments = segment(obj,data)
+        function str = toString(obj)
+            includeEventsStr = "";
+            if(obj.includeEvents)
+                includeEventsStr = "E";
+            end
+            
+            includeRangesStr = "";
+            if(obj.includeRanges)
+                includeRangesStr = "R";
+            end
+            
+            str = sprintf('manual%d%d%s%s',obj.segmentSizeLeft,obj.segmentSizeRight,includeEventsStr,includeRangesStr);
+        end
+    end
+    
+    methods (Access = private)
+        
+        function segments = segmentFile(obj,data)
             
             if(obj.includeEvents)
                 eventSegments = obj.createManualSegmentsWithEvents(data);
@@ -47,42 +78,6 @@ classdef ManualSegmentation < Segmentation
             end
         end
         
-        function str = toString(obj)
-            includeEventsStr = "";
-            if(obj.includeEvents) 
-                includeEventsStr = "E";
-            end
-            
-            includeRangesStr = "";
-            if(obj.includeRanges) 
-                includeRangesStr = "R";
-            end
-                
-            str = sprintf('manual%d%d%s%s',obj.segmentSizeLeft,obj.segmentSizeRight,includeEventsStr,includeRangesStr);
-        end
-    end
-    
-    methods (Access = protected)
-        function segmentsPerFile = createSegmentsPerFile(obj,dataFiles)
-            
-            nFiles = length(dataFiles);
-            nAnnotations = length(obj.manualAnnotations);
-            if nFiles ~= nAnnotations
-                fprintf('%s = ManualSegmentation\n',Constants.kInconsistentAnnotationAndDataFiles);
-                segmentsPerFile = [];
-            else
-                segmentsPerFile = cell(1,nFiles);
-                
-                for i = 1 : nFiles
-                    dataFile = dataFiles{i};
-                    obj.currentAnnotations = obj.manualAnnotations(i);
-                    segmentsPerFile{i} = obj.segment(dataFile);
-                end
-            end
-        end
-    end
-    
-    methods (Access = private)
         function segments = createManualSegmentsWithEvents(obj,data)
             %eliminate invalid
             eventAnnotations = obj.currentAnnotations.eventAnnotations;

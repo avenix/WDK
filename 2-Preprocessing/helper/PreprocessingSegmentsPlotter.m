@@ -74,11 +74,12 @@ classdef PreprocessingSegmentsPlotter < handle
     methods (Access = private)
         
         function updateLinkAxes(obj)
-            
-            if obj.sameScale
-                linkaxes(obj.axesHandles,'xy');
-            else
-                linkaxes(obj.axesHandles,'off');
+            if ~isempty(obj.axesHandles)
+                if obj.sameScale
+                    linkaxes(obj.axesHandles,'xy');
+                else
+                    linkaxes(obj.axesHandles,'off');
+                end
             end
         end
         
@@ -102,10 +103,8 @@ classdef PreprocessingSegmentsPlotter < handle
             
             obj.verticalLines = gobjects(nSegments);
             
-            if (obj.showVerticalLines)
-                maxY = obj.getMaxSegmentValue(segments);
-                minY = obj.getMinSegmentValue(segments);
-            end
+            maxY = obj.getMaxSegmentValue(segments);
+            minY = obj.getMinSegmentValue(segments);
                 
             for i = 1 : nSegments
                 segment = segments(i);

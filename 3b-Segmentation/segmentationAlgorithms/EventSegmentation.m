@@ -1,7 +1,8 @@
 classdef EventSegmentation < Segmentation
     
-    properties
+    properties(Access = public)
         eventDetector;
+        data;%set from outside, otherwise lazily loaded
     end
     
     methods (Access = public)
@@ -16,15 +17,23 @@ classdef EventSegmentation < Segmentation
         function resetVariables(obj)
             obj.resetVariables@Segmentation();
         end
-        
-        function outData = compute(obj,inData)
-            outData = obj.segment(inData);
-        end
-        
+          
         %returns unlabelled segments
-        function segments = segment(obj,signal)
-            events = obj.eventDetector.detectEvents(signal);
-            segments = obj.createSegmentsWithEvents(events,signal);
+        function segmentsPerFile = segment(obj,signalPerFile)
+            
+            if isempty(obj.data)
+                dataLoader = DataLoader();
+                obj.data = dataLoader.loadAllDataFiles();
+            end
+            
+            nFiles = length(signalPerFile);
+            segmentsPerFile = cell(1,nFiles);
+            
+            for i = 1 : nFiles
+                signal = signalPerFile{i};
+                dataFile = obj.data{i};
+                segmentsPerFile{i} = obj.segmentFile(signal,dataFile);
+            end
         end
         
         function str = toString(obj)
@@ -37,16 +46,13 @@ classdef EventSegmentation < Segmentation
         end
     end
     
-    methods (Access = protected)
-        function segmentsPerFile = createSegmentsPerFile(obj,dataFiles)
-            
-            nFiles = length(dataFiles);
-            segmentsPerFile = cell(1,nFiles);
-            
-            for i = 1 : nFiles
-                dataFile = dataFiles{i};
-                segmentsPerFile{i} = obj.segment(dataFile);
-            end
+    methods (Access = private)
+        
+        function segments = segmentFile(obj,signal,dataFile)
+            events = obj.eventDetector.detectEvents(signal);
+            segments = obj.createSegmentsWithEvents(events,dataFile);
         end
+        
     end
+    
 end

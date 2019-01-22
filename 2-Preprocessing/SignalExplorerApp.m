@@ -22,7 +22,7 @@ classdef SignalExplorerApp < handle
         
         %detection (only for automatic)
         eventDetectorConfigurator;
-        isManualEventDetector;
+        isManualMode;
         
         %segmentation
         segmentationConfigurator;
@@ -33,7 +33,6 @@ classdef SignalExplorerApp < handle
         labelingConfigurator;
         
         %visualisation
-        visualizationState;
         preprocessingConfiguratorVisualization;
         
         %ui plotting
@@ -58,8 +57,7 @@ classdef SignalExplorerApp < handle
             obj.segmentsLabeler.manualAnnotations = obj.annotations;
             
             
-            obj.isManualEventDetector = true;
-            obj.visualizationState = SignalExplorerVisualizationState.kOverlappingMode;
+            obj.isManualMode = true;
             
             obj.loadUI();
             obj.resetUI();
@@ -78,8 +76,8 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.manualSegmentationRadio.Callback = @obj.handleManualSegmentationRadioChanged;
             obj.uiHandles.automaticSegmentationRadio.Callback = @obj.handleAutomaticSegmentationRadioChanged;
             
-            obj.uiHandles.plotStyleButtonGroup.SelectionChangedFcn = @obj.handleVisualizationStateChanged;
             obj.uiHandles.showLinesCheckbox.Callback = @obj.handleShowLinesChanged;
+            obj.uiHandles.sameScaleCheckbox.Callback = @obj.handleSameScaleChanged;
             
             obj.scrollPanel = ScrollPanel(obj.uiHandles.palettePanel,obj.uiHandles.figure1);
             
@@ -144,11 +142,8 @@ classdef SignalExplorerApp < handle
             labelingStrategy = obj.labelingConfigurator.getCurrentLabelingStrategy();
             groupNames = labelingStrategy.classNames(selectedClassesIdxs);
             obj.segmentsPlotter.sameScale = obj.getSameScale();
-            if obj.visualizationState == SignalExplorerVisualizationState.kOverlappingMode
-                obj.segmentsPlotter.sequentialSegments = false;
-            else
-                obj.segmentsPlotter.sequentialSegments = true;
-            end
+            
+            obj.segmentsPlotter.sequentialSegments = obj.uiHandles.sequentialPlotRadio.Value;
             
             obj.segmentsPlotter.plotSegments(obj.filteredSegments,groupNames);
         end
@@ -195,7 +190,7 @@ classdef SignalExplorerApp < handle
         end
         
         function value = getSameScale(obj)
-            value = obj.uiHandles.sameScaleCheckBox.Value;
+            value = obj.uiHandles.sameScaleCheckbox.Value;
         end
         
         function updateGroupsList(obj)
@@ -213,7 +208,7 @@ classdef SignalExplorerApp < handle
         end
         
         function updateEventDetectionTablesVisibility(obj)
-            if obj.isManualEventDetector
+            if obj.isManualMode
                 obj.uiHandles.detectionLabel.Visible = 'Off';
                 obj.uiHandles.preprocessingPanel.Visible = 'Off';
                 obj.uiHandles.eventDetectionPanel.Visible = 'Off';
@@ -261,7 +256,7 @@ classdef SignalExplorerApp < handle
             obj.currentSegmentsCreator.preprocessedSignalsLoader = PreprocessedSignalsLoader();
             segmentationAlgorithm = obj.segmentationConfigurator.createSegmentationStrategyWithUIParameters();
             
-            if obj.isManualEventDetector 
+            if obj.isManualMode 
                 segmentationAlgorithm.includeEvents = obj.getIncludeEvents();
                 segmentationAlgorithm.includeRanges = obj.getIncludeRanges();
                 
@@ -300,17 +295,14 @@ classdef SignalExplorerApp < handle
             end
         end
         
-        %handles  
+        %handles
         function handleLoadClicked(obj,~,~)
-            if(obj.getIncludeEvents || obj.getIncludeRanges)
+            if(~obj.isManualMode || obj.getIncludeEvents() || obj.getIncludeRanges())
                 obj.resetSegmentsLabel();
                 obj.resetGroupsLabel();
                 obj.groupedSegments = [];
-                
                 obj.updateCurrentSegmentsCreator();
-
                 obj.loadSegments();
-
                 obj.updateSegmentsLabel();
             end
         end
@@ -340,7 +332,7 @@ classdef SignalExplorerApp < handle
         
         function handleManualSegmentationRadioChanged(obj,~,~)
             if obj.uiHandles.manualSegmentationRadio.Value == 1
-                obj.isManualEventDetector = true;
+                obj.isManualMode = true;
                 obj.updateEventDetectionTablesVisibility();
                 
                 obj.segmentationConfigurator.segmentationStrategies = {ManualSegmentation};
@@ -351,7 +343,7 @@ classdef SignalExplorerApp < handle
         function handleAutomaticSegmentationRadioChanged(obj,~,~)
             if obj.uiHandles.automaticSegmentationRadio.Value == 1
                 
-                obj.isManualEventDetector = false;
+                obj.isManualMode = false;
                 obj.updateEventDetectionTablesVisibility();
                 
                 eventDetector = obj.eventDetectorConfigurator.createEventDetectorWithUIParameters();
@@ -361,21 +353,18 @@ classdef SignalExplorerApp < handle
             end
         end
         
-        function handleVisualizationStateChanged(obj,~,~)
-            switch obj.uiHandles.plotStyleButtonGroup.SelectedObject
-                case (obj.uiHandles.overlappingPlotRadio)
-                    obj.visualizationState = SignalExplorerVisualizationState.kOverlappingMode;
-                case (obj.uiHandles.sequentialPlotRadio)
-                    obj.visualizationState = SignalExplorerVisualizationState.kSequentialMode;
+        function handleSameScaleChanged(obj,~,~)
+            if(~isempty(obj.segmentsPlotter))
+                sameScale = obj.getSameScale();
+                obj.segmentsPlotter.setSameScale(sameScale);
             end
         end
         
-        function handleSameScaleChanged(obj,~,~)
-            obj.segmentsPlotter.sameScale = obj.getSameScale();
-        end
-        
         function handleShowLinesChanged(obj,~,~)
-            obj.segmentsPlotter.showVerticalLines = obj.getShowLinesCheckbox();
+            if(~isempty(obj.segmentsPlotter))
+                showVerticalLines = obj.getShowLinesCheckbox();
+                obj.segmentsPlotter.setShowLines(showVerticalLines);
+            end
         end
         
     end

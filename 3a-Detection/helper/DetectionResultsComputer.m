@@ -1,7 +1,7 @@
 %computes an array of DetectionResults (which contain arrays of labelled events: goodEvents, missedEvents, badEvents) per
 %file
 classdef DetectionResultsComputer < handle
-    properties
+    properties (Access = public)
         tolerance = 10;
         labelingStrategy;
         classesMap;
@@ -37,15 +37,18 @@ classdef DetectionResultsComputer < handle
             labeler = EventsLabeler(obj.labelingStrategy);
             labeler.tolerance = obj.tolerance;
             labels = labeler.label(detectedEventLocations, eventAnnotations);
-            invalidIdxs = labeler.getInvalidLabels(labels);
-            
+            invalidIdxs = labeler.getInvalidLabels(labels);            
             detectedEventLocations = detectedEventLocations(~invalidIdxs);
             labels = labels(~invalidIdxs);
 
+            %eliminate annotations
+            %invalidAnnotationIdxs = labeler.getInvalidLabels([eventAnnotations.label]);
+            %eventAnnotations = eventAnnotations(~invalidAnnotationIdxs);
+            
             isGoodEvent = obj.labelingStrategy.isRelevantLabel(labels);
             goodEvents = obj.computeGoodEvents(isGoodEvent,labels,detectedEventLocations);
             badEvents = obj.computeBadEvents(detectedEventLocations,isGoodEvent,labels);
-            missedEvents = obj.computeMissedEvents(detectedEventLocations,eventAnnotations);
+            missedEvents = obj.computeMissedEvents(detectedEventLocations,eventAnnotations,labeler);
             
             detectionResult = DetectionResult(goodEvents,missedEvents,badEvents);
         end
@@ -86,8 +89,8 @@ classdef DetectionResultsComputer < handle
             end
         end
         
-        function missedEvents = computeMissedEvents(obj,detetedEventLocations,annotations)
-            didMissEvent = computeDidMissEvent(obj,detetedEventLocations,annotations);
+        function missedEvents = computeMissedEvents(obj,detectedEventLocations,annotations,labeler)
+            didMissEvent = obj.computeDidMissEvent(detectedEventLocations,annotations,labeler);
             missedEvents = [];
             nMissedEvents = sum(didMissEvent);
             if nMissedEvents > 0
@@ -105,31 +108,35 @@ classdef DetectionResultsComputer < handle
                 end
             end
         end
-
-        function didMissEvent = computeDidMissEvent(obj,detectedEventLocations,annotations)
+        
+        function didMissEvent = computeDidMissEvent(obj,detectedEventLocations,annotations,labeler)
             nEvents = length(annotations);
             
-            if isempty(detectedEventLocations)
-                didMissEvent = true(1,nEvents);
-            else
-                didMissEvent = false(1,nEvents);
+            didMissEvent = false(1,nEvents);
+
+            segmentStartings = [];
+            segmentEndings = [];
+
+            if ~isempty(detectedEventLocations)
                 segmentStartings = detectedEventLocations - obj.tolerance;
                 segmentEndings = detectedEventLocations + obj.tolerance;
-                for i = 1 : length(annotations)
-                    annotation = annotations(i);
-                    class = annotation.label;
-                    if class ~= obj.classesMap.synchronisationClass
-                        label = obj.labelingStrategy.labelForClass(class);
-                        if obj.labelingStrategy.isRelevantLabel(label)
-                            eventLocation = annotation.sample;
-                            contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
-                            if ~contained
-                                didMissEvent(i) = true;
-                            end
+            end
+            
+            for i = 1 : length(annotations)
+                annotation = annotations(i);
+                class = annotation.label;
+                if labeler.isValidLabel(class)
+                    label = obj.labelingStrategy.labelForClass(class);
+                    if obj.labelingStrategy.isRelevantLabel(label)
+                        eventLocation = annotation.sample;
+                        contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
+                        if ~contained
+                            didMissEvent(i) = true;
                         end
                     end
                 end
             end
+            
         end
     end
 end

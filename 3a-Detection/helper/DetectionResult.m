@@ -45,12 +45,12 @@ classdef DetectionResult < handle
     end
     
     methods (Static, Access = private)
-        function goodEventsPerClass = numEventsPerClass(events,nClasses)
-            goodEventsPerClass = zeros(1,nClasses);
+        function numEventsPerClass = numEventsPerClass(events,nClasses)
+            numEventsPerClass = zeros(1,nClasses);
             for i = 1 : length(events)
                 event = events(i);
-                label = event.label;
-                goodEventsPerClass(label) = goodEventsPerClass(label) + 1;
+                label = event.label;                
+                numEventsPerClass(label) = numEventsPerClass(label) + 1;
             end
         end
     end

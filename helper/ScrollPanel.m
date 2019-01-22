@@ -10,14 +10,18 @@ classdef ScrollPanel < handle
     end
     
     properties (Access = public, Constant)
-        kSliderPadding = 5;
+        kSliderPadding = 2;
         kSliderWidth = 15;
     end
     
     methods (Access = public)
         function obj = ScrollPanel(panel,figure)
+            
             obj.panel = panel;
             obj.figure = figure;
+            obj.panel.Units = 'pixels';
+            obj.figure.Units = 'pixels';
+            
             figure.SizeChangedFcn = @obj.handleSizeChanged;
             
             obj.originalPanelPosition = obj.panel.Position;
@@ -45,6 +49,7 @@ classdef ScrollPanel < handle
                 'SliderStep', [0.1, 0.5], ...
                 'Min', 0, 'Max', 0, 'Value', 0,...
                 'Position',sliderPosition);
+            obj.slider.Visible = 'Off';
             
             addlistener(obj.slider, 'Value', 'PostSet',@obj.handleSliderMoved);
         end

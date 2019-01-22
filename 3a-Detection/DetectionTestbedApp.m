@@ -39,7 +39,7 @@ classdef DetectionTestbedApp < handle
         badEventHandles;
         
         %ui plotting
-        
+        scrollPanel;
         eventsPlotter;
         preprocessingConfigurator;
         figureHandle;
@@ -80,7 +80,7 @@ classdef DetectionTestbedApp < handle
         
         function loadUI(obj)
             obj.uiHandles = guihandles(detectionTestbedUI);
-            obj.loadPlotAxes();
+            %obj.loadPlotAxes();
             
             obj.uiHandles.computeButton.Callback = @obj.handleComputeButtonClicked;
             obj.uiHandles.saveEventsButton.Callback = @obj.handleSaveEventsButtonClicked;
@@ -88,6 +88,10 @@ classdef DetectionTestbedApp < handle
             obj.uiHandles.showDetectedCheckbox.Callback = @obj.handleShowDetectedToggled;
             obj.uiHandles.showMissedCheckbox.Callback = @obj.handleShowMissedToggled;
             obj.uiHandles.showBadCheckbox.Callback = @obj.handleShowBadEventsToggled;
+            
+            obj.plotAxes = obj.uiHandles.plotAxes;
+            
+            obj.scrollPanel = ScrollPanel(obj.uiHandles.sliderPanel,obj.uiHandles.figure1);
             
             obj.uiHandles.filesList.String = obj.fileNames;
             
@@ -102,7 +106,6 @@ classdef DetectionTestbedApp < handle
                 obj.uiHandles.labelingStrategiesList);
             
             obj.resetUI();
-            
         end
         
         function resetUI(obj)
@@ -130,15 +133,16 @@ classdef DetectionTestbedApp < handle
             obj.fileEnergies = obj.preprocessedSignalsLoader.loadOrCreateData();
         end
         
+        %{
         function loadPlotAxes(obj)
             obj.plotAxes = axes(obj.uiHandles.figure1);
             obj.plotAxes.Units = 'characters';
             obj.plotAxes.Position  = [40 2 290 30];
             obj.plotAxes.Visible = 'On';
         end
+        %}
         
         %ui
-        
         function tolerance = getTolerance(obj)
             toleranceStr = obj.uiHandles.toleranceTextBox.String;
             tolerance = str2double(toleranceStr);

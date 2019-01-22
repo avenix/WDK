@@ -8,18 +8,12 @@ classdef (Abstract) Segmentation < Computer
     properties (Access = public)
         segmentSizeLeft;
         segmentSizeRight;
-        data;%set from outside, otherwise lazily loaded
         type;
     end
     
     methods (Abstract, Access = public)
-        segments = segment(obj,data);
-        
+        segments = segment(obj,signalPerFile);
         str = toString(obj);
-    end
-    
-    methods (Abstract, Access = protected)
-        segmentsPerFile = createSegmentsPerFile(obj,dataFiles);
     end
     
     methods (Access = public)
@@ -34,16 +28,8 @@ classdef (Abstract) Segmentation < Computer
             editableProperties = [property1,property2];
         end
         
-        function segmentsPerFile = segmentFiles(obj,dataFiles)
-            
-            segmentsPerFile = obj.createSegmentsPerFile(dataFiles);
-            
-            if isempty(obj.data)
-                dataLoader = DataLoader();
-                obj.data = dataLoader.loadAllDataFiles();
-            end
-            
-            obj.addDataToSegments(segmentsPerFile);
+        function outData = compute(obj,inData)
+            outData = obj.segmentFiles(inData);
         end
         
         function resetVariables(obj)
@@ -53,9 +39,9 @@ classdef (Abstract) Segmentation < Computer
     end
     
     methods (Access = protected)
-        function segments = createSegmentsWithEvents(obj,eventLocations, data)
-            numValidSegments = obj.countNumValidSegments(eventLocations,data);
-            segments = repmat(Segment,1,numValidSegments);
+        function segments = createSegmentsWithEvents(obj,eventLocations,data)
+            nSegments = obj.countNumValidSegments(eventLocations,data);
+            segments = repmat(Segment,1,nSegments);
             nSamples = length(data);
             segmentsCounter = 0;
             
@@ -69,7 +55,7 @@ classdef (Abstract) Segmentation < Computer
                     segment.eventIdx = eventLocation;
                     segment.startSample = uint32(startSample);
                     segment.endSample = uint32(endSample);
-                    segment.window = data(segment.startSample:segment.endSample,:);
+                    segment.window = data(segment.startSample : segment.endSample,:);
                     segmentsCounter = segmentsCounter + 1;
                     segments(segmentsCounter) = segment;
                 end
@@ -78,21 +64,6 @@ classdef (Abstract) Segmentation < Computer
     end
     
     methods (Access = private)
-        
-        function addDataToSegments(obj,segments)
-            
-            nFiles = length(segments);
-            for i = 1 : nFiles
-                segmentsCurrentFile = segments{i};
-                dataCurrentFile = obj.data{i};
-                for j = 1 : length(segmentsCurrentFile)
-                    segment = segmentsCurrentFile(j);
-                    if (isempty(segment.window ))
-                        segment.window = dataCurrentFile(segment.startSample:segment.endSample,:);
-                    end
-                end
-            end
-        end
         
         function numValidSegments = countNumValidSegments(obj,eventLocations,data)
             nSamples = length(data);
