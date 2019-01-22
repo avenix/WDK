@@ -2,6 +2,7 @@ classdef PreprocessingSegmentsPlotter < handle
     properties (Access = public)
         fontSize = 20;
         colorsPerSignal = {[0,0,1,0.3],[1,0,0,0.3],[1,0,1,0.3]};
+        lineColor = 'black';
         sameScale = true;
         sequentialSegments = false;
         showVerticalLines = true;
@@ -27,7 +28,10 @@ classdef PreprocessingSegmentsPlotter < handle
             subplotN = ceil(nClasses / subplotM);
             
             for i = 1 : nClasses
-                obj.axesHandles(i) = subplot(subplotN,subplotM,i,'Parent',obj.plotParent);
+                currentAxes = subplot(subplotN,subplotM,i,'Parent',obj.plotParent);
+                obj.axesHandles(i) = currentAxes;
+                currentAxes.Toolbar.Visible = 'off';
+
                 titleStr = groupNames{i};
                 title(titleStr,'FontSize',obj.fontSize);
                 hold on;
@@ -39,22 +43,26 @@ classdef PreprocessingSegmentsPlotter < handle
                     obj.plotSegmentsOverlapping(segmentsCurrentGroup);
                 end
                 
-                axis tight;
+                %axis tight;
             end
             
-            if obj.sameScale == 1
-                linkaxes(obj.axesHandles,'xy');
-            end
+            obj.updateLinkAxes();
             
         end
         
         function clearAxes(obj)
+            set(obj.axesHandles,'ylimmode','auto','xlimmode','auto');
+            
             for i = 1 : length(obj.axesHandles)
                 cla(obj.axesHandles(i));
             end
             obj.axesHandles = [];
             obj.verticalLines = [];
-            %cla(obj.plotAxes);
+        end
+        
+        function setSameScale(obj,sameScaleParam)
+            obj.sameScale = sameScaleParam;
+            obj.updateLinkAxes();
         end
         
         function setShowLines(obj,showLines)
@@ -64,6 +72,15 @@ classdef PreprocessingSegmentsPlotter < handle
     end
     
     methods (Access = private)
+        
+        function updateLinkAxes(obj)
+            
+            if obj.sameScale
+                linkaxes(obj.axesHandles,'xy');
+            else
+                linkaxes(obj.axesHandles,'off');
+            end
+        end
         
         function plotSegmentsOverlapping(obj,segments)
             for i = 1 : length(segments)
@@ -79,7 +96,7 @@ classdef PreprocessingSegmentsPlotter < handle
         function plotSegmentsSequentially(obj,segments)
             currentX = 1;
             
-            visibleStr = Helper.getOnOffStr(obj.showVerticalLines);
+            visibleStr = Helper.getOnOffString(obj.showVerticalLines);
             
             nSegments = length(segments);
             
@@ -97,10 +114,10 @@ classdef PreprocessingSegmentsPlotter < handle
                 newX = currentX + nSamples;
                 
                 for signal = 1 : min(size(data,2),3)
-                    plot(currentX:newX-1,data(:,signal),'Color',obj.colorsPerSignal{signal},'LineWidth',0.4);
+                    plot(currentX:newX-1,data(:,signal),'Color',obj.colorsPerSignal{signal});
                 end
                 
-                lineHandle = line([newX-1,newX-1],[minY,maxY],'Visible',visibleStr);
+                lineHandle = line([newX-1,newX-1],[minY,maxY],'Visible',visibleStr,'Color',obj.lineColor,'LineStyle','--');
                 obj.verticalLines(i) = lineHandle;
                 
                 currentX = newX;
@@ -121,14 +138,14 @@ classdef PreprocessingSegmentsPlotter < handle
             minValue = 0;
             for i = 1 : length(segments)
                 currentMin = min(min(segments(i).window));
-                if(currentMin > minValue)
+                if(currentMin < minValue)
                     minValue = currentMin;
                 end
             end
         end
         
         function updateLinesVisibility(obj)
-            visibleStr = Helper.getOnOffStr(obj.showVerticalLines);
+            visibleStr = Helper.getOnOffString(obj.showVerticalLines);
             
             for i = 1 : length(obj.verticalLines)
                 verticalLine = obj.verticalLines(i);

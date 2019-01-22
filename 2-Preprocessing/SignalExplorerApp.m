@@ -37,6 +37,7 @@ classdef SignalExplorerApp < handle
         preprocessingConfiguratorVisualization;
         
         %ui plotting
+        scrollPanel;
         segmentsPlotter;
         uiHandles;
     end
@@ -69,7 +70,7 @@ classdef SignalExplorerApp < handle
         function loadUI(obj)
             
             obj.uiHandles = guihandles(signalExplorerUI);
-            
+                        
             obj.uiHandles.loadButton.Callback = @obj.handleLoadClicked;
             obj.uiHandles.groupButton.Callback = @obj.handleGroupClicked;
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
@@ -80,6 +81,7 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.plotStyleButtonGroup.SelectionChangedFcn = @obj.handleVisualizationStateChanged;
             obj.uiHandles.showLinesCheckbox.Callback = @obj.handleShowLinesChanged;
             
+            obj.scrollPanel = ScrollPanel(obj.uiHandles.palettePanel,obj.uiHandles.figure1);
             
             obj.preprocessingConfigurator = PreprocessingConfigurator(...
                 obj.uiHandles.preprocessingSignalsList,...
@@ -111,6 +113,7 @@ classdef SignalExplorerApp < handle
                 obj.uiHandles.labelingStrategiesList);
                 
             obj.updateEventDetectionTablesVisibility();
+            
         end
         
         function resetUI(obj)
@@ -123,16 +126,16 @@ classdef SignalExplorerApp < handle
             obj.uiHandles.automaticSegmentationRadio.Value = 0;
             
             obj.uiHandles.signalComputerVariablesTable.ColumnName = {'Variable','Value'};
-            obj.uiHandles.signalComputerVariablesTable.ColumnWidth = {70,40};
+            obj.uiHandles.signalComputerVariablesTable.ColumnWidth = {110,40};
             
             obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnName = {'Variable','Value'};
-            obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnWidth = {70,40};
+            obj.uiHandles.preprocessingSignalComputerVariablesTable.ColumnWidth = {110,40};
             
             obj.uiHandles.segmentationVariablesTable.ColumnName = {'Variable','Value'};
-            obj.uiHandles.segmentationVariablesTable.ColumnWidth = {90,40};
+            obj.uiHandles.segmentationVariablesTable.ColumnWidth = {110,40};
             
             obj.uiHandles.signalComputerVariablesTableVisualization.ColumnName = {'Variable','Value'};
-            obj.uiHandles.signalComputerVariablesTableVisualization.ColumnWidth = {70,40};
+            obj.uiHandles.signalComputerVariablesTableVisualization.ColumnWidth = {110,40};
 
         end
 
@@ -359,20 +362,22 @@ classdef SignalExplorerApp < handle
         end
         
         function handleVisualizationStateChanged(obj,~,~)
-            
             switch obj.uiHandles.plotStyleButtonGroup.SelectedObject
                 case (obj.uiHandles.overlappingPlotRadio)
                     obj.visualizationState = SignalExplorerVisualizationState.kOverlappingMode;
                 case (obj.uiHandles.sequentialPlotRadio)
                     obj.visualizationState = SignalExplorerVisualizationState.kSequentialMode;
-                
             end
         end
         
+        function handleSameScaleChanged(obj,~,~)
+            obj.segmentsPlotter.sameScale = obj.getSameScale();
+        end
+        
         function handleShowLinesChanged(obj,~,~)
-            
             obj.segmentsPlotter.showVerticalLines = obj.getShowLinesCheckbox();
         end
+        
     end
     
 end

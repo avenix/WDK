@@ -139,7 +139,7 @@ classdef Helper < handle
         
         %% Helper methods
         
-        function str = getOnOffStr(isOn)
+        function str = getOnOffString(isOn)
             str = 'Off';
             if(isOn)
                 str = 'On';
