@@ -10,14 +10,18 @@ classdef EventSegmentation < Segmentation
         function obj = EventSegmentation(eventDetector)
             if nargin == 1
                 obj.eventDetector = eventDetector;
-                obj.type = 'event';
+                obj.type = 'event-based';
             end
         end
         
         function resetVariables(obj)
             obj.resetVariables@Segmentation();
         end
-          
+        
+        function outData = compute(obj,inData)
+            outData = obj.segment(inData);
+        end
+        
         %returns unlabelled segments
         function segmentsPerFile = segment(obj,signalPerFile)
             
@@ -48,9 +52,28 @@ classdef EventSegmentation < Segmentation
     
     methods (Access = private)
         
+        function b = isValidInput(~,input)
+            if isempty(input)
+                b = true;
+            else
+                if isa(input(1),'EventAnnotation')
+                    b = true;
+                else
+                    b = false;
+                end
+            end
+            
+        end
+        
         function segments = segmentFile(obj,signal,dataFile)
-            events = obj.eventDetector.detectEvents(signal);
-            segments = obj.createSegmentsWithEvents(events,dataFile);
+            events = obj.eventDetector.compute(signal);
+            
+            if ~obj.isValidInput(events)
+                fprintf('%s - EventSegmentation\n',Constants.kInvalidEventSegmentationInput);
+                segments = [];
+            else
+                segments = obj.createSegmentsWithEvents(events,dataFile);
+            end
         end
         
     end

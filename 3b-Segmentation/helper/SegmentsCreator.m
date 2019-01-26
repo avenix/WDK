@@ -11,7 +11,7 @@ classdef SegmentsCreator < handle
         %algorithm applied on the preprocessed data
         function segments = createSegments(obj)
             dataPerFile = obj.preprocessedSignalsLoader.loadOrCreateData();
-            segments = obj.segmentationAlgorithm.segment(dataPerFile);
+            segments = obj.segmentationAlgorithm.compute(dataPerFile);
         end
         
         function str = toString(obj,recursive)

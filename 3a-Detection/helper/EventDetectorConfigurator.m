@@ -14,16 +14,16 @@ classdef EventDetectorConfigurator < handle
     end
     
     methods (Access = public)
-        function obj = EventDetectorConfigurator(eventDetectorList,eventDetectorVariablesTable)
+        function obj = EventDetectorConfigurator(eventDetectors, eventDetectorList,eventDetectorVariablesTable)
+            obj.eventDetectors = eventDetectors;
             obj.eventDetectorList = eventDetectorList;
             obj.eventDetectorVariablesTable = eventDetectorVariablesTable;
-            obj.eventDetectors = {SimplePeakDetector,MatlabPeakDetector};
             
-            obj.updateSelectedEventDetector();
             obj.fillEventDetectionList();
+            obj.updateSelectedEventDetector();
             obj.updateVariablesTable();
             
-            obj.eventDetectorList.Callback = @obj.handleEventDetectionChanged;
+            obj.eventDetectorList.ValueChangedFcn = @obj.handleEventDetectionChanged;
         end
         
         function eventDetector = createEventDetectorWithUIParameters(obj)
@@ -43,13 +43,15 @@ classdef EventDetectorConfigurator < handle
     methods (Access = private)   
         
         function eventDetector = getSelectedEventDetector(obj)
-            idx = obj.eventDetectorList.Value;
+            idxStr = obj.eventDetectorList.Value;
+            [~,idx] = ismember(idxStr, obj.eventDetectorList.Items);
             eventDetector = obj.eventDetectors{idx};
         end
         
         function fillEventDetectionList(obj)
-            obj.eventDetectorList.String = Helper.generateEventDetectorNames(obj.eventDetectors);
-            obj.eventDetectorList.Value = 1;
+            eventDetectorStrs = Helper.generateComputerNamesArray(obj.eventDetectors);
+            obj.eventDetectorList.Items = eventDetectorStrs;
+            obj.eventDetectorList.Value = eventDetectorStrs{1};
         end
         
         function updateSelectedEventDetector(obj)

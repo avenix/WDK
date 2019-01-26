@@ -3,7 +3,6 @@ classdef FeaturesTableLoader < handle
     properties (Access = public)
         segmentsLoader;
         featureExtractor;
-        ignoredLabels;
     end
     
     properties (Access = private)
@@ -64,6 +63,7 @@ classdef FeaturesTableLoader < handle
             if shouldCreateLabelColumn
                 table.Properties.VariableNames = [obj.featureExtractor.getFeatureNames(), 'label'];
             end
+            table = Table(table);
         end
     end
     
@@ -72,8 +72,7 @@ classdef FeaturesTableLoader < handle
         function b = shouldProcessLabel(obj,label)
             
             b = isempty(label) || (label ~= obj.classesMap.synchronisationClass ...
-                        && label ~= ClassesMap.kInvalidClass ...
-                    && ~ismember(label, obj.ignoredLabels));
+                        && label ~= ClassesMap.kInvalidClass);
         end
         
         function tables = createTables(obj)

@@ -21,7 +21,7 @@ classdef ScrollPanel < handle
             obj.figure = figure;
             obj.panel.Units = 'pixels';
             obj.figure.Units = 'pixels';
-            
+                        
             figure.SizeChangedFcn = @obj.handleSizeChanged;
             
             obj.originalPanelPosition = obj.panel.Position;
@@ -30,6 +30,9 @@ classdef ScrollPanel < handle
             obj.addSliderToFigure();
             
             obj.originalSliderPosition = obj.slider.Position;
+            
+            obj.updateSize();
+            obj.updatePanelPosition();
         end
         
         function handleSliderMoved(obj,~,~)
@@ -45,11 +48,24 @@ classdef ScrollPanel < handle
             sliderPosition(1) = obj.originalPanelPosition(1) + obj.originalPanelPosition(3) + obj.kSliderPadding;
             sliderPosition(3) = obj.kSliderWidth;
             
+            if sliderPosition(2) < 0
+                sliderPosition(2) = 0;
+            end
+            
+            if obj.figure.Position(4) < sliderPosition(4)
+                sliderPosition(4) = obj.figure.Position(4);
+            end
+            
+            
             obj.slider = uicontrol(obj.figure,'Style', 'Slider', ...
                 'SliderStep', [0.1, 0.5], ...
                 'Min', 0, 'Max', 0, 'Value', 0,...
                 'Position',sliderPosition);
             obj.slider.Visible = 'Off';
+            
+            obj.slider.Min = obj.panel.Position(2);
+            obj.slider.Max = obj.slider.Min;
+            obj.slider.Value = obj.slider.Min;
             
             addlistener(obj.slider, 'Value', 'PostSet',@obj.handleSliderMoved);
         end
@@ -60,29 +76,41 @@ classdef ScrollPanel < handle
             obj.panel.Position = pos;
         end
         
-        function handleSizeChanged(obj,~,~)
+        function updateSize(obj)
             sliderPosition  = obj.slider.Position;
             figurePosition = obj.figure.Position;
             
             if(figurePosition(4) >=  obj.originalFigurePosition(4))
                 obj.slider.Visible = 'Off';
-                obj.slider.Value = 0;
+                obj.slider.Value = obj.slider.Min;
+                
+                fprintf('val: %f, min: %f, max: %f\n',obj.slider.Value,obj.slider.Min,obj.slider.Max);
+                
                 obj.updatePanelPosition();
             else
+                
                 obj.slider.Visible = 'On';
                 
                 originalHeightDiff = obj.originalFigurePosition(4) - obj.originalSliderPosition(4);
                 sliderPosition(4) = figurePosition(4) - originalHeightDiff;
                 obj.slider.Position = sliderPosition;
                 
-                newMaxValue = obj.originalSliderPosition(4) - sliderPosition(4);
+                newValue = obj.originalSliderPosition(4) - sliderPosition(4);
                 
-                if(obj.slider.Value > newMaxValue)
-                    obj.slider.Value = newMaxValue;
+                if(obj.slider.Value > newValue)
+                    obj.slider.Value = newValue;
                     obj.updatePanelPosition();
                 end
-                obj.slider.Max = newMaxValue;
+                
+                fprintf('visible on val: %f, min: %f, max: %f\n',obj.slider.Value,obj.slider.Min,obj.slider.Max);
+                
+                obj.slider.Max = newValue;
+                
             end
+        end
+        
+        function handleSizeChanged(obj,~,~)
+            obj.updateSize();
         end
     end
 end

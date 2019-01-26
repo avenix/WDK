@@ -22,6 +22,10 @@ classdef ManualSegmentation < Segmentation
         function resetVariables(obj)
             resetVariables@Segmentation(obj);
         end
+
+        function outData = compute(obj,inData)
+            outData = obj.segment(inData);
+        end
         
         %returns labeled segments
         function segments = segment(obj,dataFiles)

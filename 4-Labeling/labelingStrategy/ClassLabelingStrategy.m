@@ -19,7 +19,7 @@ classdef ClassLabelingStrategy < handle
             obj.defaultClassesMap = ClassesMap.instance();
             if nargin == 0 
                 classGroups = [];
-                obj.name = 'defaultLabelingStrategy';
+                obj.name = 'default (no grouping)';
             end
             obj.generateClassesMap(classGroups);
             strIdx = Helper.findStringInCellArray(obj.classNames,Constants.nullClassGroupStr);

@@ -11,12 +11,11 @@ classdef LabelingConfigurator < handle
     
     methods (Access = public)
         
-        function obj = LabelingConfigurator(labelingStrategiesList)
+        function obj = LabelingConfigurator(labelingStrategiesList, labelingStrategies)
             obj.labelingStrategiesList = labelingStrategiesList;
-            
-            dataLoader = DataLoader();
-            obj.labelingStrategies = dataLoader.loadAllLabelingStrategies();
+            obj.labelingStrategies = labelingStrategies;
             obj.fillLabelingStrategiesList();
+            obj.labelingStrategiesList.Value = obj.labelingStrategiesList.Items{1};
         end
         
         function labelingStrategy = getCurrentLabelingStrategy(obj)
@@ -28,7 +27,8 @@ classdef LabelingConfigurator < handle
     methods (Access = private)
         
         function idx = getSelectedLabelingIdx(obj)
-            idx = obj.labelingStrategiesList.Value;
+            idxStr = obj.labelingStrategiesList.Value;
+            [~,idx] = ismember(idxStr,obj.labelingStrategiesList.Items);
         end
         
         function fillLabelingStrategiesList(obj)
@@ -38,7 +38,7 @@ classdef LabelingConfigurator < handle
                 labelingStrategy = obj.labelingStrategies{i};
                 labelingStrategyNames{i} = labelingStrategy.name;
             end
-            obj.labelingStrategiesList.String = Helper.cellArrayToString(labelingStrategyNames);
+            obj.labelingStrategiesList.Items = labelingStrategyNames;
         end
     end
 end

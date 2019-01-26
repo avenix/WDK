@@ -53,26 +53,26 @@ classdef DataAnnotationApp < handle
             clear ClassesMap;
             obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
-            obj.markersPlotter = MarkersPlotter();
+            obj.markersPlotter = DataAnnotationMarkersPlotter();
             
-            obj.eventAnnotationsPlotter = EventAnnotationsPlotter(obj.classesMap);
+            obj.eventAnnotationsPlotter = DataAnnotationEventAnnotationsPlotter(obj.classesMap);
             obj.eventAnnotationsPlotter.delegate = obj;
             
-            obj.rangeAnnotationsPlotter = RangeAnnotationsPlotter(obj.classesMap);
+            obj.rangeAnnotationsPlotter = DataAnnotationRangeAnnotationsPlotter(obj.classesMap);
             obj.rangeAnnotationsPlotter.delegate = obj;
             
             obj.currentFile = 1;
-            obj.state = DataAnnotatorState.kAddMode;
+            obj.state = DataAnnotationState.kAddMode;
                         
             obj.loadUI();
         end
              
         function handleAnnotationClicked(obj,source,~)
             tag = str2double(source.Tag);
-            if obj.state == DataAnnotatorState.kDeleteMode
+            if obj.state == DataAnnotationState.kDeleteMode
                 obj.eventAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
                 obj.rangeAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
-            elseif obj.state == DataAnnotatorState.kModifyMode
+            elseif obj.state == DataAnnotationState.kModifyMode
                 currentClass = obj.uiHandles.classesList.Value;
                 obj.eventAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
                 obj.rangeAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
@@ -96,8 +96,6 @@ classdef DataAnnotationApp < handle
             obj.uiHandles.addRangeAnnotationButton.Callback = @obj.handleAddRangeClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
 
-            %obj.uiHandles.figure1.KeyPressFcn = @obj.handleKeyPressed;
-            obj.uiHandles.figure1.WindowKeyPressFcn = @obj.handleKeyPressed;
 
             obj.resetUI();
             obj.loadPlotAxes();
@@ -105,7 +103,7 @@ classdef DataAnnotationApp < handle
             obj.populateFileNamesList();
             obj.populateClassesList();
             
-            obj.preprocessingConfigurator = PreprocessingConfigurator(...
+            obj.preprocessingConfigurator = PreprocessingConfiguratorAnnotationApp(...
                 obj.uiHandles.signalsList,...
                 obj.uiHandles.signalComputerList,...
                 obj.uiHandles.signalComputerVariablesTable);
@@ -236,7 +234,7 @@ classdef DataAnnotationApp < handle
             end
             
             if isempty(obj.rangeSelection)
-                obj.rangeSelection = DataAnnotatorSampleRange(x);
+                obj.rangeSelection = DataAnnotationSampleRange(x);
             else
                 
             obj.rangeSelection.addValue(x);
@@ -405,13 +403,13 @@ classdef DataAnnotationApp < handle
             
             fprintf('%d\n',x);
             
-            if obj.state == DataAnnotatorState.kAddMode
+            if obj.state == DataAnnotationState.kAddMode
                 if obj.isSelectingPeaks
                     obj.addPeakAtLocation(x);
                 else
                     obj.addSampleAtLocation(x);
                 end
-            elseif obj.state == DataAnnotatorState.kSelectSamplesMode
+            elseif obj.state == DataAnnotationState.kSelectSamplesMode
                 obj.selectSampleAtLocation(x);
             end
         end
@@ -444,21 +442,21 @@ classdef DataAnnotationApp < handle
             cursorModeHandle = datacursormode(obj.uiHandles.figure1);
             cursorModeHandle.Enable = 'on';
             
-            if obj.state == DataAnnotatorState.kSelectSamplesMode
+            if obj.state == DataAnnotationState.kSelectSamplesMode
                 obj.deleteRangeSelection();
             end
             
             switch obj.uiHandles.stateButtonGroup.SelectedObject
                 case (obj.uiHandles.addRadio)
-                    obj.state = DataAnnotatorState.kAddMode;
+                    obj.state = DataAnnotationState.kAddMode;
                 case (obj.uiHandles.modifyRadio)
-                    obj.state = DataAnnotatorState.kModifyMode;
+                    obj.state = DataAnnotationState.kModifyMode;
                     cursorModeHandle.Enable = 'off';
                 case (obj.uiHandles.deleteRadio)
-                    obj.state = DataAnnotatorState.kDeleteMode;
+                    obj.state = DataAnnotationState.kDeleteMode;
                     cursorModeHandle.Enable = 'off';
                 case (obj.uiHandles.selectRangeRadio)
-                    obj.state = DataAnnotatorState.kSelectSamplesMode;
+                    obj.state = DataAnnotationState.kSelectSamplesMode;
             end
         end
         
@@ -500,17 +498,6 @@ classdef DataAnnotationApp < handle
         
         function handleAddRangeClicked(obj,~,~)
             obj.addCurrentRange();
-        end
-       
-        function handleKeyPressed(obj, ~, keyData)
-            switch keyData.Character
-                case '+'
-                    zoomHandle = zoom(obj.uiHandles.figure1);
-                    set(zoomHandle,'Enable','on');
-                case '-'
-                    zoomHandle = zoom(obj.uiHandles.figure1);
-                    set(zoomHandle,'Enable','on');
-            end
         end
         
         %% Helper methods

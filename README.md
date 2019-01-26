@@ -2,7 +2,7 @@
 
 The Warables Development Toolkit facilitates the development of wearable device applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
 
-![Activity Recognition Chain Development](images/ARCDevelopment.png)
+![Activity Recognition Chain Development](doc/images/ARCDevelopment.png)
 
  This Toolkit offers different tools for each of these activities.
 
@@ -17,13 +17,13 @@ The Warables Development Toolkit facilitates the development of wearable device 
 
 The WDK requires the installation of the Signal Processing Toolbox:
 
-![Signal Processing Toolbox](images/DSP.png)
+![Signal Processing Toolbox](doc/images/DSP.png)
 
 *Note: When running the toolkit for the first time, ensure the Constants.m file points to the right data/ directory.*
 
 *Note: to avoid issues with pathing, always stay at the root directory of the repository. You can check your matlab directory as shown in red in the following image* 
 
-![Checking Matlab Path](images/MatlabPath.png)
+![Checking Matlab Path](doc/images/matlabPath.png)
 
 ### Data Structure
 
@@ -44,7 +44,7 @@ labelingStrategiesPath = './data/labeling';
 
 Once you have data available for analysis, you can use the *DataLoaderApp* in *0-DataLoader* to do a first check on the data and convert it to Matlab's binary format, used by the rest of the toolkit.
 
-![DataLoaderApp](images/0-DataLoaderApp.png)
+![DataLoaderApp](doc/images/0-DataLoaderApp.png)
 
 *Note: the DataLoader can load any file in comma separated format.*
 
@@ -56,7 +56,7 @@ An annotated data set is needed to train a machine learning algorithm and to ass
 
 It might be cumbersome to annotate time series data without a reference. The *DataAnnotationApp* can import and display markers on top of the time series data. Currently, the *DataAnnotationApp* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the Timeline, timelines, export, Timeline markers to .EDL..., as shown in the image below:
 
-![DaVinciResolve](images/1-markers.png)
+![DaVinciResolve](doc/images/1-markers.png)
 
 Before the markers can be displayed properly on top of the time series data, they need to be synchronised to the time series data. In order to do this, the *.edl* file should contain a marker in green color in the beginning and another one in the end of the file. These markers will be automatically matched to the first and last annotation labeled as *synchronisaton'. This is the typical annotation flow:
 
@@ -67,7 +67,7 @@ Before the markers can be displayed properly on top of the time series data, the
 5. Reopen the *DataAnnotationApp*. This time the markers should be properly aligned with the data.
 6. Annotate the time series data.
 
-![Data Annotation App](images/1-DataAnnotationApp.png)
+![Data Annotation App](doc/images/1-DataAnnotationApp.png)
 
 *Note: by default, the DataAnnotationApp will load annotation files from the ./data/annotations/ directory. Saved annotation files will be stored in the root './' directory*.
 
@@ -78,11 +78,11 @@ Before the markers can be displayed properly on top of the time series data, the
 ## Application Development
 
 Most wearable device applications execute a chain of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain:
-![Activity Recognition Chain](images/ARC.png)
+![Activity Recognition Chain](doc/images/ARC.png)
 
 ### Preprocessing
 
-The *SignalExplorerApp* can be used to display and compare the signals corresponding to different classes. The *SignalExplorerApp* can also compute different signal processing methods commonly used on wearable applications. After a preprocessing and segmentation strategy have been chosen, the *SignalExplorerApp* plots every segment of each selected class on top of each other. 
+The *SignalExplorerApp* can be used to display and compare the signals corresponding to different classes. The *SignalExplorerApp* can also compute different signal processing methods commonly used on wearable applications. After a preprocessing and segmentation strategy have been chosen, the *SignalExplorerApp* plots every segment of each selected class either on top of each other or in a sequence. 
 
 Currently, the following signal processing methods are supported:
 
@@ -91,7 +91,7 @@ Filters:
 - LowPassFilter: Butterworth low-pass filter
 
 Energy:
-- EnergyComputer: ![Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)
+- SquaredMagnitudeComputer: ![Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)
 - NormComputer: ![Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)
 - S1Computer: computes ![S1](https://latex.codecogs.com/gif.latex?S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)
 - S2Computer: computes ![S2](https://latex.codecogs.com/gif.latex?S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7B%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20&plus;%20%5Cfrac%7Bmax%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7Bk%7D%7D%7B2%7D)
@@ -135,10 +135,10 @@ Coming soon: Frequency domain features (maximum frequency, value and ratio, spec
  
  ## Getting started
 1. Place your data files (.txt or .mat) in the *./data/rawdata/* directory
-2. If the files are in *.txt* format, you might want to convert them to a binary format with the *DataLoaderApp*
+2. If your files are in *ASCII*  format, you might want to convert them to a binary format with the *DataLoaderApp*. Files in binary format will load faster.
 3. Define your classes in the *classes.txt* file. 
-4. Open the *DataAnnotationApp* to annotate your data. Annotations created with the App should be copied into the *./data/annotations*
-5. Sometimes we will want to group annotations for the data analysis. For example, we might want to consider events annotated as *low jump*, *mid jump* and *high jump* as a *jump* for a first data analysis. This can be achieved by defining a labeling strategy. A labeling strategy maps annotations made to groups, which is provided in the following *.txt* format: 
+4. Open the *DataAnnotationApp* to annotate your data. Annotations created with the App need to be saved into the *./data/annotations* directory.
+5. You might want to annotate the data at a greater level of detail than your application should recognize. For example, if your application should detect lacrosse goalkeeper training exercises such as *catches*, *throws* and *passes*, you could annotate the catches at a greater level of detail as: *catchLowRight*, *catchLowLeft* but start the data analysis by studying whether any catch can be detected. In this case, you might want to group the catches into a common *catch* class. This can be achieved by creating a labeling strategy. A labeling strategy maps annotations made to groups. Labeling strategies are specified in a *.txt* file as: 
 ```
 #Group1 
 class1
@@ -149,11 +149,11 @@ class3
 class4
 class5
 ```
-You dont need to assign every class to a group. A class which is left ungrouped will be assigned to its own group automatically. Ensure that the classes you provide have been defined in the *./data/classes.txt* file and that no class belongs to two groups at the same time. Place your labeling strategy files in the *./data/labeling/*
+You don't need to assign every class to a group in a labeling strategy. A class left ungrouped will be assigned to its own group automatically. You should ensure that the classes you provide have been defined in the *./data/classes.txt* file and that no class belongs to two groups at the same time. Labeling strategies should be placed in the *./data/labeling/* directory.
 
-*Note: If you will annotate irrelevant classes, the labeling strategy should contain group called 'NULL'*
+*Note: If you will annotate irrelevant classes, the labeling strategy should contain a group called 'NULL'*
 
-6. The WDK offers a Matlab App to support you in each stage of the development your wearable applications. Check in each directory for the App file.
+6. The WDK offers a Matlab App to support you in each stage of the development your wearable applications. Look for the respective App in each directory.
 
 ## Tipps
 

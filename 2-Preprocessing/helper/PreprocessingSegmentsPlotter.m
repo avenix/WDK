@@ -12,12 +12,26 @@ classdef PreprocessingSegmentsPlotter < handle
     properties(Access = private)
         axesHandles;
         verticalLines;
+        plotAxes;
     end
     
     methods (Access = public)
         
         function obj = PreprocessingSegmentsPlotter(plotParent)
             obj.plotParent = plotParent;
+            obj.plotParent.AutoResizeChildren = 'off';
+        end
+        
+        function setZoom(obj,param)
+            for i = 1 : length(obj.axesHandles)
+                zoom(obj.axesHandles(i),param);
+            end
+        end
+        
+        function setPan(obj,param)
+            for i = 1 : length(obj.axesHandles)
+                pan(obj.axesHandles(i),param);
+            end
         end
         
         function plotSegments(obj,groupedSegments,groupNames)
@@ -26,38 +40,34 @@ classdef PreprocessingSegmentsPlotter < handle
             nClasses = length(groupedSegments);
             subplotM = ceil(sqrt(nClasses));
             subplotN = ceil(nClasses / subplotM);
+            obj.axesHandles = gobjects(1,nClasses);
             
+            if(obj.showVerticalLines)
+                obj.verticalLines = cell(1,nClasses);
+            end
+                
             for i = 1 : nClasses
                 currentAxes = subplot(subplotN,subplotM,i,'Parent',obj.plotParent);
-                obj.axesHandles(i) = currentAxes;
-                currentAxes.Toolbar.Visible = 'off';
-
-                titleStr = groupNames{i};
-                title(titleStr,'FontSize',obj.fontSize);
-                hold on;
+                
+                hold(currentAxes,'on');
+                title(currentAxes,groupNames{i},'FontSize',obj.fontSize);
+                
                 segmentsCurrentGroup = groupedSegments{i};
                 
                 if(obj.sequentialSegments)
-                    obj.plotSegmentsSequentially(segmentsCurrentGroup);
+                    verticalLinesCurrentPlot = obj.plotSegmentsSequentially(currentAxes,segmentsCurrentGroup);
+                    
+                    if(obj.showVerticalLines)
+                        obj.verticalLines{i} = verticalLinesCurrentPlot;
+                    end
                 else
-                    obj.plotSegmentsOverlapping(segmentsCurrentGroup);
+                    obj.plotSegmentsOverlapping(currentAxes,segmentsCurrentGroup);
                 end
                 
-                %axis tight;
+                obj.axesHandles(i) = currentAxes;
             end
             
             obj.updateLinkAxes();
-            
-        end
-        
-        function clearAxes(obj)
-            set(obj.axesHandles,'ylimmode','auto','xlimmode','auto');
-            
-            for i = 1 : length(obj.axesHandles)
-                cla(obj.axesHandles(i));
-            end
-            obj.axesHandles = [];
-            obj.verticalLines = [];
         end
         
         function setSameScale(obj,sameScaleParam)
@@ -68,6 +78,15 @@ classdef PreprocessingSegmentsPlotter < handle
         function setShowLines(obj,showLines)
             obj.showVerticalLines = showLines;
             obj.updateLinesVisibility();
+        end
+          
+        function clearAxes(obj)
+            for i = 1 : length(obj.axesHandles)
+                delete(obj.axesHandles(i));
+            end
+            
+            obj.axesHandles = [];
+            obj.verticalLines = [];
         end
     end
     
@@ -83,25 +102,25 @@ classdef PreprocessingSegmentsPlotter < handle
             end
         end
         
-        function plotSegmentsOverlapping(obj,segments)
+        function plotSegmentsOverlapping(obj,plotAxes,segments)
             for i = 1 : length(segments)
                 segment = segments(i);
                 data = segment.window;
                 for signal = 1 : min(size(data,2),3)
-                    plotHandle = plot(data(:,signal),'Color',obj.colorsPerSignal{signal},'LineWidth',0.4);
+                    plotHandle = plot(plotAxes,data(:,signal),'Color',obj.colorsPerSignal{signal},'LineWidth',0.4);
                     plotHandle.Color(4) = 0.4;
                 end
             end
         end
         
-        function plotSegmentsSequentially(obj,segments)
+        function verticalLinesCurrentPlot = plotSegmentsSequentially(obj,plotAxes,segments)
             currentX = 1;
             
             visibleStr = Helper.getOnOffString(obj.showVerticalLines);
             
             nSegments = length(segments);
-            
-            obj.verticalLines = gobjects(nSegments);
+                        
+            verticalLinesCurrentPlot = gobjects(1,nSegments);
             
             maxY = obj.getMaxSegmentValue(segments);
             minY = obj.getMinSegmentValue(segments);
@@ -113,11 +132,11 @@ classdef PreprocessingSegmentsPlotter < handle
                 newX = currentX + nSamples;
                 
                 for signal = 1 : min(size(data,2),3)
-                    plot(currentX:newX-1,data(:,signal),'Color',obj.colorsPerSignal{signal});
+                    plot(plotAxes,currentX:newX-1,data(:,signal),'Color',obj.colorsPerSignal{signal});
                 end
                 
-                lineHandle = line([newX-1,newX-1],[minY,maxY],'Visible',visibleStr,'Color',obj.lineColor,'LineStyle','--');
-                obj.verticalLines(i) = lineHandle;
+                lineHandle = line(plotAxes,[newX-1,newX-1],[minY,maxY],'Visible',visibleStr,'Color',obj.lineColor,'LineStyle','--');
+                verticalLinesCurrentPlot(i) = lineHandle;
                 
                 currentX = newX;
             end
@@ -147,8 +166,11 @@ classdef PreprocessingSegmentsPlotter < handle
             visibleStr = Helper.getOnOffString(obj.showVerticalLines);
             
             for i = 1 : length(obj.verticalLines)
-                verticalLine = obj.verticalLines(i);
-                verticalLine.Visible = visibleStr;
+                verticalLinesCurrentClass = obj.verticalLines{i};
+                for j = 1 : length(verticalLinesCurrentClass)
+                    verticalLine = verticalLinesCurrentClass(j);
+                    verticalLine.Visible = visibleStr;
+                end
             end
         end
     end

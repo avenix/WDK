@@ -28,10 +28,6 @@ classdef (Abstract) Segmentation < Computer
             editableProperties = [property1,property2];
         end
         
-        function outData = compute(obj,inData)
-            outData = obj.segmentFiles(inData);
-        end
-        
         function resetVariables(obj)
             obj.segmentSizeLeft = Segmentation.kBestSegmentSizeLeft;
             obj.segmentSizeRight = Segmentation.kBestSegmentSizeRight;
@@ -39,14 +35,14 @@ classdef (Abstract) Segmentation < Computer
     end
     
     methods (Access = protected)
-        function segments = createSegmentsWithEvents(obj,eventLocations,data)
-            nSegments = obj.countNumValidSegments(eventLocations,data);
+        function segments = createSegmentsWithEvents(obj,events,data)
+            nSegments = obj.countNumValidSegments(events,data);
             segments = repmat(Segment,1,nSegments);
             nSamples = length(data);
             segmentsCounter = 0;
             
-            for i = 1 : length(eventLocations)
-                eventLocation = eventLocations(i);
+            for i = 1 : length(events)
+                eventLocation = events(i).sample;
                 startSample = int32(eventLocation) - int32(obj.segmentSizeLeft);
                 endSample = int32(eventLocation) + int32(obj.segmentSizeRight);
                 
@@ -65,11 +61,11 @@ classdef (Abstract) Segmentation < Computer
     
     methods (Access = private)
         
-        function numValidSegments = countNumValidSegments(obj,eventLocations,data)
+        function numValidSegments = countNumValidSegments(obj,events,data)
             nSamples = length(data);
             numValidSegments = 0;
-            for i = 1 : length(eventLocations)
-                eventLocation = eventLocations(i);
+            for i = 1 : length(events)
+                eventLocation = events(i).sample;
                 startSample = int32(eventLocation) - int32(obj.segmentSizeLeft);
                 endSample = int32(eventLocation) + int32(obj.segmentSizeRight);
                 if startSample > 0 && endSample <= nSamples

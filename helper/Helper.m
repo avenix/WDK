@@ -304,6 +304,16 @@ classdef Helper < handle
             end
         end 
         
+        function names = generateComputerNamesArray(computers)
+            numComputers = length(computers);
+            names = cell(1,numComputers);
+            for i = 1 : numComputers
+                eventDetector = computers{i};
+                names{i} = eventDetector.name;
+            end
+        end
+        
+        %remove
         function text = generateEventDetectorNames(eventDetectors)
             numEventDetectors = length(eventDetectors);
             text = eventDetectors{1}.type;

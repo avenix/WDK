@@ -24,13 +24,17 @@ classdef PreprocessingConfigurator < handle
             obj.signalComputersList = signalComputersList;
             obj.signalComputerVariablesTable = signalComputerVariablesTable;
             
-            obj.signalComputersList.Callback = @obj.handleSelectedSignalComputerChanged;
+            obj.signalComputersList.ValueChangedFcn = @obj.handleSelectedSignalComputerChanged;
             
             obj.loadSignalComputers();
             
-            obj.fillSignalComputersList();
-            obj.updateSelectedSignalComputer();
-            obj.updateSignalComputerVariablesTable();
+            if ~isempty(obj.signalComputersList)
+                obj.fillSignalComputersList();
+                obj.selectFirstSignalComputer();
+                
+                obj.updateSelectedSignalComputer();
+                obj.updateSignalComputerVariablesTable();
+            end
         end
         
         function setDefaultColumnNames(obj)
@@ -49,12 +53,14 @@ classdef PreprocessingConfigurator < handle
         end
         
         function signalComputer = getCurrentSignalComputer(obj)
-            idx = obj.signalComputersList.Value;
+            idxStr = obj.signalComputersList.Value;
+            [~,idx] = ismember(idxStr,obj.signalComputersList.Items);
             signalComputer = obj.signalComputers{idx};
         end
         
         function signalIdxs = getSelectedSignalIdxs(obj)
-            signalIdxs = obj.signalsList.Value;
+            idxStr = obj.signalsList.Value;
+            [~,signalIdxs] = ismember(idxStr,obj.signalsList.Items);
         end
         
         function computer = createSignalComputerWithUIParameters(obj)
@@ -84,12 +90,20 @@ classdef PreprocessingConfigurator < handle
     methods (Access = private)
         
         %ui
+        function selectFirstSignalComputer(obj)
+            obj.signalComputersList.Value = obj.signalComputersList.Items{1};
+        end
+        
+        function selectFirstSignal(obj)
+            obj.signalsList.Value = obj.signalsList.Items{1};
+        end
+        
         function fillSignalComputersList(obj)
-            obj.signalComputersList.String = obj.signalComputerStrings;
+            obj.signalComputersList.Items = obj.signalComputerStrings;
         end
         
         function fillSignalsList(obj)
-            obj.signalsList.String = obj.columnNames;
+            obj.signalsList.Items = obj.columnNames;
         end
         
         function updateSignalComputerVariablesTable(obj)

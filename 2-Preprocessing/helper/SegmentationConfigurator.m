@@ -2,16 +2,12 @@
 classdef SegmentationConfigurator < handle
 
     properties (Access = private)
-        %ui
         segmenationStrategiesList;
         segmenationVariablesTable;
-        
-        %state
         currentSegmentationStrategyVariables;
     end
     
     properties (Access = public)    
-        %computers
         segmentationStrategies;
     end
     
@@ -20,12 +16,15 @@ classdef SegmentationConfigurator < handle
             obj.segmentationStrategies = segmentationStrategies;
             obj.segmenationStrategiesList = segmenationStrategiesList;
             obj.segmenationVariablesTable = segmenationVariablesTable;
-                        
-            obj.reloadUI();
+            
+            if ~isempty(obj.segmentationStrategies)
+                obj.reloadUI();
+            end
         end
         
         function reloadUI(obj)
             obj.fillSegmentationList();
+            obj.segmenationStrategiesList.Value = obj.segmenationStrategiesList.Items{1};
             obj.updateSelectedSegmentationStrategy();
             obj.updateSegmentationStrategyVariablesTable();
         end
@@ -55,11 +54,12 @@ classdef SegmentationConfigurator < handle
                 segmentationStrategyNames{i} = name;
             end
             
-            obj.segmenationStrategiesList.String = Helper.cellArrayToString(segmentationStrategyNames);
+            obj.segmenationStrategiesList.Items = segmentationStrategyNames;
         end
 
         function segmentationStrategy = getCurrentSegmentationStrategy(obj)
-            idx = obj.segmenationStrategiesList.Value;
+            idxStr = obj.segmenationStrategiesList.Value;
+            [~,idx] = ismember(idxStr,obj.segmenationStrategiesList.Items);
             segmentationStrategy = obj.segmentationStrategies{idx};
         end
         
