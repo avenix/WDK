@@ -10,7 +10,6 @@ classdef ClassesMap < handle
         synchronisationClass;
         numClasses;
         classesList;
-        nullClass;
     end
     
     properties (Access = private)
@@ -69,8 +68,8 @@ classdef ClassesMap < handle
             obj.classesList = obj.loadClassesFile();
             if ~isempty(obj.classesList)
                 obj.numClasses = length(obj.classesList);
+                obj.synchronisationClass = 0; %obj.numClasses + 1;
                 obj.createClassesMap(obj.classesList);
-                obj.synchronisationClass = obj.numClasses+1;
             end
             
       end
@@ -95,7 +94,7 @@ classdef ClassesMap < handle
             if ~isempty(classesList)
                 nClasses = length(classesList);
                 obj.classesMap = containers.Map(classesList,uint8(1:nClasses));
-                obj.classesMap(ClassesMap.synchronisationStr) = uint8(nClasses+1);
+                obj.classesMap(ClassesMap.synchronisationStr) = obj.synchronisationClass; %uint8(nClasses+1);
             end
         end
     end

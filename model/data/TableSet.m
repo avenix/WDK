@@ -26,7 +26,7 @@ classdef TableSet < handle
         function nInstances = NInstances(obj)
             nInstances = 0;
             for i = 1 : length(obj.tables) 
-                nInstances = nInstances + height(obj.tables{i});
+                nInstances = nInstances + obj.tables(i).height;
             end
         end
         
@@ -45,13 +45,13 @@ classdef TableSet < handle
                 
                 nRows = obj.countNumberOfRows(tables);
                 
-                firstTable = tables{1}.table;
+                firstTable = tables(1).table;
                 
                 mergedTableArray = zeros(nRows,width(firstTable));
                 
                 currentRow = 1;
                 for i = 1 : length(tables)
-                    currentTable = tables{i}.table;
+                    currentTable = tables(i).table;
                     nRowsCurrentTable = height(currentTable);
                     mergedTableArray(currentRow : currentRow + nRowsCurrentTable - 1,:) = table2array(currentTable);
                     currentRow = currentRow + nRowsCurrentTable;
@@ -66,8 +66,7 @@ classdef TableSet < handle
         function nRows = countNumberOfRows(~,tables)
             nRows = 0;
             for i = 1 : length(tables)
-                currentTable = tables{i};
-                nRows = nRows + currentTable.height;
+                nRows = nRows + tables(i).height;
             end
         end
         

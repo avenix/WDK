@@ -30,14 +30,19 @@ classdef DataLoader < handle
             tableExporter.exportTable(table,fileName);
         end
         
-        function [data, columnNames] = loadAllDataFiles(~)
-            dataFiles = Helper.listDataFiles();
-            nDataFiles = length(dataFiles);
+        
+        function [data, columnNames] = loadAllDataFiles(obj)
+            fileNames = Helper.listDataFiles();
+            [data, columnNames] = obj.loadDataFiles(fileNames);
+        end
+        
+        function [data, columnNames] = loadDataFiles(~,fileNames)
+            nDataFiles = length(fileNames);
             data = cell(1,nDataFiles);
             columnNames = cell(1,nDataFiles);
             
-            for i = 1 : length(dataFiles)
-                fileName = dataFiles{i};
+            for i = 1 : length(fileNames)
+                fileName = fileNames{i};
                 [data{i}, columnNames{i}] = DataLoader.loadDataFileWithFullPath(fileName);
             end 
         end

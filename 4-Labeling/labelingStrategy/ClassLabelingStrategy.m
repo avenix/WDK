@@ -29,19 +29,19 @@ classdef ClassLabelingStrategy < handle
                 obj.nullClass = obj.numClasses + 1;
             end
         end
-    
+
         function result = isRelevantLabel(obj,classLabel)
             result = (classLabel ~= obj.nullClass);
         end
         
         function label = labelForClass(obj, class)
-            if class <= length(obj.classesMap)
+            if class > 0 && class <= length(obj.classesMap)
                 label = obj.classesMap(class);
             else
                 label = class;
             end
         end
-        
+
         function labels = labelsForClasses(obj, classes)
             nClasses = length(classes);
             labels = zeros(nClasses,1);
@@ -56,6 +56,7 @@ classdef ClassLabelingStrategy < handle
         end
         
         function labelsStr = labelsToString(obj,labels)
+            
             labelsStr = obj.classNames(labels);
         end
     end

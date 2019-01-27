@@ -79,11 +79,10 @@ classdef FeaturesTableLoader < handle
             segments = obj.segmentsLoader.loadOrCreateSegments();
             
             nTables = length(segments);
-            tables = cell(1,nTables);
+            tables = repmat(Table,1,nTables);
             
             for i = 1 : nTables
-                table = obj.createTable(segments{i});
-                tables{i} = table;
+                tables(i) = obj.createTable(segments{i});
                 fprintf('created table %d\n',i);
             end
         end

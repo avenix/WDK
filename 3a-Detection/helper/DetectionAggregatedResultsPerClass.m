@@ -24,20 +24,6 @@ classdef DetectionAggregatedResultsPerClass < handle
            [nGoodEvents, nBadEvents, nTotalEvents] = obj.aggregate();
            detectionMetric = DetectionMetric(nGoodEvents,nBadEvents,nTotalEvents);
        end
-       
-       function str = toString(obj)
-           str = "";
-           numClasses = length(obj.nGoodEventsDetectedPerClass);
-           for i = 1 : numClasses
-               nGoodEventsDetected = obj.nGoodEventsDetectedPerClass(i);
-               nGoodEvents = obj.nGoodEventsPerClass(i);
-               detectionRate = 100 * nGoodEventsDetected / nGoodEvents;
-               str = sprintf('%s|%9.1f%%',str,detectionRate);
-           end
-          nTotalGoodEvents = sum(obj.nGoodEventsPerClass);
-          badEventsRate = obj.nBadEventsDetected / nTotalGoodEvents;
-          str = sprintf('%s|x%.2f(%d)',str,badEventsRate,obj.nBadEventsDetected);
-       end
    end
    
    methods (Static)

@@ -6,6 +6,23 @@ classdef DetectionResult < handle
         badEvents;
     end
     
+    properties (Dependent)
+        goodEventRate;
+        badEventRate;
+    end
+    
+    methods 
+        function er = get.goodEventRate(obj)
+            numTotalEvents = obj.numGoodEvents() + obj.numMissedEvents();
+            er = obj.numGoodEvents() / numTotalEvents;
+        end
+        
+        function er = get.badEventRate(obj)
+            numTotalEvents = obj.numGoodEvents() + obj.numMissedEvents();
+            er =  obj.numBadEvents() / numTotalEvents;
+        end
+    end
+    
     methods (Access = public)
         function obj = DetectionResult(goodEvents,missedEvents,badEvents)
             if nargin>1
@@ -34,14 +51,6 @@ classdef DetectionResult < handle
         function missedEventsPerClass = numMissedEventsPerClass(obj,nClasses)
             missedEventsPerClass = DetectionResult.numEventsPerClass(obj.missedEvents,nClasses);
         end
-        
-        function str = toString(obj)
-            
-            numTotalEvents = obj.numGoodEvents() + obj.numMissedEvents();
-            goodEventRate = 100 * obj.numGoodEvents() / numTotalEvents;
-            badEventRate =  obj.numBadEvents() / numTotalEvents;
-            str = sprintf('%7.1f%%|x%.2f(%d)',goodEventRate,badEventRate,obj.numBadEvents());
-        end
     end
     
     methods (Static, Access = private)
@@ -49,7 +58,7 @@ classdef DetectionResult < handle
             numEventsPerClass = zeros(1,nClasses);
             for i = 1 : length(events)
                 event = events(i);
-                label = event.label;                
+                label = event.label;
                 numEventsPerClass(label) = numEventsPerClass(label) + 1;
             end
         end

@@ -40,7 +40,9 @@ classdef Table < handle
     
     methods (Access = public)
         function obj = Table(table)
-            obj.table = table;
+            if nargin > 1
+                obj.table = table;
+            end
         end
         
         function filterTableToLabels(obj,labels)

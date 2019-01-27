@@ -4,7 +4,7 @@ classdef DetectionAggregatedResults < handle
        nBadEventsDetected;
        nGoodEvents;
    end
-   
+  
    methods (Access = public)
        function obj = DetectionAggregatedResults(nGoodEventsDetected,nBadEventsDetected,nGoodEvents)
            if nargin>1
@@ -16,13 +16,6 @@ classdef DetectionAggregatedResults < handle
        
        function detectionMetric = computeDetectionMetric(obj)
            detectionMetric = DetectionMetric(obj.nGoodEventsDetected,obj.nBadEventsDetected,obj.nGoodEvents);
-       end
-       
-       function str = toString(obj)
-            str = sprintf('%6.1f%%|x%3.2f(%d)',...
-                100 * obj.nGoodEventsDetected/obj.nGoodEvents,...
-                obj.nBadEventsDetected/obj.nGoodEvents,...
-                obj.nBadEventsDetected);
        end
    end
    

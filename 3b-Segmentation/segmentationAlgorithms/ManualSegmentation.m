@@ -90,8 +90,8 @@ classdef ManualSegmentation < Segmentation
             labels = labels(validIdxs);
             eventLocations = [eventAnnotations(validIdxs).sample];
             
-            %create segments
-            segments = obj.createSegmentsWithEvents(eventLocations,data);
+            segments = EventDetector.CreateEventsWithEventLocations(eventLocations);  
+            segments = obj.createSegmentsWithEvents(segments,data);
             
             %label segments
             for i = 1 : length(segments)

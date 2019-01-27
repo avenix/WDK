@@ -53,13 +53,13 @@ classdef EventsLabeler < handle
     end
     
     methods (Static)
-        function idx = findIdxOfSampleNearEventAnnotations(sample1,eventAnnotations,tolerance)
+        function idx = findIdxOfSampleNearEventAnnotations(sample,eventAnnotations,tolerance)
             idx = -1;
             for i = 1 : length(eventAnnotations)
                 eventAnnotation = eventAnnotations(i);
-                if abs(int32(eventAnnotation.sample) - int32(sample1)) < tolerance
+                if abs(int32(eventAnnotation.sample) - int32(sample)) < tolerance
                     idx = i;
-                elseif eventAnnotation.sample > sample1
+                elseif eventAnnotation.sample > sample
                     break;
                 end
             end

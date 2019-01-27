@@ -25,10 +25,10 @@ classdef PreprocessedSignalsLoader < handle
                 dataLoader = DataLoader();
                 data = dataLoader.loadAllDataFiles();
                 data = obj.preprocess(data);
+                
                 save(fullFileName,'data');
             end
         end
-
     end
     
     methods (Access = private)
