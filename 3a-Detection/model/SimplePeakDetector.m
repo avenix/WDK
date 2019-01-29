@@ -1,4 +1,4 @@
-classdef SimplePeakDetector < EventDetector
+classdef SimplePeakDetector < Computer
     
     properties (Constant)            
         kBestPeakHeight = single(160);
@@ -14,12 +14,8 @@ classdef SimplePeakDetector < EventDetector
         
         function obj = SimplePeakDetector()
             obj.name = 'simplePeakDet';
-            obj.resetVariables();
-        end
-        
-        function resetVariables(obj)
-            obj.minPeakHeight = SimplePeakDetector.kBestPeakHeight;
-            obj.minPeakDistance = SimplePeakDetector.kBestMinPeakDistance;
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,'nx1');
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,'event');
         end
         
         function str = toString(obj)
@@ -27,15 +23,14 @@ classdef SimplePeakDetector < EventDetector
         end
         
         function editableProperties = getEditableProperties(obj)
-            minPeakHeightProperty = Property('minPeakHeight',obj.minPeakHeight);
-            minPeakDistanceProperty = Property('minPeakDistance',obj.minPeakDistance);
+            minPeakHeightProperty = Property('minPeakHeight',obj.minPeakHeight,80,180);
+            minPeakDistanceProperty = Property('minPeakDistance',obj.minPeakDistance,80,200);
             editableProperties = [minPeakHeightProperty,minPeakDistanceProperty];
         end
         
-        
         function computedSignal = compute(obj,signal)
             eventLocations = obj.detectEvents(signal);
-            computedSignal = EventDetector.CreateEventsWithEventLocations(eventLocations);            
+            computedSignal = Helper.CreateEventsWithEventLocations(eventLocations);            
         end
         
         function peakLocations = detectEvents(obj,signal)

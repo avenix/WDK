@@ -1,14 +1,17 @@
-classdef S2Computer < Computer
+classdef S1 < Computer
     properties (Access = public)
         k = 30;
     end
     
     methods (Access = public)
         
-        function obj = S2Computer(k)
+        function obj = S1(k)
             if nargin > 0
                 obj.k = k;
             end
+            obj.name = 'S1';
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,'n');
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,'n');
         end
         
         function computedSignal = compute(obj,signal)
@@ -20,19 +23,19 @@ classdef S2Computer < Computer
                 leftHalf = signal(signalIdx - obj.k : signalIdx - 1);
                 rightHalf = signal(signalIdx + 1 : signalIdx + obj.k);
                 
-                leftMean = mean(signalX - leftHalf);
-                rightMean = mean(signalX - rightHalf);
-                computedSignal(signalIdx) = (leftMean + rightMean) / 2;
+                leftMaximum = max(signalX - leftHalf);
+                rightMaximum = max(signalX - rightHalf);
+                computedSignal(signalIdx) = (leftMaximum + rightMaximum) / 2;
             end
         end
         
         
-        function str = toString(~)
-            str = 'S2';
+        function str = toString(obj)
+            str = sprintf('%s_%d',obj.name,obj.k);
         end
         
         function editableProperties = getEditableProperties(obj)
-            editableProperties = Property('k',obj.k);
+            editableProperties = Property('k',obj.k,1,50);
         end
     end
 end

@@ -155,9 +155,7 @@ You don't need to assign every class to a group in a labeling strategy. A class 
 
 6. The WDK offers a Matlab App to support you in each stage of the development your wearable applications. Look for the respective App in each directory.
 
-## Tipps
-
-* The default data paths can be changed in the *Constants* class.  
+*Note: The default data paths can be changed in the Constants class*.  
  
  ## Troubleshooting
 

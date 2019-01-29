@@ -1,4 +1,4 @@
-classdef AxisSelectorComputer < Computer
+classdef AxisSelector < Computer
     
     properties (Access = public)
         axes;
@@ -6,10 +6,13 @@ classdef AxisSelectorComputer < Computer
     
     methods (Access = public)
         
-        function obj = AxisSelectorComputer(axes)
+        function obj = maxValue(axes)
             if nargin > 0
                 obj.axes = axes;
             end
+            obj.name = 'AxisSel';
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,'nxn');
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,'nx1');
         end
         
         function computedSignal = compute(obj,signal)
@@ -24,7 +27,7 @@ classdef AxisSelectorComputer < Computer
         function str = toString(obj)
             axesStr = Helper.arrayToString(obj.axes);
             axesStr = strrep(axesStr,'\n','');
-            str = sprintf('AxisSel%s',axesStr);
+            str = sprintf('%s%s',obj.name,axesStr);
         end
         
         function editableProperties = getEditableProperties(obj)

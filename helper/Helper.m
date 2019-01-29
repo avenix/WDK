@@ -139,6 +139,16 @@ classdef Helper < handle
         
         %% Helper methods
         
+        function events = CreateEventsWithEventLocations(eventLocations)
+            nEvents = length(eventLocations);
+            events = repmat(EventAnnotation,1,nEvents);
+            
+            for i = 1 : nEvents
+                eventLocation = eventLocations(i);
+                events(i) = EventAnnotation(eventLocation,[]);
+            end
+        end
+        
         function str = getOnOffString(isOn)
             str = 'Off';
             if(isOn)

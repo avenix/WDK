@@ -1,14 +1,13 @@
 classdef (Abstract) Computer < handle
     
     properties (Access = public)
-        expectedNumInputSignals;
+        inputPort;
+        outputPort;
         name;
     end
     
     methods (Abstract)
         computedSignal = compute(obj,signal);
-        str = toString(obj);
-        editableProperties = getEditableProperties(obj);
     end
     
     methods (Access = public)
@@ -16,6 +15,14 @@ classdef (Abstract) Computer < handle
         function setProperty(obj, property)
             setExpression = sprintf('obj.%s=%d;',property.name,property.value);
             eval(setExpression);
+        end
+        
+        function str = toString(obj)
+            str = sprintf('%s',obj.name);
+        end
+        
+        function editableProperties = getEditableProperties(obj)
+            editableProperties = [];
         end
     end
 end

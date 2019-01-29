@@ -1,4 +1,4 @@
-classdef MatlabPeakDetector < EventDetector
+classdef MatlabPeakDetector < Computer
     
     properties (Constant)            
         kBestPeakHeight = single(180);
@@ -14,12 +14,8 @@ classdef MatlabPeakDetector < EventDetector
         
         function obj = MatlabPeakDetector()
             obj.name = 'matlab';
-            obj.resetVariables();
-        end
-        
-        function resetVariables(obj)
-            obj.minPeakHeight = MatlabPeakDetector.kBestPeakHeight;
-            obj.minPeakDistance = MatlabPeakDetector.kBestMinPeakDistance;
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,'nx1');
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,'event');
         end
         
         function str = toString(obj)
@@ -28,12 +24,12 @@ classdef MatlabPeakDetector < EventDetector
         
         function computedSignal = compute(obj,signal)
             eventLocations = obj.detectEvents(signal);
-            computedSignal = EventDetector.CreateEventsWithEventLocations(eventLocations);  
+            computedSignal = Helper.CreateEventsWithEventLocations(eventLocations);
         end
         
         function editableProperties = getEditableProperties(obj)
-            minPeakHeightProperty = Property('minPeakHeight',obj.minPeakHeight);
-            minPeakDistanceProperty = Property('minPeakDistance',obj.minPeakDistance);
+            minPeakHeightProperty = Property('minPeakHeight',obj.minPeakHeight,80,180);
+            minPeakDistanceProperty = Property('minPeakDistance',obj.minPeakDistance,80,200);
             editableProperties = [minPeakHeightProperty,minPeakDistanceProperty];
         end
         
