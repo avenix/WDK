@@ -12,32 +12,28 @@ classdef SegmentsGrouper < handle
         
         %takes input from ManualSegmentsLoader.loadSegments()
         %returns cell array. In each cell i, contains segments of class i
-        function groupedSegments = groupSegments(obj,segments,labelingStrategy)
+        function groupedSegments = groupSegments(obj,segments,nClasses)
             
-            nClasses = labelingStrategy.numClasses;
-            groupedSegments = cell(nClasses,1);
+            groupedSegments = cell(nClasses+1,1);
             
-            nSegmentsPerClass = obj.countManualSegmentsPerClass(segments,nClasses,labelingStrategy);
-            for i = 1 : labelingStrategy.numClasses
+            nSegmentsPerClass = obj.countManualSegmentsPerClass(segments,nClasses);
+            for i = 1 : nClasses
                 nSegmentsCurrentClass = nSegmentsPerClass(i);
                 if nSegmentsCurrentClass > 0
                     groupedSegments{i}(nSegmentsCurrentClass) = Segment();
                 end
             end
             
-            segmentCounterPerClass = zeros(1,nClasses);
+            segmentCounterPerClass = zeros(1,nClasses+1);
             for currentFile = 1 : length(segments)
                 fileSegments = segments{currentFile};
                 for i = 1 : length(fileSegments)
                     segment = fileSegments(i);
-                    if segment.class ~= obj.classesMap.synchronisationClass && segment.class ~= ClassesMap.kInvalidClass
-                        label = labelingStrategy.labelForClass(segment.class);
-                        newSegment = Segment(segment.file,segment.window,label,segment.eventIdx);
-                        counter = segmentCounterPerClass(newSegment.class);
-                        counter = counter + 1;
-                        segmentCounterPerClass(newSegment.class) = counter;
-                        groupedSegments{newSegment.class}(counter) = newSegment;
-                    end
+                    class = obj.labelForSegment(segment,nClasses);
+                    counter = segmentCounterPerClass(class);
+                    counter = counter + 1;
+                    segmentCounterPerClass(class) = counter;
+                    groupedSegments{class}(counter) = segment;
                 end
             end
         end
@@ -83,20 +79,23 @@ classdef SegmentsGrouper < handle
     end
     
     methods (Access = private)
-        function nSegmentsPerClass = countManualSegmentsPerClass(obj,segments, nClasses, labelingStrategy)
-            nSegmentsPerClass = zeros(1,nClasses);
+        function label = labelForSegment(~,segment,nClasses)
+            label = segment.label;
+            if segment.label == 0
+                label = nClasses+1;
+            end
+        end
+        
+        function nSegmentsPerClass = countManualSegmentsPerClass(obj,segmentsPerFile, nClasses)
+            nSegmentsPerClass = zeros(1,nClasses+1);
             
-            for currentFile = 1 : length(segments)
-                fileSegments = segments{currentFile};
-                for i = 1 : length(fileSegments)
-                    segment = fileSegments(i);
-                    if (segment.class ~= obj.classesMap.synchronisationClass && segment.class ~= ClassesMap.kInvalidClass)
-                        label = labelingStrategy.labelForClass(segment.class);
-                        nSegmentsPerClass(label) = nSegmentsPerClass(label) + 1;
-                    end
+            for currentFile = 1 : length(segmentsPerFile)
+                segments = segmentsPerFile{currentFile};
+                for i = 1 : length(segments)
+                    class = obj.labelForSegment(segments(i),nClasses);
+                    nSegmentsPerClass(class) = nSegmentsPerClass(class) + 1;
                 end
             end
-            
             
         end
     end

@@ -6,20 +6,20 @@ classdef AxisSelector < Computer
     
     methods (Access = public)
         
-        function obj = maxValue(axes)
+        function obj = AxisSelector(axes)
             if nargin > 0
                 obj.axes = axes;
             end
             obj.name = 'AxisSel';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,'nxn');
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal,'nx1');
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kNxN);
         end
         
         function computedSignal = compute(obj,signal)
             nCols = size(signal,2);
             maxExpectedAxes = max(obj.axes);
             if nCols <= maxExpectedAxes
-                fprintf('AxisSelectorComputer - %s. input size has: %d columns but should have up to %d columns',Constants.kInvalidInputError,nCols,maxExpectedAxes);
+                fprintf('AxisSelector - %s. input size has: %d columns but should have up to %d columns',Constants.kInvalidInputError,nCols,maxExpectedAxes);
             end
             computedSignal = signal(:,obj.axes);
         end
@@ -34,4 +34,5 @@ classdef AxisSelector < Computer
             editableProperties = Property('axes',array2JSON(obj.axes));
         end
     end
+    
 end

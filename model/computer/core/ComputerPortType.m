@@ -1,10 +1,12 @@
 classdef ComputerPortType < uint8
     enumeration
-        kSignal (0)
-        kEvent (1)
-        kSegment (2)
-        kFeature (3)
-        kFeatureVector (4)
+        kDataFile (0)
+        kSignal (1)
+        kEvent (2)
+        kSegment (3)
+        kFeature (4)
+        kFeatureVector (5)
+        kAny (6)
+        kNull (7)
     end
-   
 end

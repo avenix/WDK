@@ -1,17 +1,17 @@
-classdef S1 < Computer
+classdef S2 < Computer
     properties (Access = public)
         k = 30;
     end
     
     methods (Access = public)
         
-        function obj = S1(k)
+        function obj = S2(k)
             if nargin > 0
                 obj.k = k;
             end
-            obj.name = 'S1';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,'n');
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal,'n');
+            obj.name = 'S2';
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
         end
         
         function computedSignal = compute(obj,signal)
@@ -23,12 +23,11 @@ classdef S1 < Computer
                 leftHalf = signal(signalIdx - obj.k : signalIdx - 1);
                 rightHalf = signal(signalIdx + 1 : signalIdx + obj.k);
                 
-                leftMaximum = max(signalX - leftHalf);
-                rightMaximum = max(signalX - rightHalf);
-                computedSignal(signalIdx) = (leftMaximum + rightMaximum) / 2;
+                leftMean = mean(signalX - leftHalf);
+                rightMean = mean(signalX - rightHalf);
+                computedSignal(signalIdx) = (leftMean + rightMean) / 2;
             end
         end
-        
         
         function str = toString(obj)
             str = sprintf('%s_%d',obj.name,obj.k);

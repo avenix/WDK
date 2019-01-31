@@ -1,17 +1,21 @@
 classdef ComputerPort < handle
     properties
         type ComputerPortType
-        size
+        size ComputerSizeType
     end
     
     methods(Access = public)
         function obj = ComputerPort(type,size)
             obj.type = type;
-            obj.size = size;
+            if(nargin > 1)
+                obj.size = size;
+            else
+                obj.size = ComputerSizeType.kOne;
+            end
         end
         
         function b = isSameType(obj,portType)
-            b = (portType.type == obj.type && strcmp(portType.size, obj.size));
+            b = (portType.type == obj.type && portType.size == obj.size);
         end
     end
 end

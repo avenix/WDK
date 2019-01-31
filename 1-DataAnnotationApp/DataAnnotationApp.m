@@ -96,14 +96,15 @@ classdef DataAnnotationApp < handle
             obj.uiHandles.addRangeAnnotationButton.Callback = @obj.handleAddRangeClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
 
-
             obj.resetUI();
             obj.loadPlotAxes();
             obj.setUserClickHandle();
             obj.populateFileNamesList();
             obj.populateClassesList();
             
+            signalComputers = Computer.PreprocessingComputers();
             obj.preprocessingConfigurator = PreprocessingConfiguratorAnnotationApp(...
+                signalComputers,...
                 obj.uiHandles.signalsList,...
                 obj.uiHandles.signalComputerList,...
                 obj.uiHandles.signalComputerVariablesTable);
@@ -381,7 +382,7 @@ classdef DataAnnotationApp < handle
         
         %% UI
         function class = getSelectedClass(obj)
-            class = uint8(obj.uiHandles.classesList.Value);
+            class = int8(obj.uiHandles.classesList.Value);
         end
 
         function updateSelectingPeaksCheckbox(obj)
@@ -516,7 +517,7 @@ classdef DataAnnotationApp < handle
             eventAnnotations = obj.annotationSet.eventAnnotations;
             for i = 1 : length(eventAnnotations)
                 manualAnnotation = eventAnnotations(i);
-                if manualAnnotation.label == obj.classesMap.synchronisationClass
+                if manualAnnotation.label == ClassesMap.kSynchronisationClass
                     firstSynchronisatonSample = manualAnnotation.sample;
                     break;
                 end
@@ -528,7 +529,7 @@ classdef DataAnnotationApp < handle
             eventAnnotations = obj.annotationSet.eventAnnotations;
             for i = length(eventAnnotations) : -1 : 1
                 manualAnnotation = eventAnnotations(i);
-                if manualAnnotation.label == obj.classesMap.synchronisationClass
+                if manualAnnotation.label == ClassesMap.kSynchronisationClass
                     lastSynchronisatonSample = manualAnnotation.sample;
                     break;
                 end

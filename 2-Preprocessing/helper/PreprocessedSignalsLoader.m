@@ -10,7 +10,7 @@ classdef PreprocessedSignalsLoader < handle
             if nargin == 1
                 obj.preprocessor = preprocessor;
             else
-                obj.preprocessor = SignalComputer.NoOpComputer();
+                obj.preprocessor = NoOp();
             end
         end
         

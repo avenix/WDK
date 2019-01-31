@@ -54,7 +54,7 @@ classdef DataAnnotationMarkersPlotter < handle
         end
         
         function toggleMarkersVisibility(obj,visible)
-            visibleStr = MarkersPlotter.getVisibleStr(visible);
+            visibleStr = DataAnnotationMarkersPlotter.getVisibleStr(visible);
             for i = 1 : length(obj.markerHandles)
                 markerHandle = obj.markerHandles(i);
                 markerHandle.textHandle.Visible = visibleStr;

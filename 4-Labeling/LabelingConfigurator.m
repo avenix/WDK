@@ -62,9 +62,9 @@ classdef LabelingConfigurator < handle
         
         function fillGroupingTable(obj)
             labelingStrategy = obj.getCurrentLabelingStrategy();
-            nRows = length(labelingStrategy.classNames);
-            selected = labelingStrategy.isRelevantLabel(1:nRows);
-            obj.selectedLabelsTable.Data = table(labelingStrategy.classNames',selected');
+            nRows = labelingStrategy.numClasses;
+            selected = true(nRows,1);
+            obj.selectedLabelsTable.Data = table(labelingStrategy.classNames',selected);
         end
     end
 end

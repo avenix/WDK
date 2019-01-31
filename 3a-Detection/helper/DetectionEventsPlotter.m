@@ -98,8 +98,8 @@ classdef DetectionEventsPlotter < handle
                     eventX = event.sample;
                     eventY = signal(eventX);
                     label = event.label;
-                    if label == obj.labelingStrategy.nullClass
-                        classStr = Constants.nullClassGroupStr;
+                    if label == ClassesMap.kNullClass
+                        classStr = Constants.kNullClassGroupStr;
                     else
                         classStr = obj.labelingStrategy.classNames{label};
                     end

@@ -2,7 +2,7 @@ classdef AnnotationSet < handle
    properties (Access = public)
        eventAnnotations;
        rangeAnnotations;
-       file;
+       fileName;
    end
    
    methods (Access = public)

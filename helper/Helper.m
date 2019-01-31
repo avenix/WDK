@@ -62,14 +62,15 @@ classdef Helper < handle
             fileName = sprintf('%s-markers.txt',fileName);
         end
         
-        function fileName = addDataFileExtension(fileName)
-            fileName = sprintf('%s-hand.txt',fileName);
-        end
-        
         function fileName = removeFileExtension(dataFileName)
             n = length(dataFileName);
             periodIdx = strfind(flip(dataFileName),'.');
             fileName = dataFileName(1:n-periodIdx(1));
+        end
+        
+        function fileName = removeAnnotationsExtension(fileName)
+            idx = strfind(fileName,'-annotations');
+            fileName = fileName(1:idx-1);
         end
         
         function fileNames = removeDataFileExtensionForFiles(dataFileNames)

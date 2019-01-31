@@ -30,20 +30,19 @@ classdef DataLoader < handle
             tableExporter.exportTable(table,fileName);
         end
         
-        
-        function [data, columnNames] = loadAllDataFiles(obj)
+        function data = loadAllDataFiles(obj)
             fileNames = Helper.listDataFiles();
-            [data, columnNames] = obj.loadDataFiles(fileNames);
+            data = obj.loadDataFiles(fileNames);
         end
         
-        function [data, columnNames] = loadDataFiles(~,fileNames)
+        function dataFiles = loadDataFiles(~,fileNames)
             nDataFiles = length(fileNames);
-            data = cell(1,nDataFiles);
-            columnNames = cell(1,nDataFiles);
+            dataFiles = repmat(DataFile,1,nDataFiles);
             
             for i = 1 : length(fileNames)
                 fileName = fileNames{i};
-                [data{i}, columnNames{i}] = DataLoader.loadDataFileWithFullPath(fileName);
+                [data, columnNames] = DataLoader.loadDataFileWithFullPath(fileName);
+                dataFiles(i) = DataFile(fileName,data,columnNames);
             end 
         end
         
@@ -82,7 +81,7 @@ classdef DataLoader < handle
             for i = 1 : length(annotationFiles)
                 annotationsFileName = annotationFiles{i};
                 annotationSet = obj.loadAnnotations(annotationsFileName);
-                annotationSet.file = annotationsFileName;
+                annotationSet.fileName = annotationsFileName;
                 annotations(i) = annotationSet;
             end
         end

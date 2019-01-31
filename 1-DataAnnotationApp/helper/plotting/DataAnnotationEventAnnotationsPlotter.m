@@ -98,7 +98,7 @@ classdef DataAnnotationEventAnnotationsPlotter < handle
         
         %adds an object so the map knows it's storing these objects
         function initAnnotationsMap(obj)
-            eventAnnotation = EventAnnotation(uint32(1),uint8(1));
+            eventAnnotation = EventAnnotation(uint32(1),int8(1));
             demoPeak = DataAnnotationEventPlotHandle(eventAnnotation,1,1);
             obj.annotationsMap = containers.Map(uint32(1),demoPeak);
             remove(obj.annotationsMap,1);

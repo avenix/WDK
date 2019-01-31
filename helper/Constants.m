@@ -9,7 +9,7 @@ classdef Constants < handle
         precomputedPath = './data/cache';
         labelingStrategiesPath = './data/labeling';
         synchronisationClassStr = 'synchronisation';
-        nullClassGroupStr = 'NULL';
+        kNullClassGroupStr = 'NULL';
         SynchronisatonMarker = 3;
         
         kTrainDataFileName = 'trainData';
@@ -31,5 +31,9 @@ classdef Constants < handle
         kLabelingStrategyNotSetWarning = 'Warning - DetectionResultsComputer - calling computeDetectionResults but labelingStrategy not set'
         kIncorretlyMappedClassWarning = 'Warning - GroupedClassLabeling - class is not mapped correctly';
         kConstantFeaturesWarning = 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
+        
+        kSharedVariableCurrentDataFile = 'currentFile';
+        kSharedVariableCurrentAnnotationFile = 'annotationFile';
+        kSharedVariableCurrentLabelingStrategy = 'currentLabelingStrategy';
     end
 end

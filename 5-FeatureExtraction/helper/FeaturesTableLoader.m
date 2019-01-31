@@ -47,14 +47,14 @@ classdef FeaturesTableLoader < handle
             for i = 1 : nSegments
                 segment = segments(i);
                 
-                if  obj.shouldProcessLabel(segment.class)
+                if  obj.shouldProcessLabel(segment.label)
                     
                     segmentsCounter = segmentsCounter + 1;
                     
                     featureVectors(segmentsCounter,1:nFeatures) = obj.featureExtractor.extractFeaturesForSegment(segment);
                     
-                    if ~isempty(segment.class)
-                        featureVectors(segmentsCounter,nColumns) = segment.class;
+                    if ~isempty(segment.label)
+                        featureVectors(segmentsCounter,nColumns) = segment.label;
                     end
                 end
             end

@@ -1,21 +1,16 @@
 classdef MatlabPeakDetector < Computer
     
-    properties (Constant)            
-        kBestPeakHeight = single(180);
-        kBestMinPeakDistance = int32(400);
-    end
-    
     properties
-        minPeakHeight;
-        minPeakDistance;
+        minPeakHeight = single(180);
+        minPeakDistance = int32(400);
     end
     
     methods  (Access = public)
         
         function obj = MatlabPeakDetector()
             obj.name = 'matlab';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,'nx1');
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal,'event');
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.outputPort = ComputerPort(ComputerPortType.kEvent);
         end
         
         function str = toString(obj)

@@ -4,7 +4,6 @@ classdef ClassLabelingStrategy < handle
     properties (Access = public)
         numClasses;
         classNames = {};
-        nullClass;
         name;
     end
     
@@ -22,20 +21,10 @@ classdef ClassLabelingStrategy < handle
                 obj.name = 'default (no grouping)';
             end
             obj.generateClassesMap(classGroups);
-            strIdx = Helper.findStringInCellArray(obj.classNames,Constants.nullClassGroupStr);
-            if strIdx > 0
-                obj.nullClass = strIdx;
-            else
-                obj.nullClass = obj.numClasses + 1;
-            end
         end
 
-        function result = isRelevantLabel(obj,classLabel)
-            result = (classLabel ~= obj.nullClass);
-        end
-        
         function label = labelForClass(obj, class)
-            if class > 0 && class <= length(obj.classesMap)
+            if (class > 0 && class <= length(obj.classesMap))
                 label = obj.classesMap(class);
             else
                 label = class;
@@ -46,8 +35,7 @@ classdef ClassLabelingStrategy < handle
             nClasses = length(classes);
             labels = zeros(nClasses,1);
             for i = 1 : nClasses
-                class = classes(i);
-                labels(i) = obj.labelForClass(class);
+                labels(i) = obj.labelForClass(classes(i));
             end
         end
         

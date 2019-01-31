@@ -3,7 +3,7 @@ classdef Segment < handle
     properties (Access = public)
         file;
         window;
-        class;
+        label;
         eventIdx;
         startSample;
         endSample;
@@ -14,7 +14,7 @@ classdef Segment < handle
             if nargin > 3 %enable initialisation with no params
                 obj.file = file;
                 obj.window = window;
-                obj.class = class;
+                obj.label = class;
                 obj.eventIdx = eventIdx;
             end
         end

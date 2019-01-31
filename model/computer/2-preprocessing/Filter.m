@@ -10,6 +10,8 @@ classdef(Abstract) Filter < Computer
         
         function str = toString(obj)
             str = sprintf('%s_%d_%d',obj.name,obj.order,obj.cutoff);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal, ComputerSizeType.kN);
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
         end
         
         function editableProperties = getEditableProperties(obj)

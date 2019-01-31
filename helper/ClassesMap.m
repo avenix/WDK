@@ -1,13 +1,15 @@
-%Singleton class, use instance() to instantiate. 
+%Singleton class, use instance() to instantiate.
 classdef ClassesMap < handle
     
     properties (Access = public, Constant)
+        kSynchronisationClass = -2;
         kInvalidClass = -1;
+        kNullClass = 0;
         synchronisationStr = 'synchronisation';
     end
     
     properties (Access = public)
-        synchronisationClass;
+        
         numClasses;
         classesList;
     end
@@ -30,13 +32,14 @@ classdef ClassesMap < handle
     end
     
     methods (Access = public)
-        function valid = isValidLabel(obj,labelStr)
         
+        function valid = isValidLabel(obj,labelStr)
+            
             valid = isKey(obj.classesMap,labelStr);
         end
         
         function classStr = stringForClassAtIdx(obj,idx)
-            if idx == obj.synchronisationClass
+            if idx == obj.kSynchronisationClass
                 classStr = obj.synchronisationStr;
             else
                 classStr = obj.classesList{idx};
@@ -51,29 +54,33 @@ classdef ClassesMap < handle
                     fprintf('%s: %s\n',Constants.kUndefinedClassError,classStr);
                     idx = [];
                 else
-                idx = obj.classesMap(classStr);
+                    idx = obj.classesMap(classStr);
                 end
             end
         end
     end
     
+    methods (Static)
+        function b = ShouldIgnoreLabels(labels)
+            b = (labels == ClassesMap.kSynchronisationClass | labels == ClassesMap.kInvalidClass);
+        end
+    end
     
     methods (Access = private)
         
-      % Guard the constructor against external invocation.  We only want
-      % to allow a single instance of this class.  See description in
-      % Singleton superclass.
-      function obj = ClassesMap()
-          
+        % Guard the constructor against external invocation.  We only want
+        % to allow a single instance of this class.  See description in
+        % Singleton superclass.
+        function obj = ClassesMap()
+            
             obj.classesList = obj.loadClassesFile();
             if ~isempty(obj.classesList)
                 obj.numClasses = length(obj.classesList);
-                obj.synchronisationClass = 0; %obj.numClasses + 1;
                 obj.createClassesMap(obj.classesList);
             end
             
-      end
-      
+        end
+        
         function classesList = loadClassesFile(~)
             
             [fileID,~] = fopen(Constants.classesPath);
@@ -93,8 +100,8 @@ classdef ClassesMap < handle
         function createClassesMap(obj,classesList)
             if ~isempty(classesList)
                 nClasses = length(classesList);
-                obj.classesMap = containers.Map(classesList,uint8(1:nClasses));
-                obj.classesMap(ClassesMap.synchronisationStr) = obj.synchronisationClass; %uint8(nClasses+1);
+                obj.classesMap = containers.Map(classesList,int8(1:nClasses));
+                obj.classesMap(ClassesMap.synchronisationStr) = obj.kSynchronisationClass;
             end
         end
     end

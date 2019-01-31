@@ -12,24 +12,26 @@ classdef ManualSegmentation < Segmentation
     end
     
     methods (Access = public)
-        function obj = ManualSegmentation()
+        function obj = ManualSegmentation(manualAnnotations)
+            obj.createAnnotationsMap(manualAnnotations);
             obj.classesMap = ClassesMap.instance();
             obj.includeEvents = true;
             obj.includeRanges = true;
-            obj.type = 'manual';
+            obj.name = 'manual';
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.outputPort = ComputerPort(ComputerPortType.kSegment);
         end
         
-        function resetVariables(obj)
-            resetVariables@Segmentation(obj);
-        end
-
-        function outData = compute(obj,inData)
-            outData = obj.segment(inData);
+        function segments = compute(obj,data)
+            fileName = Helper.removeFileExtension(data.fileName);
+            if obj.manualAnnotations.isKey(fileName)
+                obj.currentAnnotations = obj.manualAnnotations(fileName);
+                segments = obj.segmentFile(data);
+            end
         end
         
-        %returns labeled segments
-        function segments = segment(obj,dataFiles)
-            
+        %{
+        function segments = compute(obj,dataFiles)
             nFiles = length(dataFiles);
             nAnnotations = length(obj.manualAnnotations);
             if nFiles ~= nAnnotations
@@ -45,6 +47,7 @@ classdef ManualSegmentation < Segmentation
                 end
             end
         end
+        %}
         
         function str = toString(obj)
             includeEventsStr = "";
@@ -63,14 +66,23 @@ classdef ManualSegmentation < Segmentation
     
     methods (Access = private)
         
+        function createAnnotationsMap(obj,annotations)
+            obj.manualAnnotations = containers.Map;
+            for i = 1 : length(annotations)
+                fileName = annotations(i).fileName;
+                fileName = Helper.removeAnnotationsExtension(fileName);
+                obj.manualAnnotations(fileName) = annotations(i);
+            end
+        end
+        
         function segments = segmentFile(obj,data)
             
             if(obj.includeEvents)
-                eventSegments = obj.createManualSegmentsWithEvents(data);
+                eventSegments = obj.createManualSegmentsWithEvents(data.data);
             end
             
             if(obj.includeRanges)
-                rangeSegments = obj.createSegmentsWithRangeAnnotations(data);
+                rangeSegments = obj.createSegmentsWithRangeAnnotations(data.data);
             end
             
             if(obj.includeEvents && obj.includeRanges)
@@ -86,28 +98,27 @@ classdef ManualSegmentation < Segmentation
             %eliminate invalid
             eventAnnotations = obj.currentAnnotations.eventAnnotations;
             labels = [eventAnnotations.label];
-            validIdxs = (labels ~= obj.classesMap.synchronisationClass & labels ~= ClassesMap.kInvalidClass);
+            validIdxs = (labels ~= obj.classesMap.kSynchronisationClass & labels ~= ClassesMap.kInvalidClass);
             labels = labels(validIdxs);
             eventLocations = [eventAnnotations(validIdxs).sample];
             
-            segments = EventDetector.CreateEventsWithEventLocations(eventLocations);  
+            segments = Helper.CreateEventsWithEventLocations(eventLocations);  
             segments = obj.createSegmentsWithEvents(segments,data);
             
             %label segments
             for i = 1 : length(segments)
-                segments(i).class = labels(i);
+                segments(i).label = labels(i);
             end
         end
         
         function segments = createSegmentsWithRangeAnnotations(obj,data)
             rangeAnnotations = obj.currentAnnotations.rangeAnnotations;
-            file = obj.manualAnnotations.file;
             nSegments = length(rangeAnnotations);
             segments = repmat(Segment,1,nSegments);
             for i = 1 : length(rangeAnnotations)
                 rangeAnnotation = rangeAnnotations(i);
                 window = data(rangeAnnotation.startSample:rangeAnnotation.endSample,:);
-                segments(i) = Segment(file,window,rangeAnnotation.label,-1);
+                segments(i) = Segment(obj.currentAnnotations.fileName,window,rangeAnnotation.label,-1);
                 segments(i).startSample = rangeAnnotation.startSample;
                 segments(i).endSample = rangeAnnotation.endSample;
             end

@@ -44,17 +44,8 @@ classdef SegmentationConfigurator < handle
     
     methods(Access = private)
         
-        function fillSegmentationList(obj)
-            
-            nSegmentationStrategies = length(obj.segmentationStrategies);
-            segmentationStrategyNames = cell(1,nSegmentationStrategies);
-        
-            for i = 1 : nSegmentationStrategies
-                name = obj.segmentationStrategies{i}.type;
-                segmentationStrategyNames{i} = name;
-            end
-            
-            obj.segmenationStrategiesList.Items = segmentationStrategyNames;
+        function fillSegmentationList(obj)            
+            obj.segmenationStrategiesList.Items = Helper.generateComputerNamesArray(obj.segmentationStrategies);
         end
 
         function segmentationStrategy = getCurrentSegmentationStrategy(obj)

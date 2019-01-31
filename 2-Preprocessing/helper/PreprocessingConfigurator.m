@@ -19,14 +19,13 @@ classdef PreprocessingConfigurator < handle
     end
     
     methods (Access = public)
-        function obj = PreprocessingConfigurator(signalsList,signalComputersList,signalComputerVariablesTable)
+        function obj = PreprocessingConfigurator(signalComputers, signalsList,signalComputersList,signalComputerVariablesTable)
+            
+            obj.signalComputers = signalComputers;
             obj.signalsList = signalsList;
             obj.signalComputersList = signalComputersList;
             obj.signalComputerVariablesTable = signalComputerVariablesTable;
-            
             obj.signalComputersList.ValueChangedFcn = @obj.handleSelectedSignalComputerChanged;
-            
-            obj.loadSignalComputers();
             
             if ~isempty(obj.signalComputersList)
                 obj.fillSignalComputersList();
@@ -75,7 +74,7 @@ classdef PreprocessingConfigurator < handle
             end
             
             selectedSignals = obj.getSelectedSignalIdxs();
-            axisSelector = AxisSelectorComputer();
+            axisSelector = AxisSelector();
             axisSelector.axes = selectedSignals;
             
             computer = SequentialComputer({axisSelector, signalComputer});
@@ -98,10 +97,6 @@ classdef PreprocessingConfigurator < handle
             obj.signalsList.Value = obj.signalsList.Items{1};
         end
         
-        function fillSignalComputersList(obj)
-            obj.signalComputersList.Items = obj.signalComputerStrings;
-        end
-        
         function fillSignalsList(obj)
             obj.signalsList.Items = obj.columnNames;
         end
@@ -116,34 +111,13 @@ classdef PreprocessingConfigurator < handle
         end
         
         %methods
-        function fillsignalComputersList(obj)
-            obj.signalComputersList.String = obj.signalComputerStrings;
+        function fillSignalComputersList(obj)
+            obj.signalComputersList.Items = Helper.generateComputerNamesArray(obj.signalComputers);
         end
         
-        function fillsignalList(obj)
+        function fillSignalList(obj)
             obj.signalsList.String = obj.columnNames;
         end        
-        
-        function loadSignalComputers(obj)
-            
-            lowPassFilter = LowPassFilter(1,1);
-            highPassFilter = HighPassFilter(1,1);
-            
-            lowPassFilterComputer = FilterComputer(lowPassFilter);
-            highPassFilterComputer = FilterComputer(highPassFilter);
-            
-            s1computer = S1Computer(30);
-            s2computer = S2Computer(30);
-            
-            obj.signalComputers = {SignalComputer.NoOpComputer(),...
-                lowPassFilterComputer, ...
-                highPassFilterComputer,...
-                s1computer,s2computer,SignalComputer.EnergyComputer()};
-            
-            obj.signalComputerStrings = {'NoOpComputer',...
-                'LowPassFilter',...
-                'HighPassFilter','S1','S2','E'};
-        end
         
         %handles
         function handleSelectedSignalComputerChanged(obj,~,~)

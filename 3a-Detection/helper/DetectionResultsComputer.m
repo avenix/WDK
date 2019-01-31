@@ -4,14 +4,15 @@ classdef DetectionResultsComputer < handle
     properties (Access = public)
         tolerance = 10;
         labelingStrategy;
-        classesMap;
         positiveLabels;
     end
     
     methods (Access = public)
         
-        function obj = DetectionResultsComputer()
-            obj.classesMap = ClassesMap.instance();
+        function obj = DetectionResultsComputer(labelingStrategy)
+            if nargin > 1
+                obj.labelingStrategy = labelingStrategy;
+            end
         end
         
         %returns an array of DetectionResults (one for each file)
@@ -38,7 +39,7 @@ classdef DetectionResultsComputer < handle
             r = false(1,nLabels);
             for i = 1 : nLabels
                 label = labels(i);
-                if label == obj.labelingStrategy.nullClass
+                if label == ClassesMap.kNullClass
                     r(i) = false;
                 else
                     r(i) = obj.positiveLabels(label);
@@ -46,84 +47,81 @@ classdef DetectionResultsComputer < handle
             end
         end
         
-        function detectionResult = computeDetectionResultsForFile(obj,detectedEventLocations,eventAnnotations)
-            
-            labeler = EventsLabeler(obj.labelingStrategy);
-            labeler.tolerance = obj.tolerance;
-            labels = labeler.label(detectedEventLocations, eventAnnotations);
-            invalidIdxs = labeler.getInvalidLabels(labels);            
-            detectedEventLocations = detectedEventLocations(~invalidIdxs);
-            labels = labels(~invalidIdxs);
+        function detectionResult = computeDetectionResultsForFile(obj,detectedEvents,eventAnnotations)
 
-            %eliminate annotations
-            %invalidAnnotationIdxs = labeler.getInvalidLabels([eventAnnotations.label]);
-            %eventAnnotations = eventAnnotations(~invalidAnnotationIdxs);
+            isGoodEvent = obj.isRelevantLabels([detectedEvents.label]);
+            goodEvents = obj.computeGoodEvents(detectedEvents,isGoodEvent);
+            badEvents = obj.computeBadEvents(detectedEvents,isGoodEvent);
             
-            isGoodEvent = obj.isRelevantLabels(labels);
-            goodEvents = obj.computeGoodEvents(isGoodEvent,labels,detectedEventLocations);
-            badEvents = obj.computeBadEvents(detectedEventLocations,isGoodEvent,labels);
-            missedEvents = obj.computeMissedEvents(detectedEventLocations,eventAnnotations,labeler);
+            eventAnnotations = obj.removeIgnoredAnnotations(eventAnnotations);
+            mappedEventAnnotations = obj.mapAnnotations(eventAnnotations);
             
+            missedEvents = obj.computeMissedEvents(detectedEvents,mappedEventAnnotations);
             detectionResult = DetectionResult(goodEvents,missedEvents,badEvents);
         end
         
-        function goodEvents = computeGoodEvents(~,isGoodEvent,labels,detectedEventLocations)
+        function eventAnnotations = removeIgnoredAnnotations(~, eventAnnotations)
+            isValidLabel = ~ClassesMap.ShouldIgnoreLabels([eventAnnotations.label]);
+            eventAnnotations = eventAnnotations(isValidLabel);
+        end
+        
+        function mappedAnnotations = mapAnnotations(obj,eventAnnotations)
+            nAnnotations = length(eventAnnotations);
+            mappedAnnotations = repmat(EventAnnotation,1,nAnnotations);
+            for i = 1 : nAnnotations
+                eventAnnotation = eventAnnotations(i);
+                newLabel = obj.labelingStrategy.labelForClass(eventAnnotation.label);
+                mappedAnnotations(i) = EventAnnotation(eventAnnotation.sample,newLabel);
+            end
+        end
+        
+        function goodEvents = computeGoodEvents(~,detectedEvents, isGoodEvent)
             nGoodEvents = sum(isGoodEvent);
             goodEvents = [];
             if nGoodEvents > 0
                 goodEvents = repmat(EventAnnotation(),1,nGoodEvents);
-                goodEventIdx = 1;
-                for i = 1 : length(detectedEventLocations)
+                goodEventCount = 1;
+                for i = 1 : length(detectedEvents)
                     if isGoodEvent(i)
-                        eventLocation = detectedEventLocations(i);
-                        label = labels(i);
-                        goodEvents(goodEventIdx) = EventAnnotation(eventLocation,label);
-                        goodEventIdx = goodEventIdx + 1;
+                        goodEvents(goodEventCount) = detectedEvents(i);
+                        goodEventCount = goodEventCount + 1;
                     end
                 end
             end
         end
         
-        function badEvents = computeBadEvents(obj,detectedEventLocations,isGoodEvent, classes)
-            nSynchronisationInstances = sum(classes == obj.classesMap.synchronisationClass);
-            nBadEvents = sum(~isGoodEvent) - nSynchronisationInstances;
+        function badEvents = computeBadEvents(~,detectedEvents,isGoodEvent)
+            nBadEvents = sum(~isGoodEvent);
             badEvents = [];
             if nBadEvents > 0
                 badEvents = repmat(EventAnnotation(),1,nBadEvents);
-                %nullClass = obj.labelingStrategy.nullClass;
-                badEventIdx = 1;
-                for i = 1 : length(detectedEventLocations)
-                    class = classes(i);
+                eventCount = 1;
+                for i = 1 : length(detectedEvents)
                     if ~isGoodEvent(i)
-                        eventLocation = detectedEventLocations(i);
-                        badEvents(badEventIdx) = EventAnnotation(eventLocation,class);
-                        badEventIdx = badEventIdx + 1;
+                        badEvents(eventCount) = detectedEvents(i);
+                        eventCount = eventCount + 1;
                     end
                 end
             end
         end
         
-        function missedEvents = computeMissedEvents(obj,detectedEventLocations,annotations,labeler)
-            didMissEvent = obj.computeDidMissEvent(detectedEventLocations,annotations,labeler);
+        function missedEvents = computeMissedEvents(obj,detectedEvents,eventAnnotations)
+            didMissEvent = obj.computeDidMissEvent(detectedEvents,eventAnnotations);
             missedEvents = [];
             nMissedEvents = sum(didMissEvent);
             if nMissedEvents > 0
                 missedEvents = repmat(EventAnnotation,1,nMissedEvents);
-                missedEventCounter = 0;
+                missedEventCounter = 1;
                 for i = 1 : length(didMissEvent)
                     if didMissEvent(i)
-                        annotation = annotations(i);
-                        class = annotation.label;
-                        label = obj.labelingStrategy.labelForClass(class);
-                        eventLocation = annotation.sample;
+                        missedEvents(missedEventCounter) = eventAnnotations(i);
                         missedEventCounter = missedEventCounter + 1;
-                        missedEvents(missedEventCounter) = EventAnnotation(eventLocation,label);
                     end
                 end
             end
         end
         
-        function didMissEvent = computeDidMissEvent(obj,detectedEventLocations,annotations,labeler)
+        function didMissEvent = computeDidMissEvent(obj,detectedEvents,annotations)
             nEvents = length(annotations);
             
             didMissEvent = false(1,nEvents);
@@ -131,22 +129,21 @@ classdef DetectionResultsComputer < handle
             segmentStartings = [];
             segmentEndings = [];
 
+            detectedEventLocations = [detectedEvents.sample];
+            
             if ~isempty(detectedEventLocations)
                 segmentStartings = detectedEventLocations - obj.tolerance;
                 segmentEndings = detectedEventLocations + obj.tolerance;
             end
             
+            %relevantLabels = obj.isRelevantLabels(mappedLabels);
+            
             for i = 1 : length(annotations)
-                annotation = annotations(i);
-                class = annotation.label;
-                if labeler.isValidLabel(class)
-                    label = obj.labelingStrategy.labelForClass(class);
-                    if obj.isRelevantLabels(label)
-                        eventLocation = annotation.sample;
-                        contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
-                        if ~contained
-                            didMissEvent(i) = true;
-                        end
+                if obj.isRelevantLabels(annotations(i).label)
+                    eventLocation = annotations(i).sample;
+                    contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
+                    if ~contained
+                        didMissEvent(i) = true;
                     end
                 end
             end
