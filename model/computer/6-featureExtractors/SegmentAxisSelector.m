@@ -1,4 +1,4 @@
-classdef AxisSelector < Computer
+classdef SegmentAxisSelector < Computer
     
     properties (Access = public)
         axes;
@@ -6,22 +6,23 @@ classdef AxisSelector < Computer
     
     methods (Access = public)
         
-        function obj = AxisSelector(axes)
+        function obj = SegmentAxisSelector(axes)
             if nargin > 0
                 obj.axes = axes;
             end
-            obj.name = 'AxisSelector';
+            obj.name = 'SegmentAxisSelector';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
             obj.outputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kNxN);
         end
         
-        function computedSignal = compute(obj,signal)
-            nCols = size(signal,2);
+        function newSegment = compute(obj,segment)
+            nCols = size(segment.window,2);
             maxExpectedAxes = max(obj.axes);
             if nCols <= maxExpectedAxes
-                fprintf('AxisSelector - %s. input size has: %d columns but should have up to %d columns',Constants.kInvalidInputError,nCols,maxExpectedAxes);
+                fprintf('SegmentAxisSelector - %s. input size has: %d columns but should have up to %d columns',Constants.kInvalidInputError,nCols,maxExpectedAxes);
             end
-            computedSignal = signal(:,obj.axes);
+            newSegment = Segment.CreateSegmentWithSegment(segment);
+            newSegment.window = segment.window(:,obj.axes);
         end
         
         function str = toString(obj)

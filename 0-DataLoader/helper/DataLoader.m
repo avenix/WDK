@@ -35,13 +35,25 @@ classdef DataLoader < handle
             data = obj.loadDataFiles(fileNames);
         end
         
-        function dataFiles = loadDataFiles(~,fileNames)
+        function dataFiles = loadDataFilesFullPath(~,fileNames)
             nDataFiles = length(fileNames);
             dataFiles = repmat(DataFile,1,nDataFiles);
             
             for i = 1 : length(fileNames)
                 fileName = fileNames{i};
                 [data, columnNames] = DataLoader.loadDataFileWithFullPath(fileName);
+                dataFiles(i) = DataFile(fileName,data,columnNames);
+            end 
+        end
+        
+        function dataFiles = loadDataFiles(obj,fileNames)
+            
+            nDataFiles = length(fileNames);
+            dataFiles = repmat(DataFile,1,nDataFiles);
+            
+            for i = 1 : length(fileNames)
+                fileName = fileNames{i};
+                [data, columnNames] = obj.loadData(fileName);
                 dataFiles(i) = DataFile(fileName,data,columnNames);
             end 
         end

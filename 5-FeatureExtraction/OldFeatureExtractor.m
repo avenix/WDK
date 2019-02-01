@@ -1,4 +1,4 @@
-  classdef FeatureExtractor < handle
+  classdef OldFeatureExtractor < handle
 
     properties (Access = public, Constant)
         kSignalNames = {'lax','lay','laz','GravX','GravY','GravZ','MA'};

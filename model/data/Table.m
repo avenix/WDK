@@ -40,7 +40,7 @@ classdef Table < handle
     
     methods (Access = public)
         function obj = Table(table)
-            if nargin > 1
+            if nargin > 0
                 obj.table = table;
             end
         end

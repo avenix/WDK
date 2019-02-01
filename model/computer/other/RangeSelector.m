@@ -20,7 +20,7 @@ classdef RangeSelector < Computer
         function shorterSegment = compute(obj,segment)        
             shorterSegment = Segment.CreateSegmentWithSegment(segment);
             shorterSegment.window = segment.window(obj.rangeStart:obj.rangeEnd,:);
-            shorterSegment.startSample = segment.startSample + obj.rangeStart;
+            shorterSegment.startSample = segment.startSample + obj.rangeStart - 1;
             shorterSegment.endSample = segment.endSample - (length(segment.window) - obj.rangeEnd);
         end
         

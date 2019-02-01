@@ -94,7 +94,7 @@ classdef FeatureExtractor2 < handle
             
             statisticalFeatureExtractors = FeatureExtractor2.createStatisticalFeatureExtractors(kDefaultNumSignals,segmentRanges);
             %nStatisticalFeatureExtractors = length(statisticalFeatureExtractors);
-            defaultFeatureExtractor = SequentialComputer(statisticalFeatureExtractors);
+            %defaultFeatureExtractor = SequentialComputer(statisticalFeatureExtractors);
             
             %featureExtractors = repmat(SequentialComputer(),1,500);
             %featureExtractors(1:nStatisticalFeatureExtractors) = statisticalFeatureExtractors;
