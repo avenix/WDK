@@ -1,15 +1,7 @@
 classdef (Abstract) CompositeComputer < Computer
-    
-    properties (Constant)
-        kMaxSignalLength = 20;
-    end
-    
+
     properties (Access = public)
         computers;
-    end
-    
-    properties (Access = public, Abstract) 
-        type;
     end
     
     methods (Access = public)
@@ -23,7 +15,7 @@ classdef (Abstract) CompositeComputer < Computer
             if isempty(obj.computers)
                 str = "";
             else
-                str = obj.type;
+                str = obj.name;
                 
                 for i = 1 : length(obj.computers)
                     computerStr = obj.computerStringForIdx(i);
@@ -31,14 +23,7 @@ classdef (Abstract) CompositeComputer < Computer
                         str = sprintf('%s_%s',str,computerStr);
                     end
                 end
-                
-                classStrLength = min(CompositeComputer.kMaxSignalLength,length(str));
-                str = str(1:classStrLength);
             end
-        end
-        
-        function editableProperties = getEditableProperties(~)
-            editableProperties = [];
         end
     end
     

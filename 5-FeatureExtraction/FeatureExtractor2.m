@@ -1,5 +1,5 @@
-  classdef FeatureExtractor2 < handle
-
+classdef FeatureExtractor2 < handle
+    
     properties (Access = public)
         kSignalNames = {'lax','lay','laz','GravX','GravY','GravZ','MA'};
     end
@@ -76,7 +76,7 @@
     end
     
     methods (Static)
-        function featureExtractors = createDefaultFeatureExtractors()
+        function defaultFeatureExtractor = createDefaultFeatureExtractor()
             
             kDefaultNumSignals = 7;
             kDefaultSegmentSize = 451;
@@ -84,40 +84,42 @@
             kMiddlePartStart = 200;
             kMiddlePartEnd = 350;
             
-            kDefaultRange = FeatureRange(1,kDefaultSegmentSize);
+            %kDefaultRange = FeatureRange(1,kDefaultSegmentSize);
             
             segmentRanges = [FeatureRange(1,kMiddlePartStart-1),...
                 FeatureRange(kMiddlePartStart,kMiddlePartEnd),...
                 FeatureRange(kMiddlePartEnd+1,kDefaultSegmentSize)];
             
-            nSegmentRanges = length(segmentRanges);
+            %nSegmentRanges = length(segmentRanges);
             
             statisticalFeatureExtractors = FeatureExtractor2.createStatisticalFeatureExtractors(kDefaultNumSignals,segmentRanges);
-            nStatisticalFeatureExtractors = length(statisticalFeatureExtractors);
+            %nStatisticalFeatureExtractors = length(statisticalFeatureExtractors);
+            defaultFeatureExtractor = SequentialComputer(statisticalFeatureExtractors);
             
-            featureExtractors = repmat(FeatureComputer(),1,500);
-            featureExtractors(1:nStatisticalFeatureExtractors) = statisticalFeatureExtractors;
-            featureExtractorCounter = nStatisticalFeatureExtractors;
+            %featureExtractors = repmat(SequentialComputer(),1,500);
+            %featureExtractors(1:nStatisticalFeatureExtractors) = statisticalFeatureExtractors;
+            %featureExtractorCounter = nStatisticalFeatureExtractors;
             
             %{
             %quantile
             quantileComputer = QuantileComputer(4);
 
             for currentSignal = 1 : kDefaultNumSignals
-                featureComputer = FeatureComputer(quantileComputer,currentSignal,kDefaultRange);
+                featureComputer = SequentialComputer({quantileComputer,currentSignal,kDefaultRange});
                 featureComputer.numOutputSignals = 4;
                 featureExtractorCounter = featureExtractorCounter + 1;
                 featureExtractors(featureExtractorCounter) = featureComputer;
             end
             %}
             
+            %{
             %zrc
-            zeroCrossingComputer = SignalComputer("zrc",@zrc);
+            zeroCrossingComputer = Zrc();
             for currentSignal = 1 : kDefaultNumSignals-1
                 
                 for currentRange = 1 : nSegmentRanges
                     range = segmentRanges(currentRange);
-                    featureComputer = FeatureComputer(zeroCrossingComputer,currentSignal,range);
+                    featureComputer = SequentialComputer({zeroCrossingComputer,currentSignal,range});
                     featureExtractorCounter = featureExtractorCounter + 1;
                     featureExtractors(featureExtractorCounter) = featureComputer;
                 end
@@ -125,7 +127,7 @@
             
             %sma acceleration
             smaComputer = SignalComputer('smaAccel',@sma);
-            featureComputer = FeatureComputer(smaComputer,1:3,kDefaultRange);
+            featureComputer = SequentialComputer(smaComputer,1:3,kDefaultRange);
             featureExtractorCounter = featureExtractorCounter + 1;
             featureExtractors(featureExtractorCounter) = featureComputer;
             
@@ -150,64 +152,79 @@
                 featureExtractorCounter = featureExtractorCounter + 1;
                 featureExtractors(featureExtractorCounter) = featureComputer;
             end
-
-            featureExtractors = featureExtractors(1:featureExtractorCounter);
+            %}
+            
+            %featureExtractors = featureExtractors(1:featureExtractorCounter);
         end
         
-        function signalComputers = createDefaultFeatureExtractionComputers()
-            
-            featureExtractorHandles = {@min,@max,@mean,@var,@std,@median,@trapz,@aav,...
-                @mad,@iqr,@rms,@mySkewness,@myKurtosis};
-            
-            nFeatureExtractorHandles = length(featureExtractorHandles);
-            
-            signalComputers = repmat(SignalComputer(),1,nFeatureExtractorHandles);
-            
-            for i = 1 : nFeatureExtractorHandles
-                featureExtractorHandle = featureExtractorHandles{i};
-                featureHandleStr = func2str(featureExtractorHandle);
-                signalComputers(i) = SignalComputer(featureHandleStr,featureExtractorHandle);
+        function featureExtractors = createDefaultFeatureExtractionComputers()
+            featureExtractors = {Min(), Max(), Mean(), Median()};
+            %featureExtractorHandles = {@min,@max,@mean,@var,@std,@median,@trapz,@aav,...
+            %   @mad,@iqr,@rms,@mySkewness,@myKurtosis};
+        end
+        
+        function axisSelectors = createAxisSelectorsForSignals(numSignals)
+            axisSelectors = repmat(AxisSelector,1,numSignals);
+            for i = 1 : numSignals
+                axisSelectors(i) = AxisSelector(i);
             end
         end
         
-        function featureExtractors = createStatisticalFeatureExtractors(numSignals,segmentRanges)
+        function rangeSelectors = createRangeSelectorsForRanges(ranges)
+            nRanges = length(ranges);
+            rangeSelectors = repmat(RangeSelector,1,nRanges);
+            for i = 1 : nRanges
+                range = ranges(i);
+                rangeSelectors(i) = RangeSelector(range.rangeStart,range.rangeEnd);
+            end
+        end
+        
+        
+        function featureComputers = createStatisticalFeatureExtractors(numSignals,segmentRanges)
             
-            signalComputers = FeatureExtractor2.createDefaultFeatureExtractionComputers();
-            nSignalComputers = length(signalComputers);
-            nSegmentRanges = length(segmentRanges);
+            featureExtractors = FeatureExtractor2.createDefaultFeatureExtractionComputers();
+            axisSelectors = FeatureExtractor2.createAxisSelectorsForSignals(numSignals);
+            rangeSelectors = FeatureExtractor2.createRangeSelectorsForRanges(segmentRanges);
             
-            nFeatureComputers = nSignalComputers * numSignals * nSegmentRanges;
+            nFeatureExtractors = length(featureExtractors);
+            nAxisSelectors = length(axisSelectors);
+            nRangeSelectors = length(segmentRanges);
             
-            featureExtractors = repmat(FeatureComputer,1,nFeatureComputers);
-            featureExtractorCounter = 0;
+            nFeatureComputers = nFeatureExtractors * numSignals * nRangeSelectors;
             
-            for currentSignalComputer = 1 : nSignalComputers
+            featureComputers = cell(1,nFeatureComputers);
+            featureExtractorCounter = 1;
+            
+            for featureExtractorIdx = 1 : nFeatureExtractors
                 
-                signalComputer = signalComputers(currentSignalComputer);
+                featureExtractor = featureExtractors{featureExtractorIdx};
                 
-                for currentSignal = 1 : numSignals
+                for axisSelectorIdx = 1 : nAxisSelectors
                     
-                    for currentRange = 1 : nSegmentRanges
-                        range = segmentRanges(currentRange);
-                        featureComputer = FeatureComputer(signalComputer,currentSignal,range);
+                    axisSelector = axisSelectors(axisSelectorIdx);
+                    
+                    for rangeSelectorIdx = 1 : nRangeSelectors
                         
+                        rangeSelector = rangeSelectors(rangeSelectorIdx);
+                        
+                        featureComputer = SequentialComputer({rangeSelector,axisSelector,featureExtractor});
+                        featureComputers{featureExtractorCounter} = featureComputer;
                         featureExtractorCounter = featureExtractorCounter + 1;
-                        featureExtractors(featureExtractorCounter) = featureComputer;
                     end
                 end
             end
         end
         
         function signalComputer = createDefaultSignalComputer()
-            laxSelector = AxisSelectorComputer(15);
-            laySelector = AxisSelectorComputer(16);
-            lazSelector = AxisSelectorComputer(17);
+            laxSelector = AxisSelector(15);
+            laySelector = AxisSelector(16);
+            lazSelector = AxisSelector(17);
             
-            axSelector = AxisSelectorComputer(3);
-            aySelector = AxisSelectorComputer(4);
-            azSelector = AxisSelectorComputer(5);
+            axSelector = AxisSelector(3);
+            aySelector = AxisSelector(4);
+            azSelector = AxisSelector(5);
             
-            multiplier = ConstantMultiplicationComputer(0.1);
+            multiplier = ConstantMultiplier(0.1);
             
             scaledAxComputer = SequentialComputer({axSelector,multiplier});
             scaledAyComputer = SequentialComputer({aySelector,multiplier});
@@ -217,7 +234,7 @@
             gravySelector = SimultaneousComputer({scaledAyComputer,laySelector});
             gravzSelector = SimultaneousComputer({scaledAzComputer,lazSelector});
             
-            subtraction = SignalComputer.SubtractionComputer();
+            subtraction = SubtractionComputer();
             
             gravxComputer = SequentialComputer({gravxSelector,subtraction});
             gravyComputer = SequentialComputer({gravySelector,subtraction});
@@ -225,10 +242,9 @@
             
             energySelector = SimultaneousComputer({laxSelector,laxSelector,laxSelector});
             
-            energyComputer = SequentialComputer({energySelector, SignalComputer.EnergyComputer()});
+            magnitudeSquared = SequentialComputer({energySelector, MagnitudeSquared()});
             
-            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer, energyComputer});
-        end 
+            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer, magnitudeSquared});
+        end
     end
-  end
-  
+end

@@ -1,4 +1,4 @@
-classdef ConstantMultiplicationComputer < Computer
+classdef ConstantMultiplier < Computer
     
     properties (Access = public)
         constant;
@@ -6,10 +6,13 @@ classdef ConstantMultiplicationComputer < Computer
     
     methods (Access = public)
         
-        function obj = ConstantMultiplicationComputer(constant)
+        function obj = ConstantMultiplier(constant)
             if nargin > 0
                 obj.constant = constant;
             end
+            obj.name = 'ConstantMultiplier';
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.outputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
         end
         
         function computedSignal = compute(obj,signal)
@@ -17,7 +20,7 @@ classdef ConstantMultiplicationComputer < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('CMult%d',obj.constant);
+            str = sprintf('%s%d',obj.name,obj.constant);
         end
         
         function editableProperties = getEditableProperties(obj)

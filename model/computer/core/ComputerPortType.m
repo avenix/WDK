@@ -6,7 +6,8 @@ classdef ComputerPortType < uint8
         kSegment (3)
         kFeature (4)
         kFeatureVector (5)
-        kAny (6)
-        kNull (7)
+        kTable (6)
+        kAny (7)
+        kNull (8)
     end
 end
