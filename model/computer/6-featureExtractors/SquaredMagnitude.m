@@ -1,15 +1,15 @@
-classdef Zrc < Computer
+classdef SquaredMagnitude < Computer
     
     methods (Access = public)
         
-        function obj = Zrc()
-            obj.name = 'Zrc';
+        function obj = SquaredMagnitude()
+            obj.name = 'SquaredMagnitude';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function dataOut = compute(~,signal)
-            dataOut = zrc(signal);
+        function result = compute(~,signal)
+            result = sum(signal.^2);
         end
     end
 end

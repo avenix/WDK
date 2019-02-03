@@ -113,7 +113,7 @@ classdef FeatureExtractor < CompositeComputer
         end
         
         function featureExtractors = createDefaultFeatureExtractionComputers()
-            featureExtractors = {Min(), Max(), Mean(), Median()};
+            featureExtractors = {Min(), Max(), Mean(), Variance(), STD(), Median(), AUC(), AAV()};
             %featureExtractorHandles = {@min,@max,@mean,@var,@std,@median,@trapz,@aav,...
             %   @mad,@iqr,@rms,@mySkewness,@myKurtosis};
         end

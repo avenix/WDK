@@ -12,10 +12,8 @@ classdef Sensor < Computer
         end
         
         function computedSignal = compute(obj,dataFile)
-            nCols = size(dataFile.data,2);
-            maxExpectedAxes = max(obj.axes);
-            if nCols > maxExpectedAxes
-                fprintf('Sensor - %s. input size has: %d columns but should have up to %d columns',Constants.kInvalidInputError,nCols,maxExpectedAxes);
+            if isempty(obj.axes)
+                computedSignal = dataFile.data;
             else
                 computedSignal = dataFile.data(:,obj.axes);
             end

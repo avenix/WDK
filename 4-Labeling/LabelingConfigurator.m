@@ -19,12 +19,15 @@ classdef LabelingConfigurator < handle
                 obj.selectedLabelsTable = selectedLabelsTable;
             end
             
-            obj.fillLabelingStrategiesList();
-            obj.labelingStrategiesList.Value = obj.labelingStrategiesList.Items{1};
-            
-            if ~isempty(obj.selectedLabelsTable)
-                obj.fillGroupingTable();
-                obj.labelingStrategiesList.ValueChangedFcn = @obj.handleSelectedLabelingStrategyChanged;
+            if ~isempty(labelingStrategies)
+                obj.fillLabelingStrategiesList();
+                
+                obj.labelingStrategiesList.Value = obj.labelingStrategiesList.Items{1};
+                
+                if ~isempty(obj.selectedLabelsTable)
+                    obj.fillGroupingTable();
+                    obj.labelingStrategiesList.ValueChangedFcn = @obj.handleSelectedLabelingStrategyChanged;
+                end
             end
         end
         

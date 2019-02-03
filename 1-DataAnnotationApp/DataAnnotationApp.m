@@ -383,6 +383,9 @@ classdef DataAnnotationApp < handle
         %% UI
         function class = getSelectedClass(obj)
             class = int8(obj.uiHandles.classesList.Value);
+            if (class == length(obj.uiHandles.classesList.String))
+                class = ClassesMap.kSynchronisationClass;
+            end
         end
 
         function updateSelectingPeaksCheckbox(obj)

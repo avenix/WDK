@@ -8,13 +8,13 @@ classdef AAV < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function dataOut = compute(~,signal)
-            dataOut = single(0);
+        function result = compute(~,signal)
+            result = single(0);
             
             for i = 1 : length(signal)-1
-                dataOut = dataOut + single(abs(signal(i+1) - signal(i)));
+                result = result + single(abs(signal(i+1) - signal(i)));
             end
-            dataOut = dataOut / length(signal);
+            result = result / length(signal);
         end
     end
 end

@@ -8,28 +8,22 @@ classdef FeatureNormalizer < handle
     properties
         means;
         stds;
-        constantFeatureIndices;
     end
     
     methods (Access = public)
         function fitDefaultValues(obj)
-            obj.means = FeatureNormalizer.kDefaultMeanNormalizationValues; 
+            obj.means = FeatureNormalizer.kDefaultMeanNormalizationValues;
             obj.stds = FeatureNormalizer.kDefaultStdNormalizationValues;
         end
         
         function fit(obj,table)
-            data = table2array(table(:,1:end-1));
-            obj.means = mean(data);
-            obj.stds = std(data,0,1);
-            obj.constantFeatureIndices = abs(obj.stds < 0.000001);
+            dataArray = table2array(table.features);
+            obj.means = mean(dataArray);
+            obj.stds = std(dataArray,0,1);
         end
         
         function table = normalize(obj,table)
             table = table.table;
-            if ~isempty(obj.constantFeatureIndices)
-                table = obj.eliminateFeaturesAtIndices(table);
-            end
-            
             data = table2array(table(:,1:end-1));
             N = length(data(:,1));
             normalizedData = data - repmat(obj.means,N,1);
@@ -45,4 +39,12 @@ classdef FeatureNormalizer < handle
         end
     end
     
+    methods (Static)
+        function isValidFeatures = ComputeValidFeaturesForTable(table)
+            data = table2array(table.features);
+            tableStds = std(data,0,1);
+            isValidFeatures = ~abs(tableStds < 0.000001);
+        end
+        
+    end
 end
