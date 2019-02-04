@@ -319,8 +319,7 @@ classdef Helper < handle
             numComputers = length(computers);
             names = cell(1,numComputers);
             for i = 1 : numComputers
-                eventDetector = computers{i};
-                names{i} = eventDetector.name;
+                names{i} = computers{i}.name;
             end
         end
         

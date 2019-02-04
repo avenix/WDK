@@ -5,6 +5,21 @@ classdef TableSet < handle
         tables;
     end
     
+    properties (Dependent)
+        nRows;
+        nTables;
+    end
+    
+    methods
+        function nRows = get.nRows(obj)
+            nRows = TableSet.CountNumberOfRows(obj.tables);
+        end
+        
+        function nTables = get.nTables(obj)
+            nTables = length(obj.tables);
+        end
+    end
+    
     methods (Access = public)
         function obj = TableSet(tables)
             obj.tables = tables;
@@ -12,38 +27,25 @@ classdef TableSet < handle
         
         function table = mergedTableForIndices(obj,indices)
             selectedTables = obj.tables(indices);
-            table = obj.mergeTables(selectedTables);
+            table = TableSet.MergeTables(selectedTables);
         end
         
         function table = mergedTables(obj)
-            table = obj.mergeTables(obj.tables);
-        end
-        
-        function nTables = NTables(obj)
-            nTables = length(obj.tables);
-        end
-        
-        function nInstances = NInstances(obj)
-            nInstances = 0;
-            for i = 1 : length(obj.tables) 
-                nInstances = nInstances + obj.tables(i).height;
-            end
+            table = TableSet.MergeTables(obj.tables);
         end
         
         function labels = getAllLabels(obj)
-            table = obj.mergedTables();
-            labels = table.label;
+            labels = cat(1,obj.tables.label);
         end
     end
     
-    
-    methods (Access = private)
-        function mergedTable = mergeTables(obj,tables)
+    methods (Static)
+        function mergedTable = MergeTables(tables)
             if isempty(tables) 
                 mergedTable = [];
             else
                 
-                nRows = obj.countNumberOfRows(tables);
+                nRows = TableSet.CountNumberOfRows(tables);
                 
                 firstTable = tables(1).table;
                 
@@ -63,7 +65,7 @@ classdef TableSet < handle
             end
         end
         
-        function nRows = countNumberOfRows(~,tables)
+        function nRows = CountNumberOfRows(tables)
             nRows = 0;
             for i = 1 : length(tables)
                 nRows = nRows + tables(i).height;

@@ -10,16 +10,8 @@ classdef FeatureExtractor < CompositeComputer
             obj.outputPort = ComputerPort(ComputerPortType.kTable);
         end
         
+        %creates a table from a set of segments
         function table = compute(obj,segments)
-            table = obj.createTable(segments);
-        end
-    end
-    
-    methods (Access = private)
-        
-        %creates a single table from a set of segments
-        function table = createTable(obj,segments)
-            
             nSegments = length(segments);
             nFeatures = length(obj.computers);
             shouldCreateLabelColumn = obj.areSegmentsLabeled(segments);
@@ -48,22 +40,24 @@ classdef FeatureExtractor < CompositeComputer
             table = Table(table);
         end
         
+        function names = getFeatureNames(obj)
+            nComputers = length(obj.computers);
+            names = cell(1,nComputers);
+            for i = 1 : nComputers
+                featureName = obj.computers{i}.toString();
+                names{i} = featureName;
+            end
+        end
+    end
+    
+    methods (Access = private)
+        
         function labeled = areSegmentsLabeled(~,segments)
             labeled = false;
             if ~isempty(segments)
                 if ~isempty(segments(1).label)
                     labeled = true;
                 end
-            end
-        end
-        
-        function featureNames = getFeatureNames(obj)
-            nFeatures = length(obj.computers);
-            featureNames = cell(1,nFeatures);
-            for i = 1 : nFeatures
-                %featureNames{i} = obj.computers{i}.toString(); % these
-                %names are too long
-                featureNames{i} = sprintf('var_%d',i);
             end
         end
     end

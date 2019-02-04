@@ -12,15 +12,13 @@ classdef (Abstract) CompositeComputer < Computer
         end
         
         function str = toString(obj)
-            if isempty(obj.computers)
-                str = "";
-            else
-                str = obj.name;
+            str = "";
+            if ~isempty(obj.computers)
                 
                 for i = 1 : length(obj.computers)
                     computerStr = obj.computerStringForIdx(i);
                     if ~isequal(computerStr,"")
-                        str = sprintf('%s_%s',str,computerStr);
+                        str = sprintf('%s%s_',str,computerStr);
                     end
                 end
             end

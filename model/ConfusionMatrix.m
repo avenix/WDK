@@ -33,7 +33,7 @@ classdef ConfusionMatrix < handle
             end
             
             obj.recallPerClass(isnan(obj.recallPerClass))=[];
-            obj.recall = sum(obj.recallPerClass) / numClasses;
+            obj.recall = nanmean(obj.recallPerClass);
         end
         
         function computePrecisionPerClass(obj)
@@ -46,7 +46,7 @@ classdef ConfusionMatrix < handle
             end
             
             obj.precisionPerClass(isnan(obj.precisionPerClass))=[];
-            obj.precision = sum(obj.precisionPerClass) / numClasses;
+            obj.precision = nanmean(obj.precisionPerClass);
         end
     end
     

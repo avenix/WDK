@@ -45,6 +45,11 @@ classdef Table < handle
             end
         end
         
+        function filterTableToLabelFlags(obj,labels)
+            includeRowIdxs = labels(obj.table.label);
+            obj.table = obj.table(includeRowIdxs,:);
+        end
+        
         function filterTableToLabels(obj,labels)
             includeRowIdxs = ismember(obj.table.label, labels);
             obj.table = obj.table(includeRowIdxs,:);
