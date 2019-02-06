@@ -2,15 +2,10 @@ classdef EventsLabeler < Computer
     
     properties (Access = public)
         tolerance = 10;
-        classesMap;
     end
     
     methods (Access = public)
-        
-        function obj = EventsLabeler()
-            obj.classesMap = ClassesMap.instance();
-        end
-        
+
         function labeledEvents = compute(obj, events)
             manualAnnotations = Computer.getSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
             labels = obj.labelEventIdxs([events.sample],manualAnnotations.eventAnnotations);           

@@ -1,7 +1,17 @@
 classdef (Abstract) CompositeComputer < Computer
 
     properties (Access = public)
-        computers;
+        computers;%cell array
+    end
+    
+    properties (Dependent)
+        numComputers;
+    end
+    
+    methods
+        function n = get.numComputers(obj)
+            n = length(obj.computers);
+        end
     end
     
     methods (Access = public)
@@ -21,6 +31,14 @@ classdef (Abstract) CompositeComputer < Computer
                         str = sprintf('%s%s_',str,computerStr);
                     end
                 end
+            end
+        end
+        
+        function editableProperties = getEditableProperties(obj)
+            nComputers = obj.numComputers;
+            editableProperties = cell(1,nComputers);
+            for i = 1 : nComputers
+                editableProperties{i} = obj.computers{i}.getEditableProperties();
             end
         end
     end

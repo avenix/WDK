@@ -45,8 +45,16 @@ classdef Table < handle
             end
         end
         
-        function filterTableToLabelFlags(obj,labels)
-            includeRowIdxs = labels(obj.table.label);
+        function filterTableToLabelFlags(obj,labelFlags)
+            nRows = obj.height;
+            includeRowIdxs = false(1,nRows);
+            labels = obj.label;
+            for i = 1 : nRows
+                rowLabel = labels(i);
+                if rowLabel == ClassesMap.kNullClass || labelFlags(rowLabel)
+                    includeRowIdxs(i) = true;
+                end
+            end
             obj.table = obj.table(includeRowIdxs,:);
         end
         

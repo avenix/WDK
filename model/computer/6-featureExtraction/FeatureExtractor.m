@@ -1,5 +1,5 @@
 classdef FeatureExtractor < CompositeComputer
-    
+
     methods (Access = public)
         
         function obj = FeatureExtractor(computers)
@@ -64,12 +64,12 @@ classdef FeatureExtractor < CompositeComputer
     
     methods (Static)
         
-        function featureExtractor = CreateDefaultFeatureExtractors(numSignals,segmentRanges)
-            statisticalFeatureExtractors = FeatureExtractor.CreateStatisticalFeatureExtractors(numSignals,segmentRanges);
+        function featureExtractor = CreateAllFeatureExtractors(numSignals,segmentRanges)
+            statisticalFeatureExtractors = FeatureExtractor.CreateAllStatisticalFeatureExtractors(numSignals,segmentRanges);
             featureExtractor = FeatureExtractor(statisticalFeatureExtractors);
         end
         
-        function featureComputers = CreateStatisticalFeatureExtractors(numSignals,segmentRanges)
+        function featureComputers = CreateAllStatisticalFeatureExtractors(numSignals,segmentRanges)
             
             featureExtractors = FeatureExtractor.createDefaultFeatureExtractionComputers();
             axisSelectors = FeatureExtractor.createAxisSelectorsForSignals(numSignals);
@@ -98,7 +98,7 @@ classdef FeatureExtractor < CompositeComputer
                         
                         rangeSelector = rangeSelectors(rangeSelectorIdx);
                         
-                        featureComputer = SequentialComputer({rangeSelector,axisSelector,segmentWindowAccessor,featureExtractor});
+                        featureComputer = SequentialComputer({rangeSelector,segmentWindowAccessor,axisSelector,featureExtractor});
                         featureComputers{featureExtractorCounter} = featureComputer;
                         featureExtractorCounter = featureExtractorCounter + 1;
                     end
@@ -106,20 +106,20 @@ classdef FeatureExtractor < CompositeComputer
             end
         end
         
-        function featureExtractors = createDefaultFeatureExtractionComputers()
+        function featureExtractors = CreateDefaultFeatureExtractors()
             featureExtractors = {Min(), Max(), Mean(), Variance(), STD(), Median(), AUC(), AAV()};
             %featureExtractorHandles = {@min,@max,@mean,@var,@std,@median,@trapz,@aav,...
             %   @mad,@iqr,@rms,@mySkewness,@myKurtosis};
         end
         
-        function axisSelectors = createAxisSelectorsForSignals(numSignals)
-            axisSelectors = repmat(SegmentAxisSelector,1,numSignals);
+        function axisSelectors = CreateAxisSelectorsForSignals(numSignals)
+            axisSelectors = repmat(AxisSelector,1,numSignals);
             for i = 1 : numSignals
-                axisSelectors(i) = SegmentAxisSelector(i);
+                axisSelectors(i) = AxisSelector(i);
             end
         end
         
-        function rangeSelectors = createRangeSelectorsForRanges(ranges)
+        function rangeSelectors = CreateRangeSelectorsForRanges(ranges)
             nRanges = length(ranges);
             rangeSelectors = repmat(RangeSelector,1,nRanges);
             for i = 1 : nRanges

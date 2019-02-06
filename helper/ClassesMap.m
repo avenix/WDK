@@ -34,12 +34,13 @@ classdef ClassesMap < handle
     methods (Access = public)
         
         function valid = isValidLabel(obj,labelStr)
-            
             valid = isKey(obj.classesMap,labelStr);
         end
         
         function classStr = stringForClassAtIdx(obj,idx)
-            if idx == obj.kSynchronisationClass
+            if idx == obj.kNullClass
+                classStr = Constants.kNullClassGroupStr;
+            elseif idx == obj.kSynchronisationClass
                 classStr = obj.synchronisationStr;
             else
                 classStr = obj.classesList{idx};

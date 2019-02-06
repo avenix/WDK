@@ -1,13 +1,14 @@
 classdef ChainBuilder < handle
-    properties (Access = private)
+    properties (SetAccess = private)
         root;
         lastComputer;
     end
     
     methods (Access = public)
-        
-        function chain = getRoot(obj)
-            chain = obj.root;
+        function obj = ChainBuilder(computer)
+            if nargin > 0
+                obj.addComputer(computer);
+            end
         end
         
         function addComputer(obj, computer)

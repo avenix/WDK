@@ -12,10 +12,9 @@ classdef (Abstract) Computer < handle
     end
     
     methods (Access = public)
-        %do not comment out the obj parameter
+
         function setProperty(obj, property)
-            setExpression = sprintf('obj.%s=%d;',property.name,property.value);
-            eval(setExpression);
+            obj.(property.name) = property.value;
         end
         
         function str = toString(obj)
@@ -24,6 +23,76 @@ classdef (Abstract) Computer < handle
         
         function editableProperties = getEditableProperties(~)
             editableProperties = [];
+        end
+        
+        %{
+        %1-indexed
+        function computer = getComputerAtIdx(obj, idx)
+            
+            stack = Stack();
+            stack.push(obj);
+            
+            while ~stack.isempty() && idx > 0
+                computer = stack.pop();
+                idx = idx - 1;
+                for i = 1 : length(computer.nextComputers)
+                    stack.push(computer.nextComputers(i));
+                end
+            end
+        end
+        %}
+        
+         function computers = listAllComputers(obj)
+            
+            nElements = obj.countElements();
+            computers = cell(1,nElements);
+            
+            stack = Stack();
+            stack.push(obj);
+            
+            counter = 1;
+            while ~stack.isempty()
+                computer = stack.pop();
+                computers{counter} = computer;
+                counter = counter + 1;
+                for i = 1 : length(computer.nextComputers)
+                    stack.push(computer.nextComputers(i));
+                end
+            end
+         end
+        
+        function properties = listAllProperties(obj)
+            
+            nElements = obj.countElements();
+            properties = cell(1,nElements);
+            
+            stack = Stack();
+            stack.push(obj);
+            
+            counter = 1;
+            while ~stack.isempty()
+                computer = stack.pop();
+                properties{counter} = computer.getEditableProperties();
+                counter = counter + 1;
+                for i = 1 : length(computer.nextComputers)
+                    stack.push(computer.nextComputers(i));
+                end
+            end
+        end
+        
+        function n = countElements(obj)
+            
+            stack = Stack();
+            stack.push(obj);
+            
+            n = 1;
+            while ~stack.isempty()
+                computer = stack.pop();
+                n = n + 1;
+                for i = 1 : length(computer.nextComputers)
+                    stack.push(computer.nextComputers(i));
+                end
+            end
         end
     end
     

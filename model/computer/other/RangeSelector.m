@@ -29,8 +29,9 @@ classdef RangeSelector < Computer
         end
         
         function editableProperties = getEditableProperties(obj)
-            rangeStartProperty = Property('rangeStart',obj.rangeStart);
-            rangeEndProperty = Property('rangeEnd',obj.rangeEnd);
+            rangeStartProperty = Property('rangeStart',obj.rangeStart,[],[],PropertyType.kNumber);
+            rangeEndProperty = Property('rangeEnd',obj.rangeEnd,[],[],PropertyType.kNumber);
+            
             editableProperties = [rangeStartProperty,rangeEndProperty];
         end
     end

@@ -4,7 +4,7 @@ classdef DataAnnotationRangeAnnotationsPlotter < handle
         AnnotationColor = 'black';
         LineWidth = 3;
         SegmentHeight = 10;
-        FontSize = 20;
+        FontSize = 24;
         TextSegmentDistance = 5;
     end
     

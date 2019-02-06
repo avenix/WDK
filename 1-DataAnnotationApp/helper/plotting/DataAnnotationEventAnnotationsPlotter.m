@@ -2,7 +2,7 @@ classdef DataAnnotationEventAnnotationsPlotter < handle
     
     properties (Access = public,Constant)
         AnnotationColor = 'blue';
-        AnnotationFont = 14;
+        AnnotationFont = 24;
     end
     
     properties (Access = public)

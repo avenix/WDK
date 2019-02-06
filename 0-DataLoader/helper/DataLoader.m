@@ -117,7 +117,7 @@ classdef DataLoader < handle
                 
                 for i = 1 : length(events)-1
                     event = events(i);
-                    DataLoader.printEventToFile(fileID,event);
+                    obj.printEventToFile(fileID,event);
                     fprintf(fileID, '\n');
                 end
                 event = events(end);
@@ -162,6 +162,11 @@ classdef DataLoader < handle
                 obj.labelingStrategiesLoader = LabelingStrategyLoader();
             end
         end
+        
+        function printEventToFile(obj,fileID, event)
+            labelStr = obj.classesMap.stringForClassAtIdx(event.label);
+            fprintf(fileID, '%s, %d',labelStr,event.sample);
+        end
     end
     
     methods (Static)
@@ -175,10 +180,6 @@ classdef DataLoader < handle
                 fprintf('File not found: %s\n',fullPath);
                 data = [];
             end
-        end
-        
-        function printEventToFile(fileID, event)
-            fprintf(fileID, '%d',event);
         end
         
         function printRawData(fileHandle, sample)

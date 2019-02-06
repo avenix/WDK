@@ -31,7 +31,11 @@ classdef AxisSelector < Computer
         end
         
         function editableProperties = getEditableProperties(obj)
-            editableProperties = Property('axes',array2JSON(obj.axes));
+            axesStr = '';
+            if ~isempty(obj.axes)
+                axesStr = array2JSON(obj.axes);
+            end
+            editableProperties = Property('axes',axesStr);
         end
     end
     
