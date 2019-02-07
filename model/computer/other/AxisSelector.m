@@ -36,6 +36,7 @@ classdef AxisSelector < Computer
                 axesStr = array2JSON(obj.axes);
             end
             editableProperties = Property('axes',axesStr);
+            editableProperties.type = PropertyType.kArray;
         end
     end
     

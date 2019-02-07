@@ -102,7 +102,7 @@ classdef ComputerConfigurator < handle
                 propertiesCurrentCell = propertiesCellArray{i};
                 for j = 1 : length(propertiesCurrentCell)
                     property = propertiesCurrentCell(j);
-                    propertiesMap{mappingCounter} = {computerCurrentCell,property};
+                    propertiesMap{mappingCounter} = {computerCurrentCell,property};                    
                     mappingCounter = mappingCounter + 1;
                 end
             end
@@ -114,8 +114,7 @@ classdef ComputerConfigurator < handle
             propertiesMap = obj.propertyMaps{currentComputerIdx};
             propertyMapCell = propertiesMap{row};
             computer = propertyMapCell{1};
-            property = propertyMapCell{2};
-            
+            property = propertyMapCell{2};            
             property.setValueWithStr(callbackData.NewData);
             computer.setProperty(property);
         end
@@ -135,28 +134,8 @@ classdef ComputerConfigurator < handle
         end
         
         function updatePropertiesTable(obj)
-            properties = obj.currentComputerProperties;
-            if iscell(obj.currentComputerProperties)
-                properties = obj.convertPropertiesCellArrayToArray(obj.currentComputerProperties);
-            end
-            
+            properties = horzcat(obj.currentComputerProperties{:});
             obj.computersPropertiesTable.Data = Helper.propertyArrayToCellArray(properties);
-        end
-        
-        function properties = convertPropertiesCellArrayToArray(obj,propertyCells)
-            nCells = length(propertyCells);
-            nProperties = obj.countNProperties(propertyCells);
-            properties = repmat(Property,1,nProperties);
-            propertyCount = 1;
-            for i = 1 : nCells
-                propertiesArray = propertyCells{i};
-                for j = 1 : length(propertiesArray)
-                    property = propertiesArray(j);
-                    property.name = sprintf('%s',i,property.name);
-                    properties(propertyCount) = property;
-                    propertyCount = propertyCount + 1;
-                end
-            end
         end
         
         function nProperties = countNProperties(~,propertiesCell)

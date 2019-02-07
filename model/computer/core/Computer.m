@@ -12,7 +12,7 @@ classdef (Abstract) Computer < handle
     end
     
     methods (Access = public)
-
+        
         function setProperty(obj, property)
             obj.(property.name) = property.value;
         end
@@ -25,24 +25,7 @@ classdef (Abstract) Computer < handle
             editableProperties = [];
         end
         
-        %{
-        %1-indexed
-        function computer = getComputerAtIdx(obj, idx)
-            
-            stack = Stack();
-            stack.push(obj);
-            
-            while ~stack.isempty() && idx > 0
-                computer = stack.pop();
-                idx = idx - 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
-                end
-            end
-        end
-        %}
-        
-         function computers = listAllComputers(obj)
+        function computers = listAllComputers(obj)
             
             nElements = obj.countElements();
             computers = cell(1,nElements);
@@ -59,7 +42,7 @@ classdef (Abstract) Computer < handle
                     stack.push(computer.nextComputers(i));
                 end
             end
-         end
+        end
         
         function properties = listAllProperties(obj)
             
@@ -97,7 +80,7 @@ classdef (Abstract) Computer < handle
     end
     
     methods (Static)
-        function var = getSharedContextVariable(variableName)
+        function var = GetSharedContextVariable(variableName)
             dict = Computer.sharedContext();
             var = dict(variableName);
         end
@@ -110,7 +93,7 @@ classdef (Abstract) Computer < handle
             r = currentContext;
         end
         
-        function data = computeChain(computer, data)
+        function data = ExecuteChain(computer, data)
             stack = Stack();
             stack.push(computer);
             

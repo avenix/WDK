@@ -28,10 +28,12 @@ classdef Property < handle
         end
         
         function setValueWithStr(obj, valueStr)
-            if (obj.type == PropertyType.kNumber )
+            if (obj.type == PropertyType.kNumber)
                 obj.value = str2double(valueStr);
-            else
+            elseif(obj.type == PropertyType.kString)
                 obj.value = valueStr;
+            elseif(obj.type == PropertyType.kArray)
+                obj.value = str2num(valueStr);
             end
         end
     end

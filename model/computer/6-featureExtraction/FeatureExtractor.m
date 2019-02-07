@@ -4,7 +4,6 @@ classdef FeatureExtractor < CompositeComputer
         
         function obj = FeatureExtractor(computers)
             obj = obj@CompositeComputer(computers);
-            
             obj.name = 'FeatureExtractor';
             obj.inputPort = ComputerPort(ComputerPortType.kSegment);
             obj.outputPort = ComputerPort(ComputerPortType.kTable);
@@ -20,9 +19,8 @@ classdef FeatureExtractor < CompositeComputer
             
             for i = 1 : nSegments
                 segment = segments(i);
-                
                 for j = 1 : length(obj.computers)
-                    featureVectors(i,j) = obj.computers{j}.compute(segment);
+                    featureVectors(i,j) = Computer.ExecuteChain(obj.computers{j},segment);
                 end
             end
             
@@ -44,7 +42,7 @@ classdef FeatureExtractor < CompositeComputer
             nComputers = length(obj.computers);
             names = cell(1,nComputers);
             for i = 1 : nComputers
-                featureName = obj.computers{i}.toString();
+                featureName = sprintf('%s_%d',obj.computers{i}.toString(),i);
                 names{i} = featureName;
             end
         end

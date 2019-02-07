@@ -20,7 +20,7 @@ classdef Change < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('%s%s',obj.name,obj.property);
+            str = sprintf('%s_%s',obj.name,obj.property);
         end
         
         function editableProperties = getEditableProperties(obj)

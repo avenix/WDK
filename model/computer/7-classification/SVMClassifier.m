@@ -41,5 +41,11 @@ classdef SVMClassifier < Computer
         function str = toString(obj)
             str = sprintf('%s_%d_%d',obj.name,obj.order,obj.boxConstraint);
         end
+        
+        function editableProperties = getEditableProperties(obj)
+            property1 = Property('order',obj.order);
+            property2 = Property('boxConstraint',obj.boxConstraint);
+            editableProperties = [property1, property2];
+        end
     end
 end

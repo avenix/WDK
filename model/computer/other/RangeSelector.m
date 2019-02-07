@@ -17,11 +17,14 @@ classdef RangeSelector < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kSegment);
         end
         
-        function shorterSegment = compute(obj,segment)        
+        function shorterSegment = compute(obj,segment)
+            shorterSegment = segment(obj.rangeStart:obj.rangeEnd,:);
+            %{
             shorterSegment = Segment.CreateSegmentWithSegment(segment);
             shorterSegment.window = segment.window(obj.rangeStart:obj.rangeEnd,:);
             shorterSegment.startSample = segment.startSample + obj.rangeStart - 1;
             shorterSegment.endSample = segment.endSample - (length(segment.window) - obj.rangeEnd);
+            %}
         end
         
         function str = toString(obj)
