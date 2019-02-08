@@ -215,36 +215,5 @@ classdef FeatureExtractor2 < handle
             end
         end
         
-        function signalComputer = createDefaultSignalComputer()
-            laxSelector = AxisSelector(15);
-            laySelector = AxisSelector(16);
-            lazSelector = AxisSelector(17);
-            
-            axSelector = AxisSelector(3);
-            aySelector = AxisSelector(4);
-            azSelector = AxisSelector(5);
-            
-            multiplier = ConstantMultiplier(0.1);
-            
-            scaledAxComputer = SequentialComputer({axSelector,multiplier});
-            scaledAyComputer = SequentialComputer({aySelector,multiplier});
-            scaledAzComputer = SequentialComputer({azSelector,multiplier});
-            
-            gravxSelector = SimultaneousComputer({scaledAxComputer,laxSelector});
-            gravySelector = SimultaneousComputer({scaledAyComputer,laySelector});
-            gravzSelector = SimultaneousComputer({scaledAzComputer,lazSelector});
-            
-            subtraction = SubtractionComputer();
-            
-            gravxComputer = SequentialComputer({gravxSelector,subtraction});
-            gravyComputer = SequentialComputer({gravySelector,subtraction});
-            gravzComputer = SequentialComputer({gravzSelector,subtraction});
-            
-            energySelector = SimultaneousComputer({laxSelector,laxSelector,laxSelector});
-            
-            magnitudeSquared = SequentialComputer({energySelector, MagnitudeSquared()});
-            
-            signalComputer = SimultaneousComputer({laxSelector,laySelector,lazSelector,gravxComputer,gravyComputer,gravzComputer, magnitudeSquared});
-        end
     end
 end

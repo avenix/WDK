@@ -1,7 +1,7 @@
 classdef ComputerPort < handle
     properties
-        type ComputerPortType
-        size ComputerSizeType
+        type %ComputerPortType
+        size %ComputerSizeType
     end
     
     methods(Access = public)
@@ -12,6 +12,10 @@ classdef ComputerPort < handle
             else
                 obj.size = ComputerSizeType.kOne;
             end
+        end
+        
+        function result = toStruct(obj)
+            result = struct("type",obj.type,"size", obj.size);
         end
         
         function b = isSameType(obj,portType)

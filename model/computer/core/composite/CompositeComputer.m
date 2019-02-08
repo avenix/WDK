@@ -1,39 +1,22 @@
-classdef (Abstract) CompositeComputer < Computer
+classdef CompositeComputer < Computer
 
     properties (Access = public)
-        computers;%cell array
-    end
-    
-    properties (Dependent)
-        numComputers;
-    end
-    
-    methods
-        function n = get.numComputers(obj)
-            n = length(obj.computers);
-        end
+        root;%first element in the chain
     end
     
     methods (Access = public)
-        function obj = CompositeComputer(computers)
+        function obj = CompositeComputer(root)
             if nargin > 0
-                obj.computers = computers;
+                obj.root = root;
             end
+            obj.name = "Composite";
         end
         
-        function str = toString(obj)
-            str = "";
-            if ~isempty(obj.computers)
-                
-                for i = 1 : length(obj.computers)
-                    computerStr = obj.computerStringForIdx(i);
-                    if ~isequal(computerStr,"")
-                        str = sprintf('%s%s_',str,computerStr);
-                    end
-                end
-            end
+        function dataOut = compute(obj,dataIn)
+            dataOut = Computer.ExecuteChain(obj.root,dataIn);
         end
-        
+
+        %{
         function editableProperties = getEditableProperties(obj)
             nComputers = obj.numComputers;
             editableProperties = cell(1,nComputers);
@@ -41,15 +24,7 @@ classdef (Abstract) CompositeComputer < Computer
                 editableProperties{i} = obj.computers{i}.getEditableProperties();
             end
         end
-    end
-    
-    methods (Access = private)
-        function computerStr = computerStringForIdx(obj,idx)
-            computer = obj.computers{idx};
-            computerStr = computer.toString();
-            if isequal(computerStr,'NoOp')
-                computerStr = "";
-            end
-        end
+        %}
+        
     end
 end

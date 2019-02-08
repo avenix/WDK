@@ -1,16 +1,15 @@
-classdef ZCR < Computer
+classdef RMS < Computer
     
     methods (Access = public)
         
-        function obj = ZCR()
-            obj.name = 'ZCR';
+        function obj = RMS()
+            obj.name = 'RMS';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function result = compute(~,signal)
-            N = length(signal);
-            result = sum(abs(diff(signal>0))) / N;
+        function dataOut = compute(~,signal)
+            dataOut = rms(signal);
         end
     end
 end

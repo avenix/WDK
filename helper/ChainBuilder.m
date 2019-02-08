@@ -21,4 +21,17 @@ classdef ChainBuilder < handle
             obj.lastComputer = computer;
         end
     end
+    
+    methods (Static)
+        function computer = CreateComputerWithSequence(sequence)
+            if isempty(sequence)
+                computer = [];
+            else
+                for i = 1 : length(sequence)-1
+                    sequence{i}.nextComputers = sequence{i+1};
+                end
+                computer = CompositeComputer(sequence{1});
+            end
+        end
+    end
 end

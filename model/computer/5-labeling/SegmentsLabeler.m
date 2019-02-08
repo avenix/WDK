@@ -9,7 +9,7 @@ classdef SegmentsLabeler < Computer
         end
         
         function labeledSegments = compute(~,segments)
-            manualAnnotations = Computer.getSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
+            manualAnnotations = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
             eventsLabeler = EventsLabeler();
             labels = eventsLabeler.labelEventIdxs([segments.eventIdx],manualAnnotations.eventAnnotations);
             isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);

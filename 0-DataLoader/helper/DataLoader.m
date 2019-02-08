@@ -155,28 +155,6 @@ classdef DataLoader < handle
             end
         end
         
-        function featureExtractors = loadAllFeatureExtractionFiles(~)
-            featureExtractors = cell(1,1);
-            
-            computers = cell(1,2);
-                        
-            chainBuilder = ChainBuilder(Change('window'));
-            chainBuilder.addComputer(RangeSelector(1,199));
-            chainBuilder.addComputer(AxisSelector(16));
-            chainBuilder.addComputer(Mean());
-            computers{1} = chainBuilder.root;
-            
-            chainBuilder = ChainBuilder(Change('window'));
-            chainBuilder.addComputer(RangeSelector(1,451));
-            chainBuilder.addComputer(AxisSelector(17));
-            chainBuilder.addComputer(Min());
-            computers{2} = chainBuilder.root;
-            
-            featureExtractor = FeatureExtractor(computers);
-            featureExtractor.name = '2features_test';
-            featureExtractors{1} = featureExtractor;
-        end
-        
     end
     
     methods (Access = private)
@@ -193,6 +171,33 @@ classdef DataLoader < handle
     end
     
     methods (Static)
+        
+        function computer = LoadJSONComputerFromFile(fileName)
+            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            text = fileread(fullPath);
+            computer = jsondecode(text);
+            computer = Computer.CreateWithStruct(computer);
+        end
+        
+        function SaveComputerAsJSON(computer, fileName)
+            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            jsonFile = jsonencode(computer);
+            fileID = fopen(fullPath,'w');
+            fprintf(fileID,'%s\n',jsonFile);
+            fclose(fileID);
+        end
+        
+        function computer = LoadComputer(fileName)
+            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            computer = load(fullPath);
+            computer = computer.computer;
+        end
+        
+        function SaveComputer(computer, fileName)
+            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            save(fullPath,'computer');
+        end
+        
         function [data,columnNames] = loadDataFileWithFullPath(fullPath)
             if exist(fullPath, 'file') == 2
                 dataTable = load(fullPath);

@@ -8,6 +8,8 @@ classdef Constants < handle
         dataPath = './data/rawdata';
         precomputedPath = './data/cache';
         labelingStrategiesPath = './data/labeling';
+        kFeaturesPath = './data/features';
+        
         synchronisationClassStr = 'synchronisation';
         kNullClassGroupStr = 'NULL';
         SynchronisatonMarker = 3;

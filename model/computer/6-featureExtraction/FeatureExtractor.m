@@ -1,9 +1,15 @@
-classdef FeatureExtractor < CompositeComputer
+classdef FeatureExtractor < Computer
 
+    properties (Access = public)
+        computers;
+    end
+    
     methods (Access = public)
         
         function obj = FeatureExtractor(computers)
-            obj = obj@CompositeComputer(computers);
+            if nargin > 0 
+                obj.computers = computers;
+            end
             obj.name = 'FeatureExtractor';
             obj.inputPort = ComputerPort(ComputerPortType.kSegment);
             obj.outputPort = ComputerPort(ComputerPortType.kTable);
@@ -20,7 +26,7 @@ classdef FeatureExtractor < CompositeComputer
             for i = 1 : nSegments
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
-                    featureVectors(i,j) = Computer.ExecuteChain(obj.computers{j},segment);
+                    featureVectors(i,j) = Computer.ExecuteChain(obj.computers{j},segment.window);
                 end
             end
             
@@ -44,6 +50,19 @@ classdef FeatureExtractor < CompositeComputer
             for i = 1 : nComputers
                 featureName = sprintf('%s_%d',obj.computers{i}.toString(),i);
                 names{i} = featureName;
+            end
+        end
+        
+        function str = toString(obj)
+            str = "";
+            if ~isempty(obj.computers)
+                
+                for i = 1 : length(obj.computers)
+                    computerStr = obj.computerStringForIdx(i);
+                    if ~isequal(computerStr,"")
+                        str = sprintf('%s%s_',str,computerStr);
+                    end
+                end
             end
         end
     end

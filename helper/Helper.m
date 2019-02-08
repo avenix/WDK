@@ -22,7 +22,6 @@ classdef Helper < handle
                     files{filesCount} = file.name;
                 end
             end
-
         end
         
         function nFiles = numberOfFilesInDirectory(directory,extensions)
@@ -36,10 +35,12 @@ classdef Helper < handle
             end
         end
         
+        function files = listFeatureExtractionFiles()
+            files = Helper.listFilesInDirectory(Constants.kFeaturesPath, {'*.mat'});
+        end
+        
         function files = listLabelingStrategies()
-            
             files = Helper.listFilesInDirectory(Constants.labelingStrategiesPath, {'*.txt'});
-            
         end
         
         function files = listDataFiles(extensions)

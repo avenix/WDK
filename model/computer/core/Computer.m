@@ -80,6 +80,7 @@ classdef (Abstract) Computer < handle
     end
     
     methods (Static)
+        
         function var = GetSharedContextVariable(variableName)
             dict = Computer.sharedContext();
             var = dict(variableName);
@@ -95,13 +96,20 @@ classdef (Abstract) Computer < handle
         
         function data = ExecuteChain(computer, data)
             stack = Stack();
+            dataStack = Stack();
+            
             stack.push(computer);
+            dataStack.push(data);
             
             while ~stack.isempty()
                 computer = stack.pop();
+                data = dataStack.pop();
                 data = computer.compute(data);
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
+                if ~isempty(data)
+                    dataStack.push(data);
+                    for i = 1 : length(computer.nextComputers)
+                        stack.push(computer.nextComputers(i));
+                    end
                 end
             end
         end
@@ -119,10 +127,6 @@ classdef (Abstract) Computer < handle
         
         function segmentationComputers = SegmentationComputers()
             segmentationComputers = {EventSegmentation};
-        end
-        
-        function featureComputers = FeatureComputers()
-            featureComputers = {AAV};
         end
         
         function classificationComputers = ClassificationComputers()

@@ -1,7 +1,7 @@
 classdef SVMClassifier < Computer
     
     properties (Access = public)
-        order = 3;
+        order = 1;
         boxConstraint = 1;
     end
     

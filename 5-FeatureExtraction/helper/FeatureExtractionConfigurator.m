@@ -16,19 +16,19 @@ classdef FeatureExtractionConfigurator < handle
     
     properties (Access = public)
         defaultFeatures;
-        loadedFeatureExtractors;
+        loadedFeatureExtractionFiles;
     end
     
     methods (Access = public)
         function obj = FeatureExtractionConfigurator(defaultFeatures,...
-                loadedFeatureExtractors, featuresList,...
+                loadedFeatureExtractionFiles, featuresList,...
                 addFeaturesButton,removeFeaturesButton,...
                 selectedFeaturesList, computersVariablesTable,...
                 loadedFeatureExtractorsList,selectionTypeButtonGroup,...
                 selectFromFileRadio,selectManuallyRadio,manualFeatureExtractionPanel)
             
             obj.defaultFeatures = defaultFeatures;
-            obj.loadedFeatureExtractors = loadedFeatureExtractors;
+            obj.loadedFeatureExtractionFiles = loadedFeatureExtractionFiles;
             obj.defaultFeaturesList = featuresList;
             obj.addFeatureButton = addFeaturesButton;
             obj.removeFeatureButton = removeFeaturesButton;
@@ -42,7 +42,7 @@ classdef FeatureExtractionConfigurator < handle
             obj.removeFeatureButton.ButtonPushedFcn = @obj.handleRemoveButtonClicked;
             obj.selectionTypeButtonGroup.SelectionChangedFcn = @obj.handleSelectionTypeChanged;
             
-            if ~isempty(obj.loadedFeatureExtractors)
+            if ~isempty(obj.loadedFeatureExtractionFiles)
                 obj.fillLoadedFeaturesList();
                 obj.loadedFeatureExtractorsList.Value = obj.loadedFeatureExtractorsList.Items{1};
             end
@@ -68,7 +68,8 @@ classdef FeatureExtractionConfigurator < handle
                 featureExtractor = FeatureExtractor(obj.computerConfigurator.computers);
             else
                 fileIdx = obj.getSelectedLoadedFileIdx();
-                featureExtractor = obj.loadedFeatureExtractors{fileIdx};
+                featureExtractionFile = obj.loadedFeatureExtractionFiles{fileIdx};
+                featureExtractor = DataLoader.LoadComputer(featureExtractionFile);
             end
         end
         
@@ -108,13 +109,9 @@ classdef FeatureExtractionConfigurator < handle
         
         function handleAddButtonClicked(obj,~,~)
             featureExtractor = obj.getSelectedFeature();
-            rangeSelector = RangeSelector();
-            axisSelector = AxisSelector();
-            windowGetter = Change('window');
             
-            chainBuilder = ChainBuilder(windowGetter);
-            chainBuilder.addComputer(rangeSelector);
-            chainBuilder.addComputer(axisSelector);
+            chainBuilder = ChainBuilder(RangeSelector());
+            chainBuilder.addComputer(AxisSelector());
             chainBuilder.addComputer(featureExtractor);
             
             computer = chainBuilder.root;
@@ -127,7 +124,7 @@ classdef FeatureExtractionConfigurator < handle
         end
         
         function fillLoadedFeaturesList(obj)
-            obj.loadedFeatureExtractorsList.Items = Helper.generateComputerNamesArray(obj.loadedFeatureExtractors);
+            obj.loadedFeatureExtractorsList.Items = obj.loadedFeatureExtractionFiles;
         end
         
         function fillDefaultFeaturesList(obj)

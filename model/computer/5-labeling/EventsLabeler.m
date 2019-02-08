@@ -7,7 +7,7 @@ classdef EventsLabeler < Computer
     methods (Access = public)
 
         function labeledEvents = compute(obj, events)
-            manualAnnotations = Computer.getSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
+            manualAnnotations = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
             labels = obj.labelEventIdxs([events.sample],manualAnnotations.eventAnnotations);           
             isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
             
