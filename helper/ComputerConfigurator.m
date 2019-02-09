@@ -5,9 +5,6 @@ classdef ComputerConfigurator < handle
         computersList;
         computersPropertiesTable;
         currentComputerProperties;
-        
-        propertiesPerComputer;
-        propertyMaps;
     end
     
     properties (Access = public)    
@@ -24,7 +21,6 @@ classdef ComputerConfigurator < handle
             obj.computersList.ValueChangedFcn = @obj.handleSelectionChanged;
             
             if ~isempty(obj.computers)
-                obj.createPropertiesPerComputer();
                 obj.reloadUI();
             end
         end
@@ -33,14 +29,14 @@ classdef ComputerConfigurator < handle
             obj.fillComputersList();
             if (isempty(obj.computersList.Value) && ~isempty(obj.computersList.Items))
                 obj.computersList.Value = obj.computersList.Items{1};
-                obj.updateSelectedComputer();
                 obj.updatePropertiesTable();
             end
         end
         
         function computer = createComputerWithUIParameters(obj)
             computer = obj.getSelectedComputer();
-            
+            computer = computer.copy();
+
             data = obj.computersPropertiesTable.Data;
             for i = 1 : size(data,1)
                 propertyName = data{i,1};
@@ -62,11 +58,6 @@ classdef ComputerConfigurator < handle
         
         function addComputer(obj,computer)
             obj.computers{end+1} = computer;
-            propertiesCellArray = computer.listAllProperties();
-            obj.propertiesPerComputer{end+1} = propertiesCellArray;
-            allComputers = computer.listAllComputers();
-            obj.propertyMaps{end+1} = obj.createPropertiesMapForPropertiesCellArray(propertiesCellArray,allComputers);
-            obj.reloadUI();
         end
         
         function removeSelectedComputer(obj)
@@ -78,44 +69,11 @@ classdef ComputerConfigurator < handle
     
     methods(Access = private)
         
-        function createPropertiesPerComputer(obj)
-            nComputers = length(obj.computers);
-            obj.propertiesPerComputer = cell(1,nComputers);
-            for i = 1 : nComputers
-                computer = obj.computers{i};
-                propertiesCellArray = computer.listAllProperties();
-                obj.propertiesPerComputer{i} = propertiesCellArray;
-                allComputers = computer.listAllComputers();
-                obj.propertyMaps{i} = obj.createPropertiesMapForPropertiesCellArray(propertiesCellArray,allComputers);
-            end
-        end
-        
-        function propertiesMap = createPropertiesMapForPropertiesCellArray(~,propertiesCellArray,allComputers)
-            nTotalProperties = cellfun('length',propertiesCellArray);
-            nTotalProperties = sum(nTotalProperties);
-            
-            nCells = length(propertiesCellArray);
-            propertiesMap = cell(1,nTotalProperties);
-            mappingCounter = 1;
-            for i = 1 : nCells
-                computerCurrentCell = allComputers{i};
-                propertiesCurrentCell = propertiesCellArray{i};
-                for j = 1 : length(propertiesCurrentCell)
-                    property = propertiesCurrentCell(j);
-                    propertiesMap{mappingCounter} = {computerCurrentCell,property};                    
-                    mappingCounter = mappingCounter + 1;
-                end
-            end
-        end
-        
         function handlePropertiesTableEditFinished(obj,~,callbackData)            
             row = callbackData.Indices(1);
-            currentComputerIdx = obj.getSelectedComputerIdx();
-            propertiesMap = obj.propertyMaps{currentComputerIdx};
-            propertyMapCell = propertiesMap{row};
-            computer = propertyMapCell{1};
-            property = propertyMapCell{2};            
-            property.setValueWithStr(callbackData.NewData);
+            computer = obj.getSelectedComputer();
+            property = obj.currentComputerProperties(row);
+            property.value = callbackData.NewData;
             computer.setProperty(property);
         end
         
@@ -127,14 +85,9 @@ classdef ComputerConfigurator < handle
         function fillComputersList(obj)            
             obj.computersList.Items = Helper.generateComputerNamesArray(obj.computers);
         end
-        
-        function updateSelectedComputer(obj)
-            computerIdx = obj.getSelectedComputerIdx;
-            obj.currentComputerProperties = obj.propertiesPerComputer{computerIdx};
-        end
-        
+                
         function updatePropertiesTable(obj)
-            properties = horzcat(obj.currentComputerProperties{:});
+            properties = obj.getSelectedComputer().getEditableProperties();
             obj.computersPropertiesTable.Data = Helper.propertyArrayToCellArray(properties);
         end
         

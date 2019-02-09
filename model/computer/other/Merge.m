@@ -18,6 +18,7 @@ classdef Merge < Computer
             obj.name = 'Merge';
             obj.inputPort = ComputerPort(ComputerPortType.kAny);
             obj.outputPort = ComputerPort(ComputerPortType.kAny);
+            obj.messageCount = 0;
         end
         
         function dataOut = compute(obj,dataIn)
@@ -32,6 +33,7 @@ classdef Merge < Computer
                 dataOut = [];
             else
                 dataOut = obj.partialResult;
+                obj.messageCount = 0;
             end
         end
         

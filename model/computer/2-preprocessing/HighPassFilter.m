@@ -15,7 +15,7 @@ classdef HighPassFilter < Filter
         end
         
         function dataFiltered = compute(obj, data)
-            [b, a] = butter(order,cutoff/(obj.samplingFrequency/2),'high');
+            [b, a] = butter(obj.order,obj.cutoff/(obj.samplingFrequency/2),'high');
             dataFiltered = abs(filtfilt(b, a, double(data)));
         end
     end

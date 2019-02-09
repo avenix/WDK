@@ -8,8 +8,8 @@ classdef Subtraction < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
         end
         
-        function computedSignal = compute(~,signal)
-            computedSignal = signal(:,1) - signal(:,2);
+        function computedSignal = compute(~,dataIn)
+            computedSignal = dataIn{1} - dataIn{2};
         end
     end
 end

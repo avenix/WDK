@@ -77,7 +77,7 @@ classdef PreprocessingConfigurator < handle
             axisSelector = AxisSelector();
             axisSelector.axes = selectedSignals;
             
-            computer = ChainBuilder.CreateComputerWithSequence({axisSelector, signalComputer});
+            computer = CompositeComputer.CreateComputerWithSequence({axisSelector, signalComputer});
         end
         
         function updateSignalsList(obj)

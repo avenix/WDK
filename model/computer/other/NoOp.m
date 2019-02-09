@@ -10,8 +10,5 @@ classdef NoOp < Computer
             out = dataIn;
         end
         
-        function str = toString(~)
-            str = '';
-        end
     end
 end

@@ -1,9 +1,9 @@
-classdef SquaredMagnitude < Computer
+classdef SquaredMagnitudeSum < Computer
     
     methods (Access = public)
         
-        function obj = SquaredMagnitude()
-            obj.name = 'SquaredMagnitude';
+        function obj = SquaredMagnitudeSum()
+            obj.name = 'SquaredMagnitudeSum';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end

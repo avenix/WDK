@@ -1,12 +1,15 @@
-classdef (Abstract) Computer < handle
+classdef (Abstract) Computer < matlab.mixin.Copyable
     
     properties (Access = public)
         inputPort;
         outputPort;
         name;
-        nextComputers;
     end
     
+    properties (SetAccess = private)    
+        nextComputers;
+    end
+
     methods (Abstract)
         computedSignal = compute(obj,signal);
     end
@@ -17,6 +20,10 @@ classdef (Abstract) Computer < handle
             obj.(property.name) = property.value;
         end
         
+        function addNextComputer(obj,computer)
+            obj.nextComputers{end+1} = computer;
+        end
+        
         function str = toString(obj)
             str = sprintf('%s',obj.name);
         end
@@ -24,59 +31,7 @@ classdef (Abstract) Computer < handle
         function editableProperties = getEditableProperties(~)
             editableProperties = [];
         end
-        
-        function computers = listAllComputers(obj)
-            
-            nElements = obj.countElements();
-            computers = cell(1,nElements);
-            
-            stack = Stack();
-            stack.push(obj);
-            
-            counter = 1;
-            while ~stack.isempty()
-                computer = stack.pop();
-                computers{counter} = computer;
-                counter = counter + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
-                end
-            end
-        end
-        
-        function properties = listAllProperties(obj)
-            
-            nElements = obj.countElements();
-            properties = cell(1,nElements);
-            
-            stack = Stack();
-            stack.push(obj);
-            
-            counter = 1;
-            while ~stack.isempty()
-                computer = stack.pop();
-                properties{counter} = computer.getEditableProperties();
-                counter = counter + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
-                end
-            end
-        end
-        
-        function n = countElements(obj)
-            
-            stack = Stack();
-            stack.push(obj);
-            
-            n = 1;
-            while ~stack.isempty()
-                computer = stack.pop();
-                n = n + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
-                end
-            end
-        end
+
     end
     
     methods (Static)
@@ -106,9 +61,9 @@ classdef (Abstract) Computer < handle
                 data = dataStack.pop();
                 data = computer.compute(data);
                 if ~isempty(data)
-                    dataStack.push(data);
                     for i = 1 : length(computer.nextComputers)
-                        stack.push(computer.nextComputers(i));
+                        dataStack.push(data);
+                        stack.push(computer.nextComputers{i});
                     end
                 end
             end

@@ -11,6 +11,8 @@ classdef RangeSelector < Computer
             if nargin > 0
                 obj.rangeStart = rangeStart;
                 obj.rangeEnd = rangeEnd;
+            else
+                obj.rangeStart = 1;
             end
             obj.name = 'RangeSelector';
             obj.inputPort = ComputerPort(ComputerPortType.kSegment);
@@ -18,13 +20,11 @@ classdef RangeSelector < Computer
         end
         
         function shorterSegment = compute(obj,segment)
-            shorterSegment = segment(obj.rangeStart:obj.rangeEnd,:);
-            %{
-            shorterSegment = Segment.CreateSegmentWithSegment(segment);
-            shorterSegment.window = segment.window(obj.rangeStart:obj.rangeEnd,:);
-            shorterSegment.startSample = segment.startSample + obj.rangeStart - 1;
-            shorterSegment.endSample = segment.endSample - (length(segment.window) - obj.rangeEnd);
-            %}
+            endIdx = obj.rangeEnd;
+            if isempty(endIdx)
+                endIdx = size(segment,1);
+            end
+            shorterSegment = segment(obj.rangeStart:endIdx,:);
         end
         
         function str = toString(obj)

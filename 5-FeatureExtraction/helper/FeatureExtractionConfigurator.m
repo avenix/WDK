@@ -6,12 +6,22 @@ classdef FeatureExtractionConfigurator < handle
         defaultFeaturesList;
         addFeatureButton;
         removeFeatureButton;
+        
+        selectedFeaturesList;
+        featureStartRangeEditText;
+        featureEndRangeEditText;
+        featureFullSegmentCheckBox;
+        featureAxisEditText;
+        
         loadedFeatureExtractorsList;
         
         manualFeatureExtractionPanel;
         selectionTypeButtonGroup;
         selectFromFileRadio;
         selectManuallyRadio;
+        
+        selectedFeatures;
+        currentSelectedFeature;
     end
     
     properties (Access = public)
@@ -23,7 +33,10 @@ classdef FeatureExtractionConfigurator < handle
         function obj = FeatureExtractionConfigurator(defaultFeatures,...
                 loadedFeatureExtractionFiles, featuresList,...
                 addFeaturesButton,removeFeaturesButton,...
-                selectedFeaturesList, computersVariablesTable,...
+                selectedFeaturesList, featureStartRangeEditText,...
+                featureEndRangeEditText,...
+                featureFullSegmentCheckBox,...
+                featureAxisEditText,...,...
                 loadedFeatureExtractorsList,selectionTypeButtonGroup,...
                 selectFromFileRadio,selectManuallyRadio,manualFeatureExtractionPanel)
             
@@ -32,6 +45,13 @@ classdef FeatureExtractionConfigurator < handle
             obj.defaultFeaturesList = featuresList;
             obj.addFeatureButton = addFeaturesButton;
             obj.removeFeatureButton = removeFeaturesButton;
+            obj.selectedFeaturesList = selectedFeaturesList;
+            
+            obj.featureStartRangeEditText = featureStartRangeEditText;
+            obj.featureEndRangeEditText = featureEndRangeEditText;
+            obj.featureFullSegmentCheckBox = featureFullSegmentCheckBox;
+            obj.featureAxisEditText = featureAxisEditText;
+            
             obj.loadedFeatureExtractorsList = loadedFeatureExtractorsList;
             obj.selectionTypeButtonGroup = selectionTypeButtonGroup;
             obj.selectFromFileRadio = selectFromFileRadio;
@@ -41,31 +61,32 @@ classdef FeatureExtractionConfigurator < handle
             obj.addFeatureButton.ButtonPushedFcn = @obj.handleAddButtonClicked;
             obj.removeFeatureButton.ButtonPushedFcn = @obj.handleRemoveButtonClicked;
             obj.selectionTypeButtonGroup.SelectionChangedFcn = @obj.handleSelectionTypeChanged;
+            obj.selectedFeaturesList.ValueChangedFcn = @obj.handleSelectedFeatureChanged;
             
+            obj.featureStartRangeEditText.ValueChangedFcn = @obj.handleStartValueChanged;
+            obj.featureEndRangeEditText.ValueChangedFcn = @obj.handleEndValueChanged;
+            obj.featureFullSegmentCheckBox.ValueChangedFcn = @obj.handleFullSegmentCheckBoxChanged;
+            obj.featureAxisEditText.ValueChangedFcn = @obj.handleAxisValueChanged;
+            
+            
+            obj.selectedFeatures = [];
             if ~isempty(obj.loadedFeatureExtractionFiles)
                 obj.fillLoadedFeaturesList();
                 obj.loadedFeatureExtractorsList.Value = obj.loadedFeatureExtractorsList.Items{1};
             end
             
             if ~isempty(obj.defaultFeatures)
-                
-                obj.computerConfigurator = ComputerConfigurator(...
-                    [],...
-                    selectedFeaturesList,...
-                    computersVariablesTable);
-                
                 obj.reloadUI();
             end
         end
         
         function reloadUI(obj)
             obj.fillDefaultFeaturesList();
-            obj.computerConfigurator.reloadUI();
         end
         
         function featureExtractor = createFeatureExtractorWithUIParameters(obj)
             if obj.isManualMode()
-                featureExtractor = FeatureExtractor(obj.computerConfigurator.computers);
+                featureExtractor = FeatureExtractor(obj.selectedFeatures);
             else
                 fileIdx = obj.getSelectedLoadedFileIdx();
                 featureExtractionFile = obj.loadedFeatureExtractionFiles{fileIdx};
@@ -73,18 +94,67 @@ classdef FeatureExtractionConfigurator < handle
             end
         end
         
-        function idx = getSelectedFeatureIdx(obj)
+        function idx = getDefaultSelectedFeatureIdx(obj)
             idxStr = obj.defaultFeaturesList.Value;
             [~,idx] = ismember(idxStr,obj.defaultFeaturesList.Items);
         end
         
-        function feature = getSelectedFeature(obj)
-            idx = obj.getSelectedFeatureIdx();
+        function feature = getDefaultSelectedFeature(obj)
+            idx = obj.getDefaultSelectedFeatureIdx();
             feature = obj.defaultFeatures{idx};
+        end
+        
+        function idx = getSelectedFeatureIdx(obj)
+            idxStr = obj.selectedFeaturesList.Value;
+            [~,idx] = ismember(idxStr,obj.selectedFeaturesList.Items);
+        end
+        
+        function feature = getSelectedFeature(obj)
+            if isempty(obj.selectedFeaturesList.Items)
+                feature = [];
+            else
+                idx = obj.getSelectedFeatureIdx();
+                feature = obj.selectedFeatures{idx};
+            end
         end
     end
     
     methods(Access = private)
+        
+        function updateSelectedFeatureUI(obj)
+            if ~isempty(obj.currentSelectedFeature)
+                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                axisSelector = rangeSelector.nextComputers{1};
+                
+                if isempty(rangeSelector.rangeEnd)
+                    obj.featureStartRangeEditText.Visible = false;
+                    obj.featureEndRangeEditText.Visible = false;
+                    obj.featureFullSegmentCheckBox.Value = true;
+                else
+                    obj.featureStartRangeEditText.Visible = true;
+                    obj.featureEndRangeEditText.Visible = true;
+                    obj.featureFullSegmentCheckBox.Value = false;
+                    obj.featureStartRangeEditText.Value = rangeSelector.rangeStart;
+                    obj.featureEndRangeEditText.Value = rangeSelector.rangeEnd;
+                end
+                obj.featureAxisEditText.Value = Helper.arrayToString(axisSelector.axes,' ');
+            end
+        end
+        
+        function updateCurrentSelectedFeatureName(obj)
+            idx = obj.getSelectedFeatureIdx();
+            featureExtractor = obj.selectedFeatures{idx};
+            obj.selectedFeaturesList.Items{idx} = FeatureExtractionConfigurator.StringForFeature(featureExtractor);
+            obj.selectedFeaturesList.Value = obj.selectedFeaturesList.Items{idx};
+        end
+        
+        function addFeatureToSelectedList(obj, computer)
+            obj.selectedFeatures{end+1} = computer;
+            obj.selectedFeaturesList.Items{end+1} = FeatureExtractionConfigurator.StringForFeature(computer);
+            obj.selectedFeaturesList.Value = obj.selectedFeaturesList.Items(end);
+            obj.currentSelectedFeature = computer;
+            obj.updateSelectedFeatureUI();
+        end
         
         function idx = getSelectedLoadedFileIdx(obj)
             idxStr = obj.loadedFeatureExtractorsList.Value;
@@ -108,19 +178,28 @@ classdef FeatureExtractionConfigurator < handle
         end
         
         function handleAddButtonClicked(obj,~,~)
-            featureExtractor = obj.getSelectedFeature();
+            featureExtractor = obj.getDefaultSelectedFeature();
             
-            chainBuilder = ChainBuilder(RangeSelector());
-            chainBuilder.addComputer(AxisSelector());
-            chainBuilder.addComputer(featureExtractor);
+            compositeComputer = CompositeComputer(RangeSelector());
+            compositeComputer.addComputer(AxisSelector());
+            compositeComputer.addComputer(featureExtractor);
+            compositeComputer.name = featureExtractor.name;
             
-            computer = chainBuilder.root;
-            computer.name = featureExtractor.name;
-            obj.computerConfigurator.addComputer(computer);
+            obj.addFeatureToSelectedList(compositeComputer);
         end
         
         function handleRemoveButtonClicked(obj,~,~)
-            obj.computerConfigurator.removeSelectedComputer();
+            idx = obj.getSelectedFeatureIdx();
+            obj.selectedFeatures(idx) = [];
+            obj.selectedFeaturesList.Items(idx) = [];
+            obj.selectFirstAddedFeature();
+        end
+        
+        function selectFirstAddedFeature(obj)
+            if ~isempty(obj.selectedFeatures)
+                obj.selectedFeaturesList.Value = obj.selectedFeaturesList.Items{1};
+                obj.currentSelectedFeature = obj.selectedFeatures{1};
+            end
         end
         
         function fillLoadedFeaturesList(obj)
@@ -129,6 +208,75 @@ classdef FeatureExtractionConfigurator < handle
         
         function fillDefaultFeaturesList(obj)
             obj.defaultFeaturesList.Items = Helper.generateComputerNamesArray(obj.defaultFeatures);
+        end
+        
+        function handleSelectedFeatureChanged(obj,~,~)
+            obj.currentSelectedFeature = obj.getSelectedFeature();
+            obj.updateSelectedFeatureUI();
+        end
+        
+        function handleStartValueChanged(obj,~,~)
+            obj.currentSelectedFeature = obj.getSelectedFeature();
+            
+            if ~isempty(obj.currentSelectedFeature)
+                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                rangeSelector.rangeStart = obj.featureStartRangeEditText.Value;
+                obj.updateCurrentSelectedFeatureName();
+            end
+        end
+        
+        function handleEndValueChanged(obj,~,~)
+            obj.currentSelectedFeature = obj.getSelectedFeature();
+            
+            if ~isempty(obj.currentSelectedFeature)
+                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                rangeSelector.rangeEnd = obj.featureEndRangeEditText.Value;
+                obj.updateCurrentSelectedFeatureName();
+            end
+        end
+        
+        function handleAxisValueChanged(obj,~,~)
+            obj.currentSelectedFeature = obj.getSelectedFeature();
+            
+            if ~isempty(obj.currentSelectedFeature)
+                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                axisSelector = rangeSelector.nextComputers{1};
+                axisSelector.axes = str2num(obj.featureAxisEditText.Value);
+                obj.updateCurrentSelectedFeatureName();
+            end
+        end
+        
+        function handleFullSegmentCheckBoxChanged(obj,~,~)
+            obj.currentSelectedFeature = obj.getSelectedFeature();
+            if ~isempty(obj.currentSelectedFeature)
+                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                
+                value = obj.featureFullSegmentCheckBox.Value;
+                if (value)
+                    rangeSelector.rangeEnd = [];
+                    obj.featureStartRangeEditText.Visible = false;
+                    obj.featureEndRangeEditText.Visible = false;
+                else
+                    rangeSelector.rangeEnd = obj.featureEndRangeEditText.Value;
+                    obj.featureStartRangeEditText.Visible = true;
+                    obj.featureEndRangeEditText.Visible = true;
+                end
+                obj.updateCurrentSelectedFeatureName();
+            end
+        end
+        
+    end
+    
+    methods (Access = private, Static)
+        function str = StringForFeature(featureComputer)
+            rangeSelector = featureComputer.root.nextComputers{1};
+            axisSelector = rangeSelector.nextComputers{1};
+            featureExtractor = axisSelector.nextComputers{1};
+            
+            str = sprintf('%s_%s',featureExtractor.name,Helper.arrayToString(axisSelector.axes,' '));
+            if ~isempty(rangeSelector.rangeEnd)
+                str = sprintf('%s (%d-%d)',str,rangeSelector.rangeStart,rangeSelector.rangeEnd);
+            end
         end
     end
 end

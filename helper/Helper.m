@@ -102,7 +102,7 @@ classdef Helper < handle
         
         function cellArray = propertyArrayToCellArray(propertyArray)
             numProperties = length(propertyArray);
-                cellArray = cell(numProperties,2);
+            cellArray = cell(numProperties,2);
             for i = 1 : numProperties
                 property = propertyArray(i);
                 cellArray{i,1} = property.name;
