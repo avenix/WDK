@@ -124,9 +124,8 @@ classdef FeatureExtractor < Computer
         end
         
         function featureExtractors = CreateDefaultFeatureExtractors()
-            featureExtractors = {Min(), Max(), Mean(), Variance(), STD(), Median(), AUC(), AAV()};
-            %featureExtractorHandles = {@min,@max,@mean,@var,@std,@median,@trapz,@aav,...
-            %   @mad,@iqr,@rms,@mySkewness,@myKurtosis};
+            featureExtractors = {Min(), Max(), Mean(), Median(), Variance(), STD(),...
+                AUC(), AAV(), MAD(),IQR(),RMS(),Skewness(),Kurtosis()};
         end
         
         function axisSelectors = CreateAxisSelectorsForSignals(numSignals)

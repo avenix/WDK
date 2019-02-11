@@ -4,9 +4,6 @@ classdef FeatureSelector < handle
     end
     
     methods (Access = public)
-        
-        function obj = FeatureSelector()
-        end
 
         function selectFeaturesForTable(obj,table)
              table.filterTableToColumns([obj.selectedFeatureIdxs table.width]);

@@ -29,6 +29,7 @@ classdef ComputerConfigurator < handle
             obj.fillComputersList();
             if (isempty(obj.computersList.Value) && ~isempty(obj.computersList.Items))
                 obj.computersList.Value = obj.computersList.Items{1};
+                obj.currentComputerProperties = obj.computers{1}.getEditableProperties();
                 obj.updatePropertiesTable();
             end
         end
