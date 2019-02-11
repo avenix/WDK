@@ -78,7 +78,6 @@ classdef ComputerConfigurator < handle
         end
         
         function handleSelectionChanged(obj,~,~)
-            obj.updateSelectedComputer();
             obj.updatePropertiesTable();
         end
         
