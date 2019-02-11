@@ -78,6 +78,8 @@ classdef ComputerConfigurator < handle
         end
         
         function handleSelectionChanged(obj,~,~)
+            computer = obj.getSelectedComputer();
+            obj.currentComputerProperties = computer.getEditableProperties();
             obj.updatePropertiesTable();
         end
         
@@ -86,8 +88,7 @@ classdef ComputerConfigurator < handle
         end
                 
         function updatePropertiesTable(obj)
-            properties = obj.getSelectedComputer().getEditableProperties();
-            obj.computersPropertiesTable.Data = Helper.propertyArrayToCellArray(properties);
+            obj.computersPropertiesTable.Data = Helper.propertyArrayToCellArray(obj.currentComputerProperties);
         end
         
         function nProperties = countNProperties(~,propertiesCell)

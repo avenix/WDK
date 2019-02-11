@@ -158,9 +158,8 @@ classdef FeatureExtractor2 < handle
         end
         
         function featureExtractors = createDefaultFeatureExtractionComputers()
-            featureExtractors = {Min(), Max(), Mean(), Median()};
-            %featureExtractorHandles = {@min,@max,@mean,@var,@std,@median,@trapz,@aav,...
-            %   @mad,@iqr,@rms,@mySkewness,@myKurtosis};
+            featureExtractors = {Min(), Max(), Mean(), Median(), Variance(), STD(),...
+                AUC(), AAV(), MAD(),IQR(),RMS(),Skewness(),Kurtosis()};
         end
         
         function axisSelectors = createAxisSelectorsForSignals(numSignals)
@@ -178,42 +177,6 @@ classdef FeatureExtractor2 < handle
                 rangeSelectors(i) = RangeSelector(range.rangeStart,range.rangeEnd);
             end
         end
-        
-        
-        function featureComputers = createStatisticalFeatureExtractors(numSignals,segmentRanges)
-            
-            featureExtractors = FeatureExtractor2.createDefaultFeatureExtractionComputers();
-            axisSelectors = FeatureExtractor2.createAxisSelectorsForSignals(numSignals);
-            rangeSelectors = FeatureExtractor2.createRangeSelectorsForRanges(segmentRanges);
-            
-            nFeatureExtractors = length(featureExtractors);
-            nAxisSelectors = length(axisSelectors);
-            nRangeSelectors = length(segmentRanges);
-            
-            nFeatureComputers = nFeatureExtractors * numSignals * nRangeSelectors;
-            
-            featureComputers = cell(1,nFeatureComputers);
-            featureExtractorCounter = 1;
-            
-            for featureExtractorIdx = 1 : nFeatureExtractors
                 
-                featureExtractor = featureExtractors{featureExtractorIdx};
-                
-                for axisSelectorIdx = 1 : nAxisSelectors
-                    
-                    axisSelector = axisSelectors(axisSelectorIdx);
-                    
-                    for rangeSelectorIdx = 1 : nRangeSelectors
-                        
-                        rangeSelector = rangeSelectors(rangeSelectorIdx);
-                        
-                        featureComputer = SequentialComputer({rangeSelector,axisSelector,featureExtractor});
-                        featureComputers{featureExtractorCounter} = featureComputer;
-                        featureExtractorCounter = featureExtractorCounter + 1;
-                    end
-                end
-            end
-        end
-        
     end
 end

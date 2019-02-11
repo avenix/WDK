@@ -14,6 +14,12 @@ The Warables Development Toolkit facilitates the development of wearable device 
 * `git clone git@github.com:avenix/ARC-Tutorial.git`
 * in Matlab, `addpath(genpath('./'))`
 * enjoy the Apps in each directory (e.g. *DataAnnotationApp* in *1-DataAnnotation/*).
+* this code uses the mRMR library for feature selection. If you get an error 'estpab function not found', then you need to:
+```
+cd libraries/mRMR_0.9/mi/
+mex -setup C++ 
+makeosmex
+```
 
 The WDK requires the installation of the Signal Processing Toolbox:
 

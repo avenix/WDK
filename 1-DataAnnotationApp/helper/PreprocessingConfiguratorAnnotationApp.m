@@ -72,7 +72,7 @@ classdef PreprocessingConfiguratorAnnotationApp < handle
             axisSelector = AxisSelector();
             axisSelector.axes = selectedSignals;
             
-            computer = SequentialComputer({axisSelector, signalComputer});
+            computer = CompositeComputer.CreateComputerWithSequence({axisSelector, signalComputer});
         end
         
         function updateSignalsList(obj)

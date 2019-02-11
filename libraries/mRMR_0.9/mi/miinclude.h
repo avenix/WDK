@@ -16,7 +16,7 @@
 #ifndef __MutualInfoINLUDE_H
 #define __MutualInfoINLUDE_H
 
-#include <math.h>
+#include <cmath>
 
 #include "elementmexheader.h"
 
