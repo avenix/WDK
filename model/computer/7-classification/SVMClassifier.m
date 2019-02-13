@@ -3,6 +3,7 @@ classdef SVMClassifier < Computer
     properties (Access = public)
         order = 1;
         boxConstraint = 1;
+        shouldTrain = false;
     end
     
     properties (Access = private)
@@ -13,10 +14,17 @@ classdef SVMClassifier < Computer
         
         function obj = SVMClassifier()
             obj.name = 'SVM';
+            obj.inputPort = ComputerPort(ComputerPortType.kTable);
+            obj.outputPort = ComputerPort(ComputerPortType.kTable);
         end
         
         function dataOut = compute(obj,data)
-            dataOut = obj.test(data);
+            if obj.shouldTrain
+                obj.train(data);
+                dataOut = [];
+            else
+                dataOut = obj.test(data);
+            end
         end
         
         function train(obj,table)
