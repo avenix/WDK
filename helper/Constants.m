@@ -6,9 +6,10 @@ classdef Constants < handle
         annotationsPath = './data/annotations';
         markersPath = './data/markers';
         dataPath = './data/rawdata';
-        precomputedPath = './data/cache';
+        kPrecomputedPath = './data/cache';
         labelingStrategiesPath = './data/labeling';
         kFeaturesPath = './data/features';
+        kMaxFeatureNameCharacters = 15;
         
         synchronisationClassStr = 'synchronisation';
         kNullClassGroupStr = 'NULL';

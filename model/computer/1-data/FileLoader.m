@@ -1,13 +1,13 @@
 classdef FileLoader < Computer
     properties (Access = public)
-        %fileNames;
+        fileName;
     end
     
     properties (Access = private)
         dataLoader;
     end
     
-    methods
+    methods (Access = public)
         function obj = FileLoader()
             obj.name = 'fileLoader';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
@@ -15,17 +15,17 @@ classdef FileLoader < Computer
             obj.dataLoader = DataLoader();
         end
         
-        function files = compute(obj,~)
-             [files, ~] = obj.dataLoader.loadAllDataFiles();
+        function file = compute(obj,~)
+            file = obj.dataLoader.loadDataFile(obj.fileName);
+            Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentDataFile,file);
         end
         
         function str = toString(obj)
-            str = sprintf('%s_%s',obj.name,obj.fileName);
+            str = sprintf('%s_%s',obj.name, obj.fileName);
         end
         
         function fileNameProperty = getEditableProperties(obj)
             fileNameProperty = Property('fileName',obj.fileName);
         end
-        
     end
 end

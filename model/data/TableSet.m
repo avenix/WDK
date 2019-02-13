@@ -46,22 +46,22 @@ classdef TableSet < handle
             else
                 
                 nRows = TableSet.CountNumberOfRows(tables);
-                
-                firstTable = tables(1).table;
-                
-                mergedTableArray = zeros(nRows,width(firstTable));
-                
-                currentRow = 1;
-                for i = 1 : length(tables)
-                    currentTable = tables(i).table;
-                    nRowsCurrentTable = height(currentTable);
-                    mergedTableArray(currentRow : currentRow + nRowsCurrentTable - 1,:) = table2array(currentTable);
-                    currentRow = currentRow + nRowsCurrentTable;
+                if nRows > 0
+                    firstTable = tables(1).table;
+                    mergedTableArray = zeros(nRows,width(firstTable));
+                    
+                    currentRow = 1;
+                    for i = 1 : length(tables)
+                        currentTable = tables(i).table;
+                        nRowsCurrentTable = height(currentTable);
+                        mergedTableArray(currentRow : currentRow + nRowsCurrentTable - 1,:) = table2array(currentTable);
+                        currentRow = currentRow + nRowsCurrentTable;
+                    end
+                    
+                    mergedTable = array2table(mergedTableArray);
+                    mergedTable.Properties.VariableNames = firstTable.Properties.VariableNames;
+                    mergedTable = Table(mergedTable);
                 end
-                
-                mergedTable = array2table(mergedTableArray);
-                mergedTable.Properties.VariableNames = firstTable.Properties.VariableNames;
-                mergedTable = Table(mergedTable);
             end
         end
         

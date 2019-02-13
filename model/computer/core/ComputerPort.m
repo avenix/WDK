@@ -1,7 +1,7 @@
 classdef ComputerPort < handle
     properties
-        type %ComputerPortType
-        size %ComputerSizeType
+        type
+        size
     end
     
     methods(Access = public)

@@ -47,15 +47,18 @@ classdef DataLoader < handle
         end
         
         function dataFiles = loadDataFiles(obj,fileNames)
-            
             nDataFiles = length(fileNames);
             dataFiles = repmat(DataFile,1,nDataFiles);
             
             for i = 1 : length(fileNames)
                 fileName = fileNames{i};
-                [data, columnNames] = obj.loadData(fileName);
-                dataFiles(i) = DataFile(fileName,data,columnNames);
+                dataFiles(i) = obj.loadDataFile(fileName);
             end 
+        end
+        
+        function dataFile = loadDataFile(obj,fileName)
+            [data, columnNames] = obj.loadData(fileName);
+            dataFile = DataFile(fileName,data,columnNames);
         end
         
         function [data, columnNames] = loadData(obj,fileName)
@@ -172,6 +175,10 @@ classdef DataLoader < handle
     
     methods (Static)
         
+        function b = CheckFileExists(fullPath)
+            b = exist(fullPath);
+        end
+        
         function computer = LoadJSONComputerFromFile(fileName)
             fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
             text = fileread(fullPath);
@@ -194,7 +201,7 @@ classdef DataLoader < handle
         end
         
         function SaveComputer(computer, fileName)
-            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            fullPath = sprintf('%s',fileName);
             save(fullPath,'computer');
         end
         

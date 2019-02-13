@@ -69,9 +69,6 @@ classdef ClassesMap < handle
     
     methods (Access = private)
         
-        % Guard the constructor against external invocation.  We only want
-        % to allow a single instance of this class.  See description in
-        % Singleton superclass.
         function obj = ClassesMap()
             
             obj.classesList = obj.loadClassesFile();

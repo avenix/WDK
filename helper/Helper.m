@@ -69,6 +69,10 @@ classdef Helper < handle
             fileName = dataFileName(1:n-periodIdx(1));
         end
         
+        function fileNames = removeFileExtensionForFiles(dataFileNames)
+            fileNames = cellfun(@Helper.removeFileExtension,dataFileNames,'UniformOutput',false);
+        end
+        
         function fileName = removeAnnotationsExtension(fileName)
             idx = strfind(fileName,'-annotations');
             fileName = fileName(1:idx-1);
@@ -110,15 +114,19 @@ classdef Helper < handle
             end
         end
         
-        function str = cellArrayToString(cellArray)
+        function str = cellArrayToString(cellArray,delimiter)
             if isempty(cellArray)
                 str = "";
             else
+                
+                if nargin == 1
+                    delimiter = '\n';
+                end
                 str = cellArray{1};
                 nCells = length(cellArray);
                 for i = 2 : nCells
-                    columnName = cellArray{i};
-                    str = sprintf('%s\n%s',str,columnName);
+                    cellStr = cellArray{i};
+                    str = sprintf('%s%c%s',str,delimiter,cellStr);
                 end
             end
         end

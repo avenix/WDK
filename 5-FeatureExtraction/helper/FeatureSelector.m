@@ -96,9 +96,7 @@ classdef FeatureSelector < handle
             for i = 1 : length(labels)
                 currentLabel = labels(i);
                 labels(i) = m(currentLabel);
-            end
-            
-        end
-        
+            end 
+        end 
     end
 end

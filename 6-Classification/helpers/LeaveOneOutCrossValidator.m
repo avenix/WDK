@@ -2,8 +2,8 @@
 classdef LeaveOneOutCrossValidator < handle
     properties (Access = public)
         nFeatures = 20;
-        shouldNormalizeFeatures = true;
-        shouldSelectFeatures = true;
+        shouldNormalizeFeatures = false;
+        shouldSelectFeatures = false;
         classifier;
         tableSet;
     end

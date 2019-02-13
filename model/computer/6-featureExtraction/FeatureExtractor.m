@@ -48,23 +48,28 @@ classdef FeatureExtractor < Computer
             nComputers = length(obj.computers);
             names = cell(1,nComputers);
             for i = 1 : nComputers
-                featureName = sprintf('%s_%d',obj.computers{i}.toString(),i);
+                featureStr = obj.computers{i}.toString();
+                featureStr = featureStr(1:Constants.kMaxFeatureNameCharacters);
+                featureName = sprintf('%s_%d',featureStr,i);
+                featureName = strrep(featureName,', ','_');
                 names{i} = featureName;
             end
         end
+        
         
         function str = toString(obj)
             str = "";
             if ~isempty(obj.computers)
                 
                 for i = 1 : length(obj.computers)
-                    computerStr = obj.computerStringForIdx(i);
+                    computerStr = obj.computers{i}.toString();
                     if ~isequal(computerStr,"")
                         str = sprintf('%s%s_',str,computerStr);
                     end
                 end
             end
         end
+        
     end
     
     methods (Access = private)

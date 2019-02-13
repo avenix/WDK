@@ -30,6 +30,27 @@ classdef CompositeComputer < Computer
             obj.name = "Composite";
         end
         
+        function str = toString(obj)
+            
+            stack = Stack();
+            stack.push(obj.root);
+            
+            nStrings = Computer.CountComputers(obj.root);
+            
+            strings = cell(1,nStrings);
+            count = 1;
+            while ~stack.isempty()
+                computer = stack.pop();
+                strings{count} = computer.toString();
+                count = count + 1;
+                for i = 1 : length(computer.nextComputers)
+                    stack.push(computer.nextComputers{i});
+                end
+            end
+            
+            str = Helper.cellArrayToString(strings,', ');
+        end
+        
         function dataOut = compute(obj,dataIn)
             dataOut = Computer.ExecuteChain(obj.root,dataIn);
         end
@@ -48,26 +69,7 @@ classdef CompositeComputer < Computer
         function computer = getComputerWithIdx(obj,idx)
             computer = obj.allComputers{idx};
         end
-        
-        function computers = listAllComputers(obj)
-            
-            nElements = obj.countElements();
-            computers = cell(1,nElements);
-            
-            stack = Stack();
-            stack.push(obj.root);
-            
-            counter = 1;
-            while ~stack.isempty()
-                computer = stack.pop();
-                computers{counter} = computer;
-                counter = counter + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
-                end
-            end
-        end
-        
+
         function properties = getEditableProperties(obj)
             
             nElements = obj.countElements();
@@ -86,25 +88,6 @@ classdef CompositeComputer < Computer
                 end
             end
         end        
-    end
-    
-    methods (Access = private)
-        
-        function addToAllComputers(obj,computer)
-            
-            stack = Stack();
-            stack.push(computer);
-            
-            counter = 1;
-            while ~stack.isempty()
-                computer = stack.pop();
-                obj.allComputers{end+1} = computer;
-                counter = counter + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
-                end
-            end
-        end
     end
     
     methods (Static)

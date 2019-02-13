@@ -32,36 +32,13 @@ classdef SimplePeakDetector < Computer
     
     methods (Access = private)
         function peakLocations = detectEvents(obj,signal)
-            
-            %WINDOW_SIZE = int32(501);
-            
+                        
             signal = single(signal);
             lastPeakLocation = -1000;
             lastPeak = 0;
             
-            %peakLocations = uint32(zeros(1,floor(length(signal) / obj.minPeakDistance)));
             [peakLocations, ~,~] = obj.findPeakLocations(signal,obj.minPeakHeight,obj.minPeakDistance,lastPeakLocation,lastPeak);
             peakLocations = uint32(peakLocations);
-            %{
-            %iterates block by block to simulate the processing on a device
-            %with limited memory
-            numPeaks = 0;
-            for i = 1: WINDOW_SIZE : length(signal) - WINDOW_SIZE
-                window = signal(i : i + WINDOW_SIZE - 1);
-                
-                [detectedPeakLocations, lastPeakLocation, lastPeak] = obj.findPeakLocations(window,obj.minPeakHeight,obj.minPeakDistance,lastPeakLocation,lastPeak);
-                
-                for j = 1 : length(detectedPeakLocations)
-                    numPeaks = numPeaks + 1;
-                    peak = detectedPeakLocations(j);
-                    peakLocations(numPeaks) = peak + int32(i) - 1;
-                end
-                
-                lastPeakLocation = lastPeakLocation - int32(WINDOW_SIZE);
-            end
-            
-            peakLocations = peakLocations(1:numPeaks);
-            %}
         end
         
         function [peakLocations, lastPeakLocation, lastPeakValue] = findPeakLocations(~,magnitude,...
