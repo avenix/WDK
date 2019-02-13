@@ -5,7 +5,7 @@ classdef HoldOutValidator < handle
         trainTable;
         classifier;
     end
-        
+
     methods (Access = public)
         
         function truthLabels = getTruthLabels(obj)
