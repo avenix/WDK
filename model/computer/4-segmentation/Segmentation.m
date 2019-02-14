@@ -9,8 +9,8 @@ classdef (Abstract) Segmentation < Computer
     methods (Access = public)
         
         function editableProperties = getEditableProperties(obj)
-            property1 = Property('segmentSizeLeft',obj.segmentSizeLeft);
-            property2 = Property('segmentSizeRight',obj.segmentSizeRight);
+            property1 = Property('segmentSizeLeft',obj.segmentSizeLeft,50,300,PropertyType.kNumber);
+            property2 = Property('segmentSizeRight',obj.segmentSizeRight,50,300,PropertyType.kNumber);
             editableProperties = [property1,property2];
         end
     end
