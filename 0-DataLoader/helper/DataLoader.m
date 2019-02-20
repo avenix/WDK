@@ -140,9 +140,9 @@ classdef DataLoader < handle
             fileNames = Helper.listLabelingStrategies();
             
             nLabelingStrategies = length(fileNames);
-            labelingStrategies = cell(1,nLabelingStrategies+1);
+            labelingStrategies = repmat(ClassLabelingStrategy, 1,nLabelingStrategies+1);
             
-            labelingStrategies{1} = ClassLabelingStrategy();
+            labelingStrategies(1) = ClassLabelingStrategy();
             
             if ~isempty(fileNames)          
                 
@@ -153,7 +153,7 @@ classdef DataLoader < handle
                     fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
                     labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
                     labelingStrategy.name = Helper.removeFileExtension(fileName);
-                    labelingStrategies{i+1} = labelingStrategy;
+                    labelingStrategies(i+1) = labelingStrategy;
                 end
             end
         end

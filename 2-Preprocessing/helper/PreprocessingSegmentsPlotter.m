@@ -1,6 +1,6 @@
 classdef PreprocessingSegmentsPlotter < handle
     properties (Access = public)
-        fontSize = 20;
+        fontSize = 24;
         colorsPerSignal = {[0,0,1,0.3],[1,0,0,0.3],[1,0,1,0.3]};
         lineColor = 'black';
         sameScale = true;
@@ -13,6 +13,7 @@ classdef PreprocessingSegmentsPlotter < handle
         axesHandles;
         verticalLines;
         plotAxes;
+        isZoom = false;
     end
     
     methods (Access = public)
@@ -26,12 +27,14 @@ classdef PreprocessingSegmentsPlotter < handle
             for i = 1 : length(obj.axesHandles)
                 zoom(obj.axesHandles(i),param);
             end
+            obj.isZoom = true;
         end
         
         function setPan(obj,param)
             for i = 1 : length(obj.axesHandles)
                 pan(obj.axesHandles(i),param);
             end
+            obj.isZoom = false;
         end
         
         function plotSegments(obj,groupedSegments,groupNames)
@@ -68,6 +71,11 @@ classdef PreprocessingSegmentsPlotter < handle
             end
             
             obj.updateLinkAxes();
+            if obj.isZoom
+                obj.setZoom('on');
+            else
+                obj.setPan('on');
+            end
         end
         
         function setSameScale(obj,sameScaleParam)

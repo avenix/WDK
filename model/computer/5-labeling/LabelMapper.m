@@ -24,7 +24,7 @@ classdef LabelMapper < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('%s',obj.name);
+            str = sprintf('%s_%s',obj.name,obj.labelingStrategy.name);
         end
     end
 end

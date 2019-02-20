@@ -16,7 +16,7 @@ classdef Palette < handle
         end
         
         function classificationComputers = ClassificationComputers()
-            classificationComputers = {SVMClassifier};
+            classificationComputers = {SVMClassifier,KNNClassifier,TreeClassifier,LDClassifier,EnsembleClassifier};
         end
     end
     

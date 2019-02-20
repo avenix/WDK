@@ -31,53 +31,58 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         function editableProperties = getEditableProperties(~)
             editableProperties = [];
         end
-
-    end
-    
-    methods (Access = protected)
-        function sendMsg(obj,data)
-            for i = 1 : length(obj.nextComputers)
-                Computer.ExecuteChain(obj.nextComputers{i},data);
-            end
-        end
     end
     
     methods (Static, Access = private)
         
-        %returns the loaded data and the first computer in the chain that
-        %was not cached
-        function [computer, data] = LoadCacheDataFromChain(computer)
-            
-            cache = Cache.SharedInstance();
-            allComputersStack = Stack();
+        function computers = ListAllComputers(computer)
+           
+            nComputers = Computer.CountComputers(computer);
             
             stack = Stack();
             stack.push(computer);
             
-            nComputers = Computer.CountComputers(computer);
-            stringsStack = cell(1,nComputers);
-
+            computers = cell(1,nComputers);
+            
             count = 1;
             while ~stack.isempty()
                 computer = stack.pop();
-                allComputersStack.push(computer);
-                stringsStack{count} = computer.toString();
+                computers{count} = computer;
                 count = count + 1;
                 for i = 1 : length(computer.nextComputers)
                     stack.push(computer.nextComputers{i});
                 end
             end
-            
-            data = [];
-            while ~allComputersStack.isempty()
-                computer = allComputersStack.pop();
-                count = count -1;
-                stringStackStr = Helper.cellArrayToString(stringsStack(1:count),', ');
+        end
                 
-                if cache.containsVariable(stringStackStr)
-                    data = cache.loadVariable(stringStackStr);
+        %returns the loaded data and the first computer in the chain that
+        %was not cached
+        function [computer, data, str] = LoadCacheDataWithComputers(computers)
+            
+            cache = Cache.SharedInstance();
+            
+            strings = cellfun(@(x) x.toString(),computers,'UniformOutput',false);
+            nComputers = length(computers);
+            
+            computer = [];
+            data = [];
+            str = [];
+            for i = nComputers : -1 : 1
+                computer = computers{i};
+                str = Helper.cellArrayToString(strings(1:i),', ');
+                
+                if cache.containsVariable(str)
+                    data = cache.loadVariable(str);
                     break;
                 end
+            end
+            
+            if isempty(computer.nextComputers)
+                computer = [];
+            elseif length(computer.nextComputers) == 1
+                computer = computer.nextComputers{1};
+            else
+                computer = CompositeComputer.CreateComputerWithSequence(computer.nextComputers);
             end
         end
     end
@@ -94,24 +99,28 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             var = dict(variableName);
         end
         
-        function r = SharedContext()
+        function dict = SharedContext()
             persistent currentContext;
             if isempty(currentContext)
                 currentContext = containers.Map();
             end
-            r = currentContext;
+            dict = currentContext;
         end
         
         function nComputers = CountComputers(computer)
-            stack = Stack();
-            stack.push(computer);
-
-            nComputers = 0;
-            while ~stack.isempty()
-                computer = stack.pop();
-                nComputers = nComputers + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers{i});
+            if isempty(computer)
+                nComputers = 0;
+            else
+                stack = Stack();
+                stack.push(computer);
+                
+                nComputers = 0;
+                while ~stack.isempty()
+                    computer = stack.pop();
+                    nComputers = nComputers + 1;
+                    for i = 1 : length(computer.nextComputers)
+                        stack.push(computer.nextComputers{i});
+                    end
                 end
             end
         end
@@ -123,42 +132,53 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
             
             if shouldCache
-                [firstComputer, loadedData] = Computer.LoadCacheDataFromChain(computer);
-                if ~isempty(loadedData)
+                
+                computers = Computer.ListAllComputers(computer);
+                nComputers = length(computers);
+                computerStrings = cell(1,nComputers);
+                
+                [firstComputer, loadedData, str] = Computer.LoadCacheDataWithComputers(computers);
+                clear('computers');
+                
+                if isempty(loadedData)
+                    count = 1;
+                else
+                    if(~isempty(firstComputer))
+                        fprintf('loaded %s %s\n',class(loadedData),firstComputer.toString());
+                    end
                     data = loadedData;
                     computer = firstComputer;
+                    computerStrings{1} = str;
+                    count = 2;
                 end
                 cache = Cache.SharedInstance();
-                
-                nComputers = Computer.CountComputers(computer);
-                stringsStack = cell(1,nComputers);
             end
             
-            
-            stack = Stack();
-            dataStack = Stack();
-            
-            stack.push(computer);
-            dataStack.push(data);
-            
-            count = 1;
-            
-            while ~stack.isempty()
-                computer = stack.pop();
-                data = dataStack.pop();
-                data = computer.compute(data);
-                if ~isempty(data)
-                    for i = 1 : length(computer.nextComputers)
-                        dataStack.push(data);
-                        stack.push(computer.nextComputers{i});
-                    end
-                end
+            if ~isempty(computer)
+                stack = Stack();
+                dataStack = Stack();
                 
-                if shouldCache
-                    stringsStack{count} = computer.toString();
-                    stringStackStr = Helper.cellArrayToString(stringsStack(1:count),', ');
-                    count = count + 1;
-                    cache.saveVariable(data,stringStackStr);
+                stack.push(computer);
+                dataStack.push(data);
+                
+                
+                while ~stack.isempty()
+                    computer = stack.pop();
+                    data = dataStack.pop();
+                    data = computer.compute(data);
+                    if ~isempty(data)
+                        for i = 1 : length(computer.nextComputers)
+                            dataStack.push(data);
+                            stack.push(computer.nextComputers{i});
+                        end
+                    end
+                    
+                    if shouldCache
+                        computerStrings{count} = computer.toString();
+                        stringStackStr = Helper.cellArrayToString(computerStrings(1:count),', ');
+                        count = count + 1;
+                        cache.saveVariable(data,stringStackStr);
+                    end
                 end
             end
         end

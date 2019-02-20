@@ -9,22 +9,39 @@ classdef DetectionEventsPlotter < handle
     
     properties (Access = public)
         labelingStrategy;
-        textFontSize = 16;
+        textFontSize = 22;
+        symbolSize = 10;
     end
     
     properties (Access = private)
         showingDetectedEventsPrivate = true;
         showingMissedEventsPrivate = true;
         showingFalsePositiveEventsPrivate = true;
+        zoomModePrivate;
     end
     
     properties (Dependent)
         showingDetectedEvents;
         showingMissedEvents;
         showingFalsePositiveEvents;
+        zoomMode;
     end
     
     methods
+        
+        function value = get.zoomMode(obj)
+            value = obj.zoomModePrivate;
+        end
+        
+        function set.zoomMode(obj,value)
+            obj.zoomModePrivate = value;
+            if(value)
+                zoom(obj.plotAxes,'on');
+            else
+                %zoom(app.plotAxes,'off');
+                pan(obj.plotAxes,'on');
+            end
+        end
         
         function set.showingDetectedEvents(obj,value)
             obj.showingDetectedEventsPrivate = value;
@@ -82,6 +99,7 @@ classdef DetectionEventsPlotter < handle
         function clearPlot(obj)
             cla(obj.plotAxes);
             cla(obj.plotAxes,'reset');
+            obj.zoomMode = obj.zoomModePrivate;
         end
         
     end
@@ -104,7 +122,7 @@ classdef DetectionEventsPlotter < handle
                         classStr = obj.labelingStrategy.classNames{label};
                     end
                     
-                    symbolHandle = plot(obj.plotAxes,eventX,eventY,'*','Color',symbolColor);
+                    symbolHandle = plot(obj.plotAxes,eventX,eventY,'*','Color',symbolColor,'LineWidth',obj.symbolSize);
                     textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr,'FontSize',obj.textFontSize);
                     set(textHandle, 'Clipping', 'on');
                     

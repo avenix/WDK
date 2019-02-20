@@ -2,8 +2,8 @@ classdef ManualSegmentation < Segmentation
     
     properties (Access = public)
         manualAnnotations;
-        includeEvents;
-        includeRanges;
+        includeEvents = true;
+        includeRanges = true;
     end
     
     properties (Access = private)
@@ -15,9 +15,7 @@ classdef ManualSegmentation < Segmentation
         function obj = ManualSegmentation(manualAnnotations)
             obj.createAnnotationsMap(manualAnnotations);
             obj.classesMap = ClassesMap.instance();
-            obj.includeEvents = true;
-            obj.includeRanges = true;
-            obj.name = 'manual';
+            obj.name = 'manualSegmentation';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
             obj.outputPort = ComputerPort(ComputerPortType.kSegment);
         end
@@ -29,26 +27,7 @@ classdef ManualSegmentation < Segmentation
                 segments = obj.segmentFile(data);
             end
         end
-        
-        %{
-        function segments = compute(obj,dataFiles)
-            nFiles = length(dataFiles);
-            nAnnotations = length(obj.manualAnnotations);
-            if nFiles ~= nAnnotations
-                fprintf('%s = ManualSegmentation\n',Constants.kInconsistentAnnotationAndDataFiles);
-                segments = [];
-            else
-                segments = cell(1,nFiles);
-                
-                for i = 1 : nFiles
-                    dataFile = dataFiles{i};
-                    obj.currentAnnotations = obj.manualAnnotations(i);
-                    segments{i} = obj.segmentFile(dataFile);
-                end
-            end
-        end
-        %}
-        
+
         function str = toString(obj)
             includeEventsStr = "";
             if(obj.includeEvents)

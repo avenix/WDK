@@ -33,7 +33,7 @@ classdef LabelingConfigurator < handle
         
         function labelingStrategy = getCurrentLabelingStrategy(obj)
             labelingStrategyIdx = obj.getSelectedLabelingIdx();
-            labelingStrategy = obj.labelingStrategies{labelingStrategyIdx};
+            labelingStrategy = obj.labelingStrategies(labelingStrategyIdx);
         end
         
         %returns a logical array
@@ -57,7 +57,7 @@ classdef LabelingConfigurator < handle
             nLabelingStrategies = length(obj.labelingStrategies);
             labelingStrategyNames = cell(1,nLabelingStrategies);
             for i = 1 : nLabelingStrategies
-                labelingStrategy = obj.labelingStrategies{i};
+                labelingStrategy = obj.labelingStrategies(i);
                 labelingStrategyNames{i} = labelingStrategy.name;
             end
             obj.labelingStrategiesList.Items = labelingStrategyNames;
