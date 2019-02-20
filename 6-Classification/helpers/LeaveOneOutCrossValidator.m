@@ -3,21 +3,18 @@ classdef LeaveOneOutCrossValidator < handle
     properties (Access = public)
         nFeatures = 20;
         shouldNormalizeFeatures = false;
-        shouldSelectFeatures = false;
         classifier;
         tableSet;
     end
     
     properties (Access = private)
         dataNormalizer;
-        featureSelector;
     end
     
     methods (Access = public)
         
         function obj = LeaveOneOutCrossValidator()
             obj.dataNormalizer = FeatureNormalizer();
-            obj.featureSelector = FeatureSelector();
         end
         
         function truthLabels = getTruthLabels(obj)
@@ -43,13 +40,6 @@ classdef LeaveOneOutCrossValidator < handle
                     obj.dataNormalizer.fit(trainTable);
                     trainTable = obj.dataNormalizer.normalize(trainTable);
                     testTable = obj.dataNormalizer.normalize(testTable);
-                end
-                
-                %feature selection
-                if(obj.shouldSelectFeatures)
-                    obj.featureSelector.findBestFeaturesForTable(trainTable,obj.nFeatures);
-                    obj.featureSelector.selectFeaturesForTable(trainTable);
-                    obj.featureSelector.selectFeaturesForTable(testTable);
                 end
                 
                 %classification

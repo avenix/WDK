@@ -1,6 +1,6 @@
 classdef FeatureSelector < handle
     properties (Access = public)
-         selectedFeatureIdxs = [58, 278, 119, 292, 16, 59, 5, 37, 155, 17, 56, 121, 215, 142, 35, 251, 167, 133, 13, 38];
+         selectedFeatureIdxs = [38, 30, 22, 33, 12, 35, 26, 39, 20, 36, 27, 32, 25, 29, 24, 21, 23, 10, 31, 1, 9, 41, 37, 18, 2, 28, 40, 34, 17, 45, 19, 8, 42, 7, 11, 14, 3, 16, 4, 13];
     end
     
     methods (Access = public)
@@ -43,7 +43,6 @@ classdef FeatureSelector < handle
                 fprintf('%d, ',selectedFeatureIndices(i));
             end
         end
-        
     end
     
     methods (Access = private)

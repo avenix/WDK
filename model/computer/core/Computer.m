@@ -72,6 +72,8 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 str = Helper.cellArrayToString(strings(1:i),', ');
                 
                 if cache.containsVariable(str)
+                    
+                    fprintf('loaded %s\n',str);
                     data = cache.loadVariable(str);
                     break;
                 end
@@ -143,9 +145,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 if isempty(loadedData)
                     count = 1;
                 else
-                    if(~isempty(firstComputer))
-                        fprintf('loaded %s %s\n',class(loadedData),firstComputer.toString());
-                    end
                     data = loadedData;
                     computer = firstComputer;
                     computerStrings{1} = str;
