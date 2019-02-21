@@ -16,7 +16,7 @@ classdef ManualSegmentation < Segmentation
             obj.createAnnotationsMap(manualAnnotations);
             obj.classesMap = ClassesMap.instance();
             obj.name = 'manualSegmentation';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kSegment);
         end
         

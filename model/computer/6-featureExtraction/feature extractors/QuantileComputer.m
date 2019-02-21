@@ -9,6 +9,9 @@ classdef QuantileComputer < Computer
             if nargin > 0
                 obj.numQuantileParts = numQuantileParts;
             end
+            obj.name = 'QuantileComputer';
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
+            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
         function result = compute(obj,data)

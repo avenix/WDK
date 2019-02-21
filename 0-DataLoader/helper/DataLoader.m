@@ -150,14 +150,17 @@ classdef DataLoader < handle
                 
                 for i = 1 : nLabelingStrategies
                     fileName = fileNames{i};
-                    fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
-                    labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
-                    labelingStrategy.name = Helper.removeFileExtension(fileName);
-                    labelingStrategies(i+1) = labelingStrategy;
+                    labelingStrategies(i+1) = obj.loadLabelingStrategy(fileName);
                 end
             end
         end
         
+        function labelingStrategy = loadLabelingStrategy(obj,fileName)
+            fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
+            labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
+            labelingStrategy.name = Helper.removeFileExtension(fileName);
+        end
+                    
     end
     
     methods (Access = private)
@@ -176,7 +179,7 @@ classdef DataLoader < handle
     methods (Static)
         
         function b = CheckFileExists(fullPath)
-            b = exist(fullPath);
+            b = exist(fullPath,'file');
         end
         
         function computer = LoadJSONComputerFromFile(fileName)

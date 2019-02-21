@@ -4,12 +4,12 @@ classdef MaxCrossCorr < Computer
         
         function obj = MaxCrossCorr()
             obj.name = 'MaxCrossCorr';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kNx2);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal2);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
         function result = compute(~,signal)
-            result = max(xcorr(signal(:,1),signal2(:,2)));
+            result = max(xcorr(signal(:,1),signal(:,2)));
         end
         
         %TODO: recalculate these metrics

@@ -1,13 +1,16 @@
-classdef ComputerPortType < handle
+classdef ComputerPortType
     properties (Constant)
         kDataFile = 0;
         kSignal = 1;
-        kEvent = 2;
-        kSegment = 3;
-        kFeature = 4;
-        kFeatureVector = 5;
-        kTable = 6;
-        kAny = 7;
-        kNull = 8;
+        kSignal2 = 2;
+        kSignal3 = 3;
+        kSignalN = 4;
+        kEvent = 5;
+        kSegment = 6;
+        kFeature = 7;
+        kFeatureVector = 8;
+        kTable = 9;
+        kAny = 10;
+        kNull = 11;
     end
 end

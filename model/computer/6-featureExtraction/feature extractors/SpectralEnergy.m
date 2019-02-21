@@ -9,7 +9,7 @@ classdef SpectralEnergy < Computer
         
         function obj = SpectralEnergy()
             obj.name = 'SpectralEnergy';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

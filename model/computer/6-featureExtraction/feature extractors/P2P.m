@@ -4,7 +4,7 @@ classdef P2P < Computer
         
         function obj = P2P()
             obj.name = 'P2P';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

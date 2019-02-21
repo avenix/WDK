@@ -24,19 +24,8 @@ classdef ComputerTestFixConfigurator < handle
             if ~isempty(computers)
                 obj.createComputerTestFixes(computers);
                 obj.fillComputerTestFixesTable(computers);
-                %obj.reloadUI();
             end
         end
-        %{
-        function reloadUI(obj)
-            obj.fillComputersList();
-            if (isempty(obj.computersList.Value) && ~isempty(obj.computersList.Items))
-                obj.computersList.Value = obj.computersList.Items{1};
-                obj.currentComputerProperties = obj.computers{1}.getEditableProperties();
-                obj.updatePropertiesTable();
-            end
-        end
-        %}
         
         function testFixes = createComputerTestFixWithUIParameters(obj)
             

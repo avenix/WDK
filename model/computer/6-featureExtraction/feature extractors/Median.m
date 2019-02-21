@@ -4,7 +4,7 @@ classdef Median < Computer
         
         function obj = Median()
             obj.name = 'Median';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

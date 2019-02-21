@@ -1,25 +1,19 @@
 classdef ComputerPort < handle
-    properties
-        type
-        size
+    properties (Access = public)
+        type;
     end
     
     methods(Access = public)
-        function obj = ComputerPort(type,size)
+        function obj = ComputerPort(type)
             obj.type = type;
-            if(nargin > 1)
-                obj.size = size;
-            else
-                obj.size = ComputerSizeType.kOne;
-            end
         end
         
         function result = toStruct(obj)
-            result = struct("type",obj.type,"size", obj.size);
+            result = struct("type",obj.type);
         end
         
         function b = isSameType(obj,portType)
-            b = (portType.type == obj.type && portType.size == obj.size);
+            b = (portType.type == obj.type);
         end
     end
 end

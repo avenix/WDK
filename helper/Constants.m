@@ -18,7 +18,8 @@ classdef Constants < handle
         kFeaturesTableFileName = 'exportedFeaturesTable';
         kNormalisationFileName = 'normalisationValues.txt';
         kDetectedEventsFileName = 'detetedEvents.txt';
-        
+               
+        kComputerTypeStrings = {'kDataFile','kSignal','kSignal2','kSignal3','kSignalN', 'kEvent','kSegment', 'kFeature','kFeatureVector', 'kTable', 'kAny', 'kNull'};
         
         kInconsistentAnnotationAndDataFiles = 'Error - the number of annotation files is different than the number of data files';
         kNoLabelingStrategyAvailableError = 'Error - no labeling strategy file found. Double check that Matlabs path and Constants.m file are consistent';

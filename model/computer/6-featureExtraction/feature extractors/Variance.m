@@ -4,7 +4,7 @@ classdef Variance < Computer
         
         function obj = Variance()
             obj.name = 'Variance';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

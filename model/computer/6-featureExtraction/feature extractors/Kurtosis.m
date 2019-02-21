@@ -4,7 +4,7 @@ classdef Kurtosis < Computer
         
         function obj = Kurtosis()
             obj.name = 'Kurtosis';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

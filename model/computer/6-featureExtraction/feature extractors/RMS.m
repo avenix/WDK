@@ -4,7 +4,7 @@ classdef RMS < Computer
         
         function obj = RMS()
             obj.name = 'RMS';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

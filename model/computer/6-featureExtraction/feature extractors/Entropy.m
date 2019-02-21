@@ -4,7 +4,7 @@ classdef Entropy < Computer
         
         function obj = Entropy()
             obj.name = 'Entropy';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

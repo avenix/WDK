@@ -4,7 +4,7 @@ classdef SignalVectorMagnitude < Computer
         
         function obj = SignalVectorMagnitude()
             obj.name = 'SignalVectorMagnitude';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kNx2);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal2);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

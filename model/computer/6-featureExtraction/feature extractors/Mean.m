@@ -4,7 +4,7 @@ classdef Mean < Computer
         
         function obj = Mean()
             obj.name = 'Mean';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

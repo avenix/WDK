@@ -6,8 +6,8 @@ classdef PowerSpectrum < Computer
     methods (Access = public)
         
         function obj = PowerSpectrum()
-            obj.name = 'Skewness';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.name = 'PowerSpectrum';
+            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         

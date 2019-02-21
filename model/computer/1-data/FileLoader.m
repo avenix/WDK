@@ -10,8 +10,8 @@ classdef FileLoader < Computer
     methods (Access = public)
         function obj = FileLoader()
             obj.name = 'fileLoader';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
-            obj.outputPort = ComputerPort(ComputerPortType.kEvent);
+            obj.inputPort = ComputerPort(ComputerPortType.kNull);
+            obj.outputPort = ComputerPort(ComputerPortType.kDataFile);
             obj.dataLoader = DataLoader();
         end
         
