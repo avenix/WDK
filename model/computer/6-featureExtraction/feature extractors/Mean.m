@@ -11,5 +11,13 @@ classdef Mean < Computer
         function dataOut = compute(~,signal)
             dataOut = mean(signal);
         end
+
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 3 * n + 2;
+            memory = 8;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

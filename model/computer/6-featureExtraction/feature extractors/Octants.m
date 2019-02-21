@@ -42,7 +42,14 @@ classdef Octants < Computer
                 end
             end
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 4 * n;
+            memory = 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end
 
-end

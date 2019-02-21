@@ -11,5 +11,13 @@ classdef P2P < Computer
         function result = compute(~,signal)
             result = peak2peak(signal);
         end
+                
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 4 * n + 2;
+            memory = 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

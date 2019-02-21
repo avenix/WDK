@@ -37,5 +37,12 @@ classdef S1 < Computer
         function editableProperties = getEditableProperties(obj)
             editableProperties = Property('k',obj.k,1,50);
         end
+        
+        function metrics = computeMetrics(~,input)
+            flops = (size(input,1) - 2 * obj.k) * (4 * obj.k +  3);
+            memory = (size(input,1) + 2 * obj.k + 2) * 4;
+            outputSize = size(input,1) * 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

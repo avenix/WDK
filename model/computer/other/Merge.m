@@ -44,5 +44,20 @@ classdef Merge < Computer
         function str = toString(obj)
             str = sprintf("%s_%d",obj.name,obj.numMessages);
         end
+        
+        function metrics = computeMetrics(obj,input)
+            
+            memory = 0;
+            dataOut = obj.compute(input);
+            if ~isempty(dataOut)
+                nMessages = length(dataOut);
+                for i = 1 : nMessages 
+                    data = dataOut{i};
+                    n = size(data,1) * size(data,2) * 4;
+                    memory = memory + n;
+                end
+            end
+            metrics = Metric(0,memory,memory);
+        end
     end
 end

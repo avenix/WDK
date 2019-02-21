@@ -11,5 +11,13 @@ classdef SquaredMagnitudeSum < Computer
         function result = compute(~,signal)
             result = sum(signal.^2);
         end
+                
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 4 * n + 1;
+            memory = 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

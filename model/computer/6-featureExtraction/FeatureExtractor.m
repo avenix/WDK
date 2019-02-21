@@ -56,7 +56,6 @@ classdef FeatureExtractor < Computer
             end
         end
         
-        
         function str = toString(obj)
             str = "";
             if ~isempty(obj.computers)
@@ -70,6 +69,17 @@ classdef FeatureExtractor < Computer
             end
         end
         
+        function metricSum = computeMetrics(obj,segments)
+            metricSum = Metric();
+            
+            for i = 1 : length(segments)
+                segment = segments(i);
+                for j = 1 : length(obj.computers)
+                    [~, metrics] = Computer.ExecuteChain(obj.computers{j},segment.window);
+                    metricSum.addMetric(metrics);
+                end
+            end
+        end
     end
     
     methods (Access = private)
@@ -85,48 +95,6 @@ classdef FeatureExtractor < Computer
     end
     
     methods (Static)
-        
-        function featureExtractor = CreateAllFeatureExtractors(numSignals,segmentRanges)
-            statisticalFeatureExtractors = FeatureExtractor.CreateAllStatisticalFeatureExtractors(numSignals,segmentRanges);
-            featureExtractor = FeatureExtractor(statisticalFeatureExtractors);
-        end
-        
-        function featureComputers = CreateAllStatisticalFeatureExtractors(numSignals,segmentRanges)
-            
-            featureExtractors = FeatureExtractor.createDefaultFeatureExtractionComputers();
-            axisSelectors = FeatureExtractor.createAxisSelectorsForSignals(numSignals);
-            rangeSelectors = FeatureExtractor.createRangeSelectorsForRanges(segmentRanges);
-            
-            nFeatureExtractors = length(featureExtractors);
-            nAxisSelectors = length(axisSelectors);
-            nRangeSelectors = length(segmentRanges);
-            
-            nFeatureComputers = nFeatureExtractors * numSignals * nRangeSelectors;
-            
-            featureComputers = cell(1,nFeatureComputers);
-            featureExtractorCounter = 1;
-            
-            segmentWindowAccessor = Change('window');
-            
-            for featureExtractorIdx = 1 : nFeatureExtractors
-                
-                featureExtractor = featureExtractors{featureExtractorIdx};
-                
-                for axisSelectorIdx = 1 : nAxisSelectors
-                    
-                    axisSelector = axisSelectors(axisSelectorIdx);
-                    
-                    for rangeSelectorIdx = 1 : nRangeSelectors
-                        
-                        rangeSelector = rangeSelectors(rangeSelectorIdx);
-                        
-                        featureComputer = SequentialComputer({rangeSelector,segmentWindowAccessor,axisSelector,featureExtractor});
-                        featureComputers{featureExtractorCounter} = featureComputer;
-                        featureExtractorCounter = featureExtractorCounter + 1;
-                    end
-                end
-            end
-        end
         
         function featureExtractors = CreateDefaultFeatureExtractors()
             featureExtractors = {Min(), Max(), Mean(), Median(), Variance(), STD(),...

@@ -19,6 +19,13 @@ classdef(Abstract) Filter < Computer
             property2 = Property('cutoff',obj.cutoff,1,20);
             editableProperties = [property1,property2];
         end
+        
+        function metrics = computeMetrics(~,input)
+            flops = obj.order * size(input,1); %assumes filter swipes once the entire signal
+            memory = size(input,1) * 4;
+            outputSize = size(input,1) * 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
     
 end

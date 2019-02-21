@@ -23,5 +23,14 @@ classdef FFTDC < Computer
             Y = optimizedFFT(signal,localFourierTransform);
             result = real(Y(1));
         end
+        
+        %TODO: recalculate these metrics
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = n * log2(n) + n;
+            memory = n;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

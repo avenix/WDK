@@ -1,5 +1,5 @@
 clear Cache;
-
+%{
 dataLoader = DataLoader();
 labelingStrategies = dataLoader.loadAllLabelingStrategies();
 annotations = dataLoader.loadAllAnnotations();
@@ -16,6 +16,12 @@ compositeComputer.addComputer(mapper);
 
 featureExtractor = dataLoader.LoadComputer('goalplayFeatures2.mat');
 compositeComputer.addComputer(featureExtractor);
+%}
 
-res = Computer.ExecuteChain(compositeComputer.root,'start',true);
+compositeComputer = CompositeComputer();
+compositeComputer.addComputer(Magnitude());
+compositeComputer.addComputer(SimplePeakDetector());
+
+[res,metrics] = Computer.ExecuteChain(compositeComputer.root,[1 2 3;4 5 6; 7 8 9],true);
 disp(res);
+%disp(metrics);

@@ -12,5 +12,13 @@ classdef ZCR < Computer
             N = length(signal);
             result = sum(abs(diff(signal>0))) / N;
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 7 * n + 1;
+            memory = 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

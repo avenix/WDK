@@ -28,6 +28,14 @@ classdef Kurtosis < Computer
             lower = lower / n;
             result = upper / (n*lower*lower);
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 7 * n + 10;
+            memory = 6 * 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
     
 end

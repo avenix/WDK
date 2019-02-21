@@ -15,5 +15,14 @@ classdef SpectralFlatness < Computer
             den = mean(pxx);
             result = num / den;
         end
+        
+        %TODO: recalculate these metrics
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 4 * n * log(n) + 7 * n;
+            memory = n * 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

@@ -20,13 +20,19 @@ classdef AUC < Computer
             
             %integrates the signal
             result = 0;
-            for i = 0 : localWindowSize : length(signal)-1
-                startIndex = i * localWindowSize + 1;
-                endIndex = startIndex + localWindowSize;
+            for startIndex = 1 : localWindowSize : length(signal)-1
+                endIndex = startIndex + localWindowSize-1;
                 endIndex = min(endIndex,length(signal));
                 window = signal(startIndex:endIndex);
                 result = result + trapz(window);
             end
+        end
+        
+        function metrics = computeMetrics(~,input)        
+            flops = 6 * size(input,1);
+            memory = 3 * 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
         end
     end
 end

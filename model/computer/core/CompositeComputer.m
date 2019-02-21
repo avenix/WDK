@@ -55,6 +55,10 @@ classdef CompositeComputer < Computer
             dataOut = Computer.ExecuteChain(obj.root,dataIn);
         end
         
+        function metrics = computeMetrics(obj,dataIn)
+            [~,metrics] = Computer.ExecuteChain(obj.root,dataIn);
+        end
+        
         function addComputer(obj,computer)
             if isempty(obj.root.nextComputers)
                 obj.root.addNextComputer(computer);

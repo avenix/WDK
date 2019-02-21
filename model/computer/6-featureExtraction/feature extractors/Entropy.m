@@ -20,6 +20,14 @@ classdef Entropy < Computer
             P = freq / sum(freq);
             result = -sum(P .* log2(P));
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = n * log2(n) + n * n + 5 * n;
+            memory = (size(input,1) + 2) * 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
     
 end

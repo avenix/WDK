@@ -16,5 +16,12 @@ classdef AAV < Computer
             end
             result = result / length(signal);
         end
+        
+        function metrics = computeMetrics(~,input)
+            flops = 5 * size(input,1) + 2;
+            memory = 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

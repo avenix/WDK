@@ -26,6 +26,14 @@ classdef Skewness < Computer
             lower = lower / n;
             result = upper / (n * lower^1.5);
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 10 * n + 7;
+            memory = 4 * (n + 5);
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
     
 end

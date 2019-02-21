@@ -6,10 +6,10 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         name;
     end
     
-    properties (SetAccess = private)    
+    properties (SetAccess = private)
         nextComputers;
     end
-
+    
     methods (Abstract)
         computedSignal = compute(obj,signal);
     end
@@ -31,12 +31,16 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         function editableProperties = getEditableProperties(~)
             editableProperties = [];
         end
+        
+        function metrics = computeMetrics(~,~)
+            metrics = Metric();
+        end
     end
     
     methods (Static, Access = private)
         
         function computers = ListAllComputers(computer)
-           
+            
             nComputers = Computer.CountComputers(computer);
             
             stack = Stack();
@@ -54,7 +58,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 end
             end
         end
-                
+        
         %returns the loaded data and the first computer in the chain that
         %was not cached
         function [computer, data, str] = LoadCacheDataWithComputers(computers)
@@ -72,7 +76,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 str = Helper.cellArrayToString(strings(1:i),', ');
                 
                 if cache.containsVariable(str)
-                    
                     fprintf('loaded %s\n',str);
                     data = cache.loadVariable(str);
                     break;
@@ -127,14 +130,15 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
-        function data = ExecuteChain(computer, data, shouldCache)
-
-            if nargin == 2
+        function [data, metricSum] = ExecuteChain(computer, data, shouldCache)
+            
+            if nargin < 3
                 shouldCache = false;
             end
             
+            metricSum = Metric();
+            
             if shouldCache
-                
                 computers = Computer.ListAllComputers(computer);
                 nComputers = length(computers);
                 computerStrings = cell(1,nComputers);
@@ -145,13 +149,15 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 if isempty(loadedData)
                     count = 1;
                 else
-                    data = loadedData;
+                    data = loadedData{1};
+                    metricSum = loadedData{2};
                     computer = firstComputer;
                     computerStrings{1} = str;
                     count = 2;
                 end
                 cache = Cache.SharedInstance();
             end
+            
             
             if ~isempty(computer)
                 stack = Stack();
@@ -160,11 +166,14 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 stack.push(computer);
                 dataStack.push(data);
                 
-                
                 while ~stack.isempty()
                     computer = stack.pop();
                     data = dataStack.pop();
+                    metric = computer.computeMetrics(data);
                     data = computer.compute(data);
+                    
+                    metricSum.addMetric(metric);
+                    
                     if ~isempty(data)
                         for i = 1 : length(computer.nextComputers)
                             dataStack.push(data);
@@ -176,11 +185,11 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                         computerStrings{count} = computer.toString();
                         stringStackStr = Helper.cellArrayToString(computerStrings(1:count),', ');
                         count = count + 1;
-                        cache.saveVariable(data,stringStackStr);
+                        cache.saveVariable({data,metricSum},stringStackStr);
                     end
                 end
             end
         end
-
+        
     end
 end

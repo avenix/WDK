@@ -32,5 +32,12 @@ classdef MatlabPeakDetector < Computer
             [~,peakLocations] = findpeaks(signal,'MinPeakHeight',obj.minPeakHeight,'MinPeakDistance',obj.minPeakDistance);
             peakLocations = uint32(peakLocations);
         end
+             
+        function metrics = computeMetrics(~,input)
+            flops = size(input,1) * 10;
+            memory = size(input,1);
+            outputSize = 0;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

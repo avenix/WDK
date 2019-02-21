@@ -37,6 +37,16 @@ classdef SpectralCentroid < Computer
             % normalize by fs/2 (so that 1 correponds to the maximum signal frequency, i.e. fs/2):
             result = result / (fs/2);
         end
+        
+        %TODO: recalculate these metrics
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 4 * n * log(n) + 10 * n;
+            memory = n * 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
+        
     end
 end
 

@@ -27,5 +27,14 @@ classdef SpectralEnergy < Computer
             pow = Y.*conj(Y);
             result = sum(pow) / N;
         end
+        
+        %TODO: recalculate these metrics
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 4 * n * log(n) + 3 * n;
+            memory = n * 4;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

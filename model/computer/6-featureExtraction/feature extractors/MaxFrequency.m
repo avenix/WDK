@@ -30,5 +30,14 @@ classdef MaxFrequency < Computer
             [~, maxIndex] = max(P1);
             result = frequency(maxIndex);
         end
+
+        %TODO: recalculate these metrics
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 4 * n * log(n) + 2 * n;
+            memory = n;
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

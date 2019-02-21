@@ -28,6 +28,12 @@ classdef SimplePeakDetector < Computer
             computedSignal = Helper.CreateEventsWithEventLocations(eventLocations);
         end
         
+        function metrics = computeMetrics(~,input)
+            flops = size(input,1) * 3;
+            memory = 3 * 4;
+            outputSize = 0;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
     
     methods (Access = private)
