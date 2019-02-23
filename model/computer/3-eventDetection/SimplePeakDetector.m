@@ -7,7 +7,11 @@ classdef SimplePeakDetector < Computer
     
     methods  (Access = public)
         
-        function obj = SimplePeakDetector()
+        function obj = SimplePeakDetector(minPeakHeight, minPeakDistance)
+            if nargin > 0
+                obj.minPeakHeight = minPeakHeight;
+                obj.minPeakDistance = minPeakDistance;
+            end
             obj.name = 'simplePeakDet';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kEvent);

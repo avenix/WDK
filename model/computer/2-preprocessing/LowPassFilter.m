@@ -34,7 +34,7 @@ classdef LowPassFilter < Computer
             editableProperties = [property1,property2];
         end
         
-        function metrics = computeMetrics(~,input)
+        function metrics = computeMetrics(obj,input)
             flops = obj.order * size(input,1); %assumes filter swipes once the entire signal
             memory = size(input,1) * 4;
             outputSize = size(input,1) * 4;

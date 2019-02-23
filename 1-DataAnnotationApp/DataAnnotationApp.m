@@ -34,7 +34,8 @@ classdef DataAnnotationApp < handle
         markerHandles;
         markersPlotter;
         
-        %ui   
+        %ui
+        plottedSignalYRange;
         state;    
         uiHandles;
         plotAxes;
@@ -190,6 +191,9 @@ classdef DataAnnotationApp < handle
                     obj.plotHandles{i} = plot(obj.plotAxes,obj.data(:,signalIdx));
                 end
                 obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude);
+                
+                n = size(obj.magnitude,1);
+                axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * 1.1,obj.plottedSignalYRange(2) * 1.1]);
             end
         end
         
@@ -224,6 +228,7 @@ classdef DataAnnotationApp < handle
         
         function plotMarkers(obj)
             if ~isempty(obj.markers)
+                obj.markersPlotter.markerYRange = obj.plottedSignalYRange;
                 obj.markersPlotter.plotMarkers(obj.markers,obj.plotAxes,obj.showingMarkers);
             end
         end
@@ -357,20 +362,33 @@ classdef DataAnnotationApp < handle
             obj.annotationSet = obj.dataLoader.loadAnnotations(fileName);
         end
         
+        function computePlottedSignalYRanges(obj)
+            maxY = max(max(obj.magnitude));
+            minY = min(min(obj.magnitude));
+            
+            selectedSignals = obj.preprocessingConfigurator.getSelectedSignalIdxs();
+            
+            maxYSignals = max(max(obj.data(:,selectedSignals)));
+            maxY = max(maxY,maxYSignals);
+            
+            minYSignals = min(min(obj.data(:,selectedSignals)));
+            minY = min(minY,minYSignals);
+            obj.plottedSignalYRange = [minY, maxY];
+        end
+        
         function plotAnnotations(obj)
             if ~isempty(obj.annotationSet) && ~isempty(obj.magnitude)
-                
+                obj.rangeAnnotationsPlotter.yRange = obj.plottedSignalYRange;
                 obj.eventAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations,obj.magnitude);
                 obj.rangeAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.rangeAnnotations);
             end
         end
-                
+
         function peakIdx = findPeakIdxNearLocation(obj,idx)
             
             [~, peakIdx] = max(obj.magnitude(idx-obj.FindPeaksRadius:idx+obj.FindPeaksRadius));
             peakIdx = int32(peakIdx + idx - obj.FindPeaksRadius - 1);
         end
-        
         
         function computeMagnitude(obj)
             signalComputer = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
@@ -435,6 +453,7 @@ classdef DataAnnotationApp < handle
             if ~isempty(obj.data)
                 obj.clearAll();
                 obj.computeMagnitude();
+                obj.computePlottedSignalYRanges();
                 obj.plotData();
                 obj.plotAnnotations();
                 obj.plotMarkers();

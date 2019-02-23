@@ -6,7 +6,7 @@ classdef DetectionResultsComputer < handle
         labelingStrategy;
         positiveLabels;
     end
-    
+
     methods (Access = public)
         
         function obj = DetectionResultsComputer(labelingStrategy)
@@ -15,10 +15,12 @@ classdef DetectionResultsComputer < handle
             end
         end
         
-        %returns an array of DetectionResults (one for each file)
+        %returns an array of DetectionResults (one for each cell)
         function detectionResults = computeDetectionResults(obj,eventsCellArray,annotationsCellArray)
             if isempty(obj.labelingStrategy)
                 fprintf('%s\n',Constants.kLabelingStrategyNotSetWarning);
+            elseif isempty(obj.positiveLabels)
+                fprintf('%s\n',Constants.kPositiveLabelsNotSetWarning);
             else
                 
                 nCells = length(eventsCellArray);
@@ -26,30 +28,39 @@ classdef DetectionResultsComputer < handle
                 for i = 1 : nCells
                     annotationSet = annotationsCellArray(i);
                     detectedEvents = eventsCellArray{i};
-                    detectionResults(i) = obj.computeDetectionResultsForFile(detectedEvents,annotationSet.eventAnnotations);
+                    detectionResults(i) = obj.computeDetectionResult(detectedEvents,annotationSet.eventAnnotations);
                 end
             end
         end
+
     end
     
     methods (Access = private)
         
-        function r = isRelevantLabels(obj,labels)
-            nLabels = length(labels);
-            r = false(1,nLabels);
-            for i = 1 : nLabels
-                label = labels(i);
-                if label == ClassesMap.kNullClass
-                    r(i) = false;
-                else
-                    r(i) = obj.positiveLabels(label);
+         function r = isRelevantEvents(obj,detectedEvents)
+            if isempty(detectedEvents)
+                r = [];
+            else
+                labels = [detectedEvents.label];
+                nLabels = length(labels);
+                r = false(1,nLabels);
+                for i = 1 : nLabels
+                    r(i) = obj.isRelevantLabel(labels(i));
                 end
             end
-        end
-        
-        function detectionResult = computeDetectionResultsForFile(obj,detectedEvents,eventAnnotations)
+         end
+         
+         function b = isRelevantLabel(obj,label)
+             if label == ClassesMap.kNullClass
+                 b = false;
+             else
+                 b = obj.positiveLabels(label);
+             end
+         end
+         
+         function detectionResult = computeDetectionResult(obj,detectedEvents,eventAnnotations)
 
-            isGoodEvent = obj.isRelevantLabels([detectedEvents.label]);
+            isGoodEvent = obj.isRelevantEvents(detectedEvents);
             goodEvents = obj.computeGoodEvents(detectedEvents,isGoodEvent);
             badEvents = obj.computeBadEvents(detectedEvents,isGoodEvent);
             
@@ -123,31 +134,27 @@ classdef DetectionResultsComputer < handle
         
         function didMissEvent = computeDidMissEvent(obj,detectedEvents,annotations)
             nEvents = length(annotations);
-            
-            didMissEvent = false(1,nEvents);
+            if isempty(detectedEvents)
+                didMissEvent = true(1,nEvents);
+            else
 
-            segmentStartings = [];
-            segmentEndings = [];
-
-            detectedEventLocations = [detectedEvents.sample];
-            
-            if ~isempty(detectedEventLocations)
+                didMissEvent = false(1,nEvents);
+                                
+                detectedEventLocations = [detectedEvents.sample];
+                
                 segmentStartings = detectedEventLocations - obj.tolerance;
                 segmentEndings = detectedEventLocations + obj.tolerance;
-            end
-            
-            %relevantLabels = obj.isRelevantLabels(mappedLabels);
-            
-            for i = 1 : length(annotations)
-                if obj.isRelevantLabels(annotations(i).label)
-                    eventLocation = annotations(i).sample;
-                    contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
-                    if ~contained
-                        didMissEvent(i) = true;
+                                
+                for i = 1 : length(annotations)
+                    if obj.isRelevantLabel(annotations(i).label)
+                        eventLocation = annotations(i).sample;
+                        contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
+                        if ~contained
+                            didMissEvent(i) = true;
+                        end
                     end
                 end
             end
-            
         end
     end
 end

@@ -1,4 +1,4 @@
-classdef ComputerTestFix < handle
+classdef ComputerTestFix <  handle
     properties (Access = public)
         computer;
         propertyTestFixes;
@@ -13,7 +13,7 @@ classdef ComputerTestFix < handle
             n = 1;
             for i = 1 : length(obj.propertyTestFixes)
                 propertyTestFix = obj.propertyTestFixes(i);
-                n = n + (propertyTestFix.maxValue - propertyTestFix.minValue) / propertyTestFix.interval;
+                n = n * propertyTestFix.nCombinations;
             end
         end
     end
@@ -23,6 +23,40 @@ classdef ComputerTestFix < handle
             if nargin > 0
                 obj.computer = computer;
                 obj.createDefaultPropertyTestFixes();
+            end
+        end
+        
+        function computers = generateCombinations(obj)
+            if isempty(obj.propertyTestFixes)
+                computers = obj.computer.copy();
+            else
+                computers = cell(1,obj.nCombinations);
+                nProperties = length(obj.propertyTestFixes);
+                computerCount = 1;
+                
+                stack = Stack();
+                stack.push({[],0});
+                
+                while ~stack.isempty()
+                    currentElement = stack.pop();
+                    currentElementProperties = currentElement{1};
+                    propertyCount = currentElement{2} + 1;
+                    
+                    if propertyCount > nProperties
+                        newComputer = obj.computer.copy();
+                        newComputer.setProperties(currentElementProperties);
+                        computers{computerCount} = newComputer;
+                        computerCount = computerCount + 1;
+                    else
+                        propertyTestFix = obj.propertyTestFixes(propertyCount);
+                        properties = propertyTestFix.generateCombinations();
+                        
+                        for i = length(properties) : -1 : 1
+                            property = properties(i);
+                            stack.push({[currentElementProperties,property],propertyCount});
+                        end
+                    end
+                end
             end
         end
     end

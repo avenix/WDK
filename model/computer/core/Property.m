@@ -4,7 +4,7 @@ classdef Property < handle
         value = 0;
         minValue = 0;
         maxValue = 1;
-        type;
+        type PropertyType;
     end
     
     methods (Access = public)

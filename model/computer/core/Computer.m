@@ -20,7 +20,13 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             obj.(property.name) = property.value;
         end
         
-        function addNextComputer(obj,computer)
+        function setProperties(obj, properties)
+            for i = 1 : length(properties)
+                obj.setProperty(properties(i));
+            end
+        end
+        
+        function addNextComputer(obj, computer)
             obj.nextComputers{end+1} = computer;
         end
         
@@ -76,7 +82,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 str = Helper.cellArrayToString(strings(1:i),', ');
                 
                 if cache.containsVariable(str)
-                    fprintf('loaded %s\n',str);
+                    %fprintf('loaded %s\n',str);
                     data = cache.loadVariable(str);
                     break;
                 end

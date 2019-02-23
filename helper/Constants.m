@@ -32,6 +32,7 @@ classdef Constants < handle
         
         kNoDataFileFoundWarning = 'Warning - no data file found. Double check that Matlabs path and Constants.m file are consistent';
         kLabelingStrategyNotSetWarning = 'Warning - DetectionResultsComputer - calling computeDetectionResults but labelingStrategy not set'
+        kPositiveLabelsNotSetWarning = 'Warning - DetectionResultsComputer - calling computeDetectionResults but positiveLabels not set'
         kIncorretlyMappedClassWarning = 'Warning - GroupedClassLabeling - class is not mapped correctly';
         kConstantFeaturesWarning = 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
         

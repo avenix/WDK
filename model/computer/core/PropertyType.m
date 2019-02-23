@@ -1,4 +1,4 @@
-classdef PropertyType < handle
+classdef PropertyType < uint8
     properties (Constant)
         kNumber = 0;
         kString = 1;

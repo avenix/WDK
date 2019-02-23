@@ -3,13 +3,15 @@ classdef DataAnnotationRangeAnnotationsPlotter < handle
     properties (Access = public,Constant)
         AnnotationColor = 'black';
         LineWidth = 3;
-        SegmentHeight = 10;
-        FontSize = 24;
-        TextSegmentDistance = 5;
+        FontSize = 22;
+        RectangleYPosToDataRatio = 1.025;
+        LabelYPosToRectangleRatio = 1.05;
+        RectangleCurvature = 0.1;
     end
     
     properties (Access = public)
         delegate;
+        yRange;
     end
     
     properties (Access = private)
@@ -38,29 +40,26 @@ classdef DataAnnotationRangeAnnotationsPlotter < handle
         function plotAnnotation(obj, plotAxes, rangeAnnotation)
             
             classStr = obj.classesMap.stringForClassAtIdx(rangeAnnotation.label);
-            color = obj.AnnotationColor;
             
-            segmentStartHandle = line(plotAxes,...
-                [rangeAnnotation.startSample, rangeAnnotation.startSample],...
-                [-obj.SegmentHeight/2 obj.SegmentHeight/2],'Color',color,'LineWidth',obj.LineWidth);
+            rectangleHeight = (obj.yRange(2) - obj.yRange(1)) * obj.RectangleYPosToDataRatio;
+            yOffset = (rectangleHeight - (obj.yRange(2) - obj.yRange(1))) / 2;
+            rectangleWidth = single(rangeAnnotation.endSample - rangeAnnotation.startSample);
+            rectanglePosition = [single(rangeAnnotation.startSample), obj.yRange(1) - yOffset, single(rectangleWidth), rectangleHeight];
             
-            segmentEndHandle = line(plotAxes,...
-                [rangeAnnotation.endSample, rangeAnnotation.endSample],...
-                [-obj.SegmentHeight/2 obj.SegmentHeight/2],'Color',color,'LineWidth',obj.LineWidth);
+            segmentStartHandle = rectangle('Position',rectanglePosition,'Curvature',[obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.LineWidth);
+
+            xPos = (double(rangeAnnotation.startSample) + double(rangeAnnotation.endSample)) / 2;
+            yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatio;
             
-            segmentMainHandle = line(plotAxes,...
-                [rangeAnnotation.startSample, rangeAnnotation.endSample],...
-                [0 0],'Color',color,'LineWidth',obj.LineWidth);
-            
-            textPosition = floor(double(rangeAnnotation.startSample + rangeAnnotation.endSample)/2);
-            segmentTextHandle = text(plotAxes,textPosition,-obj.TextSegmentDistance, classStr,'FontSize',obj.FontSize);
+            segmentTextHandle = text(plotAxes,xPos,yPos, classStr,...
+                'FontSize',obj.FontSize,'HorizontalAlignment','center');
             
             set(segmentTextHandle, 'Clipping', 'on');
             segmentTextHandle.Tag = int2str(rangeAnnotation.startSample);
             segmentTextHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
             
             annotationHandle = DataAnnotationRangePlotHandle(rangeAnnotation,...
-                segmentStartHandle,segmentEndHandle,segmentMainHandle,...
+                segmentStartHandle,segmentStartHandle,segmentStartHandle,...
                 segmentTextHandle);
             
             obj.annotationsMap(rangeAnnotation.startSample) = annotationHandle;

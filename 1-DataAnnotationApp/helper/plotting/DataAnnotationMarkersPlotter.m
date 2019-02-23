@@ -3,6 +3,7 @@ classdef DataAnnotationMarkersPlotter < handle
         markerHandles;
         markerColors = {[1 0 0],[1 1 0],[0 1 0], [0 0 1], [0 1 1], [1 105/255 180/255], [0.5 0 0.5], [0 0 0]};
         markerLineWidths = [1,1,4,1,1,1,1,1];
+        markerYRange = [-1 1];
     end
     
     methods (Access = public)
@@ -15,9 +16,7 @@ classdef DataAnnotationMarkersPlotter < handle
             visibleStr = DataAnnotationMarkersPlotter.getVisibleStr(visible);
             nMarkers = length(markers);
             obj.markerHandles = repmat(DataAnnotationMarkerHandle,1,nMarkers);
-            
-            markerHeights = ylim(plotAxes);
-            
+                        
             for i = 1 : length(markers)
                 marker = markers(i);
                 color = obj.markerColors(marker.label);
@@ -26,13 +25,14 @@ classdef DataAnnotationMarkersPlotter < handle
                 markerHandle = DataAnnotationMarkerHandle();
                 
                 markerHandle.lineHandle = line(plotAxes,[marker.sample, marker.sample],...
-                    [markerHeights(1) markerHeights(2)],...
+                    [obj.markerYRange(1) obj.markerYRange(2)],...
                     'Color',color{1},'LineWidth',lineWidth,...
                     'LineStyle','-','Visible',visibleStr);
                 
                 if ~isempty(marker.text)
-                    textHandle = text(plotAxes,double(marker.sample-15),...
-                        markerHeights(2) /2 , marker.text,...
+                    textY = double((obj.markerYRange(1) + obj.markerYRange(2)) / 2);
+                    textHandle = text(plotAxes,double(marker.sample),...
+                        textY , marker.text,...
                         'Rotation',90, 'Visible',visibleStr);
                     
                     set(textHandle, 'Clipping', 'on');

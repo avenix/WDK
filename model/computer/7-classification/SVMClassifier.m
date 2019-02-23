@@ -51,8 +51,8 @@ classdef SVMClassifier < Computer
         end
         
         function editableProperties = getEditableProperties(obj)
-            property1 = Property('order',obj.order);
-            property2 = Property('boxConstraint',obj.boxConstraint);
+            property1 = Property('order',obj.order,1,4,PropertyType.kNumber);
+            property2 = Property('boxConstraint',obj.boxConstraint,0,1,PropertyType.kNumber);
             editableProperties = [property1, property2];
         end
     end

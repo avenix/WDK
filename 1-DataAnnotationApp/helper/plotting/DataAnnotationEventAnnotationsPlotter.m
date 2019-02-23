@@ -1,8 +1,8 @@
 classdef DataAnnotationEventAnnotationsPlotter < handle
     
     properties (Access = public,Constant)
-        AnnotationColor = 'blue';
-        AnnotationFont = 24;
+        AnnotationColor = 'red';
+        AnnotationFont = 22;
     end
     
     properties (Access = public)
@@ -107,9 +107,12 @@ classdef DataAnnotationEventAnnotationsPlotter < handle
         function [symbolHandle,textHandle] = plotPeak(obj, plotAxes, x, y, class)
             
             classStr = obj.classesMap.stringForClassAtIdx(class);
-            color = obj.AnnotationColor;
-            symbolHandle = plot(plotAxes,x,y,'*','Color',color);
-            textHandle = text(plotAxes,double(x),double(y), classStr,'FontSize',DataAnnotationEventAnnotationsPlotter.AnnotationFont);
+            symbolHandle = plot(plotAxes,x,y,'*','Color',obj.AnnotationColor);
+            
+            textHandle = text(plotAxes,double(x),double(y), classStr,...
+                'FontSize',DataAnnotationEventAnnotationsPlotter.AnnotationFont,...
+                'Color',obj.AnnotationColor);
+            
             set(textHandle, 'Clipping', 'on');
             textHandle.Tag = int2str(x);
             textHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
