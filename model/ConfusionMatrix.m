@@ -7,6 +7,7 @@ classdef ConfusionMatrix < handle
         precision;
         recall;
         nClasses;
+        containsNullClass;
     end
     
     methods (Access = public)
