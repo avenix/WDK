@@ -1,13 +1,10 @@
 classdef CompositeComputer < Computer
     
     properties (Access = public)
-        root;%first element in the flow
+        root;
+        lastComputers;
     end
-    
-    properties (Access = private)
-        lastComputer;
-    end
-    
+
     properties (Dependent)
         nComputers;
     end
@@ -19,12 +16,14 @@ classdef CompositeComputer < Computer
     end
     
     methods (Access = public)
-        function obj = CompositeComputer(firstElement)
-            
-            obj.root = NoOp();
-            
+        function obj = CompositeComputer(firstElement,lastComputers)
+
             if nargin > 0
-                obj.addComputer(firstElement);
+                obj.root = firstElement;
+                obj.lastComputers = lastComputers;
+            else
+                obj.root = NoOp();
+                obj.lastComputers = {obj.root};
             end
             
             obj.name = "Composite";
@@ -59,21 +58,6 @@ classdef CompositeComputer < Computer
             [~,metrics] = Computer.ExecuteChain(obj.root,dataIn);
         end
         
-        function addComputer(obj,computer)
-            if isempty(obj.root.nextComputers)
-                obj.root.addNextComputer(computer);
-            end
-            
-            if ~isempty(obj.lastComputer)
-                obj.lastComputer.addNextComputer(computer);
-            end
-            obj.lastComputer = computer;
-        end
-        
-        function computer = getComputerWithIdx(obj,idx)
-            computer = obj.allComputers{idx};
-        end
-
         function properties = getEditableProperties(obj)
             
             nElements = obj.countElements();
@@ -91,10 +75,25 @@ classdef CompositeComputer < Computer
                     stack.push(computer.nextComputers(i));
                 end
             end
-        end        
+        end
+    end
+    
+    %{
+    methods (Access = private)
+        function addComputer(obj,computer)
+            if isempty(obj.root.nextComputers)
+                obj.root.addNextComputer(computer);
+            end
+            
+            if ~isempty(obj.lastComputer)
+                obj.lastComputer.addNextComputer(computer);
+            end
+            obj.lastComputer = computer;
+        end
     end
     
     methods (Static)
+        
         function computer = CreateComputerWithSequence(sequence)
             if isempty(sequence)
                 computer = [];
@@ -104,7 +103,9 @@ classdef CompositeComputer < Computer
                 for i = 1 : length(sequence)
                     computer.addComputer(sequence{i});
                 end
+                
             end
         end
     end
+    %}
 end

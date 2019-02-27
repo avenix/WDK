@@ -1,7 +1,7 @@
 classdef SimplePeakDetector < Computer
     
     properties (Access = public)
-        minPeakHeight = single(160);
+        minPeakHeight = single(0.5);
         minPeakDistance  = int32(100);
     end
     
@@ -18,12 +18,12 @@ classdef SimplePeakDetector < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('%s%d%d',obj.name,obj.minPeakHeight,obj.minPeakDistance);
+            str = sprintf('%s_%.3f_%d',obj.name,obj.minPeakHeight,obj.minPeakDistance);
         end
         
         function editableProperties = getEditableProperties(obj)
-            minPeakHeightProperty = Property('minPeakHeight',obj.minPeakHeight,80,180);
-            minPeakDistanceProperty = Property('minPeakDistance',obj.minPeakDistance,80,200);
+            minPeakHeightProperty = Property('minPeakHeight',obj.minPeakHeight,0,1);
+            minPeakDistanceProperty = Property('minPeakDistance',obj.minPeakDistance,50,200);
             editableProperties = [minPeakHeightProperty,minPeakDistanceProperty];
         end
         

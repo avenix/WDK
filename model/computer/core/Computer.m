@@ -6,8 +6,9 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         name;
     end
     
-    properties (SetAccess = private)
+    properties (Access = public)
         nextComputers;
+        tag;
     end
     
     methods (Abstract)
@@ -48,19 +49,22 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         function computers = ListAllComputers(computer)
             
             nComputers = Computer.CountComputers(computer);
-            
-            stack = Stack();
-            stack.push(computer);
-            
-            computers = cell(1,nComputers);
-            
-            count = 1;
-            while ~stack.isempty()
-                computer = stack.pop();
-                computers{count} = computer;
-                count = count + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers{i});
+            if nComputers == 0
+                computers = [];
+            else
+                stack = Stack();
+                stack.push(computer);
+                
+                computers = cell(1,nComputers);
+                
+                count = 1;
+                while ~stack.isempty()
+                    computer = stack.pop();
+                    computers{count} = computer;
+                    count = count + 1;
+                    for i = 1 : length(computer.nextComputers)
+                        stack.push(computer.nextComputers{i});
+                    end
                 end
             end
         end
@@ -136,6 +140,31 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
+        function FlattenChain(computer)
+            stack = Stack();
+            
+            stack.push(computer);
+            
+            while ~stack.isempty()
+                computer = stack.pop();
+                
+                for i = 1 : length(computer.nextComputers)
+                    nextComputer = computer.nextComputers{i};
+                    
+                    if isa(nextComputer, 'CompositeComputer')
+                        computer.nextComputers{i} = nextComputer.root;
+                        nextComputerIdx = 1;
+                        for j = 1 : length(nextComputer.lastComputers{i})
+                            nextComputer.lastComputers{i}.nextComputers{j} = nextComputer.nextComputers{nextComputerIdx};
+                            nextComputerIdx = nextComputerIdx + 1;
+                        end
+                        nextComputer = nextComputer.root;
+                    end
+                    stack.push(nextComputer);
+                end
+            end
+        end
+        
         function [data, metricSum] = ExecuteChain(computer, data, shouldCache)
             
             if nargin < 3
@@ -197,5 +226,15 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
+        function root = ChainComputersInSequence(sequence)
+            if isempty(sequence)
+                root = [];
+            else
+                root = sequence{1};
+                for i = 1 : length(sequence)-1
+                    sequence{i}.addNextComputer(sequence{i+1});
+                end
+            end
+        end
     end
 end

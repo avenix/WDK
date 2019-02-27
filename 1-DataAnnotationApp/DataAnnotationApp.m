@@ -32,7 +32,7 @@ classdef DataAnnotationApp < handle
         %markers
         markers;
         markerHandles;
-        markersPlotter;
+        markersPlotter DataAnnotationMarkersPlotter;
         
         %ui
         plottedSignalYRange;

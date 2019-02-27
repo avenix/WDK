@@ -149,6 +149,31 @@ classdef Helper < handle
         
         %% Helper methods
         
+        function PlotComputerGraph(computer)
+            
+            computerGraph = ComputerGraph.CreateGraph(computer);
+            nEdges = length(computerGraph.edges);
+            graph = digraph([computerGraph.edges.source],[computerGraph.edges.target],ones(1,nEdges),computerGraph.nodeNames);
+            plotHandle = plot(graph,'NodeFontSize',20,'LineWidth',3,'MarkerSize',10,'NodeColor','red','ArrowSize',15,'ArrowPosition',1);
+            layout(plotHandle,'layered','Direction','right');
+        end
+        
+        function PrintComputerChain(computer)
+            stack = Stack();
+            stack.push({computer,0});
+            
+            while(~stack.isempty())
+                computerAndSpaces = stack.pop();
+                computer = computerAndSpaces{1};
+                nSpaces = computerAndSpaces{2};
+                fprintf('%s%s\n',repmat(' ',1,nSpaces),computer.toString());
+                nSpaces = nSpaces+1;
+                for i = 1 : length(computer.nextComputers)
+                    stack.push({computer.nextComputers{i},nSpaces});
+                end
+            end
+        end
+        
         function events = CreateEventsWithEventLocations(eventLocations)
             nEvents = length(eventLocations);
             events = repmat(EventAnnotation,1,nEvents);

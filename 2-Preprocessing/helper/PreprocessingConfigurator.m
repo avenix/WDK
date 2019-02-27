@@ -76,8 +76,8 @@ classdef PreprocessingConfigurator < handle
             selectedSignals = obj.getSelectedSignalIdxs();
             axisSelector = AxisSelector();
             axisSelector.axes = selectedSignals;
-            
-            computer = CompositeComputer.CreateComputerWithSequence({axisSelector, signalComputer});
+            axisSelector.addNextComputer(signalComputer);
+            computer = CompositeComputer(axisSelector,{signalComputer});
         end
         
         function updateSignalsList(obj)

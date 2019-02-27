@@ -12,7 +12,11 @@ classdef PropertyTestFix <  handle
         
     methods
         function n = get.nCombinations(obj)
-            n = floor((obj.maxValue - obj.minValue + 1) / obj.interval);
+            if obj.maxValue < obj.minValue
+                n = 0;
+            else
+                n = floor((obj.maxValue - obj.minValue) / obj.interval) + 1;
+            end
         end
     end
     

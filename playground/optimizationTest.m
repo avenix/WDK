@@ -1,4 +1,6 @@
-%chains = createChains();
+close all;
+
+chains = createChains();
 %save('chains','chains');
 %chains = load('chains','chains');
 %chains = chains.chains;
@@ -21,11 +23,12 @@ metrics = repmat(ARCMetric,1,nChains);
 for i = 1  : nChains
     chain = chains{i};
     
-    [events, ~] = Computer.ExecuteChain(chain,'start',true);
+    [events, ~] = Computer.ExecuteChain(chain,'start',false);
     events = labeler.compute(events);
     events = mapper.compute(events);
     results = resultsComputer.computeDetectionResults({events},annotation);
     metrics(i) = ARCMetric(results.goodEventRate,results.badEventRate);
+    disp(metrics(i));
 end
 
 function chains = createChains()
@@ -33,47 +36,107 @@ function chains = createChains()
 axisSelectors = createAxisSelectors();
 preprocessingTestFixes = createPreprocessingTestFixes();
 eventDetectionTestFixes = createEventDetectionTestFixes();
+postpreprocessingTestFixes = createPostPreprocessingTestFixes();
 
 preprocessingAlgorithms = createAlgorithmsWithTestFixes(preprocessingTestFixes);
 eventDetectionAlgorithms = createAlgorithmsWithTestFixes(eventDetectionTestFixes);
+postpreprocessingAlgorithms = createAlgorithmsWithTestFixes(postpreprocessingTestFixes);
 
-nChains = length(axisSelectors) * length(preprocessingAlgorithms) * length(eventDetectionAlgorithms);
+preprocessingCombinations = generateSignalsPreprocessingCombinations(axisSelectors,preprocessingAlgorithms);
+postPreprocessingCombinations = generatePostPreprocessingCombinations(preprocessingCombinations,postpreprocessingAlgorithms);
+
+nChains = length(postPreprocessingCombinations) * length(eventDetectionAlgorithms);
 chains = cell(1,nChains);
-
 
 chainCount = 1;
 
-for axisIdx = 1 : length(axisSelectors)
-    axisSelector = axisSelectors(axisIdx);
+for postpreprocessingIdx = 1 : length(postPreprocessingCombinations)
+    postpreprocessingComputer = postPreprocessingCombinations(postpreprocessingIdx);
     
-    for preprocessingIdx = 1 : length(preprocessingAlgorithms)
-        preprocessingAlgorithm = preprocessingAlgorithms{preprocessingIdx};
+    for eventDetectionIdx = 1 : length(eventDetectionAlgorithms)
+        eventDetectionAlgorithm = eventDetectionAlgorithms{eventDetectionIdx};
         
-        for eventDetectionIdx = 1 : length(eventDetectionAlgorithms)
-            eventDetectionAlgorithm = eventDetectionAlgorithms{eventDetectionIdx};
-            
-            fileLoader = FileLoader();
-            fileLoader.fileName = '1-niklas.mat';
-            propertyGetter = PropertyGetter('data');
-            propertyGetter.outputPort = ComputerPort(ComputerPortType.kSignalN);
-            
-            arcChain = CompositeComputer();
-            arcChain.addComputer(fileLoader);
-            arcChain.addComputer(propertyGetter);
-            arcChain.addComputer(axisSelector.copy());
-            arcChain.addComputer(preprocessingAlgorithm.copy());
-            arcChain.addComputer(eventDetectionAlgorithm.copy());
-            
-            chains{chainCount} = arcChain;
-            chainCount = chainCount + 1;
-        end
+        fileLoader = FileLoader();
+        fileLoader.fileName = '1-niklas.mat';
+        propertyGetter = PropertyGetter('data');
+        propertyGetter.outputPort = ComputerPort(ComputerPortType.kSignalN);
+        
+        fileLoader.addNextComputer(propertyGetter);
+        propertyGetter.addNextComputer(postpreprocessingComputer);
+        postpreprocessingComputer.addNextComputer(eventDetectionAlgorithm.copy());
+        
+        Computer.FlattenChain(fileLoader);
+        Helper.PlotComputerGraph(fileLoader);
+                
+        chains{chainCount} = fileLoader;
+        chainCount = chainCount + 1;
     end
 end
 
 end
 
+function combinations = generateSignalsPreprocessingCombinations(axisSelectors,preprocessingAlgorithms)
+nAxisSelectors = length(axisSelectors);
+nPreprocessingAlgorithms = length(preprocessingAlgorithms);
+combinations = repmat(AxisSelector,1,nAxisSelectors * nPreprocessingAlgorithms);
+
+combinationCount = 1;
+for i = 1 : nAxisSelectors
+    for j = 1 : nPreprocessingAlgorithms
+        axisSelector = axisSelectors(i).copy();
+        if ~isa(preprocessingAlgorithms{j},'NoOp')
+            axisSelector.addNextComputer(preprocessingAlgorithms{j}.copy());
+        end
+        
+        combinations(combinationCount) = axisSelector;
+        combinationCount = combinationCount + 1;
+    end
+end
+end
+
+function combinations = generatePostPreprocessingCombinations(preprocessingCombinations, postPreprocessingAlgorithms)
+nPreprocessingCombinations = length(preprocessingCombinations);
+nPostpreprocessingAlgorithms = length(postPreprocessingAlgorithms);
+
+nCombinations = uint64(factorial(nPreprocessingCombinations) / (factorial(3) * factorial(nPreprocessingCombinations - 3)));
+
+combinations = repmat(CompositeComputer,1,nCombinations);%check
+combinationCount = 1;
+for algorithmIdx = 1 : nPostpreprocessingAlgorithms
+    postPreprocessingAlgorithm = postPreprocessingAlgorithms{algorithmIdx};
+    for i = 1 : nPreprocessingCombinations-2
+        for j = i+1 : nPreprocessingCombinations-1
+            for k = j+1 : nPreprocessingCombinations
+                
+                root = NoOp();
+                
+                preprocessingAlgorithm1 = preprocessingCombinations(i).copy();
+                preprocessingAlgorithm2 = preprocessingCombinations(j).copy();
+                preprocessingAlgorithm3 = preprocessingCombinations(k).copy();
+                
+                root.addNextComputer(preprocessingAlgorithm1);
+                root.addNextComputer(preprocessingAlgorithm2);
+                root.addNextComputer(preprocessingAlgorithm3);
+                
+                merger = AxisMerger(3);
+                preprocessingAlgorithm1.addNextComputer(merger);
+                preprocessingAlgorithm2.addNextComputer(merger);
+                preprocessingAlgorithm3.addNextComputer(merger);
+                
+                postPreprocessingAlgorithmCopy = postPreprocessingAlgorithm.copy();
+                merger.addNextComputer(postPreprocessingAlgorithmCopy);
+                
+                combinations(combinationCount) = CompositeComputer(root,{postPreprocessingAlgorithmCopy});
+                combinationCount = combinationCount + 1;
+            end
+        end
+    end
+end
+end
+
 function axisSelectors = createAxisSelectors()
-axes = [3:11,15,16,17];
+%axes = 1:9;%accel, gyro, magneto
+axes = 1:3;%acel
 nAxes = length(axes);
 axisSelectors = repmat(AxisSelector,1,nAxes);
 for i = 1 : length(axes)
@@ -82,20 +145,30 @@ end
 end
 
 function preprocessingTestFixes = createPreprocessingTestFixes()
+
 lowPassTestFix = ComputerTestFix(LowPassFilter);
-lowPassTestFix.propertyTestFixes =  [PropertyTestFix('order',1,1,4), PropertyTestFix('cutoff',1,5,20)];
+lowPassTestFix.propertyTestFixes =  [PropertyTestFix('order',2,1,2), PropertyTestFix('cutoff',20,5,20)];
 
 highPassTestFix = ComputerTestFix(HighPassFilter);
-highPassTestFix.propertyTestFixes =  [PropertyTestFix('order',1,1,4), PropertyTestFix('cutoff',1,5,20)];
+highPassTestFix.propertyTestFixes =  [PropertyTestFix('order',1,1,1), PropertyTestFix('cutoff',3,5,3)];
 
-preprocessingTestFixes = [lowPassTestFix,highPassTestFix];
+%preprocessingTestFixes = [ComputerTestFix(NoOp), lowPassTestFix, highPassTestFix];
+preprocessingTestFixes = ComputerTestFix(NoOp);
+end
+
+function postpreprocessingTestFixes = createPostPreprocessingTestFixes()
+
+magnitudeTestFix = ComputerTestFix(Magnitude);
+
+postpreprocessingTestFixes = magnitudeTestFix;
+
 end
 
 function eventDetectionTestFixes = createEventDetectionTestFixes()
 simplePeakDetectorTestFix = ComputerTestFix(SimplePeakDetector);
-simplePeakDetectorTestFix.propertyTestFixes =  [PropertyTestFix('minPeakHeight',80,20,180), PropertyTestFix('minPeakDistance',80,20,200)];
+simplePeakDetectorTestFix.propertyTestFixes =  [PropertyTestFix('minPeakHeight',0.9,0.1,0.9), PropertyTestFix('minPeakDistance',80,20,80)];
 
-eventDetectionTestFixes = [simplePeakDetectorTestFix];
+eventDetectionTestFixes = simplePeakDetectorTestFix;
 end
 
 function algorithms = createAlgorithmsWithTestFixes(testFixes)

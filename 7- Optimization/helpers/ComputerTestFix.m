@@ -28,7 +28,7 @@ classdef ComputerTestFix <  handle
         
         function computers = generateCombinations(obj)
             if isempty(obj.propertyTestFixes)
-                computers = obj.computer.copy();
+                computers = {obj.computer.copy()};
             else
                 computers = cell(1,obj.nCombinations);
                 nProperties = length(obj.propertyTestFixes);

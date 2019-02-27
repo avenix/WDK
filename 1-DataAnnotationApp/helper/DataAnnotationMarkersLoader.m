@@ -39,7 +39,7 @@ classdef DataAnnotationMarkersLoader < handle
                 
                 nRows = floor(length(raw)/2);
                 
-                markers(1,nRows) = DataAnnotationVideoMarker();
+                markers = repmat(DataAnnotationVideoMarker(),1,nRows);
                 
                 rowCounter = 1;
                 for i = 1 : 2 : length(raw)
@@ -54,9 +54,8 @@ classdef DataAnnotationMarkersLoader < handle
                     markerTimeStamp = obj.timeStampStrToFrame(timeStampStr);
                     colorStr = secondRowSplitted{1};
                     markerLabel = obj.colorStrToEnum(colorStr);
-                    markers(rowCounter).sample = markerTimeStamp;
-                    markers(rowCounter).label = markerLabel;
-                    markers(rowCounter).text = text;
+                    
+                    markers(rowCounter) = DataAnnotationVideoMarker(markerTimeStamp,markerLabel,text);
                     rowCounter = rowCounter + 1;
                 end
             end

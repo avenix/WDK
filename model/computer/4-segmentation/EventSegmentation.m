@@ -8,9 +8,9 @@ classdef EventSegmentation < Segmentation
             obj.outputPort = ComputerPort(ComputerPortType.kSegment);
         end
         
-        function segments = compute(obj,signal)            
+        function segments = compute(obj,events)            
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
-            segments = obj.createSegmentsWithEvents(signal,file.data);
+            segments = obj.createSegmentsWithEvents(events,file.data);
         end
         
         function str = toString(obj)
