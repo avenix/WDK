@@ -1,4 +1,4 @@
-%returns the first component of the frequency representation of the signal
+
 classdef SpectralCentroid < Computer
     
     properties (Access = public)
@@ -22,7 +22,6 @@ classdef SpectralCentroid < Computer
             %end
             
             N = length(signal);
-            %windowFFT = abs(fft(data)) / N;
             windowFFT = abs(optimizedFFT(signal,localFourierTransform)) / N;
             windowFFT = windowFFT(1:ceil(N/2));
             

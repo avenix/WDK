@@ -110,8 +110,9 @@ Computational Performance:
 - Amount of memory consumed by the algorithm (in bytes)
 - Amount of communication required by the algorithm (requires the user to map the computation components to hardware devices) 
 
-
 ![Data Annotation App](doc/images/4-EvaluationApp.png)
+
+The generated feature tables can be exported in both *.mat* and *.txt* formats. The *.txt* format makes it possible to study the classification on other platforms (e.g. python / TensorFlow or WEKA). 
 
 ## Application Development
 
@@ -149,28 +150,34 @@ We use the term *stage* to refer to the different parts in the activity recognit
 
 ### Feature Extraction
 
-The *FeatureExtractor* class extracts the following time-domain features:
+#### Time-domain features
 
-- Statistical features: mean, standard deviation, variance, maximum, minimum, correlation.
-- Cross correlation: a measure of the similarity between two waveforms. It calculates the dot product between the signal and a shifted version of another signal.
-- Correlaton coefficients (also called Pearson correlation coefficients): cov(x,y) / (std(x)*std(y).
-- DC component: the first component of the frequency domain representation of a signal.
-- SVM: signal vector magnitude (normalized). The sum of the magnitude.
-- SMA: Signal Magnitude Area. Similar to AUC, but easier to compute.
-- quantile(signal,n): the cutpoints dividing a set of values into n+1 segments. quantile(signal,2) sorts the values in the signal and dividides them in three groups and returns the two cutpoints separating the three groups.
-- entropy: gives an indication of the amount of information in a signal. More information leads to less entropy. Flipping a coin has high entropy of 1. If there is 100 / 0% probability that an event will occur, the entropy is 0.
-- kurtosis: describes the tailedness of the distribution of values in the signal.
-- skewness: describes the distribution of values with respect to the mean. A positive skewness indicates that most values in the segment are concentrated at the left of the distribution and there is a tail on the right.
-- IQR: interquartile range. The difference between the median of Q3 and Q1 where Q3 and Q1 are intervals separated by the median of the data set. Indicates variability in the signal.
-- MAD: mean absolute deviation.
-- AAV: average absolute acceleration variation.
-- trapz: The area under the signal's curve integrated numerically with the trapezoid method
-- ZRC: zero crossing rate: how often a signal crosses the 0 threshold:
-TODO. Check the zero crossing using the mean as sample
-- RMS: root mean square
-- duration: the number of samples in the segment (makes sense if the segmentaton produced segments with different amounts of samples)
+| ﻿Name                  | Description                                                                                                                                                                                                                                                       | Flops      | Mem                | Comm               |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|--------------------|--------------------|
+| AAV                   | Average Absolute Variation: ![AAV](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20%5Cfrac%7B%5Cleft%20%7Cx_i%20-%20x_%7Bi-1%7D%20%5Cright%20%7C%20%7D%7Bn%7D)                                                                              | 5 * n      | 1                  | 1                  |
+| AUC                   | Area under the curve computed with the trapezoid rule: ![AUC](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20%5Cfrac%7Bx_k%20&plus;%20x_%7Bk&plus;1%7D%7D%7Bn%7D)                                                                          | 6 * n      | 3                  | 1                  |
+| Entropy               | Estimates the amount of information in the input signal. Rare events (i.e. sample values) carry more information (and have a higher entropy) than seldom events. ![AUC](https://latex.codecogs.com/gif.latex?-%20%5Csum%7BC_i%5Clog%20%28C_i%29%7D)               | n * n      | n                  | 1                  |
+| IQR                   | Computes the difference between Q3 and Q1 where Q1 is the median of the n/2 smallest values and Q3 is the median of the n/2 largest values in an input signal of size n.                                                                                          | n * log(n) | n                  | 1                  |
+| Kurtosis              | Describes the "tailedness" of the distribution of values in the input signal. ![Kurtosis](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20%5Cleft%20%28%20%5Cfrac%7Bx_i%20-%20%5Cbar%7Bx%7D%29%7D%7B%5Csigma%7D%5Cright%29%5E4)               | 7 * n      | 1                  | 1                  |
+| MAD                   | Mean Absolute Deviation. The average distance of each data point to the mean. ![MAD](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20%5Cfrac%7B%5Cleft%20%7Cx_i%20-%20%5Cbar%7Bx%7D%20%5Cright%20%7C%20%7D%7Bn%7D)                            | 5 * n      | 1                  | 1                  |
+| Max                   | Maximum value in the signal.                                                                                                                                                                                                                                      | 2 * n      | 1                  | 1                  |
+| MaxCrossCorr          | Maximum value of the cross correlation coefficients of two input signals. *Note: input should be a nx2 array*.                                                                                                                                                    | n * log(n) | n                  | 1                  |
+| Mean                  | Average of every value in the input signal.                                                                                                                                                                                                                       | 3 * n      | 2                  | 1                  |
+| Median                | Median of the input signal.                                                                                                                                                                                                                                       | 6 * n      | 4                  | 1                  |
+| Min                   | Minimum value in the input signal.                                                                                                                                                                                                                                | 2 * n      | 1                  | 1                  |
+| Octants               | Determines the octant of each sample in an input array of n samples with 3 columns each (e.g. if all three columns are positive, octant = 1. If all 3 columns are negative, octant = 7).                                                                          | 4 * n      | 1                  | 1                  |
+| P2P                   | Peak to Peak distance (distance between maximum and minimum values).                                                                                                                                                                                              | 4 * n      | 3                  | 1                  |
+| Quantile              | Computes *numQuantileParts* cutpoints that separate the distribution of samples in in the input signal.                                                                                                                                                           | n * log(n) | *numQuantileParts* | *numQuantileParts* |
+| RMS                   | Root Mean Squared. ![AUC](https://latex.codecogs.com/gif.latex?%5Csqrt%7B%5Cfrac%7B%5Csum_%7Bi%3D1%7D%5En%20x_i%5E2%7D%7Bn%7D%7D)                                                                                                                                 | 8 * n      | 3                  | 1                  |
+| SignalVectorMagnitude | ![SignalVectorMagnitude](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csum_%7Bi%3D1%7D%5En%20%5Csqrt%7Bx_i%5E2%20&plus;%20y_i%5E2%29%7D%7D%7Bn%7D)                                                                                                            | 7 * n      | 1                  | 1                  |
+| Skewness              | A measure of the asymmetry in the distribution of values in the input signal calculated as: ![Skewness](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20%5Cleft%20%28%20%5Cfrac%7Bx_i%20-%20%5Cbar%7Bx%7D%29%7D%7B%5Csigma%7D%5Cright%29%5E3) | 10 * n     | 5                  | 1                  |
+| SMA                   | Sum of absolute values on each input signal.                                                                                                                                                                                                                      | 3 * n * n  | 1                  | 1                  |
+| SquaredMagnitudeSum   | Sum of squared values of input signal.                                                                                                                                                                                                                            | 3 * n      | 1                  | 1                  |
+| STD                   | Standard Deviation of the input signal.                                                                                                                                                                                                                           | 6 * n      | 2                  | 1                  |
+| Variance              | Variance of the input signal.                                                                                                                                                                                                                                     | 6 * n      | 2                  | 1                  |
+| ZCR                   | Zero Crossing Rate. Amount of times the signal crosses the zero line.                                                                                                                                                                                             | 7 * n      | 1                  | 1                  |
 
-and the following frequency-domain features:
+#### Frequency-domain features
 
 - spectral spread: indicates the variance in the distribution of frequencies.
 - spectral centroid: Indicates where the "center of mass" of the spectrum is located.

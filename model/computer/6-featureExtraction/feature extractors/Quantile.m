@@ -1,15 +1,15 @@
-classdef QuantileComputer < Computer
+classdef Quantile < Computer
     properties (Access = public)
         numQuantileParts;
     end
     
     methods (Access = public)
         
-        function obj = QuantileComputer(numQuantileParts)
+        function obj = Quantile(numQuantileParts)
             if nargin > 0
                 obj.numQuantileParts = numQuantileParts;
             end
-            obj.name = 'QuantileComputer';
+            obj.name = 'Quantile';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal);
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end

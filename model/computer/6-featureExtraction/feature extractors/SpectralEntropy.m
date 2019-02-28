@@ -24,8 +24,8 @@ classdef SpectralEntropy < Computer
             powerSpectrumResult = powerSpectrum(signal,localFourierTransform);
             
             %Normalization
-            maxPower = sum(powerSpectrumResult + 1e-12);
-            powerSpectrumResult = powerSpectrumResult / maxPower;
+            sumPower = sum(powerSpectrumResult + 1e-12);
+            powerSpectrumResult = powerSpectrumResult / sumPower;
             
             %entropy calculation
             result = -sum(powerSpectrumResult.*log2(powerSpectrumResult+eps));

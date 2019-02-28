@@ -15,7 +15,7 @@ classdef MAD < Computer
         function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 5 * n + 10;
-            memory = 4 * (n + 7);
+            memory = 8;
             outputSize = 4;
             metrics = Metric(flops,memory,outputSize);
         end

@@ -30,7 +30,7 @@ classdef Skewness < Computer
         function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 10 * n + 7;
-            memory = 4 * (n + 5);
+            memory = 20;
             outputSize = 4;
             metrics = Metric(flops,memory,outputSize);
         end

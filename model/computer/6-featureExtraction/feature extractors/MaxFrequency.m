@@ -16,7 +16,7 @@ classdef MaxFrequency < Computer
             localFourierTransform = obj.fourierTransform;
             
             %if isempty(localFourierTransform)
-            %localFourierTransform = fft(signal);%this is probably wrong, should be tested
+            %localFourierTransform = fft(signal);
             %end
             
             signalLength = length(signal);
