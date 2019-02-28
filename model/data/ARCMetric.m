@@ -1,14 +1,12 @@
 classdef ARCMetric < handle
    properties (Access = public)
-       goodEventRate = 0;
-       badEventRate = 0;
+       detectionf1Score;
    end
-   
+     
    methods (Access = public)
-       function obj = ARCMetric(goodEventRate,badEventRate)
+       function obj = ARCMetric(detectionf1Score)
            if nargin > 0
-               obj.goodEventRate = goodEventRate;
-               obj.badEventRate = badEventRate;
+               obj.detectionf1Score = detectionf1Score;
            end
        end
    end

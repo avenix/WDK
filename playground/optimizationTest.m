@@ -27,9 +27,15 @@ for i = 1  : nChains
     events = labeler.compute(events);
     events = mapper.compute(events);
     results = resultsComputer.computeDetectionResults({events},annotation);
-    metrics(i) = ARCMetric(results.goodEventRate,results.badEventRate);
-    disp(metrics(i));
+    metrics(i) = ARCMetric(results.f1Score);
 end
+
+[bestF1Score,bestIdx] = max([metrics.detectionf1Score]);
+fprintf('best detection f1score: %.2f\n',100 * bestF1Score);
+bestChain = chains{bestIdx};
+
+Computer.FlattenChain(bestChain);
+Helper.PlotComputerGraph(bestChain);
 
 function chains = createChains()
 
@@ -64,10 +70,7 @@ for postpreprocessingIdx = 1 : length(postPreprocessingCombinations)
         fileLoader.addNextComputer(propertyGetter);
         propertyGetter.addNextComputer(postpreprocessingComputer);
         postpreprocessingComputer.addNextComputer(eventDetectionAlgorithm.copy());
-        
-        Computer.FlattenChain(fileLoader);
-        Helper.PlotComputerGraph(fileLoader);
-                
+                       
         chains{chainCount} = fileLoader;
         chainCount = chainCount + 1;
     end
@@ -98,7 +101,7 @@ function combinations = generatePostPreprocessingCombinations(preprocessingCombi
 nPreprocessingCombinations = length(preprocessingCombinations);
 nPostpreprocessingAlgorithms = length(postPreprocessingAlgorithms);
 
-nCombinations = uint64(factorial(nPreprocessingCombinations) / (factorial(3) * factorial(nPreprocessingCombinations - 3)));
+nCombinations = nchoosek(nPreprocessingCombinations,3) * nPostpreprocessingAlgorithms;
 
 combinations = repmat(CompositeComputer,1,nCombinations);%check
 combinationCount = 1;
@@ -147,13 +150,13 @@ end
 function preprocessingTestFixes = createPreprocessingTestFixes()
 
 lowPassTestFix = ComputerTestFix(LowPassFilter);
-lowPassTestFix.propertyTestFixes =  [PropertyTestFix('order',2,1,2), PropertyTestFix('cutoff',20,5,20)];
+lowPassTestFix.propertyTestFixes =  [PropertyTestFix('order',1,1,2), PropertyTestFix('cutoff',1,5,20)];
 
 highPassTestFix = ComputerTestFix(HighPassFilter);
-highPassTestFix.propertyTestFixes =  [PropertyTestFix('order',1,1,1), PropertyTestFix('cutoff',3,5,3)];
+highPassTestFix.propertyTestFixes =  [PropertyTestFix('order',1,1,2), PropertyTestFix('cutoff',1,5,20)];
 
-%preprocessingTestFixes = [ComputerTestFix(NoOp), lowPassTestFix, highPassTestFix];
-preprocessingTestFixes = ComputerTestFix(NoOp);
+preprocessingTestFixes = [ComputerTestFix(NoOp), lowPassTestFix, highPassTestFix];
+%preprocessingTestFixes = ComputerTestFix(NoOp);
 end
 
 function postpreprocessingTestFixes = createPostPreprocessingTestFixes()
@@ -166,7 +169,7 @@ end
 
 function eventDetectionTestFixes = createEventDetectionTestFixes()
 simplePeakDetectorTestFix = ComputerTestFix(SimplePeakDetector);
-simplePeakDetectorTestFix.propertyTestFixes =  [PropertyTestFix('minPeakHeight',0.9,0.1,0.9), PropertyTestFix('minPeakDistance',80,20,80)];
+simplePeakDetectorTestFix.propertyTestFixes =  [PropertyTestFix('minPeakHeight',0.8,0.1,0.9), PropertyTestFix('minPeakDistance',80,20,120)];
 
 eventDetectionTestFixes = simplePeakDetectorTestFix;
 end

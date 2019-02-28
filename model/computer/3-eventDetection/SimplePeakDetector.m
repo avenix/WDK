@@ -1,7 +1,7 @@
 classdef SimplePeakDetector < Computer
     
     properties (Access = public)
-        minPeakHeight = single(0.75);
+        minPeakHeight = single(0.8);
         minPeakDistance  = int32(100);
     end
     

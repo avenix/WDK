@@ -7,20 +7,47 @@ classdef DetectionResult < handle
     end
     
     properties (Dependent)
-        goodEventRate;
-        badEventRate;
+        numGoodEvents;
+        numMissedEvents;
+        numBadEvents;
+        FPEventRate;
+        recall;
+        precision;
+        f1Score;
     end
     
     methods 
-        function er = get.goodEventRate(obj)
-            numTotalEvents = obj.numGoodEvents() + obj.numMissedEvents();
-            er = obj.numGoodEvents() / numTotalEvents;
+                
+        function nGoodEvents = get.numGoodEvents(obj)
+            nGoodEvents = length(obj.goodEvents);
         end
         
-        function er = get.badEventRate(obj)
-            numTotalEvents = obj.numGoodEvents() + obj.numMissedEvents();
-            er =  obj.numBadEvents() / numTotalEvents;
+        function nMissedEvents = get.numMissedEvents(obj)
+            nMissedEvents = length(obj.missedEvents);
         end
+        
+        function nBadEvents = get.numBadEvents(obj)
+            nBadEvents = length(obj.badEvents);
+        end
+        
+        function er = get.recall(obj)
+            er = obj.numGoodEvents / (obj.numGoodEvents + obj.numMissedEvents);
+        end
+        
+        function er = get.FPEventRate(obj)
+            er =  obj.numBadEvents / (obj.numGoodEvents + obj.numMissedEvents);
+        end
+        
+        function precision = get.precision(obj)
+            precision =  obj.numGoodEvents / (obj.numGoodEvents + obj.numBadEvents);
+        end
+        
+        function f1Score = get.f1Score(obj)
+            p = obj.precision;
+            r = obj.recall;
+            f1Score = (2 * r * p) / (r + p);
+        end
+        
     end
     
     methods (Access = public)
@@ -30,18 +57,6 @@ classdef DetectionResult < handle
                 obj.missedEvents = missedEvents;
                 obj.badEvents = badEvents;
             end
-        end
-        
-        function nGoodEvents = numGoodEvents(obj)
-            nGoodEvents = length(obj.goodEvents);
-        end
-        
-        function nMissedEvents = numMissedEvents(obj)
-            nMissedEvents = length(obj.missedEvents);
-        end
-        
-        function nBadEvents = numBadEvents(obj)
-            nBadEvents = length(obj.badEvents);
         end
         
         function goodEventsPerClass = numGoodEventsPerClass(obj,nClasses)

@@ -81,27 +81,56 @@ Before the markers can be displayed properly on top of the time series data, the
 
 *Note: in order to be able to annotate a data set, the classes should have previously been defined in the ./data/classes.txt file*
 
+## Data Visualization
+The *Data Visualization App* displays the signals corresponding to different classes. After a preprocessing, an event detection algorithm (optional) and segmentation strategy have been chosen, the *Data Visualization App* plots the segments of every selected class. Segments can be plotted either on top of each other or after each other.
+
+![Data Annotation App](doc/images/2-VisualizationApp.png)
+
+## Event Detection
+Some wearable applications detect the occurrence of specific events in a stream of sensor values. The challenge is to design an algorithm that detects the relevant events (also called target-class or true positives) while ignoring irrelevant events (also called non-target class or false positives). 
+
+The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes  the amount of relevant and irrelevant events detected for each file / subject and the amount of events detected of each class. The *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. For this purpose, a developer might zoom into the data and observe the detected and missed events together with the data. 
+
+
+![Data Annotation App](doc/images/3-EventDetectionApp.png)
+
+## Evaluation
+Great part of the effort to develop an activity recognition application will be invested in the development of an algorithm (i.e. chain of computations) able to recognize the particular activities accurately and within the computational constraints of the wearable device. This development is usually done iteratively based on a frequent performance evaluation.
+
+The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at any stage of the activity recognition chain and assess its performance. The calculated performance metrics are:
+
+Recognition Performance:
+- Accuracy
+- Precision
+- Recall
+- Confusion Matrix
+
+Computational Performance:
+- Number of floating point operations performed by the algorithm
+- Amount of memory consumed by the algorithm (in bytes)
+- Amount of communication required by the algorithm (requires the user to map the computation components to hardware devices) 
+
+
+![Data Annotation App](doc/images/4-EvaluationApp.png)
+
 ## Application Development
 
-Most wearable device applications execute a chain of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain:
+Most wearable device applications execute a chain (i.e. sequence) of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain:
 ![Activity Recognition Chain](doc/images/ARC.png)
+
+We use the term *stage* to refer to the different parts in the activity recognition chain (e.g. Preprocessing stage, Segmentation stage). The WDK provides the following reusable components for every stage of the chain:
 
 ### Preprocessing
 
-The *SignalExplorerApp* can be used to display and compare the signals corresponding to different classes. The *SignalExplorerApp* can also compute different signal processing methods commonly used on wearable applications. After a preprocessing and segmentation strategy have been chosen, the *SignalExplorerApp* plots every segment of each selected class either on top of each other or in a sequence. 
-
-Currently, the following signal processing methods are supported:
-
-Filters:
-- HighPassFilter: Butterworth high-pass filter
-- LowPassFilter: Butterworth low-pass filter
-
-Energy:
-- SquaredMagnitudeComputer: ![Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)
-- NormComputer: ![Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)
-- S1Computer: computes ![S1](https://latex.codecogs.com/gif.latex?S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)
-- S2Computer: computes ![S2](https://latex.codecogs.com/gif.latex?S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7B%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20&plus;%20%5Cfrac%7Bmax%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7Bk%7D%7D%7B2%7D)
-
+| Name             | Desscription                                                                                                                                                                                                                                                                                                                       | Flops     | Mem | Comm |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|--------|---------------|
+| HighPassFilter   | Butterworth High-pass filter                                                                                                                                                                                                                                                                                                       | order * n | n      | n             |
+| LowPassFilter    | Butterworth High-pass filter                                                                                                                                                                                                                                                                                                       | order * n | n      | n             |
+| Magnitude        | ![Magnitude](https://latex.codecogs.com/gif.latex?M%28x_i%29%20%3D%20%5Csqrt%7Ba_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2%29%7D)                                                                                                                                                                     | 5 * n     | n      | n             |
+| SquaredMagnitude | ![Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)                                                                                                                                                                                        | 5 * n     | n      | n             |
+| Norm             | ![Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)                                                                                                                     | 5 * n     | n      | n             |
+| S1               | ![S1](https://latex.codecogs.com/gif.latex?S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)                                         | n * k     | n      | n             |
+| S2               | ![S2](https://latex.codecogs.com/gif.latex?S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7B%5Cfrac%7Bmax%28x&plus;i%20-%20x_%7Bi-1%7D%2C%20x_i%20-%20x_%7Bi-2%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20&plus;%20%5Cfrac%7Bmax%28x_i-x_%7Bi&plus;1%7D%2Cx_i-x_%7Bi&plus;2%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7Bk%7D%7D%7B2%7D) | n * k     | n      | n             |
 
 ### Feature Extraction
 

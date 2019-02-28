@@ -1,5 +1,6 @@
-formulas
+formulas: go to https://www.codecogs.com/latex/eqneditor.php and select URL Encoded at the bottom.
 
+[//]: # M(x_i) =  \sqrt{a_x(x_i)^2 + a_y(x_i)^2 + a_z(x_i)^2)}
 [//]: # (E(x_i) =  a_x(x_i)^2 + a_y(x_i)^2 + a_z(x_i)^2)
 [//]: # (E(x_i) =  \left| a_x(x_i) \right| + \left| a_y(x_i) \right| + \left| a_z(x_i) \right|)
 [//]: # (S_1(k,i,X_i,T) =  \frac{max(x+i - x_{i-1}, x_i - x_{i-2},...,x_i - x_{i-k}) + max(x_i-x_{i+1},x_i-x_{i+2},...,x_i-x_{i+k})}{2})

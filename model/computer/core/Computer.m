@@ -206,7 +206,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
-        function root = ChainComputersInSequence(sequence)
+        function root = ComputerWithSequence(sequence)
             if isempty(sequence)
                 root = [];
             else
