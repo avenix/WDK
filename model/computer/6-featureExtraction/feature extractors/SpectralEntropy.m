@@ -1,10 +1,6 @@
 %returns the first component of the frequency representation of the signal
 classdef SpectralEntropy < Computer
-    
-    properties (Access = public)
-        fourierTransform;
-    end
-    
+   
     methods (Access = public)
         
         function obj = SpectralEntropy()
@@ -13,15 +9,10 @@ classdef SpectralEntropy < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function result = compute(obj,signal)
-            
-            localFourierTransform = obj.fourierTransform;
-            
-            %if isempty(localFourierTransform)
-            %localFourierTransform = fft(signal);%this is probably wrong, should be tested
-            %end
-            
-            powerSpectrumResult = powerSpectrum(signal,localFourierTransform);
+        %receives a fourier transform
+        function result = compute(~,Y)
+
+            powerSpectrumResult = powerSpectrum(Y);
             
             %Normalization
             sumPower = sum(powerSpectrumResult + 1e-12);

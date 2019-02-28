@@ -179,16 +179,16 @@ We use the term *stage* to refer to the different parts in the activity recognit
 
 #### Frequency-domain features
 
-- spectral spread: indicates the variance in the distribution of frequencies.
-- spectral centroid: Indicates where the "center of mass" of the spectrum is located.
-- spectral flatness: provides a way to quantify how noise-like a sound is. White noise has peaks in all frequencies making its spectrum look flat.
-- spectral entropy: indicates how chaotic / how much informatiomn there is in the frequency distribution.
-- spectral energy: the energy of the frequency domain (sum of squared values of dft coefficients).
-- spectral density: the probability distribution of the spectrum. Not a feature but a transformation that can result in other features.
-
-Coming soon: Frequency domain features (maximum frequency, value and ratio, spectral entropy, 10 cepstral coefficients, Fourier transform: coefficients grouped in four logarithmic bands, maximum spectral frequency ), wavelet analysis, mean crossing rate.
-
-*Note: use the extractFeatures() method of the FeatureExtractor. This method receives a *Segment* as input and returns i) an array of features and ii) an array with the name of each feature in i)*.
+| ﻿Name             | Description                                                                                                                                                                                                                                                                                                              | Flops           | Mem | Comm |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|-----|------|
+| FFTDC            | Computes the DC component of the FFT of the input signal                                                                                                                                                                                                                                                                 | 8 * n * log(n)  | n   | 1    |
+| MaxFrequency     | Computes the maximum value in the fourier transform of the input signal                                                                                                                                                                                                                                                  | 10 * n * log(n) | n   | 1    |
+| PowerSpectrum    | Distribution of power into frequency components. *Note: returns n/2 coefficients*                                                                                                                                                                                                                                        | 10 * n * log(n) | n   | n/2    |
+| SpectralCentroid | Indicates where the "center of mass" of the spectrum is located. ![SpectralCentroid](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20%5Cbar%7By_i%7D%20y_%7Bi%7D%7D%7B%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20y_i%7D)                                                                           | 10 * n * log(n) | n   | 1    |
+| SpectralEnergy   | The energy of the frequency domain (sum of squared values of dft coefficients). ![SpectralEnergy](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20%5Cbar%7By_i%7D%5E2)                                                                                                                               | 10 * n * log(n) | n   | 1    |
+| SpectralEntropy  | Indicates how chaotic / how much informatiomn there is in the frequency distribution. Calculated as: ![SpectralEntropy](https://latex.codecogs.com/gif.latex?-%5Csum_%7Bi%3D1%7D%5En%7By_i%5Clog_2%20%28y_i%29%7D) where y_i are the coefficients of the power spectrum of the input signal                              | 15 * n * log(n) | n   | 1    |
+| SpectralFlatness | Provides a way to quantify how noise-like a sound is. White noise has peaks in all frequencies making its spectrum look flat. ![SpectralFlatness](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csqrt%5Bn%5D%7B%5Cprod_%7Bi%3D1%7D%5E%7Bn%7D%20x_i%7D%7D%7B%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bi%3D1%7D%5En%20x%28n%29%7D) | 15 * n * log(n) | n   | 1    |
+| SpectralSpread   | Indicates the variance in the distribution of frequencies.                                                                                                                                                                                                                                                               | 15 * n * log(n) | n   | 1    |
  
  ## Getting started
 1. Place your data files (.txt or .mat) in the *./data/rawdata/* directory

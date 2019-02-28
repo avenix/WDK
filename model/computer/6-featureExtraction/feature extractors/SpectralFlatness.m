@@ -9,8 +9,9 @@ classdef SpectralFlatness < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function result = compute(~,signal)
-            pxx = periodogram(signal);
+        %receives a fourier transform
+        function result = compute(~,Y)
+            pxx = periodogram(Y);
             num = geomean(pxx);
             den = mean(pxx);
             result = num / den;

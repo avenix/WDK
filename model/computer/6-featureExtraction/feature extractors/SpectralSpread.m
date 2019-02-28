@@ -1,10 +1,6 @@
 %returns the first component of the frequency representation of the signal
 classdef SpectralSpread < Computer
     
-    properties (Access = public)
-        fourierTransform;
-    end
-    
     methods (Access = public)
         
         function obj = SpectralSpread()
@@ -13,18 +9,13 @@ classdef SpectralSpread < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function result = compute(obj,data)
-            
-            localFourierTransform = obj.fourierTransform;
-            
-            %if isempty(localFourierTransform)
-            %localFourierTransform = fft(signal);
-            %end
+        %receives a fourier transform
+        function result = compute(~,Y)
             
             fs = 100;
             
-            N = length(data);
-            windowFFT = abs(optimizedFFT(data,localFourierTransform)) / N;
+            N = length(Y);
+            windowFFT = abs(Y) / N;
             windowFFT = windowFFT(1:ceil(N/2));
             
             windowLength = length(windowFFT);

@@ -1,10 +1,6 @@
 
 classdef SpectralCentroid < Computer
     
-    properties (Access = public)
-        fourierTransform;
-    end
-    
     methods (Access = public)
         
         function obj = SpectralCentroid()
@@ -13,16 +9,11 @@ classdef SpectralCentroid < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function result = compute(obj,signal)
-            
-            localFourierTransform = obj.fourierTransform;
-            
-            %if isempty(localFourierTransform)
-                %localFourierTransform = fft(signal);%this is probably wrong, should be tested
-            %end
-            
-            N = length(signal);
-            windowFFT = abs(optimizedFFT(signal,localFourierTransform)) / N;
+        %receives a fourier transform
+        function result = compute(~,Y)
+
+            N = length(Y);
+            windowFFT = abs(Y)/ N;
             windowFFT = windowFFT(1:ceil(N/2));
             
             fs = 100;

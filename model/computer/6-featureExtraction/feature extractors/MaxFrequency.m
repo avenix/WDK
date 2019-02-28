@@ -1,7 +1,4 @@
 classdef MaxFrequency < Computer
-    properties (Access = public)
-        fourierTransform;
-    end
     
     methods (Access = public)
         
@@ -11,20 +8,15 @@ classdef MaxFrequency < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function result = compute(~,signal)
-            
-            localFourierTransform = obj.fourierTransform;
-            
-            %if isempty(localFourierTransform)
-            %localFourierTransform = fft(signal);
-            %end
-            
-            signalLength = length(signal);
+        %receives a fourier transform
+        function result = compute(~,Y)
+                        
+            signalLength = length(Y);
             Fs = 1000;
             frequency = Fs*(0:(signalLength/2))/signalLength;
             endIndex = round(signalLength / 2 + 1);
             
-            P2 = abs(optimizedFFT(signal,localFourierTransform)/signalLength);
+            P2 = abs(Y/signalLength);
             P1 = P2(1:endIndex);
             P1(2:end-1) = 2*P1(2:end-1);
             [~, maxIndex] = max(P1);

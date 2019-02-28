@@ -1,7 +1,4 @@
 classdef PowerSpectrum < Computer
-    properties (Access = public)
-        fourierTransform;
-    end
     
     methods (Access = public)
         
@@ -11,16 +8,10 @@ classdef PowerSpectrum < Computer
             obj.outputPort = ComputerPort(ComputerPortType.kFeature);
         end
         
-        function result = compute(~,signal)
+        %receives a fourier transform
+        function result = compute(~,Y)
             
-            localFourierTransform = obj.fourierTransform;
-            
-            %if isempty(localFourierTransform)
-            %localFourierTransform = fft(signal);%this is probably wrong, should be tested
-            %end
-            
-            N = length(signal);
-            Y = optimizedFFT(signal,localFourierTransform);
+            N = length(Y);
             
             result = ((sqrt(abs(Y).*abs(Y)) * 2 )/N);
             result = result(1:floor(N/2));
