@@ -33,7 +33,7 @@ classdef SimplePeakDetector < Computer
         end
         
         function metrics = computeMetrics(~,input)
-            flops = size(input,1) * 3;
+            flops = size(input,1) * 4;
             memory = 3 * 4;
             outputSize = 0;
             metrics = Metric(flops,memory,outputSize);
