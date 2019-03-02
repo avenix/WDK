@@ -10,7 +10,7 @@ classdef Cache < handle
             if ~isempty(var) && ~isempty(str)
                 fileName = Cache.HashForString(str);
                 obj.filesMap(fileName) = true;
-                fileName = sprintf('%s/%s.mat',Constants.kPrecomputedPath,fileName);
+                fileName = sprintf('%s/%s.mat',Constants.kCachePath,fileName);
                 save(fileName,'var');
             end
         end
@@ -22,7 +22,7 @@ classdef Cache < handle
         
         function var = loadVariable(~,str)
             fileName = Cache.HashForString(str);
-            fileName = sprintf('%s/%s.mat',Constants.kPrecomputedPath,fileName);
+            fileName = sprintf('%s/%s.mat',Constants.kCachePath,fileName);
             var = load(fileName);
             var = var.var;
         end
@@ -47,7 +47,7 @@ classdef Cache < handle
     
     methods (Access = private)
         function obj = Cache()
-            files = Helper.listFilesInDirectory(Constants.kPrecomputedPath,{'*.mat'});
+            files = Helper.listFilesInDirectory(Constants.kCachePath,{'*.mat'});
             files = Helper.removeFileExtensionForFiles(files);
             
             if isempty(files)

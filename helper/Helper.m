@@ -40,7 +40,7 @@ classdef Helper < handle
         end
         
         function files = listLabelingStrategies()
-            files = Helper.listFilesInDirectory(Constants.labelingStrategiesPath, {'*.txt'});
+            files = Helper.listFilesInDirectory(Constants.kLabelingStrategiesPath, {'*.txt'});
         end
         
         function files = listDataFiles(extensions)
@@ -48,15 +48,19 @@ classdef Helper < handle
                 extensions = {'*.mat','*.txt'};
             end
             
-            files = Helper.listFilesInDirectory(Constants.dataPath, extensions);
+            files = Helper.listFilesInDirectory(Constants.kDataPath, extensions);
         end
         
         function files = listAnnotationFiles()
-            files = Helper.listFilesInDirectory(Constants.annotationsPath, {'*.txt'});
+            files = Helper.listFilesInDirectory(Constants.kAnnotationsPath, {'*.txt'});
         end
         
         function files = listSynchronisationFileNames()
             files = Helper.listFilesInDirectory(Constants.kVideosPath, {'*.txt'});
+        end
+        
+        function files = listVideoFiles()
+            files = Helper.listFilesInDirectory(Constants.kVideosPath, {'*.mov','*.MP4','*.avi'});
         end
         
         function fileName = addSynchronisationFileExtension(fileName)
@@ -64,7 +68,7 @@ classdef Helper < handle
         end
         
         function fileName = addVideoFileExtension(fileName)
-            fileName = sprintf('%s-video.MP4',fileName);
+            fileName = sprintf('%s-video',fileName);
         end
         
         function fileName = addAnnotationsFileExtension(fileName)
@@ -88,6 +92,15 @@ classdef Helper < handle
         function fileName = removeAnnotationsExtension(fileName)
             idx = strfind(fileName,'-annotations');
             fileName = fileName(1:idx-1);
+        end
+        
+        function fileName = removeVideoExtension(fileName)
+            idx = strfind(fileName,'-video');
+            fileName = fileName(1:idx-1);
+        end
+        
+        function fileNames = removeVideoExtensionForFiles(dataFileNames)
+            fileNames = cellfun(@Helper.removeVideoExtension,dataFileNames,'UniformOutput',false);
         end
         
         function fileNames = removeDataFileExtensionForFiles(dataFileNames)

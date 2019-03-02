@@ -1,12 +1,8 @@
-# Wearables Development Toolkit
+# Wearables Development Toolkit (WDK)
 
-The Wearables Development Toolkit is a set of tools to facilitate the development of wearable device / activity recognition applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
+The Wearables Development Toolkit (WDK) is a set of tools to facilitate the development of wearable device / activity recognition applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
 
 ![Activity Recognition Chain Development](doc/images/ARCDevelopment.png)
-
- This Toolkit offers different tools for each of these activities.
-
-*Note: Check my Matlab tutorial on the Activity Recognition Chain for wearables: <https://github.com/avenix/ARC-Tutorial/>*
 
 ## Setup
 
@@ -25,7 +21,7 @@ The WDK requires the installation of the Signal Processing Toolbox:
 
 ![Signal Processing Toolbox](doc/images/DSP.png)
 
-*Note: to avoid issues with pathing, always stay at the root directory of the repository. You can check your matlab directory as shown in red in the following image* 
+*Note: to avoid issues with pathing, Matlab's current path should be set to the root of the WDK directory:* 
 
 ![Checking Matlab Path](doc/images/matlabPath.png)
 
@@ -40,42 +36,63 @@ markersPath = './data/markers';
 dataPath = './data/rawdata';
 precomputedPath = './data/cache';
 labelingStrategiesPath = './data/labeling';
+kVideosPath = './data/videos';
 ```
 ## Data Collection
 
-The *Data Loader App* can be used to do a first check on the data after collection. It offers the following features:
+The *Data Loader App* can be used to do a first check on the data after its collection. It offers the following features:
 - Load any tabularized ".txt" data file and save it to Matlab's binary format, which is used by the rest of the toolkit.
-- Check whether there has been data loss. For this purpose, a timestamp or counter column should be selected and an interval / rate change should be provided.
-- Visualize collected data.
+- Check whether there has been data loss. For this purpose, a timestamp / counter signal and an sampling interval should be provided.
+- Visualize the different signals.
 
 ![DataLoaderApp](doc/images/0-DataLoaderApp.png)
 
-*Note: by default, the DataLoaderApp will load data files from the ./data/rawdata/ directory*
+*Note: by default, the DataLoaderApp loads data files from the ./data/rawdata/ directory. Files are saved to the ./ root directory.*
 
 ## Data Annotation
 
 An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate specific events or activities that have a duration in time. The *Data Annotation App* supports both kinds of annotations.
 
+### Importing External Markers
 The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
 
 ![DaVinciResolve](doc/images/1-markers.png)
 
-Before the markers can be displayed properly on top of the time series data, they need to be synchronised to the time series data. In order to do this, the *.edl* file should contain a synchronisation marker in the beginning and another one in the end of the file. Currently, markers in green color are used for synchronisation. These markers are matched automatically to the first and last annotation of class *synchronisaton*. In order to annotate data:
+Before the markers can be displayed properly on top of the time series data, they need to be synchronised to the time series data. In order to do this, the *.edl* file should contain a synchronisation marker in the beginning and another one in the end of the file. Currently, the first and last green marker are matched to the first and last event annotation of the class *synchronisaton*. In order to annotate data:
 
 1. Annotate the video using DaVinci Resolve. Use a green marker to annotate a special event, ideally in the beginning and end of the file. (e.g. the user shakes the sensor three times in front of the camera).
 2. Export the markers to an *.edl* file.
 3. Copy the *.edl* file to the *data/markers/* directory.
-4. Open the *Data Annotation App* and add an event annotation of type *synchronisation* to the timestamp that corresponds .
+4. Open the *Data Annotation App* and add an event annotation of the class *synchronisation* to the timestamp that corresponds .
 5. Reopen the *Data Annotation App*. This time the markers should be properly aligned with the data.
 6. Annotate the time series data.
 
+*Note: markers in .edl format are read from the './data/markers' directory*.
+
+### Synchronising a Video
+
+The *Data Annotation App* can load and display videos that are displayed next to the data and can be helpful for annotation. The video is synchronised to the data by matching the first and last event annotations of the class *synchronisation to the two video frames provided in a synchronisation file:
+
+```
+frame1: 3302
+frame2: 45269
+```
+
+The exact frames of a specific event in a video can be found by exploring the video file using Matlab's ![Video Viewer App](https://www.mathworks.com/help/images/ref/implay.html):
+
+![Video Player App](doc/images/videoPlayer.png)
+
+In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). The annotated data:
+
+![Event Annotations](doc/images/1-synchronisation.png)
+
+*Note: Supported video formats are .mov and .MP4*.
+
 ![Data Annotation App](doc/images/1-DataAnnotationApp.png)
 
-*Note: Annotation and marker files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt' and its marker file 'S1-markers.edl'*.
+*Note: annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.<video extension>''*.
 
 *Note: by default, the Data Annotation App loads annotation files from the './data/annotations/' directory. Saved annotation files will be stored in the root './' directory*.
-
-*Note: markers in .edl format are read from the './data/markers' directory*.
 
 *Note: the classes to annotate should be defined in the 'classes.txt' file.*
 
@@ -248,17 +265,20 @@ If Matlab crashes with an error:
 
 
 ## References
-You will find more information about the human activity recognition on Andreas Bulling's tutorial: https://dl.acm.org/citation.cfm?id=2499621
 
-A few example applications developed with the toolkit:
+1. Matlab tutorial on the Activity Recognition Chain for wearables: https://github.com/avenix/ARC-Tutorial/
+2. Andreas Bulling's tutorial on Activity Recognition: https://dl.acm.org/citation.cfm?id=2499621
+2. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
+3. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
+
+Applications developed with the WDK:
+
 1. https://www.mdpi.com/2414-4088/2/2/27
 2. https://dl.acm.org/citation.cfm?id=3267267
 
-Further references:
-1. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
-2. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
-
 ## About
-I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with feature requests.
+I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. 
+
+Feel free to contact me with feature requests:
 [haladjia@in.tum.de](haladjia@in.tum.de)
 [in.tum.de/~haladjia](in.tum.de/~haladjia)

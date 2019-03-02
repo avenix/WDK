@@ -16,6 +16,8 @@ classdef DataAnnotationApp < handle
         currentFile = 1;
         dataLoader;
         videoPlayer DataAnnotationVideoPlayer;
+        videoFileNames;
+        videoFileNamesNoExtension;
         
         %data
         data;
@@ -39,6 +41,7 @@ classdef DataAnnotationApp < handle
         markersPlotter DataAnnotationMarkersPlotter;
         
         %ui
+        timestampMarker;
         videoFigure;
         plottedSignalYRange;
         state DataAnnotationState = DataAnnotationState.kSelectMode;    
@@ -61,6 +64,8 @@ classdef DataAnnotationApp < handle
             clear ClassesMap;
             obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
+            obj.videoFileNames = Helper.listVideoFiles();
+            obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
             
             obj.markersPlotter = DataAnnotationMarkersPlotter();
             
@@ -128,8 +133,8 @@ classdef DataAnnotationApp < handle
              obj.loadData();
             if obj.classesMap.numClasses > 0 && ~isempty(obj.data)
                 obj.loadAnnotations();
-                obj.loadMarkers();
                 obj.loadSynchronisationFile();
+                obj.loadMarkers();
             end
         end
         
@@ -151,6 +156,7 @@ classdef DataAnnotationApp < handle
         end
         
         function setUserClickHandle(obj)
+            
             dataCursorMode = datacursormode(obj.uiHandles.figure1);
             dataCursorMode.SnapToDataVertex = 'on';
             dataCursorMode.DisplayStyle = 'window';
@@ -170,11 +176,9 @@ classdef DataAnnotationApp < handle
                 markersFileName = obj.getMarkersFileName();
                 obj.markers = obj.dataLoader.loadMarkers(markersFileName);
                 
-                if ~isempty(obj.markers)
-                    %x1 = obj.findFirstSynchronisationMarker();
-                    %x2 = obj.findLastSynchronisationMarker();
-                    x1 = obj.synchronisationFile.startFrame;
-                    x2 = obj.synchronisationFile.endFrame;
+                if ~isempty(obj.markers)                    
+                    x1 = obj.findFirstSynchronisationMarker();
+                    x2 = obj.findLastSynchronisationMarker();
                     
                     y1 = obj.findFirstSynchronisationSample();
                     y2 = obj.findLastSynchronisationSample();
@@ -189,20 +193,14 @@ classdef DataAnnotationApp < handle
                 end
             end
         end
-  
-        function loadSynchronisationFile()
-            
-                markersFileName = obj.getSynchronsationFileName();
-            obj.dataLoader.loadSynchronisationFile();
-        end
         
         function videoFrame = sampleToVideoFrame(obj, x)
             
             x1 = double(obj.findFirstSynchronisationSample());%data
             x2 = double(obj.findLastSynchronisationSample());
             
-            y1 = double(1);%marker
-            y2 = double(length(obj.data));
+            y1 = obj.synchronisationFile.startFrame;
+            y2 = obj.synchronisationFile.endFrame;
             
             a = (y2-y1) / (x2-x1);
             videoFrame = a * (x - x1) + y1;
@@ -269,11 +267,13 @@ classdef DataAnnotationApp < handle
         function plotVideo(obj)
             
             videoFileName = obj.getVideoFileName();
-            if DataLoader.CheckFileExists(videoFileName)
+            
+            if ~isempty(videoFileName)
                 if isempty(obj.videoFigure) || ~isvalid(obj.videoFigure)
                     videoTitle = sprintf('Reference Video: %s',videoFileName);
                     obj.videoFigure = figure('NumberTitle', 'off', 'Name', videoTitle);
                     obj.videoFigure.CurrentAxes = axes();
+                    set(obj.videoFigure,'KeyPressFcn',@obj.handleKeyPressed);
                 end
                 obj.videoPlayer = DataAnnotationVideoPlayer(videoFileName,obj.videoFigure.CurrentAxes);
                 obj.videoPlayer.displayFrame(1);
@@ -382,24 +382,25 @@ classdef DataAnnotationApp < handle
             fileName = Helper.addMarkersFileExtension(fileName);
         end
         
-        function fileName = getSynchronsationFileName(obj)
+        function fileName = getSynchronisationFileName(obj)
             fileName = obj.getCurrentFileNameNoExtension();
             fileName = Helper.addSynchronisationFileExtension(fileName);
         end
         
         function fileName = getVideoFileName(obj)
             fileName = obj.getCurrentFileNameNoExtension();
-            fileName = Helper.addVideoFileExtension(fileName);
-        end
             
+            [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
+            if idx > 0
+                fileName = obj.videoFileNames{idx};
+            else
+                fileName = [];
+            end
+        end
+        
         function annotationsFileName = getAnnotationsFileName(obj)
             fileName = obj.getCurrentFileNameNoExtension();
             annotationsFileName = Helper.addAnnotationsFileExtension(fileName);
-        end
-        
-        function synchronisationFileName = getSynchronisationFileName(obj)
-            fileName = obj.getCurrentFileNameNoExtension();
-            synchronisationFileName = Helper.addSynchronisationFileExtension(fileName);
         end
         
         function fileName = getCurrentFileName(obj)
@@ -489,6 +490,7 @@ classdef DataAnnotationApp < handle
         
         %% Handles
         function outputTxt = handleUserClick(obj,src,~)
+
             pos = get(src,'Position');
             x = pos(1);
             y = pos(2);
@@ -497,7 +499,6 @@ classdef DataAnnotationApp < handle
             outputTxt = {['X: ',xStr],['Y: ',yStr]};
             
             fprintf('%d\n',x);
-            
             if obj.state == DataAnnotationState.kAddMode
                 if obj.isSelectingPeaks
                     obj.addPeakAtLocation(x);
@@ -509,6 +510,8 @@ classdef DataAnnotationApp < handle
             elseif obj.state == DataAnnotationState.kSelectRangesMode
                 obj.selectRangeAtLocation(x);
             end
+            
+            %obj.timestampMarker = 
         end
         
         function handleLoadDataClicked(obj,~,~)
@@ -541,7 +544,7 @@ classdef DataAnnotationApp < handle
             cursorModeHandle = datacursormode(obj.uiHandles.figure1);
             cursorModeHandle.Enable = 'on';
             
-            if obj.state == DataAnnotationState.kSelectSamplesMode
+            if obj.state == DataAnnotationState.kSelectRangesMode
                 obj.deleteRangeSelection();
             end
             
@@ -611,6 +614,16 @@ classdef DataAnnotationApp < handle
             obj.addCurrentRange();
         end
         
+        function handleKeyPressed(obj,~,event)
+            if strcmp(event.Key, 'rightarrow')
+                %obj.currentTimestamp = obj.currentTimestamp + 10;
+            elseif strcmp(event.Key, 'leftarrow')
+                %obj.currentTimestamp = obj.currentTimestamp - 10;
+            end
+            
+            %obj.updateTimestampMarker();
+        end
+        
         %% Helper methods
         function idx = findIdxOfValue(~,valueArray,startIdx,value)
             idx = uint32(-1);
@@ -650,7 +663,7 @@ classdef DataAnnotationApp < handle
             firstSynchronisationMarker = -1;
             for i = 1 : length(obj.markers)
                 currentMarker = obj.markers(i);
-                if currentMarker.label == Constants.SynchronisatonMarker
+                if currentMarker.label == Constants.kSynchronisatonMarker
                     firstSynchronisationMarker = currentMarker.sample;
                     break;
                 end
@@ -661,7 +674,7 @@ classdef DataAnnotationApp < handle
             lastSynchronisationMarker = -1;
             for i = length(obj.markers) : -1 : 1
                 currentMarker = obj.markers(i);
-                if currentMarker.label == Constants.SynchronisatonMarker
+                if currentMarker.label == Constants.kSynchronisatonMarker
                     lastSynchronisationMarker = currentMarker.sample;
                     break;
                 end

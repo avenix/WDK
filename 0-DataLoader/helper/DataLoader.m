@@ -63,7 +63,7 @@ classdef DataLoader < handle
         
         function [data, columnNames] = loadData(obj,fileName)
             fileExtension = Helper.getFileExtension(fileName);
-            fileName = sprintf('%s/%s',Constants.dataPath,fileName);
+            fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
             if strcmp(fileExtension, ".mat")
                 [data, columnNames] = obj.loadDataFileWithFullPath(fileName);
             elseif strcmp(fileExtension, ".txt")
@@ -106,7 +106,7 @@ classdef DataLoader < handle
                 obj.annotationsLoader = AnnotationsLoader();
             end
             
-            annotationsFileName = sprintf('%s/%s',Constants.annotationsPath,annotationsFileName);
+            annotationsFileName = sprintf('%s/%s',Constants.kAnnotationsPath,annotationsFileName);
             annotationSet = obj.annotationsLoader.loadAnnotations(annotationsFileName);
         end
         
@@ -132,7 +132,7 @@ classdef DataLoader < handle
         function markers = loadMarkers(~,markerFileName)
             markersLoader = DataAnnotationMarkersLoader();
             
-            markerFileName = sprintf('%s/%s',Constants.markersPath,markerFileName);
+            markerFileName = sprintf('%s/%s',Constants.kMarkersPath,markerFileName);
             markers = markersLoader.loadMarkers(markerFileName);
         end
         
@@ -156,7 +156,7 @@ classdef DataLoader < handle
         end
         
         function labelingStrategy = loadLabelingStrategy(obj,fileName)
-            fullFileName = sprintf('%s/%s',Constants.labelingStrategiesPath,fileName);
+            fullFileName = sprintf('%s/%s',Constants.kLabelingStrategiesPath,fileName);
             labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
             labelingStrategy.name = Helper.removeFileExtension(fileName);
         end
@@ -168,20 +168,25 @@ classdef DataLoader < handle
             synchronisationFiles = repmat(DataAnnotationSynchronisationFile,1,synchronisationFileNames);
             
             for i = 1 : nSynchronisationFiles
-                %fileName = Helper.addSynchronisationFileExtension();
-                synchronisationFiles(i) = obj.loadSynchronisationFile(fileName);
+                synchronisationFiles(i) = obj.loadSynchronisationFile(fullFileName);
             end
         end
         
-        function synchronisationFile = loadSynchronisationFile(obj,fileName)
-            file = fopen(fileName);
-            data = fread(file);
-            startTs = data(1,:);
-            endTs = data(1,:);
-            fclose(file);
-           
-           
-            synchronisationFile = DataAnnotationSynchronisationFile(startTs,endTs);
+        function synchronisationFile = loadSynchronisationFile(~,fileName)
+            synchronisationFile = [];
+            fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
+            file = fopen(fullFileName);
+            
+            if file > 0
+                line = fgets(file);
+                tsStr = split(line);
+                startTs = str2double(tsStr{2});
+                line = fgets(file);
+                tsStr = split(line);
+                endTs = str2double(tsStr{2});
+                fclose(file);
+                synchronisationFile = DataAnnotationSynchronisationFile(startTs,endTs);
+            end
         end
     end
     
@@ -199,6 +204,11 @@ classdef DataLoader < handle
     end
     
     methods (Static)
+        
+        function b = CheckVideoFileExists(fileName)
+            fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
+            b = DataLoader.CheckFileExists(fullFileName);
+        end
         
         function b = CheckFileExists(fullPath)
             b = exist(fullPath,'file');

@@ -17,7 +17,7 @@ classdef EventSegmentation < Segmentation
             str = sprintf('%s%d%d',obj.name,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
         
-        function metrics = computeMetrics(~,input)
+        function metrics = computeMetrics(obj,input)
             flops = 4 * length(input);
             memory = 8 * length(input);
             outputSize = obj.segmentSizeLeft + obj.segmentSizeRight;

@@ -69,7 +69,7 @@ classdef DataAnnotationMarkersLoader < handle
             elseif strcmp(colorStr,'ResolveColorYellow')
                 markerEnum = 2;
             elseif strcmp(colorStr,'ResolveColorGreen')
-                markerEnum = Constants.SynchronisatonMarker;
+                markerEnum = Constants.kSynchronisatonMarker;
             elseif strcmp(colorStr,'ResolveColorBlue')
                 markerEnum = 4;
             elseif strcmp(colorStr,'ResolveColorCyan')

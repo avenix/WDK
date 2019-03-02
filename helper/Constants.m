@@ -2,19 +2,19 @@ classdef Constants < handle
     
     properties (Access = public, Constant)
 
-        classesPath = './data/classes.txt';
-        annotationsPath = './data/annotations';
-        markersPath = './data/markers';
-        dataPath = './data/rawdata';
-        kPrecomputedPath = './data/cache';
-        labelingStrategiesPath = './data/labeling';
+        kClassesPath = './data/classes.txt';
+        kAnnotationsPath = './data/annotations';
+        kMarkersPath = './data/markers';
+        kDataPath = './data/rawdata';
+        kCachePath = './data/cache';
+        kLabelingStrategiesPath = './data/labeling';
         kFeaturesPath = './data/features';
         kVideosPath = './data/videos';
         kMaxFeatureNameCharacters = 15;
         
-        synchronisationClassStr = 'synchronisation';
+        kSynchronisationClassStr = 'synchronisation';
         kNullClassGroupStr = 'NULL';
-        SynchronisatonMarker = 3;
+        kSynchronisatonMarker = 3;
         
         kFeaturesTableFileName = 'exportedFeaturesTable';
         kNormalisationFileName = 'normalisationValues.txt';
