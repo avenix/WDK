@@ -80,7 +80,7 @@ frame2: 45269
 
 The exact frames of a specific event in a video can be found by exploring the video file using Matlab's ![Video Viewer App](https://www.mathworks.com/help/images/ref/implay.html):
 
-![Video Player App](doc/images/videoPlayer.png)
+![Video Player App](doc/images/1-VideoPlayer.png)
 
 In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). The annotated data:
 
