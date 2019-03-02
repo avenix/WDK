@@ -78,34 +78,4 @@ classdef CompositeComputer < Computer
         end
     end
     
-    %{
-    methods (Access = private)
-        function addComputer(obj,computer)
-            if isempty(obj.root.nextComputers)
-                obj.root.addNextComputer(computer);
-            end
-            
-            if ~isempty(obj.lastComputer)
-                obj.lastComputer.addNextComputer(computer);
-            end
-            obj.lastComputer = computer;
-        end
-    end
-    
-    methods (Static)
-        
-        function computer = CreateComputerWithSequence(sequence)
-            if isempty(sequence)
-                computer = [];
-            else
-                computer = CompositeComputer();
-                
-                for i = 1 : length(sequence)
-                    computer.addComputer(sequence{i});
-                end
-                
-            end
-        end
-    end
-    %}
 end

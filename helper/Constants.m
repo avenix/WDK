@@ -9,6 +9,7 @@ classdef Constants < handle
         kPrecomputedPath = './data/cache';
         labelingStrategiesPath = './data/labeling';
         kFeaturesPath = './data/features';
+        kVideosPath = './data/videos';
         kMaxFeatureNameCharacters = 15;
         
         synchronisationClassStr = 'synchronisation';

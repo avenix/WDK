@@ -160,7 +160,29 @@ classdef DataLoader < handle
             labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
             labelingStrategy.name = Helper.removeFileExtension(fileName);
         end
-                    
+
+        function synchronisationFiles = loadAllSynchronisationFiles(obj)
+            
+            synchronisationFileNames = Helper.ListSynchronisationFileNames();
+            nSynchronisationFiles = length(synchronisationFileNames);
+            synchronisationFiles = repmat(DataAnnotationSynchronisationFile,1,synchronisationFileNames);
+            
+            for i = 1 : nSynchronisationFiles
+                %fileName = Helper.addSynchronisationFileExtension();
+                synchronisationFiles(i) = obj.loadSynchronisationFile(fileName);
+            end
+        end
+        
+        function synchronisationFile = loadSynchronisationFile(obj,fileName)
+            file = fopen(fileName);
+            data = fread(file);
+            startTs = data(1,:);
+            endTs = data(1,:);
+            fclose(file);
+           
+           
+            synchronisationFile = DataAnnotationSynchronisationFile(startTs,endTs);
+        end
     end
     
     methods (Access = private)

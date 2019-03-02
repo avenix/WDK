@@ -55,12 +55,24 @@ classdef Helper < handle
             files = Helper.listFilesInDirectory(Constants.annotationsPath, {'*.txt'});
         end
         
+        function files = listSynchronisationFileNames()
+            files = Helper.listFilesInDirectory(Constants.kVideosPath, {'*.txt'});
+        end
+        
+        function fileName = addSynchronisationFileExtension(fileName)
+            fileName = sprintf('%s-synchronisation.txt',fileName);
+        end
+        
+        function fileName = addVideoFileExtension(fileName)
+            fileName = sprintf('%s-video.MP4',fileName);
+        end
+        
         function fileName = addAnnotationsFileExtension(fileName)
             fileName = sprintf('%s-annotations.txt',fileName);
         end
         
         function fileName = addMarkersFileExtension(fileName)
-            fileName = sprintf('%s-markers.txt',fileName);
+            fileName = sprintf('%s-markers.edl',fileName);
         end
         
         function fileName = removeFileExtension(dataFileName)
@@ -354,6 +366,13 @@ classdef Helper < handle
             names = cell(1,numComputers);
             for i = 1 : numComputers
                 names{i} = computers{i}.name;
+            end
+        end
+        
+        function visibleStr = GetVisibleStr(visible)
+            visibleStr = 'off';
+            if visible
+                visibleStr = 'on';
             end
         end
         

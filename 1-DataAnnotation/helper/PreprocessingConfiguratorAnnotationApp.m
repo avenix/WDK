@@ -1,5 +1,7 @@
 %this class retrieves a preprocessing algorithm from the UI
-classdef PreprocessingConfigurator < handle
+%this file duplicats the PreprocessingConfigurator and should be removed as
+%soon as Matlab releases support for datacursor mode using App Designer
+classdef PreprocessingConfiguratorAnnotationApp < handle
 
     properties (Access = private)
         %data
@@ -7,7 +9,6 @@ classdef PreprocessingConfigurator < handle
         
         %computers
         signalComputers;
-        signalComputerStrings;
         
         %ui
         signalsList;
@@ -19,21 +20,17 @@ classdef PreprocessingConfigurator < handle
     end
     
     methods (Access = public)
-        function obj = PreprocessingConfigurator(signalComputers, signalsList,signalComputersList,signalComputerVariablesTable)
-            
+        function obj = PreprocessingConfiguratorAnnotationApp(signalComputers, signalsList,signalComputersList,signalComputerVariablesTable)
             obj.signalComputers = signalComputers;
             obj.signalsList = signalsList;
             obj.signalComputersList = signalComputersList;
             obj.signalComputerVariablesTable = signalComputerVariablesTable;
-            obj.signalComputersList.ValueChangedFcn = @obj.handleSelectedSignalComputerChanged;
             
-            if ~isempty(obj.signalComputersList)
-                obj.fillSignalComputersList();
-                obj.selectFirstSignalComputer();
-                
-                obj.updateSelectedSignalComputer();
-                obj.updateSignalComputerVariablesTable();
-            end
+            obj.signalComputersList.Callback = @obj.handleSelectedSignalComputerChanged;
+            
+            obj.fillSignalComputersList();
+            obj.updateSelectedSignalComputer();
+            obj.updateSignalComputerVariablesTable();
         end
         
         function setDefaultColumnNames(obj)
@@ -52,14 +49,12 @@ classdef PreprocessingConfigurator < handle
         end
         
         function signalComputer = getCurrentSignalComputer(obj)
-            idxStr = obj.signalComputersList.Value;
-            [~,idx] = ismember(idxStr,obj.signalComputersList.Items);
+            idx = obj.signalComputersList.Value;
             signalComputer = obj.signalComputers{idx};
         end
         
         function signalIdxs = getSelectedSignalIdxs(obj)
-            idxStr = obj.signalsList.Value;
-            [~,signalIdxs] = ismember(idxStr,obj.signalsList.Items);
+            signalIdxs = obj.signalsList.Value;
         end
         
         function computer = createSignalComputerWithUIParameters(obj)
@@ -79,6 +74,8 @@ classdef PreprocessingConfigurator < handle
             
             axisSelector.addNextComputer(signalComputer);
             computer = CompositeComputer(axisSelector,{signalComputer});
+            
+            %computer = CompositeComputer.ComputerWithSequence({axisSelector, signalComputer});
         end
         
         function updateSignalsList(obj)
@@ -90,16 +87,12 @@ classdef PreprocessingConfigurator < handle
     methods (Access = private)
         
         %ui
-        function selectFirstSignalComputer(obj)
-            obj.signalComputersList.Value = obj.signalComputersList.Items{1};
-        end
-        
-        function selectFirstSignal(obj)
-            obj.signalsList.Value = obj.signalsList.Items{1};
+        function fillSignalComputersList(obj)
+            obj.signalComputersList.String = Helper.generateComputerNamesArray(obj.signalComputers);
         end
         
         function fillSignalsList(obj)
-            obj.signalsList.Items = obj.columnNames;
+            obj.signalsList.String = obj.columnNames;
         end
         
         function updateSignalComputerVariablesTable(obj)
@@ -112,11 +105,8 @@ classdef PreprocessingConfigurator < handle
         end
         
         %methods
-        function fillSignalComputersList(obj)
-            obj.signalComputersList.Items = Helper.generateComputerNamesArray(obj.signalComputers);
-        end
         
-        function fillSignalList(obj)
+        function fillsignalList(obj)
             obj.signalsList.String = obj.columnNames;
         end        
         

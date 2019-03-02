@@ -1,6 +1,6 @@
 # Wearables Development Toolkit
 
-The Warables Development Toolkit facilitates the development of wearable device applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
+The Wearables Development Toolkit is a set of tools to facilitate the development of wearable device / activity recognition applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
 
 ![Activity Recognition Chain Development](doc/images/ARCDevelopment.png)
 
@@ -13,7 +13,7 @@ The Warables Development Toolkit facilitates the development of wearable device 
 * install Matlab 2018b or greater. 
 * `git clone git@github.com:avenix/ARC-Tutorial.git`
 * in Matlab, `addpath(genpath('./'))`
-* enjoy the Apps in each directory (e.g. *DataAnnotationApp* in *1-DataAnnotation/*).
+* use the Apps in each directory (e.g. *Data Annotation App* in *1-DataAnnotation/*).
 * this code uses the mRMR library for feature selection. If you get an error 'estpab function not found', then you need to:
 ```
 cd libraries/mRMR_0.9/mi/
@@ -25,15 +25,13 @@ The WDK requires the installation of the Signal Processing Toolbox:
 
 ![Signal Processing Toolbox](doc/images/DSP.png)
 
-*Note: When running the toolkit for the first time, ensure the Constants.m file points to the right data/ directory.*
-
 *Note: to avoid issues with pathing, always stay at the root directory of the repository. You can check your matlab directory as shown in red in the following image* 
 
 ![Checking Matlab Path](doc/images/matlabPath.png)
 
 ### Data Structure
 
-The *Constants.m* file defines the following path constants:
+The '*/data*' directory should contain the following files and directories defined in the *Constants.m* file:
 
 ```
 classesPath = './data/classes.txt';
@@ -43,58 +41,64 @@ dataPath = './data/rawdata';
 precomputedPath = './data/cache';
 labelingStrategiesPath = './data/labeling';
 ```
-- Make sure these paths point to the right directory in your filesystem.
-- List the classes of your particular application in the *classes.txt* file. These classes are used to annotate the data. You can include relevant and non-relevant classes.
-
 ## Data Collection
 
-Once you have data available for analysis, you can use the *DataLoaderApp* in *0-DataLoader* to do a first check on the data and convert it to Matlab's binary format, used by the rest of the toolkit.
+The *Data Loader App* can be used to do a first check on the data after collection. It offers the following features:
+- Load any tabularized ".txt" data file and save it to Matlab's binary format, which is used by the rest of the toolkit.
+- Check whether there has been data loss. For this purpose, a timestamp or counter column should be selected and an interval / rate change should be provided.
+- Visualize collected data.
 
 ![DataLoaderApp](doc/images/0-DataLoaderApp.png)
-
-*Note: the DataLoader can load any file in comma separated format.*
 
 *Note: by default, the DataLoaderApp will load data files from the ./data/rawdata/ directory*
 
 ## Data Annotation
 
-An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *DataAnnotationApp* offers functionality to annotate time series data. Depending on the particular application, you will want to annotate specific events or activities that have a duration in time. The *DataAnnotationApp* supports both kinds of annotations.
+An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate specific events or activities that have a duration in time. The *Data Annotation App* supports both kinds of annotations.
 
-It might be cumbersome to annotate time series data without a reference. The *DataAnnotationApp* can import and display markers on top of the time series data. Currently, the *DataAnnotationApp* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the Timeline, timelines, export, Timeline markers to .EDL..., as shown in the image below:
+The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
 
 ![DaVinciResolve](doc/images/1-markers.png)
 
-Before the markers can be displayed properly on top of the time series data, they need to be synchronised to the time series data. In order to do this, the *.edl* file should contain a marker in green color in the beginning and another one in the end of the file. These markers will be automatically matched to the first and last annotation labeled as *synchronisaton'. This is the typical annotation flow:
+Before the markers can be displayed properly on top of the time series data, they need to be synchronised to the time series data. In order to do this, the *.edl* file should contain a synchronisation marker in the beginning and another one in the end of the file. Currently, markers in green color are used for synchronisation. These markers are matched automatically to the first and last annotation of class *synchronisaton*. In order to annotate data:
 
 1. Annotate the video using DaVinci Resolve. Use a green marker to annotate a special event, ideally in the beginning and end of the file. (e.g. the user shakes the sensor three times in front of the camera).
 2. Export the markers to an *.edl* file.
 3. Copy the *.edl* file to the *data/markers/* directory.
-4. Open the *DataAnnotationApp* and annotate the special events using the *synchronisation* class.
-5. Reopen the *DataAnnotationApp*. This time the markers should be properly aligned with the data.
+4. Open the *Data Annotation App* and add an event annotation of type *synchronisation* to the timestamp that corresponds .
+5. Reopen the *Data Annotation App*. This time the markers should be properly aligned with the data.
 6. Annotate the time series data.
 
 ![Data Annotation App](doc/images/1-DataAnnotationApp.png)
 
-*Note: by default, the DataAnnotationApp will load annotation files from the ./data/annotations/ directory. Saved annotation files will be stored in the root './' directory*.
+*Note: Annotation and marker files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt' and its marker file 'S1-markers.edl'*.
 
-*Note: markers in .edl format will be read from the ./data/markers directory*.
+*Note: by default, the Data Annotation App loads annotation files from the './data/annotations/' directory. Saved annotation files will be stored in the root './' directory*.
 
-*Note: in order to be able to annotate a data set, the classes should have previously been defined in the ./data/classes.txt file*
+*Note: markers in .edl format are read from the './data/markers' directory*.
+
+*Note: the classes to annotate should be defined in the 'classes.txt' file.*
 
 ## Data Visualization
-The *Data Visualization App* displays the signals corresponding to different classes. After a preprocessing, an event detection algorithm (optional) and segmentation strategy have been chosen, the *Data Visualization App* plots the segments of every selected class. Segments can be plotted either on top of each other or after each other.
+The *Data Visualization App* displays the signals grouped by classes. After a preprocessing, an event detection algorithm (optional) and segmentation strategy have been chosen, the *Data Visualization App* plots the segments of every selected class. Segments can be plotted either on top of each other or sequentially (i.e. after each other). In order to visualize data:
+
+1. Select one or more files.
+2. Select where the segments should come from. *Manual annotations* creates segments from the range annotations and loads event annotations to create segments using the *ManualSegmentationStrategy*. The *Automatic segmentation* uses a preprocessing, event detection and segmentation algorithms selected over the user interface to create segments.
+3. (in Automatic segmentation mode) Select the signals to use, a preprocessing algorithm and (optionally) an event detection algorithm.
+4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Create* button. At this point the segments are created.
+6. Select signals and classes to visualize and a plot style. 
 
 ![Data Annotation App](doc/images/2-VisualizationApp.png)
 
 ## Event Detection
-Some wearable applications detect the occurrence of specific events in a stream of sensor values. The challenge is to design an algorithm that detects the relevant events (also called target-class or true positives) while ignoring irrelevant events (also called non-target class or false positives). 
+Some wearable applications need to detect the occurrence of specific events in a stream of sensor values. The challenge is to detect the relevant events (also called target-class or true positives) while ignoring irrelevant events (also called non-target class or false positives). 
 
-The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes  the amount of relevant and irrelevant events detected for each file / subject and the amount of events detected of each class. The *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. For this purpose, a developer might zoom into the data and observe the detected and missed events together with the data. 
+The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes the amount of relevant and irrelevant events detected for each file / subject and the amount of events detected of each class. The *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. For this purpose, a developer might zoom into the data and observe the detected and missed events together with the data. 
 
 
 ![Data Annotation App](doc/images/3-EventDetectionApp.png)
 
-## Evaluation
+## Application Development and Evaluation
 Great part of the effort to develop an activity recognition application will be invested in the development of an algorithm (i.e. chain of computations) able to recognize the particular activities accurately and within the computational constraints of the wearable device. This development is usually done iteratively based on a frequent performance evaluation.
 
 The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at any stage of the activity recognition chain and assess its performance. The calculated performance metrics are:
@@ -194,7 +198,7 @@ We use the term *stage* to refer to the different parts in the activity recognit
 1. Place your data files (.txt or .mat) in the *./data/rawdata/* directory
 2. If your files are in *ASCII*  format, you might want to convert them to a binary format with the *DataLoaderApp*. Files in binary format will load faster.
 3. Define your classes in the *classes.txt* file. 
-4. Open the *DataAnnotationApp* to annotate your data. Annotations created with the App need to be saved into the *./data/annotations* directory.
+4. Open the *Data Annotation App* to annotate your data. Annotations created with the App need to be saved into the *./data/annotations* directory.
 5. You might want to annotate the data at a greater level of detail than your application should recognize. For example, if your application should detect lacrosse goalkeeper training exercises such as *catches*, *throws* and *passes*, you could annotate the catches at a greater level of detail as: *catchLowRight*, *catchLowLeft* but start the data analysis by studying whether any catch can be detected. In this case, you might want to group the catches into a common *catch* class. This can be achieved by creating a labeling strategy. A labeling strategy maps annotations made to groups. Labeling strategies are specified in a *.txt* file as: 
 ```
 #Group1 
@@ -215,6 +219,8 @@ You don't need to assign every class to a group in a labeling strategy. A class 
 *Note: The default data paths can be changed in the Constants class*.  
  
  ## Troubleshooting
+
+*Note: Most errors after installation will be due to pathing issues. Paths are defined in the Constants.m file. Double-check the different directories exist in your file system.*
 
 > 'Error - no labeling strategy available'.
 
@@ -252,7 +258,7 @@ Further references:
 1. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
 2. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
 
-## Contact
-Juan Haladjian
-Website: (in.tum.de/~haladjia)
-Email: (haladjia@in.tum.de)
+## About
+I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with feature requests.
+[haladjia@in.tum.de](haladjia@in.tum.de)
+[in.tum.de/~haladjia](in.tum.de/~haladjia)
