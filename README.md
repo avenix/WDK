@@ -53,6 +53,8 @@ The *Data Loader App* can be used to do a first check on the data after its coll
 
 An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate specific events or activities that have a duration in time. The *Data Annotation App* supports both kinds of annotations.
 
+![Data Annotation App](doc/images/1-DataAnnotationApp.png)
+
 ### Importing External Markers
 The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
 
@@ -78,28 +80,25 @@ frame1: 3302
 frame2: 45269
 ```
 
-The exact frames of a specific event in a video can be found by exploring the video file using Matlab's ![Video Viewer App](https://www.mathworks.com/help/images/ref/implay.html):
+The exact frames of a specific event in a video can be found by exploring the video file using Matlab's [Video Viewer App](https://www.mathworks.com/help/images/ref/implay.html):
 
 ![Video Player App](doc/images/1-VideoPlayer.png)
 
-In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). The annotated data:
+In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). The respective annotated synchronisation events:
 
 ![Event Annotations](doc/images/1-synchronisation.png)
 
-*Note: Supported video formats are .mov and .MP4*.
+To consider:
 
-![Data Annotation App](doc/images/1-DataAnnotationApp.png)
-
-*Note: annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.<video extension>''*.
-
-*Note: by default, the Data Annotation App loads annotation files from the './data/annotations/' directory. Saved annotation files will be stored in the root './' directory*.
-
-*Note: the classes to annotate should be defined in the 'classes.txt' file.*
+1. Note: Supported video formats are .mov and .MP4.
+2. Note: annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.<video extension>''.
+3. Note: by default, the Data Annotation App loads annotation files from the './data/annotations/' directory. Saved annotation files will be stored in the root './' directory.
+4. Note: the classes to annotate should be defined in the 'classes.txt' file.
 
 ## Data Visualization
-The *Data Visualization App* displays the signals grouped by classes. After a preprocessing, an event detection algorithm (optional) and segmentation strategy have been chosen, the *Data Visualization App* plots the segments of every selected class. Segments can be plotted either on top of each other or sequentially (i.e. after each other). In order to visualize data:
+The *Data Visualization App* displays segments of data grouped by class. This is useful to study the differences across classes (e.g. to design an event detection or feature extraction algorithm). Segments can be plotted either on top of each other or sequentially (i.e. after each other). In order to visualize data:
 
-1. Select one or more files.
+1. Select one or more input data files.
 2. Select where the segments should come from. *Manual annotations* creates segments from the range annotations and loads event annotations to create segments using the *ManualSegmentationStrategy*. The *Automatic segmentation* uses a preprocessing, event detection and segmentation algorithms selected over the user interface to create segments.
 3. (in Automatic segmentation mode) Select the signals to use, a preprocessing algorithm and (optionally) an event detection algorithm.
 4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Create* button. At this point the segments are created.
