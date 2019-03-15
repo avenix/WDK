@@ -276,12 +276,10 @@ Applications developed with the WDK:
 2. https://dl.acm.org/citation.cfm?id=3267267
 
 ## About
-I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. 
+My name is Juan Haladjian. I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. 
 
 Feel free to contact me with feature requests:
 
+[Email](mailto:haladjia@in.tum.de)
 
-[haladjia@in.tum.de](haladjia@in.tum.de)
-
-
-[in.tum.de/~haladjia](in.tum.de/~haladjia)
+[Website](http://in.tum.de/~haladjia)
