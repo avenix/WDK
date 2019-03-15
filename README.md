@@ -84,14 +84,14 @@ The exact frames of a specific event in a video can be found by exploring the vi
 
 ![Video Player App](doc/images/1-VideoPlayer.png)
 
-In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). The respective annotated synchronisation events:
+In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). The respective annotated synchronisation events are shown in the following image:
 
 ![Event Annotations](doc/images/1-synchronisation.png)
 
 To consider:
 
 1. Note: Supported video formats are .mov and .MP4.
-2. Note: annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.<video extension>''.
+2. Note: annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.mov' or ''S1-video.MP4''.
 3. Note: by default, the Data Annotation App loads annotation files from the './data/annotations/' directory. Saved annotation files will be stored in the root './' directory.
 4. Note: the classes to annotate should be defined in the 'classes.txt' file.
 
@@ -115,9 +115,9 @@ The *Event Detection App* can be used to compare the performance of different ev
 ![Data Annotation App](doc/images/3-EventDetectionApp.png)
 
 ## Application Development and Evaluation
-Great part of the effort to develop an activity recognition application is invested in the development of an algorithm (i.e. chain of computations) able to recognize the particular activities accurately and within the computational constraints of the wearable device. This development is usually done iteratively based on a frequent performance evaluation.
+A great part of the effort to develop an activity recognition application is usually invested in the development of an algorithm (i.e. chain of computations) that is able to recognize the particular activities accurately while being computationally efficient. This development of an algorithm is usually done iteratively based on a frequent performance evaluation.
 
-The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at any stage of the activity recognition chain and assess its performance. The calculated performance metrics are:
+The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at every stage of the activity recognition chain (e.g. preprocessing, segmentation) and assess its performance. The calculated performance metrics are:
 
 Recognition Performance:
 - Accuracy
@@ -126,9 +126,9 @@ Recognition Performance:
 - Confusion Matrix
 
 Computational Performance:
-- Number of floating point operations performed by the algorithm
-- Amount of memory consumed by the algorithm (in bytes)
-- Amount of communication required by the algorithm (requires the user to map the computation components to hardware devices) 
+- Flops: Number of floating point operations performed by the algorithm for the input data set
+- Memory: Amount of memory consumed by the algorithm (in bytes) for the input data set
+- Communication: Amount of bytes output by the last component in the recognition chain (requires the user to map the computation components to hardware devices) 
 
 ![Data Annotation App](doc/images/4-EvaluationApp.png)
 
@@ -236,7 +236,9 @@ You don't need to assign every class to a group in a labeling strategy. A class 
  
  ## Troubleshooting
 
-*Note: Most errors after installation will be due to pathing issues. Paths are defined in the Constants.m file. Double-check the different directories exist in your file system.*
+Most errors after installation will be due to pathing issues. Paths are defined in the Constants.m file. Double-check the different directories exist in your file system.
+
+Furthermore, errors identified by Matlab will be shown over the console:
 
 > 'Error - no labeling strategy available'.
 
@@ -252,20 +254,21 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a cl
  
  > 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
  
- The current version of the *FeatureSelector* uses the mRMR algorithm to select the most relevant features. The mRMR algorithm will fail if every value of a feature is the same.
+ The current version of the *FeatureSelector* uses the mRMR algorithm to select the most relevant features. The mRMR algorithm will fail if every feature vector contains the same value for a particular feature.
 
 If Matlab crashes with an error:
  > 'Too many input arguments'
  
- double-check you are using Matlab 2018b. Matlab changed the way how cell arrays are handled.
+ double-check you are using Matlab 2018b. Previous versions of Matlab might handle cell arrays differently.
  
-* The data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
-* Double-check that the *./data/annotations/* directory contains an annotation file for each data file in *./data/rawdata/*.  
+The data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
+
+Double-check that the *./data/annotations/* directory contains an annotation file for each data file in *./data/rawdata/*.  
 
 
 ## References
 
-1. Matlab tutorial on the Activity Recognition Chain for wearables: https://github.com/avenix/ARC-Tutorial/
+1. Matlab tutorial on Activity Recognition for wearables: https://github.com/avenix/ARC-Tutorial/
 2. Andreas Bulling's tutorial on Activity Recognition: https://dl.acm.org/citation.cfm?id=2499621
 2. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
 3. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
@@ -280,6 +283,6 @@ My name is Juan Haladjian. I developed the Wearables Development Toolkit as part
 
 Feel free to contact me with feature requests:
 
-[Email](mailto:haladjia@in.tum.de)
+[haladjia@in.tum.de](mailto:haladjia@in.tum.de)
 
-[Website](http://in.tum.de/~haladjia)
+[http://in.tum.de/~haladjia](http://in.tum.de/~haladjia)
