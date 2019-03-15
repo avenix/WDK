@@ -115,7 +115,7 @@ The *Event Detection App* can be used to compare the performance of different ev
 ![Data Annotation App](doc/images/3-EventDetectionApp.png)
 
 ## Application Development and Evaluation
-Great part of the effort to develop an activity recognition application will be invested in the development of an algorithm (i.e. chain of computations) able to recognize the particular activities accurately and within the computational constraints of the wearable device. This development is usually done iteratively based on a frequent performance evaluation.
+Great part of the effort to develop an activity recognition application is invested in the development of an algorithm (i.e. chain of computations) able to recognize the particular activities accurately and within the computational constraints of the wearable device. This development is usually done iteratively based on a frequent performance evaluation.
 
 The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at any stage of the activity recognition chain and assess its performance. The calculated performance metrics are:
 
@@ -279,5 +279,9 @@ Applications developed with the WDK:
 I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. 
 
 Feel free to contact me with feature requests:
+
+
 [haladjia@in.tum.de](haladjia@in.tum.de)
+
+
 [in.tum.de/~haladjia](in.tum.de/~haladjia)
