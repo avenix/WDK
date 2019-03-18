@@ -22,7 +22,7 @@ function varargout = AnnotationUI(varargin)
 
 % Edit the above text to modify the response to help AnnotationUI
 
-% Last Modified by GUIDE v2.5 18-Mar-2019 09:04:05
+% Last Modified by GUIDE v2.5 18-Mar-2019 13:50:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -273,19 +273,19 @@ function mainFigure_WindowKeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in showRangesCheckbox.
-function showRangesCheckbox_Callback(hObject, eventdata, handles)
-% hObject    handle to showRangesCheckbox (see GCBO)
+% --- Executes on button press in showRangesCheckBox.
+function showRangesCheckBox_Callback(hObject, eventdata, handles)
+% hObject    handle to showRangesCheckBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of showRangesCheckbox
+% Hint: get(hObject,'Value') returns toggle state of showRangesCheckBox
 
 
-% --- Executes on button press in showEventsCheckbox.
-function showEventsCheckbox_Callback(hObject, eventdata, handles)
-% hObject    handle to showEventsCheckbox (see GCBO)
+% --- Executes on button press in showEventsCheckBox.
+function showEventsCheckBox_Callback(hObject, eventdata, handles)
+% hObject    handle to showEventsCheckBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of showEventsCheckbox
+% Hint: get(hObject,'Value') returns toggle state of showEventsCheckBox

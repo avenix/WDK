@@ -259,7 +259,11 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a cl
 If Matlab crashes with an error:
  > 'Too many input arguments'
  
- double-check you are using Matlab 2018b. Previous versions of Matlab might handle cell arrays differently.
+ double-check you are using Matlab 2018b or latest. Previous versions of Matlab might handle cell arrays differently.
+ 
+ > 'Unrecognized property 'Scrollable' for class 'matlab.ui.Figure'
+ 
+ double-check you are using Matlab 2018b or latest. Figures in previous versions of Matlab did not have the Scrollable property. If you still would like to use a previous release of Matlab, uncheck the *Scrollable* property under the *Interactivity* category of the main Figure of the VisualizationApp and EvaluationApp.  
  
 The data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
 

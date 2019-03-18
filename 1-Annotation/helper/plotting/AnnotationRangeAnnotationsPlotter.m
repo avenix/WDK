@@ -12,6 +12,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
     properties (Access = public)
         delegate;
         yRange;
+        shouldShowAnnotations = true;
     end
     
     properties (Access = private)
@@ -19,6 +20,12 @@ classdef AnnotationRangeAnnotationsPlotter < handle
         classesMap;
     end
     
+    methods
+        function set.shouldShowAnnotations(obj,visible)
+            obj.setAnnotationVisibility(visible);
+            obj.shouldShowAnnotations = visible;
+        end
+    end
     
     methods (Access = public)
         function obj = AnnotationRangeAnnotationsPlotter(classesMap)
@@ -35,6 +42,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
                 rangeAnnotation = rangeAnnotations(i);
                 obj.plotAnnotation(plotAxes,rangeAnnotation);
             end
+            obj.setAnnotationVisibility(obj.shouldShowAnnotations);
         end
         
         function plotAnnotation(obj, plotAxes, rangeAnnotation)

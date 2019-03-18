@@ -53,9 +53,6 @@ classdef AnnotationApp < handle
         
         %ui state
         isSelectingPeaks = 0;
-        showingMarkers = 1;
-        showingEvents = 1;
-        showingRanges = 1;
     end
     
     methods (Access = public)
@@ -74,7 +71,7 @@ classdef AnnotationApp < handle
             
             obj.rangeAnnotationsPlotter = AnnotationRangeAnnotationsPlotter(obj.classesMap);
             obj.rangeAnnotationsPlotter.delegate = obj;
-                        
+            
             obj.loadUI();
         end
              
@@ -101,8 +98,8 @@ classdef AnnotationApp < handle
             obj.uiHandles.loadDataButton.Callback = @obj.handleLoadDataClicked;
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
             obj.uiHandles.showMarkersCheckBox.Callback = @obj.handleShowMarkersToggled;
-            obj.uiHandles.showEventsCheckbox.Callback = @obj.handleShowEventsToggled;
-            obj.uiHandles.showRangesCheckbox.Callback = @obj.handleShowRangesToggled;
+            obj.uiHandles.showEventsCheckBox.Callback = @obj.handleShowEventsToggled;
+            obj.uiHandles.showRangesCheckBox.Callback = @obj.handleShowRangesToggled;
             
             obj.uiHandles.stateButtonGroup.SelectionChangedFcn = @obj.handleStateChanged;
             obj.uiHandles.findButton.Callback = @obj.handleFindPeaksClicked;
@@ -126,7 +123,10 @@ classdef AnnotationApp < handle
         
         function resetUI(obj)
             obj.uiHandles.loadDataTextbox.String = "";
-            obj.updateSelectingPeaksCheckbox();
+            obj.uiHandles.showMarkersCheckBox.Value = true;
+            obj.uiHandles.showEventsCheckBox.Value = true;
+            obj.uiHandles.showRangesCheckBox.Value = true;
+            obj.updateSelectingPeaksCheckBox();
         end
         
         function loadAll(obj)
@@ -260,7 +260,7 @@ classdef AnnotationApp < handle
         function plotMarkers(obj)
             if ~isempty(obj.markers)
                 obj.markersPlotter.markerYRange = obj.plottedSignalYRange;
-                obj.markersPlotter.plotMarkers(obj.markers,obj.plotAxes,obj.showingMarkers);
+                obj.markersPlotter.plotMarkers(obj.markers,obj.plotAxes);
             end
         end
         
@@ -480,7 +480,7 @@ classdef AnnotationApp < handle
             end
         end
 
-        function updateSelectingPeaksCheckbox(obj)
+        function updateSelectingPeaksCheckBox(obj)
             obj.uiHandles.peaksCheckBox.Value = obj.isSelectingPeaks;
         end
         
@@ -592,18 +592,15 @@ classdef AnnotationApp < handle
         end
         
         function handleShowMarkersToggled(obj,~,~)
-            obj.showingMarkers = ~obj.showingMarkers;
-            obj.markersPlotter.setMarkersVisibility(obj.showingMarkers);
+            obj.markersPlotter.shouldShowMarkers = obj.uiHandles.showMarkersCheckBox.Value;
         end
         
         function handleShowEventsToggled(obj,~,~)
-            obj.showingEvents = ~obj.showingEvents;
-            obj.eventAnnotationsPlotter.setAnnotationVisibility(obj.showingEvents);
+            obj.eventAnnotationsPlotter.shouldShowAnnotations = obj.uiHandles.showEventsCheckBox.Value;
         end
         
         function handleShowRangesToggled(obj,~,~)
-            obj.showingRanges = ~obj.showingRanges;
-            obj.rangeAnnotationsPlotter.setAnnotationVisibility(obj.showingRanges);
+            obj.rangeAnnotationsPlotter.shouldShowAnnotations = obj.uiHandles.showRangesCheckBox.Value;
         end
         
         function handleSelectionChanged(obj,~,~)

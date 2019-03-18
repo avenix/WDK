@@ -8,10 +8,18 @@ classdef AnnotationEventAnnotationsPlotter < handle
     properties (Access = public)
         delegate;
         annotationsMap;
+        shouldShowAnnotations = true;
     end
     
     properties (Access = private)
         classesMap;
+    end
+    
+    methods
+        function set.shouldShowAnnotations(obj,visible)
+            obj.setAnnotationVisibility(visible);
+            obj.shouldShowAnnotations = visible;
+        end
     end
     
     methods (Access = public)
@@ -32,6 +40,7 @@ classdef AnnotationEventAnnotationsPlotter < handle
                 class = eventAnnotation.label;
                 obj.addAnnotation(plotAxes,x,y,class);
             end
+            obj.setAnnotationVisibility(obj.shouldShowAnnotations);
         end
         
         function addAnnotation(obj, plotAxes, x, y, class)
