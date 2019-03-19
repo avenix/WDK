@@ -74,7 +74,7 @@ classdef DataLoader < handle
                 columnNames = [];
             end
         end
-                
+
         function [data, columnNames] = loadTextData(~,fileName)
             
             if exist(fileName, 'file') == 2

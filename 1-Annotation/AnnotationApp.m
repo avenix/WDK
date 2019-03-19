@@ -50,6 +50,8 @@ classdef AnnotationApp < handle
         rangeSelectionAxis = [];
         rangeSelection = [];
         plotHandles;
+        currentTimeLine;
+        currentTimeLineHandle;
         
         %ui state
         isSelectingPeaks = 0;
@@ -73,6 +75,7 @@ classdef AnnotationApp < handle
             obj.rangeAnnotationsPlotter.delegate = obj;
             
             obj.loadUI();
+            obj.createCurrentTimeLine();
         end
              
         function handleAnnotationClicked(obj,source,~)
@@ -162,6 +165,15 @@ classdef AnnotationApp < handle
             dataCursorMode.DisplayStyle = 'window';
             dataCursorMode.Enable = 'on';
             set(dataCursorMode,'UpdateFcn',@obj.handleUserClick);
+        end
+        
+        function createCurrentTimeLine(obj)
+            %{
+            obj.currentTimeLineHandle = line(obj.plotAxes,[marker.sample, marker.sample],...
+                    [obj.markerYRange(1) obj.markerYRange(2)],...
+                    'Color',color{1},'LineWidth',lineWidth,...
+                    'LineStyle','-');
+            %}
         end
         
         function loadData(obj)
@@ -499,6 +511,7 @@ classdef AnnotationApp < handle
             outputTxt = {['X: ',xStr],['Y: ',yStr]};
             
             fprintf('%d\n',x);
+            
             if obj.state == AnnotationState.kAddMode
                 if obj.isSelectingPeaks
                     obj.addPeakAtLocation(x);
