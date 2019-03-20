@@ -37,6 +37,8 @@ classdef Constants < handle
         kIncorretlyMappedClassWarning = 'Warning - GroupedClassLabeling - class is not mapped correctly';
         kConstantFeaturesWarning = 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
         
+        kLoadingVideoMessage = 'Message - AnnotationVideoPlayer - loading video ';
+        
         kSharedVariableCurrentDataFile = 'currentFile';
         kSharedVariableCurrentAnnotationFile = 'annotationFile';
         kSharedVariableCurrentLabelingStrategy = 'currentLabelingStrategy';

@@ -40,8 +40,11 @@ classdef AnnotationApp < handle
         markerHandles;
         markersPlotter AnnotationMarkersPlotter;
         
+        %timestamp
+        timeLineMarker = 0;
+        timeLineMarkerHandle;
+        
         %ui
-        timestampMarker;
         videoFigure;
         plottedSignalYRange;
         state AnnotationState = AnnotationState.kSelectMode;    
@@ -50,8 +53,6 @@ classdef AnnotationApp < handle
         rangeSelectionAxis = [];
         rangeSelection = [];
         plotHandles;
-        currentTimeLine;
-        currentTimeLineHandle;
         
         %ui state
         isSelectingPeaks = 0;
@@ -60,6 +61,7 @@ classdef AnnotationApp < handle
     methods (Access = public)
         
         function obj =  AnnotationApp()
+            close all;
             clear ClassesMap;
             obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
@@ -75,9 +77,8 @@ classdef AnnotationApp < handle
             obj.rangeAnnotationsPlotter.delegate = obj;
             
             obj.loadUI();
-            obj.createCurrentTimeLine();
         end
-             
+
         function handleAnnotationClicked(obj,source,~)
             tag = str2double(source.Tag);
             if obj.state == AnnotationState.kDeleteMode
@@ -87,6 +88,13 @@ classdef AnnotationApp < handle
                 currentClass = obj.uiHandles.classesList.Value;
                 obj.eventAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
                 obj.rangeAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
+            end
+        end
+        
+        function handleFrameChanged(obj,~)
+            obj.timeLineMarker = obj.videoFrameToSample(obj.videoPlayer.currentFrame);
+            if ~isempty(obj.timeLineMarkerHandle)
+                obj.updateTimelineMarker();
             end
         end
     end
@@ -109,12 +117,15 @@ classdef AnnotationApp < handle
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
             obj.uiHandles.addRangeAnnotationButton.Callback = @obj.handleAddRangeClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
-
+            obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
+            
             obj.resetUI();
             obj.loadPlotAxes();
             obj.setUserClickHandle();
             obj.populateFileNamesList();
             obj.populateClassesList();
+
+            obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
             
             signalComputers = Palette.PreprocessingComputers();
             obj.preprocessingConfigurator = PreprocessingConfiguratorAnnotationApp(...
@@ -138,6 +149,7 @@ classdef AnnotationApp < handle
                 obj.loadAnnotations();
                 obj.loadSynchronisationFile();
                 obj.loadMarkers();
+                obj.loadVideo();
             end
         end
         
@@ -154,8 +166,9 @@ classdef AnnotationApp < handle
         function loadPlotAxes(obj)
             obj.plotAxes = axes(obj.uiHandles.mainFigure);
             obj.plotAxes.Units = 'characters';
-            obj.plotAxes.Position  = [35 4 270 57];
+            obj.plotAxes.Position  = [35 4 230 57];
             obj.plotAxes.Visible = 'On';
+            obj.plotAxes.Box = 'off';
         end
         
         function setUserClickHandle(obj)
@@ -163,17 +176,19 @@ classdef AnnotationApp < handle
             dataCursorMode = datacursormode(obj.uiHandles.mainFigure);
             dataCursorMode.SnapToDataVertex = 'on';
             dataCursorMode.DisplayStyle = 'window';
-            dataCursorMode.Enable = 'on';
             set(dataCursorMode,'UpdateFcn',@obj.handleUserClick);
         end
         
-        function createCurrentTimeLine(obj)
-            %{
-            obj.currentTimeLineHandle = line(obj.plotAxes,[marker.sample, marker.sample],...
-                    [obj.markerYRange(1) obj.markerYRange(2)],...
-                    'Color',color{1},'LineWidth',lineWidth,...
-                    'LineStyle','-');
-            %}
+        function plotTimelineMarker(obj)
+            maxY = obj.plotAxes.Position(4);
+            obj.timeLineMarkerHandle = line(obj.plotAxes,[obj.timeLineMarker, obj.timeLineMarker],...
+                    [-maxY / 2, maxY / 2],...
+                    'Color','red','LineWidth',2,'LineStyle','-');
+        end
+        
+        function updateTimelineMarker(obj)
+            set(obj.timeLineMarkerHandle,'XData',[obj.timeLineMarker, obj.timeLineMarker]);
+            drawnow;
         end
         
         function loadData(obj)
@@ -206,19 +221,38 @@ classdef AnnotationApp < handle
             end
         end
         
-        function videoFrame = sampleToVideoFrame(obj, x)
+        function videoFrame = sampleToVideoFrame(obj, sample)
             
-            x1 = double(obj.findFirstSynchronisationSample());%data
+            x1 = double(obj.findFirstSynchronisationSample());
             x2 = double(obj.findLastSynchronisationSample());
             
             y1 = obj.synchronisationFile.startFrame;
             y2 = obj.synchronisationFile.endFrame;
             
             a = (y2-y1) / (x2-x1);
-            videoFrame = a * (x - x1) + y1;
+            videoFrame = a * (sample - x1) + y1;
+            
             if videoFrame < 1
                 videoFrame = 1;
             end
+            videoFrame = uint32(videoFrame);
+        end
+        
+        function sample = videoFrameToSample(obj, videoFrame)
+            x1 = obj.synchronisationFile.startFrame;
+            x2 = obj.synchronisationFile.endFrame;
+            
+            y1 = double(obj.findFirstSynchronisationSample());
+            y2 = double(obj.findLastSynchronisationSample());
+            
+            
+            a = (y2-y1) / (x2-x1);
+            sample = a * (videoFrame - x1) + y1;
+            
+            if sample < 1
+                sample = 1;
+            end
+            sample = uint32(sample);
         end
         
         function plotData(obj)
@@ -236,7 +270,16 @@ classdef AnnotationApp < handle
                 obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude);
                 
                 n = size(obj.magnitude,1);
-                axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * 1.1,obj.plottedSignalYRange(2) * 1.1]);
+                axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * 1.1, obj.plottedSignalYRange(2) * 1.1]);
+                
+                %{
+                obj.plotAxes.XLimMode = 'manual';
+                obj.plotAxes.XTickMode = 'manual';
+                obj.plotAxes.XTickLabelMode = 'manual';
+                obj.plotAxes.YLimMode = 'manual';
+                obj.plotAxes.YTickMode = 'manual';
+                obj.plotAxes.YTickLabelMode = 'manual';
+                %}
             end
         end
         
@@ -276,26 +319,19 @@ classdef AnnotationApp < handle
             end
         end
         
-        function plotVideo(obj)
+        function loadVideo(obj)
             
             videoFileName = obj.getVideoFileName();
             
-            if ~isempty(videoFileName)
-                if isempty(obj.videoFigure) || ~isvalid(obj.videoFigure)
-                    videoTitle = sprintf('Reference Video: %s',videoFileName);
-                    obj.videoFigure = figure('NumberTitle', 'off', 'Name', videoTitle);
-                    obj.videoFigure.CurrentAxes = axes();
-                    set(obj.videoFigure,'KeyPressFcn',@obj.handleKeyPressed);
-                end
-                obj.videoPlayer = AnnotationVideoPlayer(videoFileName,obj.videoFigure.CurrentAxes);
-                obj.videoPlayer.displayFrame(1);
+            if ~isempty(videoFileName) && isempty(obj.videoPlayer)
+                obj.videoPlayer = AnnotationVideoPlayer(videoFileName,obj);
+                obj.updateVideoFrame();
             end
         end
         
-        function selectSampleAtLocation(obj, x)
-            
+        function updateVideoFrame(obj)
             if ~isempty(obj.videoPlayer)
-                videoFrame = obj.sampleToVideoFrame(x);
+                videoFrame = obj.sampleToVideoFrame(obj.timeLineMarker);
                 obj.videoPlayer.displayFrame(videoFrame);
             end
         end
@@ -519,12 +555,12 @@ classdef AnnotationApp < handle
                     obj.addSampleAtLocation(x);
                 end
             elseif obj.state == AnnotationState.kSelectMode
-                obj.selectSampleAtLocation(x);
+                obj.timeLineMarker = x;
+                obj.updateTimelineMarker();
+                obj.updateVideoFrame();
             elseif obj.state == AnnotationState.kSelectRangesMode
                 obj.selectRangeAtLocation(x);
             end
-            
-            %obj.timestampMarker = 
         end
         
         function handleLoadDataClicked(obj,~,~)
@@ -548,7 +584,8 @@ classdef AnnotationApp < handle
                 obj.plotData();
                 obj.plotAnnotations();
                 obj.plotMarkers();
-                obj.plotVideo();
+                obj.plotTimelineMarker();
+
             end
         end
         
@@ -624,14 +661,15 @@ classdef AnnotationApp < handle
             obj.addCurrentRange();
         end
         
-        function handleKeyPressed(obj,~,event)
-            if strcmp(event.Key, 'rightarrow')
-                %obj.currentTimestamp = obj.currentTimestamp + 10;
-            elseif strcmp(event.Key, 'leftarrow')
-                %obj.currentTimestamp = obj.currentTimestamp - 10;
-            end
-            
-            %obj.updateTimestampMarker();
+        function handleKeyPress(obj, source, event)
+            obj.videoPlayer.handleKeyPress(source,event);
+        end
+                
+        function handleFigureClick(obj,~,event)
+            x = event.IntersectionPoint(1);
+            obj.timeLineMarker = x;
+            obj.updateTimelineMarker();
+            obj.updateVideoFrame();
         end
         
         %% Helper methods
