@@ -323,7 +323,10 @@ classdef AnnotationApp < handle
             
             videoFileName = obj.getVideoFileName();
             
-            if ~isempty(videoFileName) && isempty(obj.videoPlayer)
+            if ~isempty(videoFileName)
+                if ~isempty(obj.videoPlayer)
+                    delete(obj.videoPlayer);
+                end
                 obj.videoPlayer = AnnotationVideoPlayer(videoFileName,obj);
                 obj.updateVideoFrame();
             end

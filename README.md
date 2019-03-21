@@ -73,7 +73,7 @@ Before the markers can be displayed properly on top of the time series data, the
 
 ### Synchronising a Video
 
-The *Data Annotation App* can load and display videos that are displayed next to the data and can be helpful for annotation. The video is synchronised to the data by matching the first and last event annotations of the class *synchronisation to the two video frames provided in a synchronisation file:
+The *Data Annotation App* can load and display videos that are displayed next to the data and can be helpful for annotation. The video is synchronised to the data by matching the first and last event annotations of the class *synchronisation* to the two video frames provided in a synchronisation file:
 
 ```
 frame1: 3302
@@ -119,7 +119,7 @@ The *Event Detection App* can be used to compare the performance of different ev
 ![Data Annotation App](doc/images/3-EventDetectionApp.png)
 
 ## Application Development and Evaluation
-A great part of the effort to develop an activity recognition application is usually invested in the development of an algorithm (i.e. chain of computations) that is able to recognize the particular activities accurately while being computationally efficient. This development of an algorithm is usually done iteratively based on a frequent performance evaluation.
+A great part of the effort to develop an activity recognition application is usually invested in the development of an algorithm (i.e. chain of computations) to recognize a particular set of activities accurately while being computationally efficient. This development of an algorithm is usually done iteratively based on several performance evaluations.
 
 The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at every stage of the activity recognition chain (e.g. preprocessing, segmentation) and assess its performance. The calculated performance metrics are:
 

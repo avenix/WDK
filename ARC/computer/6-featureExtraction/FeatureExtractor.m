@@ -26,7 +26,7 @@ classdef FeatureExtractor < Computer
             for i = 1 : nSegments
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
-                    featureVectors(i,j) = Computer.ExecuteChain(obj.computers{j},segment.window);
+                    featureVectors(i,j) = Computer.ExecuteChain(obj.computers{j},segment.data);
                 end
             end
             
@@ -77,7 +77,7 @@ classdef FeatureExtractor < Computer
             for i = 1 : length(segments)
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
-                    [~, metrics] = Computer.ExecuteChain(obj.computers{j},segment.window);
+                    [~, metrics] = Computer.ExecuteChain(obj.computers{j},segment.data);
                     metricSum.addMetric(metrics);
                 end
             end

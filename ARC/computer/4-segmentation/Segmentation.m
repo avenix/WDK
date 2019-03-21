@@ -32,7 +32,7 @@ classdef (Abstract) Segmentation < Computer
                     segment.eventIdx = eventLocation;
                     segment.startSample = uint32(startSample);
                     segment.endSample = uint32(endSample);
-                    segment.window = data(segment.startSample : segment.endSample,:);
+                    segment.data = data(segment.startSample : segment.endSample,:);
                     segmentsCounter = segmentsCounter + 1;
                     segments(segmentsCounter) = segment;
                 end

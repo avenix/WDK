@@ -186,7 +186,7 @@ classdef Plotter
             hold on;
             for i = 1: length(segments)
                 segment = segments(i);
-                p = plot(segment.window(:,axisIdx),'-','LineWidth',0.2,'Color','black');
+                p = plot(segment.data(:,axisIdx),'-','LineWidth',0.2,'Color','black');
                 p.Color(4) = 0.10;
             end
             obj.setAxisAndTitle(title,'Samples','Acceleration [g]');

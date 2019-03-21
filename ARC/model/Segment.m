@@ -2,7 +2,7 @@ classdef Segment < handle
     
     properties (Access = public)
         file;
-        window;
+        data;
         label;
         eventIdx;
         startSample;
@@ -10,10 +10,10 @@ classdef Segment < handle
     end
     
     methods (Access = public)
-        function obj = Segment(file,window,label,eventIdx)
+        function obj = Segment(file,data,label,eventIdx)
             if nargin > 3
                 obj.file = file;
-                obj.window = window;
+                obj.data = data;
                 obj.label = label;
                 obj.eventIdx = eventIdx;
             end

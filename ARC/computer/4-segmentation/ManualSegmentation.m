@@ -87,6 +87,7 @@ classdef ManualSegmentation < Segmentation
             %label segments
             for i = 1 : length(segments)
                 segments(i).label = labels(i);
+                segments(i).file = obj.currentAnnotations.fileName;
             end
         end
         

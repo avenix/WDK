@@ -1,38 +1,57 @@
-classdef PreprocessingSegmentsPlotter < handle
+classdef VisualizationSegmentsPlotter < handle
     properties (Access = public)
         fontSize = 24;
         colorsPerSignal = {[0,0,1,0.3],[1,0,0,0.3],[1,0,1,0.3]};
+        paddingX = 80;
         lineColor = 'black';
+        separatorLineFontSize = 20;
+        
         sameScale = true;
-        sequentialSegments = false;
-        showVerticalLines = true;
+        sequentialSegments = false;        
         plotParent;
     end
     
     properties(Access = private)
         axesHandles;
-        verticalLines;
         plotAxes;
         isZoom = false;
+        minSegmentValue;
+        maxSegmentValue;
     end
     
     methods (Access = public)
         
-        function obj = PreprocessingSegmentsPlotter(plotParent)
+        function obj = VisualizationSegmentsPlotter(plotParent)
             obj.plotParent = plotParent;
             obj.plotParent.AutoResizeChildren = 'off';
         end
         
-        function setZoom(obj,param)
+        function setZoom(obj,b)
+            str = Helper.getOnOffStringLowerCase(b);
             for i = 1 : length(obj.axesHandles)
-                zoom(obj.axesHandles(i),param);
+                zoom(obj.axesHandles(i),str);
             end
             obj.isZoom = true;
         end
         
-        function setPan(obj,param)
+        function resetZoom(obj)
+            str = Helper.getOnOffStringLowerCase(false);
             for i = 1 : length(obj.axesHandles)
-                pan(obj.axesHandles(i),param);
+                zoom(obj.axesHandles(i),str);
+                obj.axesHandles(i).XLimMode = 'auto';
+            end
+            
+            obj.setAxesLimits();
+            
+            if obj.isZoom
+                obj.setZoom(obj.isZoom);
+            end
+        end
+        
+        function setPan(obj,b)
+            str = Helper.getOnOffStringLowerCase(b);
+            for i = 1 : length(obj.axesHandles)
+                pan(obj.axesHandles(i),str);
             end
             obj.isZoom = false;
         end
@@ -45,10 +64,8 @@ classdef PreprocessingSegmentsPlotter < handle
             subplotN = ceil(nClasses / subplotM);
             obj.axesHandles = gobjects(1,nClasses);
             
-            if(obj.showVerticalLines)
-                obj.verticalLines = cell(1,nClasses);
-            end
-                
+            obj.findSegmentsLimits(groupedSegments);
+            
             for i = 1 : nClasses
                 currentAxes = subplot(subplotN,subplotM,i,'Parent',obj.plotParent);
                 
@@ -58,11 +75,7 @@ classdef PreprocessingSegmentsPlotter < handle
                 segmentsCurrentGroup = groupedSegments{i};
                 
                 if(obj.sequentialSegments)
-                    verticalLinesCurrentPlot = obj.plotSegmentsSequentially(currentAxes,segmentsCurrentGroup);
-                    
-                    if(obj.showVerticalLines)
-                        obj.verticalLines{i} = verticalLinesCurrentPlot;
-                    end
+                    obj.plotSegmentsSequentially(currentAxes,segmentsCurrentGroup);
                 else
                     obj.plotSegmentsOverlapping(currentAxes,segmentsCurrentGroup);
                 end
@@ -70,11 +83,13 @@ classdef PreprocessingSegmentsPlotter < handle
                 obj.axesHandles(i) = currentAxes;
             end
             
+            obj.setAxesLimits();
             obj.updateLinkAxes();
+            
             if obj.isZoom
-                obj.setZoom('on');
+                obj.setZoom(true);
             else
-                obj.setPan('on');
+                obj.setPan(true);
             end
         end
         
@@ -83,22 +98,34 @@ classdef PreprocessingSegmentsPlotter < handle
             obj.updateLinkAxes();
         end
         
-        function setShowLines(obj,showLines)
-            obj.showVerticalLines = showLines;
-            obj.updateLinesVisibility();
-        end
           
         function clearAxes(obj)
             for i = 1 : length(obj.axesHandles)
                 delete(obj.axesHandles(i));
             end
-            
             obj.axesHandles = [];
-            obj.verticalLines = [];
         end
     end
     
     methods (Access = private)
+        
+        function setAxesLimits(obj)
+            
+             height = obj.maxSegmentValue - obj.minSegmentValue;
+            for i = 1 : length(obj.axesHandles)
+                ylim(obj.axesHandles(i),[obj.minSegmentValue - height * 0.1, obj.maxSegmentValue + height * 0.1]);
+            end
+        end
+        
+        function findSegmentsLimits(obj, groupedSegments)
+            obj.minSegmentValue = Inf;
+            obj.maxSegmentValue = -Inf;
+            for i = 1 : length(groupedSegments)
+                segments = groupedSegments{i};
+                obj.minSegmentValue = min(obj.minSegmentValue,obj.getMinSegmentValue(segments));
+                obj.maxSegmentValue = max(obj.maxSegmentValue, obj.getMaxSegmentValue(segments));
+            end
+        end
         
         function updateLinkAxes(obj)
             if ~isempty(obj.axesHandles)
@@ -113,7 +140,7 @@ classdef PreprocessingSegmentsPlotter < handle
         function plotSegmentsOverlapping(obj,plotAxes,segments)
             for i = 1 : length(segments)
                 segment = segments(i);
-                data = segment.window;
+                data = segment.data;
                 for signal = 1 : min(size(data,2),3)
                     plotHandle = plot(plotAxes,data(:,signal),'Color',obj.colorsPerSignal{signal},'LineWidth',0.4);
                     plotHandle.Color(4) = 0.4;
@@ -121,21 +148,16 @@ classdef PreprocessingSegmentsPlotter < handle
             end
         end
         
-        function verticalLinesCurrentPlot = plotSegmentsSequentially(obj,plotAxes,segments)
+        function plotSegmentsSequentially(obj,plotAxes,segments)
             currentX = 1;
-            
-            visibleStr = Helper.getOnOffString(obj.showVerticalLines);
-            
+
             nSegments = length(segments);
-                        
-            verticalLinesCurrentPlot = gobjects(1,nSegments);
+            lastFileName = '';
             
-            maxY = obj.getMaxSegmentValue(segments);
-            minY = obj.getMinSegmentValue(segments);
-                
             for i = 1 : nSegments
+                
                 segment = segments(i);
-                data = segment.window;
+                data = segment.data;
                 nSamples = size(data,1);
                 newX = currentX + nSamples;
                 
@@ -143,17 +165,31 @@ classdef PreprocessingSegmentsPlotter < handle
                     plot(plotAxes,currentX:newX-1,data(:,signal),'Color',obj.colorsPerSignal{signal});
                 end
                 
-                lineHandle = line(plotAxes,[newX-1,newX-1],[minY,maxY],'Visible',visibleStr,'Color',obj.lineColor,'LineStyle','--');
-                verticalLinesCurrentPlot(i) = lineHandle;
+                if ~strcmp(lastFileName,segment.file)
+                                        
+                    height = obj.maxSegmentValue - obj.minSegmentValue;
+
+                    line(plotAxes,[currentX, currentX],...
+                        [obj.minSegmentValue - 0.05 * height, obj.maxSegmentValue + 0.05 * height],...
+                        'LineWidth',2,'Color',obj.lineColor);
+                    
+                    textHandle = text(plotAxes,currentX, double(obj.maxSegmentValue + 0.05 * height),...
+                        segment.file,'FontSize',obj.separatorLineFontSize);
+                    
+                    set(textHandle, 'Clipping', 'on');
+                    
+                    lastFileName = segment.file;
+                end
                 
-                currentX = newX;
+                currentX = newX + obj.paddingX;
             end
+            
         end
         
         function maxValue = getMaxSegmentValue(~,segments)
             maxValue = 0;
             for i = 1 : length(segments)
-                currentMax = max(max(segments(i).window));
+                currentMax = max(max(segments(i).data));
                 if(currentMax > maxValue)
                     maxValue = currentMax;
                 end
@@ -163,21 +199,9 @@ classdef PreprocessingSegmentsPlotter < handle
         function minValue = getMinSegmentValue(~,segments)
             minValue = 0;
             for i = 1 : length(segments)
-                currentMin = min(min(segments(i).window));
+                currentMin = min(min(segments(i).data));
                 if(currentMin < minValue)
                     minValue = currentMin;
-                end
-            end
-        end
-        
-        function updateLinesVisibility(obj)
-            visibleStr = Helper.getOnOffString(obj.showVerticalLines);
-            
-            for i = 1 : length(obj.verticalLines)
-                verticalLinesCurrentClass = obj.verticalLines{i};
-                for j = 1 : length(verticalLinesCurrentClass)
-                    verticalLine = verticalLinesCurrentClass(j);
-                    verticalLine.Visible = visibleStr;
                 end
             end
         end

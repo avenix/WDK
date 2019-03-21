@@ -49,7 +49,7 @@ classdef SegmentsGrouper < handle
                 segmentArray = groupedSegments{i};
                 for j = 1 : length(segmentArray)
                     segment = segmentArray(j);
-                    data = segment.window;
+                    data = segment.data;
                     segmentSize = size(data,1);
                     fullData(flatSegmentIdx:flatSegmentIdx + segmentSize - 1,:) = data(:,3:end);
                     flatSegmentIdx = flatSegmentIdx + segmentSize;
@@ -71,7 +71,7 @@ classdef SegmentsGrouper < handle
                 segmentArray = groupedSegments{i};
                 for j = 1 : length(segmentArray)
                     segment = segmentArray(j);
-                    nSamplesPerClass(i) = nSamplesPerClass(i) + length(segment.window);
+                    nSamplesPerClass(i) = nSamplesPerClass(i) + length(segment.data);
                 end
             end
         end

@@ -209,12 +209,18 @@ classdef Helper < handle
             end
         end
         
+        function str = getOnOffStringLowerCase(isOn)
+            str = 'off';
+            if(isOn)
+                str = 'on';
+            end
+        end
+        
         function str = getOnOffString(isOn)
             str = 'Off';
             if(isOn)
                 str = 'On';
             end
-            
         end
         
         function idx = findStringInCellArray(strings,string)

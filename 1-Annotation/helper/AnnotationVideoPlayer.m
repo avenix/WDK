@@ -84,6 +84,11 @@ classdef AnnotationVideoPlayer < handle
                     obj.play(timeInterval);
             end
         end
+        
+        function delete(obj)
+            close(obj.figureHandle);
+            delete(obj.playTimer);
+        end
     end
     
     methods (Access = private)
