@@ -10,7 +10,7 @@ classdef EventSegmentation < Segmentation
         
         function segments = compute(obj,events)            
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
-            segments = obj.createSegmentsWithEvents(events,file.data);
+            segments = obj.createSegmentsWithEvents(events,file);
         end
         
         function str = toString(obj)

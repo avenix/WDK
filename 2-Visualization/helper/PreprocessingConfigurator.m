@@ -41,7 +41,8 @@ classdef PreprocessingConfigurator < handle
             dataFiles = Helper.listDataFiles();
             if ~isempty(dataFiles)
                 fileName = dataFiles{1};
-                [~, obj.columnNames] = dataLoader.loadData(fileName);
+                dataFile = dataLoader.loadData(fileName);
+                obj.columnNames = dataFile.columnNames;
             end
             obj.fillSignalsList();
         end

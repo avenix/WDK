@@ -7,7 +7,6 @@ classdef (Abstract) Segmentation < Computer
     end
     
     methods (Access = public)
-        
         function editableProperties = getEditableProperties(obj)
             property1 = Property('segmentSizeLeft',obj.segmentSizeLeft,50,300,PropertyType.kNumber);
             property2 = Property('segmentSizeRight',obj.segmentSizeRight,50,300,PropertyType.kNumber);
@@ -16,10 +15,10 @@ classdef (Abstract) Segmentation < Computer
     end
     
     methods (Access = protected)
-        function segments = createSegmentsWithEvents(obj,events,data)
-            nSegments = obj.countNumValidSegments(events,data);
+        function segments = createSegmentsWithEvents(obj,events,dataFile)
+            nSegments = obj.countNumValidSegments(events,dataFile.data);
             segments = repmat(Segment,1,nSegments);
-            nSamples = length(data);
+            nSamples = dataFile.numRows;
             segmentsCounter = 0;
             
             for i = 1 : length(events)
@@ -28,11 +27,13 @@ classdef (Abstract) Segmentation < Computer
                 endSample = int32(eventLocation) + int32(obj.segmentSizeRight);
                 
                 if startSample > 0 && endSample <= nSamples
-                    segment = Segment();
-                    segment.eventIdx = eventLocation;
+                    segment = Segment(dataFile.fileName,...
+                        dataFile.data(startSample : endSample,:),...
+                        [], eventLocation);
+
                     segment.startSample = uint32(startSample);
                     segment.endSample = uint32(endSample);
-                    segment.data = data(segment.startSample : segment.endSample,:);
+
                     segmentsCounter = segmentsCounter + 1;
                     segments(segmentsCounter) = segment;
                 end

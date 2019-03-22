@@ -13,37 +13,15 @@ classdef DataLoader < handle
             obj.classesMap = ClassesMap.instance();
         end
 
-        function saveData(~,dataTable,fileName)
-            fileName = sprintf('%s.mat',fileName);
-            varName = 'dataTable';
-            save(fileName,varName);
-        end
-        
-        function data = saveTextData(~,data,varNames,fileName)
-            fileName = sprintf('%s.txt',fileName);
-            
-            tableExporter = TableExporter();
-            table = array2table(data);
-            if nargin > 2
-                table.Properties.VariableNames = varNames;
-            end
-            tableExporter.exportTable(table,fileName);
-        end
-        
+        %% Data Files        
         function data = loadAllDataFiles(obj)
             fileNames = Helper.listDataFiles();
             data = obj.loadDataFiles(fileNames);
         end
         
-        function dataFiles = loadDataFilesFullPath(~,fileNames)
-            nDataFiles = length(fileNames);
-            dataFiles = repmat(DataFile,1,nDataFiles);
-            
-            for i = 1 : length(fileNames)
-                fileName = fileNames{i};
-                [data, columnNames] = DataLoader.loadDataFileWithFullPath(fileName);
-                dataFiles(i) = DataFile(fileName,data,columnNames);
-            end 
+        function dataFile = loadDataFileWithFullPath(~,fullPath)
+            dataFile = load(fullPath);
+            dataFile = dataFile.dataFile;
         end
         
         function dataFiles = loadDataFiles(obj,fileNames)
@@ -57,37 +35,45 @@ classdef DataLoader < handle
         end
         
         function dataFile = loadDataFile(obj,fileName)
-            [data, columnNames] = obj.loadData(fileName);
-            dataFile = DataFile(fileName,data,columnNames);
+            fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
+            dataFile = obj.loadDataFileWithFullPath(fileName);
         end
         
-        function [data, columnNames] = loadData(obj,fileName)
+        function [data, columnNames] = loadTextData(~,fileName)
+            tableImporter = TableImporter();
+            data = tableImporter.importTable(fileName);
+            columnNames = data.Properties.VariableNames;
+            data = table2array(data);
+        end
+                
+        function dataFile = loadData(obj,fileName)
             fileExtension = Helper.getFileExtension(fileName);
             fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
             if strcmp(fileExtension, ".mat")
-                [data, columnNames] = obj.loadDataFileWithFullPath(fileName);
+                dataFile = obj.loadDataFileWithFullPath(fileName);
             elseif strcmp(fileExtension, ".txt")
-                [data, columnNames] = obj.loadTextData(fileName);
+                dataFile = obj.loadTextData(fileName);
             else
-                fprintf('DataLoader - unrecognized file extension\n');
-                data = [];
-                columnNames = [];
+                dataFile = [];
             end
         end
-
-        function [data, columnNames] = loadTextData(~,fileName)
+        
+        function saveDataFile(~,dataFile)
+            save(dataFile.fileName,'dataFile');
+        end
+        
+        function data = saveTextData(~,data,varNames,fileName)
+            fileName = sprintf('%s.txt',fileName);
             
-            if exist(fileName, 'file') == 2
-                tableImporter = TableImporter();
-                data = tableImporter.importTable(fileName);
-                columnNames = data.Properties.VariableNames;
-                data = table2array(data);
-            else
-                fprintf('File not found: %s\n',fileName);
-                data = [];
+            tableExporter = TableExporter();
+            table = array2table(data);
+            if nargin > 2
+                table.Properties.VariableNames = varNames;
             end
+            tableExporter.exportTable(table,fileName);
         end
-                
+        
+        %% Annotations
         %returns an array of AnnotationSet.
         function annotations = loadAllAnnotations(obj)
             annotationFiles = Helper.listAnnotationFiles();
@@ -129,6 +115,7 @@ classdef DataLoader < handle
             end
         end
         
+        %% Markers
         function markers = loadMarkers(~,markerFileName)
             markersLoader = AnnotationMarkersLoader();
             
@@ -136,6 +123,7 @@ classdef DataLoader < handle
             markers = markersLoader.loadMarkers(markerFileName);
         end
         
+        %% Labeling Strategies
         function labelingStrategies = loadAllLabelingStrategies(obj)
             fileNames = Helper.listLabelingStrategies();
             
@@ -161,6 +149,7 @@ classdef DataLoader < handle
             labelingStrategy.name = Helper.removeFileExtension(fileName);
         end
 
+        %% Synchronisation Files
         function synchronisationFiles = loadAllSynchronisationFiles(obj)
             
             synchronisationFileNames = Helper.ListSynchronisationFileNames();
@@ -238,18 +227,6 @@ classdef DataLoader < handle
         function SaveComputer(computer, fileName)
             fullPath = sprintf('%s',fileName);
             save(fullPath,'computer');
-        end
-        
-        function [data,columnNames] = loadDataFileWithFullPath(fullPath)
-            if exist(fullPath, 'file') == 2
-                dataTable = load(fullPath);
-                dataTable = dataTable.dataTable;
-                columnNames = dataTable.Properties.VariableNames;
-                data = single(table2array(dataTable));
-            else
-                fprintf('File not found: %s\n',fullPath);
-                data = [];
-            end
         end
         
         function printRawData(fileHandle, sample)

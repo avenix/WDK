@@ -20,9 +20,8 @@ classdef AnnotationApp < handle
         videoFileNamesNoExtension;
         
         %data
-        data;
+        dataFile;
         magnitude;
-        columnNames;
         
         %synchronisation
         synchronisationFile;
@@ -145,7 +144,7 @@ classdef AnnotationApp < handle
         
         function loadAll(obj)
              obj.loadData();
-            if obj.classesMap.numClasses > 0 && ~isempty(obj.data)
+            if obj.classesMap.numClasses > 0 && ~isempty(obj.dataFile)
                 obj.loadAnnotations();
                 obj.loadSynchronisationFile();
                 obj.loadMarkers();
@@ -194,7 +193,7 @@ classdef AnnotationApp < handle
         function loadData(obj)
             fileName = obj.getCurrentFileName();
             if ~isempty(fileName)
-                [obj.data, obj.columnNames] = obj.dataLoader.loadData(fileName);
+                obj.dataFile = obj.dataLoader.loadDataFile(fileName);
             end
         end
         
@@ -256,7 +255,7 @@ classdef AnnotationApp < handle
         end
         
         function plotData(obj)
-            if ~isempty(obj.data)
+            if ~isempty(obj.dataFile)
                 hold(obj.plotAxes,'on');
                 
                 selectedSignals = obj.preprocessingConfigurator.getSelectedSignalIdxs();
@@ -265,21 +264,12 @@ classdef AnnotationApp < handle
                 
                 for i = 1 : nSignals
                     signalIdx = selectedSignals(i);
-                    obj.plotHandles{i} = plot(obj.plotAxes,obj.data(:,signalIdx));
+                    obj.plotHandles{i} = plot(obj.plotAxes,obj.dataFile.data(:,signalIdx));
                 end
                 obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude);
                 
                 n = size(obj.magnitude,1);
                 axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * 1.1, obj.plottedSignalYRange(2) * 1.1]);
-                
-                %{
-                obj.plotAxes.XLimMode = 'manual';
-                obj.plotAxes.XTickMode = 'manual';
-                obj.plotAxes.XTickLabelMode = 'manual';
-                obj.plotAxes.YLimMode = 'manual';
-                obj.plotAxes.YTickMode = 'manual';
-                obj.plotAxes.YTickLabelMode = 'manual';
-                %}
             end
         end
         
@@ -301,7 +291,7 @@ classdef AnnotationApp < handle
         function deleteData(obj)
             obj.clearDataPlots();
             obj.magnitude = [];
-            obj.data = [];
+            obj.dataFile = [];
         end
         
         function clearDataPlots(obj)
@@ -391,7 +381,7 @@ classdef AnnotationApp < handle
         end
         
         function updateLoadDataTextbox(obj,~,~)
-            obj.uiHandles.loadDataTextbox.String = sprintf('data size: %d x %d',size(obj.data,1),size(obj.data,2));
+            obj.uiHandles.loadDataTextbox.String = sprintf('data size: %d x %d',obj.dataFile.numRows,obj.dataFile.numColumns);
         end
  
         function populateClassesList(obj)
@@ -493,10 +483,10 @@ classdef AnnotationApp < handle
             
             selectedSignals = obj.preprocessingConfigurator.getSelectedSignalIdxs();
             
-            maxYSignals = max(max(obj.data(:,selectedSignals)));
+            maxYSignals = max(max(obj.dataFile.data(:,selectedSignals)));
             maxY = max(maxY,maxYSignals);
             
-            minYSignals = min(min(obj.data(:,selectedSignals)));
+            minYSignals = min(min(obj.dataFile.data(:,selectedSignals)));
             minY = min(minY,minYSignals);
             obj.plottedSignalYRange = [minY, maxY];
         end
@@ -519,7 +509,7 @@ classdef AnnotationApp < handle
             signalComputer = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
             
             if ~isempty(signalComputer)
-                obj.magnitude = signalComputer.compute(obj.data);
+                obj.magnitude = signalComputer.compute(obj.dataFile.data);
             end
         end
         
@@ -570,17 +560,14 @@ classdef AnnotationApp < handle
             obj.deleteAll();
             obj.loadAll();
             
-            if ~isempty(obj.columnNames)
-                obj.preprocessingConfigurator.setColumnNames(obj.columnNames);
-            end
-            
-            if ~isempty(obj.data)
+            if ~isempty(obj.dataFile)
+                obj.preprocessingConfigurator.setColumnNames(obj.dataFile.columnNames);
                 obj.updateLoadDataTextbox();
             end
         end
         
         function handleVisualizeClicked(obj,~,~)
-            if ~isempty(obj.data)
+            if ~isempty(obj.dataFile)
                 obj.clearAll();
                 obj.computeMagnitude();
                 obj.computePlottedSignalYRanges();
