@@ -58,6 +58,13 @@ classdef AnnotationVideoPlayer < handle
             obj.delegate.handleFrameChanged(obj.currentFrame);
         end
         
+        function close(obj)
+            close(obj.figureHandle);
+        end
+    end
+    
+    methods (Access = private)
+        
         function timerTick(obj,~,~)
             if(obj.currentFrame ~= obj.previousFrame)
                 obj.previousFrame = obj.currentFrame;

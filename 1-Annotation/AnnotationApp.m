@@ -40,7 +40,7 @@ classdef AnnotationApp < handle
         markersPlotter AnnotationMarkersPlotter;
         
         %timestamp
-        timeLineMarker = 0;
+        timeLineMarker;
         timeLineMarkerHandle;
         
         %ui
@@ -152,6 +152,7 @@ classdef AnnotationApp < handle
         function loadAll(obj)
              obj.loadData();
             if obj.classesMap.numClasses > 0 && ~isempty(obj.dataFile)
+                obj.timeLineMarker = 1;
                 obj.loadAnnotations();
                 obj.loadSynchronisationFile();
                 obj.loadMarkers();
@@ -178,7 +179,6 @@ classdef AnnotationApp < handle
         end
         
         function setUserClickHandle(obj)
-            
             dataCursorMode = datacursormode(obj.uiHandles.mainFigure);
             dataCursorMode.SnapToDataVertex = 'on';
             dataCursorMode.DisplayStyle = 'window';
@@ -186,10 +186,12 @@ classdef AnnotationApp < handle
         end
         
         function plotTimelineMarker(obj)
-            maxY = obj.plotAxes.Position(4);
-            obj.timeLineMarkerHandle = line(obj.plotAxes,[obj.timeLineMarker, obj.timeLineMarker],...
+            if ~isempty(obj.timeLineMarker)
+                maxY = obj.plotAxes.Position(4);
+                obj.timeLineMarkerHandle = line(obj.plotAxes,[obj.timeLineMarker, obj.timeLineMarker],...
                     [-maxY / 2, maxY / 2],...
                     'Color','red','LineWidth',2,'LineStyle','-');
+            end
         end
         
         function updateTimelineMarker(obj)
@@ -252,6 +254,8 @@ classdef AnnotationApp < handle
             obj.deleteAllAnnotations();
             obj.deleteData();
             obj.deleteRangeSelection();
+            obj.deleteTimelineMarker();
+            obj.deleteVideoPlayer();
         end
         
         function deleteData(obj)
@@ -330,6 +334,18 @@ classdef AnnotationApp < handle
                 obj.rangeSelectionAxis = [];
                 obj.rangeSelection = [];
             end
+        end
+        
+        function deleteVideoPlayer(obj)
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.close();
+            end
+        end
+        
+        function deleteTimelineMarker(obj)
+            obj.timeLineMarker = [];
+            delete(obj.timeLineMarkerHandle);
+            obj.timeLineMarkerHandle = [];
         end
         
         function addPeakAtLocation(obj,x)
@@ -523,6 +539,7 @@ classdef AnnotationApp < handle
         end
         
         function handleLoadDataClicked(obj,~,~)
+            
             obj.deleteAll();
             obj.loadAll();
             
@@ -541,7 +558,6 @@ classdef AnnotationApp < handle
                 obj.plotAnnotations();
                 obj.plotMarkers();
                 obj.plotTimelineMarker();
-
             end
         end
         
