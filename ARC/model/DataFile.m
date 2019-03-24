@@ -32,5 +32,10 @@ classdef DataFile < handle
                 end
             end
         end
+        
+        function table = convertToTable(obj)
+            table = array2table(obj.data);
+            table.Properties.VariableNames = obj.columnNames;
+        end
     end
 end

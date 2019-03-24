@@ -161,7 +161,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         
         function [data, metricSum] = ExecuteChain(computer, data, shouldCache)
             if isempty(computer)
-                data = [];
                 metricSum = [];
             else
                 if nargin < 3
@@ -171,7 +170,10 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 isDataLoaded = false;
                 if shouldCache
                     graphString = Computer.GraphToString(computer);
-                    [isDataLoaded, data, metricSum] = Computer.LoadCacheDataForGraphString(graphString);
+                    [isDataLoaded, loadedData, metricSum] = Computer.LoadCacheDataForGraphString(graphString);
+                    if isDataLoaded
+                        data = loadedData;
+                    end
                 end
                 
                 if ~isDataLoaded

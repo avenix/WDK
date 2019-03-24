@@ -2,8 +2,8 @@
 classdef (Abstract) Segmentation < Computer
     
     properties (Access = public)
-        segmentSizeLeft = 250;
-        segmentSizeRight = 200;
+        segmentSizeLeft = 200;
+        segmentSizeRight = 30;
     end
     
     methods (Access = public)
