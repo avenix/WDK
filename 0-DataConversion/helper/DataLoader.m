@@ -161,25 +161,29 @@ classdef DataLoader < handle
             end
         end
         
-        function synchronisationFile = loadSynchronisationFile(~,fileName)
+        function synchronisationFile = loadSynchronisationFile(obj,fileName)
             synchronisationFile = [];
             fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
             file = fopen(fullFileName);
             
             if file > 0
-                line = fgets(file);
-                tsStr = split(line);
-                startTs = str2double(tsStr{2});
-                line = fgets(file);
-                tsStr = split(line);
-                endTs = str2double(tsStr{2});
+                sample1 = obj.readFileLineSecondColumn(file);
+                sample2 = obj.readFileLineSecondColumn(file);
+                frame1 = obj.readFileLineSecondColumn(file);
+                frame2 = obj.readFileLineSecondColumn(file);
+                synchronisationFile = AnnotationSynchronisationFile(sample1,sample2,frame1,frame2);
                 fclose(file);
-                synchronisationFile = AnnotationSynchronisationFile(startTs,endTs);
             end
         end
     end
     
     methods (Access = private)
+        function value = readFileLineSecondColumn(~,file)
+            line = fgets(file);
+            str = split(line);
+            value = str2double(str{2});
+        end
+        
         function lazyInitLabelingStrategiesLoader(obj)
             if isempty(obj.labelingStrategiesLoader)
                 obj.labelingStrategiesLoader = LabelingStrategyLoader();

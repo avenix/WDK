@@ -15,7 +15,7 @@ classdef AnnotationApp < handle
         %data loading
         currentFile = 1;
         dataLoader;
-        videoPlayer AnnotationVideoPlayer;
+        videoPlayer;
         videoFileNames;
         videoFileNamesNoExtension;
         
@@ -91,10 +91,17 @@ classdef AnnotationApp < handle
         end
         
         function handleFrameChanged(obj,~)
-            obj.timeLineMarker = obj.videoFrameToSample(obj.videoPlayer.currentFrame);
-            if ~isempty(obj.timeLineMarkerHandle)
-                obj.updateTimelineMarker();
+            if ~isempty(obj.synchronisationFile)
+                obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
+                if ~isempty(obj.timeLineMarkerHandle)
+                    obj.updateTimelineMarker();
+                end
             end
+        end
+        
+        function handleVideoPlayerWindowClosed(obj)
+            delete(obj.videoPlayer);
+            obj.videoPlayer = [];
         end
     end
     
@@ -198,62 +205,21 @@ classdef AnnotationApp < handle
         end
         
         function loadMarkers(obj)
-            if ~isempty(obj.annotationSet)
+            if ~isempty(obj.synchronisationFile) && ~isempty(obj.annotationSet)
                 markersFileName = obj.getMarkersFileName();
                 obj.markers = obj.dataLoader.loadMarkers(markersFileName);
                 
-                if ~isempty(obj.markers)                    
-                    x1 = obj.findFirstSynchronisationMarker();
-                    x2 = obj.findLastSynchronisationMarker();
-                    
-                    y1 = obj.findFirstSynchronisationSample();
-                    y2 = obj.findLastSynchronisationSample();
-                    
-                    a = double(y2-y1) / double(x2-x1);
+                if ~isempty(obj.markers)               
                     
                     for i = 1 : length(obj.markers)
                         currentMarker = obj.markers(i);
-                        currentMarker.sample = a * (currentMarker.sample - x1) + y1;
+                        currentMarker.sample = obj.synchronisationFile.videoFrameToSample(currentMarker.sample);
                         obj.markers(i) = currentMarker;
                     end
                 end
             end
         end
-        
-        function videoFrame = sampleToVideoFrame(obj, sample)
-            
-            x1 = double(obj.findFirstSynchronisationSample());
-            x2 = double(obj.findLastSynchronisationSample());
-            
-            y1 = obj.synchronisationFile.startFrame;
-            y2 = obj.synchronisationFile.endFrame;
-            
-            a = (y2-y1) / (x2-x1);
-            videoFrame = a * (sample - x1) + y1;
-            
-            if videoFrame < 1
-                videoFrame = 1;
-            end
-            videoFrame = uint32(videoFrame);
-        end
-        
-        function sample = videoFrameToSample(obj, videoFrame)
-            x1 = obj.synchronisationFile.startFrame;
-            x2 = obj.synchronisationFile.endFrame;
-            
-            y1 = double(obj.findFirstSynchronisationSample());
-            y2 = double(obj.findLastSynchronisationSample());
-            
-            
-            a = (y2-y1) / (x2-x1);
-            sample = a * (videoFrame - x1) + y1;
-            
-            if sample < 1
-                sample = 1;
-            end
-            sample = uint32(sample);
-        end
-        
+
         function plotData(obj)
             if ~isempty(obj.dataFile)
                 hold(obj.plotAxes,'on');
@@ -323,8 +289,8 @@ classdef AnnotationApp < handle
         end
         
         function updateVideoFrame(obj)
-            if ~isempty(obj.videoPlayer)
-                videoFrame = obj.sampleToVideoFrame(obj.timeLineMarker);
+            if ~isempty(obj.synchronisationFile) && ~isempty(obj.videoPlayer)
+                videoFrame = obj.synchronisationFile.sampleToVideoFrame(obj.timeLineMarker);
                 obj.videoPlayer.displayFrame(videoFrame);
             end
         end
@@ -652,9 +618,11 @@ classdef AnnotationApp < handle
         end
         
         function handleKeyPress(obj, source, event)
-            obj.videoPlayer.handleKeyPress(source,event);
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.handleKeyPress(source,event);
+            end
         end
-                
+        
         function handleFigureClick(obj,~,event)
             x = event.IntersectionPoint(1);
             obj.timeLineMarker = x;
@@ -672,52 +640,5 @@ classdef AnnotationApp < handle
                 end
             end
         end
-        
-         function firstSynchronisatonSample = findFirstSynchronisationSample(obj)
-            firstSynchronisatonSample = -1;
-            eventAnnotations = obj.annotationSet.eventAnnotations;
-            for i = 1 : length(eventAnnotations)
-                manualAnnotation = eventAnnotations(i);
-                if manualAnnotation.label == ClassesMap.kSynchronisationClass
-                    firstSynchronisatonSample = manualAnnotation.sample;
-                    break;
-                end
-            end
-        end
-        
-        function lastSynchronisatonSample = findLastSynchronisationSample(obj)
-            lastSynchronisatonSample = -1;
-            eventAnnotations = obj.annotationSet.eventAnnotations;
-            for i = length(eventAnnotations) : -1 : 1
-                manualAnnotation = eventAnnotations(i);
-                if manualAnnotation.label == ClassesMap.kSynchronisationClass
-                    lastSynchronisatonSample = manualAnnotation.sample;
-                    break;
-                end
-            end
-        end
-        
-        function firstSynchronisationMarker = findFirstSynchronisationMarker(obj)
-            firstSynchronisationMarker = -1;
-            for i = 1 : length(obj.markers)
-                currentMarker = obj.markers(i);
-                if currentMarker.label == Constants.kSynchronisatonMarker
-                    firstSynchronisationMarker = currentMarker.sample;
-                    break;
-                end
-            end
-        end
-        
-        function lastSynchronisationMarker = findLastSynchronisationMarker(obj)
-            lastSynchronisationMarker = -1;
-            for i = length(obj.markers) : -1 : 1
-                currentMarker = obj.markers(i);
-                if currentMarker.label == Constants.kSynchronisatonMarker
-                    lastSynchronisationMarker = currentMarker.sample;
-                    break;
-                end
-            end
-        end
     end
-    
 end

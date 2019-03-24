@@ -62,8 +62,17 @@ classdef AnnotationMarkersLoader < handle
         end
     end
     methods (Access = private)
-        function markerEnum = colorStrToEnum(~,colorStr)
+        
+        function frame = timeStampStrToFrame(obj, markerStr)
+            hour = str2double(markerStr(1:2))-1;
+            minute = str2double(markerStr(4:5));
+            second = str2double(markerStr(7:8));
+            frame = str2double(markerStr(10:11));
             
+            frame = uint32((hour * 3600 + minute * 60 + second) *  obj.videoFrameRate + frame);
+        end
+        
+        function markerEnum = colorStrToEnum(~,colorStr)
             if strcmp(colorStr,'ResolveColorRed')
                 markerEnum = 1;
             elseif strcmp(colorStr,'ResolveColorYellow')
@@ -84,14 +93,5 @@ classdef AnnotationMarkersLoader < handle
             
         end
         
-        function frame = timeStampStrToFrame(obj, markerStr)
-            hour = str2double(markerStr(1:2))-1;
-            minute = str2double(markerStr(4:5));
-            second = str2double(markerStr(7:8));
-            frame = str2double(markerStr(10:11));
-            
-            frame = (hour * 3600 + minute * 60 + second + frame/obj.videoFrameRate);
-        end
     end
-    
 end

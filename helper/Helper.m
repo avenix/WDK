@@ -173,6 +173,13 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        function value = ClampValueToRange(value, rangeStart, rangeEnd)
+            if value < rangeStart
+                value = rangeStart;
+            elseif value > rangeEnd
+                value = rangeEnd;
+            end
+        end
         
         function PlotComputerGraph(computer)
             
@@ -393,29 +400,6 @@ classdef Helper < handle
             if visible
                 visibleStr = 'on';
             end
-        end
-        
-        %remove
-        function text = generateEventDetectorNames(eventDetectors)
-            numEventDetectors = length(eventDetectors);
-            text = eventDetectors{1}.type;
-            for i = 2 : numEventDetectors
-                eventDetector = eventDetectors{i};
-                text = sprintf('%s\n%s',text,eventDetector.type);
-            end
-        end
-        
-        function str = generateSignalComputerNames(signalComputers)
-            
-            signalComputer = signalComputers(1);
-            str = signalComputer.name;
-            
-            for i = 2 : length(signalComputers)
-                signalComputer = signalComputers(i);
-                signalName = signalComputer.name;
-                str = sprintf('%s\n%s',str,signalName);
-            end
-        end
-        
+        end        
     end
 end

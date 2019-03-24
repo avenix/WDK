@@ -11,6 +11,10 @@ classdef AnnotationVideoPlayer < handle
         previousFrame;
     end
     
+    properties (GetAccess = public)
+        numFrames;
+    end
+    
     properties (Dependent)
         currentFrame;
     end
@@ -27,14 +31,18 @@ classdef AnnotationVideoPlayer < handle
             obj.videoPlayerHandle = implay(fileName);
             obj.delegate = delegate;
             obj.figureHandle = obj.videoPlayerHandle.Parent;
+            obj.numFrames = str2double(obj.videoPlayerHandle.Visual.VideoInfo.PlaybackInfo.Widgets{2,2});
             obj.figureHandle.KeyPressFcn = @obj.handleKeyPress;
+            obj.figureHandle.CloseRequestFcn = @obj.handleWindowClosed;
             obj.timer = timer('TimerFcn', @obj.timerTick,'Period',0.03,'ExecutionMode','fixedRate');
             start(obj.timer);
         end
         
         function displayFrame(obj,frame)
-            obj.videoPlayerHandle.DataSource.Controls.jumpTo(double(frame));
-            obj.previousFrame = frame;
+            if frame < obj.numFrames
+                obj.videoPlayerHandle.DataSource.Controls.jumpTo(double(frame));
+                obj.previousFrame = frame;
+            end
         end
         
         function handleKeyPress(obj, ~, event)
@@ -57,10 +65,11 @@ classdef AnnotationVideoPlayer < handle
             end
         end
         
-        function delete(obj)
+        function handleWindowClosed(obj,~,~)
             stop(obj.timer);
             delete(obj.timer);
-            close(obj.figureHandle);
+            delete(obj.figureHandle);
+            obj.delegate.handleVideoPlayerWindowClosed();
         end
     end
 end
