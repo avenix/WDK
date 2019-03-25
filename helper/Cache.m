@@ -40,9 +40,12 @@ classdef Cache < handle
         end
         
         function hash = HashForString(str)
-            hash = mlreportgen.utils.hash(str);
-        end
-        
+            persistent md
+            if isempty(md)
+                md = java.security.MessageDigest.getInstance('SHA-256');
+            end
+            hash = sprintf('%2.2x', typecast(md.digest(uint8(str)), 'uint8')');
+        end        
     end
     
     methods (Access = private)
