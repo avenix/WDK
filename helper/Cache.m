@@ -28,6 +28,20 @@ classdef Cache < handle
         end
     end
     
+    methods (Access = private)
+        function obj = Cache()
+            files = Helper.listFilesInDirectory(Constants.kCachePath,{'*.mat'});
+            files = Helper.removeFileExtensionForFiles(files);
+            
+            if isempty(files)
+                obj.filesMap = containers.Map('KeyType','char','ValueType','logical');
+            else
+                values = true(1,length(files));
+                obj.filesMap = containers.Map(files,values);
+            end
+        end
+    end
+    
     methods(Static, Access = public)
         function obj = SharedInstance()
             persistent uniqueInstance
@@ -45,22 +59,17 @@ classdef Cache < handle
                 md = java.security.MessageDigest.getInstance('SHA-256');
             end
             hash = sprintf('%2.2x', typecast(md.digest(uint8(str)), 'uint8')');
-        end        
-    end
-    
-    methods (Access = private)
-        function obj = Cache()
-            files = Helper.listFilesInDirectory(Constants.kCachePath,{'*.mat'});
-            files = Helper.removeFileExtensionForFiles(files);
-            
-            if isempty(files)
-                obj.filesMap = containers.Map('KeyType','char','ValueType','logical');
-            else
-                values = true(1,length(files));
-                obj.filesMap = containers.Map(files,values);
-            end
         end
         
+        function ClearAllCacheFiles()            
+            cacheFileNames = Helper.listFilesInDirectory(Constants.kCachePath,{'*.mat'});
+            for i = 1:length(cacheFileNames)
+                fileName = cacheFileNames{i};
+                fileName = sprintf('%s/%s',Constants.kCachePath,fileName);
+                delete(fileName);
+            end
+        end
     end
+    
     
 end
