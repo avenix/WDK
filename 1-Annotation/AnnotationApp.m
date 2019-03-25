@@ -451,7 +451,7 @@ classdef AnnotationApp < handle
         
         function loadAnnotations(obj)
             fileName = obj.getAnnotationsFileName();
-            obj.annotationSet = obj.dataLoader.loadAnnotations(fileName);
+            obj.annotationSet = obj.dataLoader.loadAnnotationSet(fileName);
         end
         
         function loadSynchronisationFile(obj)

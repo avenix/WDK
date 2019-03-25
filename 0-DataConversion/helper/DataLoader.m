@@ -39,11 +39,12 @@ classdef DataLoader < handle
             dataFile = obj.loadDataFileWithFullPath(fileName);
         end
         
-        function [data, columnNames] = loadTextData(~,fileName)
+        function dataFile = loadTextData(~,fileName)
             tableImporter = TableImporter();
             data = tableImporter.importTable(fileName);
             columnNames = data.Properties.VariableNames;
             data = table2array(data);
+            dataFile = DataFile(fileName,data,columnNames);
         end
                 
         function dataFile = loadData(obj,fileName)
@@ -81,13 +82,13 @@ classdef DataLoader < handle
             annotations = repmat(AnnotationSet,1,nAnnotationFiles);
             for i = 1 : length(annotationFiles)
                 annotationsFileName = annotationFiles{i};
-                annotationSet = obj.loadAnnotations(annotationsFileName);
+                annotationSet = obj.loadAnnotationSet(annotationsFileName);
                 annotationSet.fileName = annotationsFileName;
                 annotations(i) = annotationSet;
             end
         end
         
-        function annotationSet = loadAnnotations(obj,annotationsFileName)
+        function annotationSet = loadAnnotationSet(obj,annotationsFileName)
             if isempty(obj.annotationsLoader)
                 obj.annotationsLoader = AnnotationsLoader();
             end
@@ -174,6 +175,16 @@ classdef DataLoader < handle
                 synchronisationFile = AnnotationSynchronisationFile(sample1,sample2,frame1,frame2);
                 fclose(file);
             end
+        end
+        
+        function saveSynchronisationFile(~,synchronisationFile,fileName)
+            
+            file = fopen(fileName,'w');
+            fprintf(file,'sample1: %d\n',synchronisationFile.sample1);
+            fprintf(file,'sample2: %d\n',synchronisationFile.sample2);
+            fprintf(file,'frame1: %d\n',synchronisationFile.frame1);
+            fprintf(file,'frame2: %d\n',synchronisationFile.frame2);
+            fclose(file);
         end
     end
     

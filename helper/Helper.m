@@ -82,7 +82,11 @@ classdef Helper < handle
         function fileName = removeFileExtension(dataFileName)
             n = length(dataFileName);
             periodIdx = strfind(flip(dataFileName),'.');
-            fileName = dataFileName(1:n-periodIdx(1));
+            if isempty(periodIdx)
+                fileName = dataFileName;
+            else
+                fileName = dataFileName(1:n-periodIdx(1));
+            end
         end
         
         function fileNames = removeFileExtensionForFiles(dataFileNames)
