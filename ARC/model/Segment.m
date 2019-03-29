@@ -11,11 +11,17 @@ classdef Segment < handle
     
     methods (Access = public)
         function obj = Segment(file,data,label,eventIdx)
-            if nargin > 3
+            if nargin >= 1
                 obj.file = file;
-                obj.data = data;
-                obj.label = label;
-                obj.eventIdx = eventIdx;
+                if nargin >= 2
+                    obj.data = data;
+                    if nargin >= 3
+                        obj.label = label;
+                        if nargin >= 4
+                            obj.eventIdx = eventIdx;
+                        end
+                    end
+                end
             end
         end
     end

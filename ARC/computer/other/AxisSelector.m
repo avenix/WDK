@@ -25,16 +25,12 @@ classdef AxisSelector < Computer
         end
         
         function str = toString(obj)
-            axesStr = Helper.arrayToString(obj.axes);
-            axesStr = strrep(axesStr,'\n','');
+            axesStr = Helper.arrayToString(obj.axes,'');
             str = sprintf('%s%s',obj.name,axesStr);
         end
         
         function editableProperties = getEditableProperties(obj)
-            axesStr = '';
-            if ~isempty(obj.axes)
-                axesStr = array2JSON(obj.axes);
-            end
+            axesStr = sprintf('[%s]',Helper.arrayToString(obj.axes,','));
             editableProperties = Property('axes',axesStr);
             editableProperties.type = PropertyType.kArray;
         end

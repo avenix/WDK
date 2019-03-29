@@ -123,8 +123,8 @@ classdef FeatureExtractionConfigurator < handle
         
         function updateSelectedFeatureUI(obj)
             if ~isempty(obj.currentSelectedFeature)
-                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
-                axisSelector = rangeSelector.nextComputers{1};
+                axisSelector = obj.currentSelectedFeature.root;
+                rangeSelector = axisSelector.nextComputers{1};
                 
                 if isempty(rangeSelector.rangeEnd)
                     obj.featureStartRangeEditText.Visible = false;
@@ -178,11 +178,14 @@ classdef FeatureExtractionConfigurator < handle
         end
         
         function handleAddButtonClicked(obj,~,~)
+            
+            axisSelector = AxisSelector();
+            rangeSelector = RangeSelector();
             featureExtractor = obj.getDefaultSelectedFeature();
             
-            compositeComputer = CompositeComputer(RangeSelector());
-            compositeComputer.addComputer(AxisSelector());
-            compositeComputer.addComputer(featureExtractor);
+            Computer.ComputerWithSequence({axisSelector,rangeSelector,featureExtractor});
+            
+            compositeComputer = CompositeComputer(axisSelector,featureExtractor);
             compositeComputer.name = featureExtractor.name;
             
             obj.addFeatureToSelectedList(compositeComputer);
@@ -239,8 +242,7 @@ classdef FeatureExtractionConfigurator < handle
             obj.currentSelectedFeature = obj.getSelectedFeature();
             
             if ~isempty(obj.currentSelectedFeature)
-                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
-                axisSelector = rangeSelector.nextComputers{1};
+                axisSelector = obj.currentSelectedFeature.root;
                 axisSelector.axes = str2num(obj.featureAxisEditText.Value);
                 obj.updateCurrentSelectedFeatureName();
             end
@@ -269,9 +271,9 @@ classdef FeatureExtractionConfigurator < handle
     
     methods (Access = private, Static)
         function str = StringForFeature(featureComputer)
-            rangeSelector = featureComputer.root.nextComputers{1};
-            axisSelector = rangeSelector.nextComputers{1};
-            featureExtractor = axisSelector.nextComputers{1};
+            axisSelector = featureComputer.root;
+            rangeSelector = axisSelector.nextComputers{1};
+            featureExtractor = rangeSelector.nextComputers{1};
             
             str = sprintf('%s_%s',featureExtractor.name,Helper.arrayToString(axisSelector.axes,' '));
             if ~isempty(rangeSelector.rangeEnd)

@@ -1,5 +1,5 @@
 %this class retrieves an event detector algorithm from the UI
-classdef LabelingConfigurator < handle
+classdef GroupingConfigurator < handle
     
     properties (Access = public)
         labelingStrategies;
@@ -12,7 +12,7 @@ classdef LabelingConfigurator < handle
     
     methods (Access = public)
         
-        function obj = LabelingConfigurator(labelingStrategies,labelingStrategiesList,selectedLabelsTable)
+        function obj = GroupingConfigurator(labelingStrategies,labelingStrategiesList,selectedLabelsTable)
             obj.labelingStrategiesList = labelingStrategiesList;
             obj.labelingStrategies = labelingStrategies;
             if nargin > 2

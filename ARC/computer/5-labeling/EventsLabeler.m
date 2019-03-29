@@ -5,7 +5,13 @@ classdef EventsLabeler < Computer
     end
     
     methods (Access = public)
-
+        
+        function obj = EventsLabeler()
+            obj.name = 'eventsLabeler';
+            obj.inputPort = ComputerPort(ComputerPortType.kEvent);
+            obj.outputPort = ComputerPort(ComputerPortType.kEvent);
+        end
+        
         function labeledEvents = compute(obj, events)
             if isempty(events)
                 labeledEvents = [];

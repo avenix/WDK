@@ -119,6 +119,7 @@ classdef Helper < handle
         end
         
         %% Conversion methods
+
         function array = cellArray2FlatArray(cellArray)
             
             n = Helper.nElementsInCellArray(cellArray);

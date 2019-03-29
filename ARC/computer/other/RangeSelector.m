@@ -28,7 +28,7 @@ classdef RangeSelector < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('%s%d%d',obj.name,obj.rangeStart,obj.rangeEnd);
+            str = sprintf('%s_%d_%d',obj.name,obj.rangeStart,obj.rangeEnd);
         end
         
         function editableProperties = getEditableProperties(obj)

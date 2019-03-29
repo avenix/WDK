@@ -1,9 +1,9 @@
-classdef SegmentsLabeler < Computer
+classdef EventSegmentsLabeler < Computer
     
     methods (Access = public)
         
-        function obj = SegmentsLabeler()
-            obj.name = 'segmentsLabeler';
+        function obj = EventSegmentsLabeler()
+            obj.name = 'eventSegmentsLabeler';
             obj.inputPort = ComputerPort(ComputerPortType.kSegment);
             obj.outputPort = ComputerPort(ComputerPortType.kSegment);
         end
