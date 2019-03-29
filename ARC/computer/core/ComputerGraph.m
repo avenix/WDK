@@ -25,6 +25,20 @@ classdef ComputerGraph < handle
     
     methods (Static, Access = private)
         
+        function UntagComputers(computer)
+            
+            stack = Stack();
+            stack.push(computer);
+            while ~stack.isempty()
+                computer = stack.pop();
+                computer.tag = [];
+                
+                for i = 1 : length(computer.nextComputers)
+                    stack.push(computer.nextComputers{i});
+                end
+            end
+        end
+        
         function [computerCount, edgesCount] = TagComputers(computer)
             stack = Stack();
             stack.push(computer);
@@ -49,6 +63,7 @@ classdef ComputerGraph < handle
     
     methods (Static, Access = public)
         function graph = CreateGraph(computer)
+            ComputerGraph.UntagComputers(computer);
             [nComputers, nEdges] = ComputerGraph.TagComputers(computer);
             
             nodes = cell(1,nComputers);

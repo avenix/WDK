@@ -1,7 +1,10 @@
-classdef EventSegmentation < Segmentation
-
+classdef EventSegmentation < Computer
+    properties (Access = public)
+        segmentSizeLeft = 200;
+        segmentSizeRight = 30;
+    end
+     
     methods (Access = public)
-        
         function obj = EventSegmentation()
             obj.name = 'eventSegmentation';
             obj.inputPort = ComputerPort(ComputerPortType.kSignal);
@@ -10,7 +13,7 @@ classdef EventSegmentation < Segmentation
         
         function segments = compute(obj,events)            
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
-            segments = obj.createSegmentsWithEvents(events,file);
+            segments = Helper.CreateSegmentsWithEvents(events,file,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
         
         function str = toString(obj)
@@ -23,6 +26,11 @@ classdef EventSegmentation < Segmentation
             outputSize = obj.segmentSizeLeft + obj.segmentSizeRight;
             metrics = Metric(flops,memory,outputSize);
         end
+        
+        function editableProperties = getEditableProperties(obj)
+            property1 = Property('segmentSizeLeft',obj.segmentSizeLeft,50,300,PropertyType.kNumber);
+            property2 = Property('segmentSizeRight',obj.segmentSizeRight,50,300,PropertyType.kNumber);
+            editableProperties = [property1,property2];
+        end
     end
-    
 end

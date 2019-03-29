@@ -1,9 +1,11 @@
-classdef ManualSegmentation < Segmentation
-    
+classdef ManualSegmentation < Computer
+
     properties (Access = public)
         manualAnnotations;
         includeEvents = true;
         includeRanges = true;
+        segmentSizeLeft = 200;
+        segmentSizeRight = 30;
     end
     
     properties (Access = private)
@@ -40,6 +42,12 @@ classdef ManualSegmentation < Segmentation
             end
             
             str = sprintf('manual%d%d%s%s',obj.segmentSizeLeft,obj.segmentSizeRight,includeEventsStr,includeRangesStr);
+        end
+        
+        function editableProperties = getEditableProperties(obj)
+            property1 = Property('segmentSizeLeft',obj.segmentSizeLeft,50,300,PropertyType.kNumber);
+            property2 = Property('segmentSizeRight',obj.segmentSizeRight,50,300,PropertyType.kNumber);
+            editableProperties = [property1,property2];
         end
     end
     
@@ -81,8 +89,7 @@ classdef ManualSegmentation < Segmentation
             labels = labels(validIdxs);
             eventLocations = [eventAnnotations(validIdxs).sample];
             
-            segments = Helper.CreateEventsWithEventLocations(eventLocations);  
-            segments = obj.createSegmentsWithEvents(segments,dataFile);
+            segments = Helper.CreateSegmentsWithEventLocations(eventLocations,dataFile,obj.segmentSizeLeft,obj.segmentSizeRight);  
             
             %label segments
             for i = 1 : length(segments)

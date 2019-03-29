@@ -55,7 +55,7 @@ An annotated data set is needed to train a machine learning algorithm and to ass
 
 ![Data Annotation App](doc/images/1-DataAnnotationApp.png)
 
-### Synchronising a Video (optional)
+### Annotating with Video (optional)
 
 The *Data Annotation App* can load and display videos next to the data. The video is synchronised to the data by matching two data samples to two video frames as defined in a synchronisation file. The format of a synchronisation file is:
 
@@ -74,17 +74,17 @@ In this application, we asked the subject to applaud three times in front of the
 
 ![Event Annotations](doc/images/1-synchronisation.png)
 
-*Note: the AnnotationApp synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of of a recording session.*
+*Note: the AnnotationApp synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of a recording session.*
 
 *Tipp: use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through the data and video.*
 
 To consider:
 
-1. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.<extension>'.
+1. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.extension'.
 2. By default, the *Data Annotation App* loads annotation files from the './data/annotations/', video and synchronisation files from './data/videos' directory. Saved annotation files are located in the root './' directory.
 3. The classes to annotate should be defined in the 'classes.txt' file beforehand.
 
-### Importing External Markers (optional)
+### Annotating with External Markers (optional)
 The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
 
 ![DaVinciResolve](doc/images/1-markers.png)
@@ -120,10 +120,10 @@ The *Event Detection App* can be used to compare the performance of different ev
 
 ## Application Development
 
-Most wearable device applications execute a chain (i.e. sequence) of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain:
+Most wearable device applications execute a chain (i.e. sequence) of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain and consists of the following *stages*:
 ![Activity Recognition Chain](doc/images/ARC.png)
 
-We use the term *stage* to refer to the different parts in the activity recognition chain (e.g. Preprocessing stage, Segmentation stage). The WDK provides the following reusable components for every stage of the chain:
+The WDK provides the following reusable components:
 
 ### Preprocessing
 
@@ -196,7 +196,7 @@ We use the term *stage* to refer to the different parts in the activity recognit
  
  ## Evaluation
  
- The iterative development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at every stage of the activity recognition chain (e.g. preprocessing, segmentation) and assess its performance. The calculated performance metrics are:
+ The iterative development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at each stage of the activity recognition chain and assess its performance. The calculated performance metrics are:
  
  Recognition Performance:
  - Accuracy
@@ -211,14 +211,14 @@ We use the term *stage* to refer to the different parts in the activity recognit
  
  ![Data Annotation App](doc/images/4-EvaluationApp.png)
  
- The generated feature tables can be exported in both *.mat* and *.txt* formats. The *.txt* format makes it possible to study the classification on other platforms (e.g. python / tensorFlow or WEKA). 
+ *Note: The generated feature tables can be exported to *.mat* and *.txt* formats. The *.txt* format makes it possible to study the classification on other platforms such as python / tensorFlow and WEKA.*
+ 
 
  ## Getting started
-1. Place your data files (.txt or .mat) in the *./data/rawdata/* directory
-2. If your files are in *ASCII*  format, you might want to convert them to a binary format with the *DataLoaderApp*. Files in binary format will load faster.
-3. Define your classes in the *classes.txt* file. 
-4. Open the *Data Annotation App* to annotate your data. Annotations created with the App need to be saved into the *./data/annotations* directory.
-5. You might want to annotate the data at a greater level of detail than your application should recognize. For example, if your application should detect lacrosse goalkeeper training exercises such as *catches*, *throws* and *passes*, you could annotate the catches at a greater level of detail as: *catchLowRight*, *catchLowLeft* but start the data analysis by studying whether any catch can be detected. In this case, you might want to group the catches into a common *catch* class. This can be achieved by creating a labeling strategy. A labeling strategy maps annotations made to groups. Labeling strategies are specified in a *.txt* file as: 
+1. The WDK loads data from a binary .mat file containing an instance of the *DataFile* class found in *./ARC/model* directory. The *DataConversionApp* can load any file in CSV format and export it to the *DataFile* format. Place your CSV files in the *./data/rawdata/* directory.
+2. The classes used by the WDK should be listed in the *classes.txt* file.
+3. Use the *AnnotationApp* to create a ground truth data set.
+4. (optional) Define a labeling strategy. While annotating the data, a developer might not know exactly what the application should detect / classify. In this case, it might be convenient to annotate the data at a greater level of detail than the application will need. A labeling strategy describes how classes are mapped to the groups used by a machine learning classifier. The following labeling strategy maps classes *class1*, *class2* and *class3* into *Group1* and *class4* and *class5* to group *Group2*.
 ```
 #Group1 
 class1
@@ -229,27 +229,23 @@ class3
 class4
 class5
 ```
-You don't need to assign every class to a group in a labeling strategy. A class left ungrouped will be assigned to its own group automatically. You should ensure that the classes you provide have been defined in the *./data/classes.txt* file and that no class belongs to two groups at the same time. Labeling strategies should be placed in the *./data/labeling/* directory.
 
-*Note: If you will annotate irrelevant classes, the labeling strategy should contain a group called 'NULL'*
-
-6. The WDK offers a Matlab App to support you in each stage of the development your wearable applications. Look for the respective App in each directory.
-
-*Note: The default data paths can be changed in the Constants class*.  
+*Note: Classes mentioned in a labeling strategy should be defined in the './data/classes.txt' file*.
+*Note: Labeling strategies should be placed in the './data/labeling/' directory*.
+*Note: Classes should be mapped to a single group in a labeling strategy. Classes that are left ungrouped in a labeling strategy will be assigned to its own group automatically*.
  
  ## Troubleshooting
 
-Most errors after installation will be due to pathing issues. Paths are defined in the Constants.m file. Double-check the different directories exist in your file system.
+Most errors after installation are related to pathing issues. The paths used by the WDK are defined in the *Constants.m* file. Double-check the different paths in the *Constants.m* file exist in your file system.
 
 Furthermore, errors identified by Matlab will be shown over the console:
-
-> 'Error - no labeling strategy available'.
-
-Check the *./data/labeling/* directory. There might be no *.txt* file containing a labeling strategy.
 
 > 'Error. Invalid annotation class'. 
 
 An annotation file in *./data/annotations/* contains an invalid label (i.e. a class which is not listed in the *./data/classes.txt* file)  
+
+
+> 'Index in position 1 exceeds array bounds (must not exceed XXX).'
 
 > 'Error. class not defined'
  
@@ -259,18 +255,19 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a cl
  
  The current version of the *FeatureSelector* uses the mRMR algorithm to select the most relevant features. The mRMR algorithm will fail if every feature vector contains the same value for a particular feature.
 
-If Matlab crashes with an error:
+The WDK has been developed based on Matlab's version 2018b. If Matlab crashes with these errors:
+
  > 'Too many input arguments'
- 
- double-check you are using Matlab 2018b or latest. Previous versions of Matlab might handle cell arrays differently.
- 
+  
  > 'Unrecognized property 'Scrollable' for class 'matlab.ui.Figure'
  
- double-check you are using Matlab 2018b or latest. Figures in previous versions of Matlab did not have the Scrollable property. If you still would like to use a previous release of Matlab, uncheck the *Scrollable* property under the *Interactivity* category of the main Figure of the VisualizationApp and EvaluationApp.  
- 
-The data in the *./data/rawData* directory should be consistent. You will get errors if different files have different amount of columns. 
+double-check that your are using Matlab 2018b or later. 
 
-Double-check that the *./data/annotations/* directory contains an annotation file for each data file in *./data/rawdata/*.  
+*Note: The data in the './data/rawData' directory should be consistent. You will get errors if different files have different amount of columns.* 
+
+*Note: Double-check that the './data/annotations/' directory contains an annotation file for each data file in './data/rawdata/'.* 
+
+*Note: A common error happens due to selecting incompatible computer nodes. As the WDK does not do type-checking on the computers selected, the first computer that received incompatible data will crash. If Matlab produces an error message with 'Computer.ExecuteChain' in its stack-trace, it is most likely due to an incompatible set of computers being used. In this case, double-check the input and output types of each computer.*
 
 ## References
 
@@ -285,7 +282,7 @@ Applications developed with the WDK:
 2. https://dl.acm.org/citation.cfm?id=3267267
 
 ## About
-My name is Juan Haladjian. I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with feature requests:
+My name is Juan Haladjian. I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with questions or feature requests. The project is under an MIT license. You are welcome to use the WDK, extend it and redistribute it for any purpose, as long as you give credit for it.
 
 Email: [haladjia@in.tum.de](mailto:haladjia@in.tum.de)
 

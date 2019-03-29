@@ -177,6 +177,62 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        
+        function segments = CreateSegmentsWithEventLocations(eventLocations,dataFile,segmentSizeLeft,segmentSizeRigh)
+            
+            events = Helper.CreateEventsWithEventLocations(eventLocations);
+            
+            segments = Helper.CreateSegmentsWithEvents(events,dataFile,segmentSizeLeft,segmentSizeRigh);
+        end
+        
+        function events = CreateEventsWithEventLocations(eventLocations)
+            nEvents = length(eventLocations);
+            events = repmat(EventAnnotation,1,nEvents);
+            
+            for i = 1 : nEvents
+                eventLocation = eventLocations(i);
+                events(i) = EventAnnotation(eventLocation,[]);
+            end
+        end
+        
+        function segments = CreateSegmentsWithEvents(events,dataFile,segmentSizeLeft,segmentSizeRight)
+            
+            nSamples = dataFile.numRows;
+            nSegments = Helper.CountNumValidSegments(events,segmentSizeLeft,segmentSizeRight,nSamples);
+            segments = repmat(Segment,1,nSegments);
+            segmentsCounter = 0;
+            
+            for i = 1 : length(events)
+                eventLocation = events(i).sample;
+                startSample = int32(eventLocation) - int32(segmentSizeLeft);
+                endSample = int32(eventLocation) + int32(segmentSizeRight);
+                
+                if startSample > 0 && endSample <= nSamples
+                    segment = Segment(dataFile.fileName,...
+                        dataFile.data(startSample : endSample,:),...
+                        [], eventLocation);
+
+                    segment.startSample = uint32(startSample);
+                    segment.endSample = uint32(endSample);
+
+                    segmentsCounter = segmentsCounter + 1;
+                    segments(segmentsCounter) = segment;
+                end
+            end
+        end
+        
+        function numValidSegments = CountNumValidSegments(events,segmentSizeLeft,segmentSizeRight,nSamples)
+            numValidSegments = 0;
+            for i = 1 : length(events)
+                eventLocation = events(i).sample;
+                startSample = int32(eventLocation) - int32(segmentSizeLeft);
+                endSample = int32(eventLocation) + int32(segmentSizeRight);
+                if startSample > 0 && endSample <= nSamples
+                    numValidSegments = numValidSegments + 1;
+                end
+            end
+        end
+        
         function value = ClampValueToRange(value, rangeStart, rangeEnd)
             if value < rangeStart
                 value = rangeStart;
@@ -207,16 +263,6 @@ classdef Helper < handle
                 for i = 1 : length(computer.nextComputers)
                     stack.push({computer.nextComputers{i},nSpaces});
                 end
-            end
-        end
-        
-        function events = CreateEventsWithEventLocations(eventLocations)
-            nEvents = length(eventLocations);
-            events = repmat(EventAnnotation,1,nEvents);
-            
-            for i = 1 : nEvents
-                eventLocation = eventLocations(i);
-                events(i) = EventAnnotation(eventLocation,[]);
             end
         end
         
