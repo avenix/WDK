@@ -77,7 +77,10 @@ classdef DataLoader < handle
         %% Annotations
         %returns an array of AnnotationSet.
         function annotations = loadAllAnnotations(obj)
-            annotationFiles = Helper.listAnnotationFiles();
+            dataFileNames = Helper.listDataFiles();
+            dataFileNames = Helper.removeFileExtensionForFiles(dataFileNames);
+            annotationFiles = Helper.addAnnotationsFileExtensionForFiles(dataFileNames);
+            
             nAnnotationFiles = length(annotationFiles);
             annotations = repmat(AnnotationSet,1,nAnnotationFiles);
             for i = 1 : length(annotationFiles)

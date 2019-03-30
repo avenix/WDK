@@ -18,19 +18,8 @@ classdef EventsLabeler < Computer
             else
                 manualAnnotations = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
                 labels = obj.labelEventIdxs([events.sample],manualAnnotations.eventAnnotations);
-                isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
                 
-                nValidEvents = sum(isValidLabel);
-                labeledEvents = repmat(EventAnnotation,1,nValidEvents);
-                eventCounter = 1;
-                for i = 1 : length(events)
-                    if isValidLabel(i)
-                        event = events(i);
-                        event.label = labels(i);
-                        labeledEvents(eventCounter) = event;
-                        eventCounter = eventCounter + 1;
-                    end
-                end
+                labeledEvents = Helper.LabelEventsWithValidLabels(events,labels);
             end
         end
         

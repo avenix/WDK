@@ -12,20 +12,8 @@ classdef EventSegmentsLabeler < Computer
             manualAnnotations = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
             eventsLabeler = EventsLabeler();
             labels = eventsLabeler.labelEventIdxs([segments.eventIdx],manualAnnotations.eventAnnotations);
-            isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
             
-            nValidSegments = sum(isValidLabel);
-            labeledSegments = repmat(Segment,1,nValidSegments);
-            segmentCounter = 1;
-            
-            for i = 1 : length(segments)
-                segment = segments(i);
-                if isValidLabel(i)
-                    segment.label = labels(i);
-                    labeledSegments(segmentCounter) = segment;
-                    segmentCounter = segmentCounter + 1;
-                end
-            end
+            labeledSegments = Helper.LabelSegmentsWithValidLabels(segments,labels);
         end
         
         function str = toString(obj)

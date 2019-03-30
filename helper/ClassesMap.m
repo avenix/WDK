@@ -81,9 +81,9 @@ classdef ClassesMap < handle
         
         function classesList = loadClassesFile(~)
             
-            [fileID,~] = fopen(Constants.kClassesPath);
+            [fileID,~] = fopen(Constants.kLabelsPath);
             if (fileID < 0)
-                fprintf('file not found: %s\n',Constants.kClassesPath);
+                fprintf('file not found: %s\n',Constants.kLabelsPath);
                 classesList = [];
             else
                 startRow = 1;

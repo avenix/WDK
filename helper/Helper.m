@@ -78,6 +78,10 @@ classdef Helper < handle
         function fileName = addMarkersFileExtension(fileName)
             fileName = sprintf('%s-markers.edl',fileName);
         end
+
+        function fileNames = addAnnotationsFileExtensionForFiles(fileNames)
+            fileNames = cellfun(@(fileName) Helper.addAnnotationsFileExtension(fileName),fileNames,'UniformOutput',false);
+        end
         
         function fileName = removeFileExtension(dataFileName)
             n = length(dataFileName);
@@ -178,6 +182,39 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        
+        function labeledSegments = LabelSegmentsWithValidLabels(segments,labels)
+            
+            isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
+            nValidSegments = sum(isValidLabel);
+            labeledSegments = repmat(Segment,1,nValidSegments);
+            segmentCounter = 1;
+            
+            for i = 1 : length(segments)
+                segment = segments(i);
+                if isValidLabel(i)
+                    segment.label = labels(i);
+                    labeledSegments(segmentCounter) = segment;
+                    segmentCounter = segmentCounter + 1;
+                end
+            end
+        end
+        
+        function labeledEvents = LabelEventsWithValidLabels(events,labels)
+            isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
+            
+            nValidEvents = sum(isValidLabel);
+            labeledEvents = repmat(EventAnnotation,1,nValidEvents);
+            eventCounter = 1;
+            for i = 1 : length(events)
+                if isValidLabel(i)
+                    event = events(i);
+                    event.label = labels(i);
+                    labeledEvents(eventCounter) = event;
+                    eventCounter = eventCounter + 1;
+                end
+            end
+        end
         
         function segments = CreateSegmentsWithEventLocations(eventLocations,dataFile,segmentSizeLeft,segmentSizeRigh)
             

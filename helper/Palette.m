@@ -16,7 +16,7 @@ classdef Palette < handle
         end
         
         function labelingStrategyComputers = LabelingStrategyComputers()
-            labelingStrategyComputers = {EventsLabeler, EventSegmentsLabeler};
+            labelingStrategyComputers = {EventsLabeler, EventSegmentsLabeler, RangeSegmentsLabeler};
         end
         
         function classificationComputers = ClassificationComputers()

@@ -14,10 +14,16 @@ classdef OverlappingWindowSegmentation < Computer
         function segments = compute(obj,data)
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             nSamples = length(data);
-            nSegments = int32 (nSamples / obj.iterationSize);
+            nSegments = int32 ((nSamples - obj.windowSize + 1) / obj.iterationSize);
             segments = repmat(Segment,1,nSegments);
+            segmentsCount = 1;
             for i = 1 : obj.iterationSize : nSamples - obj.windowSize
-                segments(i) = Segment(file.fileName,file.data(i:i+obj.windowSize,:));
+                endSample = i + obj.windowSize - 1;
+                segment = Segment(file.fileName,file.data(i:endSample,:));
+                segment.startSample = i;
+                segment.endSample = endSample;
+                segments(segmentsCount) = segment;
+                segmentsCount = segmentsCount + 1;
             end
         end
         
