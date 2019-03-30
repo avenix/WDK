@@ -28,12 +28,18 @@ classdef LeaveOneOutCrossValidator < handle
             nTables = obj.tableSet.nTables;
             labels = cell(1,nTables);
             
+                
+            waitBar = waitbar(0,'Validating...');
+                
             for i = 1 : nTables
                 trainIndices = [1 : i-1, i+1 : nTables];
                 testIndex = i;
                 
                 trainTable = obj.tableSet.mergedTableForIndices(trainIndices);
                 testTable = obj.tableSet.mergedTableForIndices(testIndex);
+                
+                waitBarMsg = sprintf('Validating fold %s ...',testIndex);
+                waitbar(i/nTables,waitBar,waitBarMsg);
                 
                 %normalisation
                 if(obj.shouldNormalizeFeatures)
@@ -46,6 +52,8 @@ classdef LeaveOneOutCrossValidator < handle
                 obj.classifier.train(trainTable);
                 labels{i} = obj.classifier.test(testTable);
             end
+            
+            close(waitBar);
             
             labels = cat(1,labels{:});
         end
