@@ -7,7 +7,7 @@ classdef Constants < handle
         kMarkersPath = './data/markers';
         kDataPath = './data/rawdata';
         kCachePath = './data/cache';
-        kLabelingStrategiesPath = './data/labeling';
+        kLabelGroupingsPath = './data/labeling';
         kFeaturesPath = './data/features';
         kVideosPath = './data/videos';
         kMaxFeatureNameCharacters = 15;

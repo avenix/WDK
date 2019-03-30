@@ -1,5 +1,5 @@
 
-classdef ClassLabelingStrategy < handle
+classdef LabelGrouping < handle
     
     properties (Access = public)
         numClasses;
@@ -14,7 +14,7 @@ classdef ClassLabelingStrategy < handle
     
     methods (Access = public)
         
-        function obj = ClassLabelingStrategy(classGroups)
+        function obj = LabelGrouping(classGroups)
             obj.defaultClassesMap = ClassesMap.instance();
             if nargin == 0 
                 classGroups = [];
@@ -39,8 +39,8 @@ classdef ClassLabelingStrategy < handle
             end
         end
         
-        function result = equals(obj, labelingStrategy)
-            result = strcmp(class(obj),class(labelingStrategy));
+        function result = equals(obj, labelGrouping)
+            result = strcmp(class(obj),class(labelGrouping));
         end
         
         function labelsStr = labelsToString(obj,labels)

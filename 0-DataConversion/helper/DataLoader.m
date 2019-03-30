@@ -4,7 +4,7 @@ classdef DataLoader < handle
     properties (Access = private)
         annotationsLoader;
         classesMap;
-        labelingStrategiesLoader;
+        labelGroupingsLoader;
     end
 
     methods (Access = public)
@@ -127,30 +127,30 @@ classdef DataLoader < handle
             markers = markersLoader.loadMarkers(markerFileName);
         end
         
-        %% Labeling Strategies
-        function labelingStrategies = loadAllLabelingStrategies(obj)
-            fileNames = Helper.listLabelingStrategies();
+        %% Label Groupings
+        function labelGroupings = loadAllLabelGroupings(obj)
+            fileNames = Helper.listLabelGroupings();
             
-            nLabelingStrategies = length(fileNames);
-            labelingStrategies = repmat(ClassLabelingStrategy, 1,nLabelingStrategies+1);
+            nLabelGroupings = length(fileNames);
+            labelGroupings = repmat(LabelGrouping, 1,nLabelGroupings+1);
             
-            labelingStrategies(1) = ClassLabelingStrategy();
+            labelGroupings(1) = LabelGrouping();
             
             if ~isempty(fileNames)          
                 
-                obj.lazyInitLabelingStrategiesLoader();
+                obj.lazyInitLabelGroupingsLoader();
                 
-                for i = 1 : nLabelingStrategies
+                for i = 1 : nLabelGroupings
                     fileName = fileNames{i};
-                    labelingStrategies(i+1) = obj.loadLabelingStrategy(fileName);
+                    labelGroupings(i+1) = obj.loadLabelGrouping(fileName);
                 end
             end
         end
         
-        function labelingStrategy = loadLabelingStrategy(obj,fileName)
-            fullFileName = sprintf('%s/%s',Constants.kLabelingStrategiesPath,fileName);
-            labelingStrategy = obj.labelingStrategiesLoader.loadLabelingStrategy(fullFileName);
-            labelingStrategy.name = Helper.removeFileExtension(fileName);
+        function labelGrouping = loadLabelGrouping(obj,fileName)
+            fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
+            labelGrouping = obj.labelGroupingsLoader.loadLabelGrouping(fullFileName);
+            labelGrouping.name = Helper.removeFileExtension(fileName);
         end
 
         %% Synchronisation Files
@@ -198,9 +198,9 @@ classdef DataLoader < handle
             value = str2double(str{2});
         end
         
-        function lazyInitLabelingStrategiesLoader(obj)
-            if isempty(obj.labelingStrategiesLoader)
-                obj.labelingStrategiesLoader = LabelingStrategyLoader();
+        function lazyInitLabelGroupingsLoader(obj)
+            if isempty(obj.labelGroupingsLoader)
+                obj.labelGroupingsLoader = LabelGroupingLoader();
             end
         end
         

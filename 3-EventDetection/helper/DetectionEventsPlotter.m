@@ -8,7 +8,7 @@ classdef DetectionEventsPlotter < handle
     end
     
     properties (Access = public)
-        labelingStrategy;
+        labelGrouping;
         textFontSize = 22;
         symbolSize = 10;
     end
@@ -119,7 +119,7 @@ classdef DetectionEventsPlotter < handle
                     if label == ClassesMap.kNullClass
                         classStr = Constants.kNullClassGroupStr;
                     else
-                        classStr = obj.labelingStrategy.classNames{label};
+                        classStr = obj.labelGrouping.classNames{label};
                     end
                     
                     symbolHandle = plot(obj.plotAxes,eventX,eventY,'*','Color',symbolColor,'LineWidth',obj.symbolSize);

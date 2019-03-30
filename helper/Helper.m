@@ -39,8 +39,8 @@ classdef Helper < handle
             files = Helper.listFilesInDirectory(Constants.kFeaturesPath, {'*.mat'});
         end
         
-        function files = listLabelingStrategies()
-            files = Helper.listFilesInDirectory(Constants.kLabelingStrategiesPath, {'*.txt'});
+        function files = listLabelGroupings()
+            files = Helper.listFilesInDirectory(Constants.kLabelGroupingsPath, {'*.txt'});
         end
         
         function files = listDataFiles(extensions)

@@ -3,7 +3,7 @@ classdef OverlappingWindowSegmentation < Computer
         windowSize = 300;
         iterationSize = 150;
     end
-     
+
     methods (Access = public)
         function obj = OverlappingWindowSegmentation()
             obj.name = 'overlappingWindow';

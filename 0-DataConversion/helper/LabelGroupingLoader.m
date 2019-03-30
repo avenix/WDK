@@ -1,15 +1,15 @@
-classdef LabelingStrategyLoader < handle
+classdef LabelGroupingLoader < handle
         
     methods (Access = public)
         
-        function labelingStrategy = loadLabelingStrategy(obj, fileName)
-            labelingStrategy = obj.parseLabelingStrategyFile(fileName);
+        function labelGrouping = loadLabelGrouping(obj, fileName)
+            labelGrouping = obj.parseLabelGroupingFile(fileName);
         end
     end
     
     methods (Access = private)
          
-        function labelingStrategy = parseLabelingStrategyFile(obj,fileName)
+        function labelGrouping = parseLabelGroupingFile(obj,fileName)
             
             delimiter = ',';
             startRow = 1;
@@ -20,14 +20,14 @@ classdef LabelingStrategyLoader < handle
             [fileID,~] = fopen(fileName);
             if (fileID < 0)
                 fprintf('file not found: %s\n',fileName);
-                labelingStrategy = [];
+                labelGrouping = [];
             else
                 dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
                 
                 nGroups = obj.countNumberOfGroups(dataArray{1});
-                classGroups = obj.parseClassGroup(dataArray{1},nGroups);
+                labelGroups = obj.parseLabelGroup(dataArray{1},nGroups);
                 
-                labelingStrategy = ClassLabelingStrategy(classGroups);
+                labelGrouping = LabelGrouping(labelGroups);
                 
                 fclose(fileID);
             end
@@ -44,20 +44,20 @@ classdef LabelingStrategyLoader < handle
             end
         end
         
-        function classGroups = parseClassGroup(~,dataArray,nGroups)
-            classGroups = repmat(ClassGroup,1,nGroups);
+        function labelGroups = parseLabelGroup(~,dataArray,nGroups)
+            labelGroups = repmat(LabelGroup,1,nGroups);
             
-            currentClassGroup = classGroups(1);
+            currentLabelGroup = labelGroups(1);
             groupCount = 0;
             nRows = length(dataArray);
             for i = 1 : nRows
                 row = dataArray{i};
                 if contains(row,'#')
-                    currentClassGroup = ClassGroup(row(2:end));
+                    currentLabelGroup = LabelGroup(row(2:end));
                     groupCount = groupCount + 1;
-                    classGroups(groupCount) = currentClassGroup;
+                    labelGroups(groupCount) = currentLabelGroup;
                 else
-                    currentClassGroup.addGroupedClass(row);
+                    currentLabelGroup.addGroupedLabel(row);
                 end
             end
         end

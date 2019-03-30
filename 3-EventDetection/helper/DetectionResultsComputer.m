@@ -3,22 +3,22 @@
 classdef DetectionResultsComputer < handle
     properties (Access = public)
         tolerance = 10;
-        labelingStrategy;
+        labelGrouping;
         positiveLabels;
     end
 
     methods (Access = public)
         
-        function obj = DetectionResultsComputer(labelingStrategy)
+        function obj = DetectionResultsComputer(labelGrouping)
             if nargin > 1
-                obj.labelingStrategy = labelingStrategy;
+                obj.labelGrouping = labelGrouping;
             end
         end
         
         %returns an array of DetectionResults (one for each cell)
         function detectionResults = computeDetectionResults(obj,eventsCellArray,annotationsCellArray)
-            if isempty(obj.labelingStrategy)
-                fprintf('%s\n',Constants.kLabelingStrategyNotSetWarning);
+            if isempty(obj.labelGrouping)
+                fprintf('%s\n',Constants.kLabelGroupingNotSetWarning);
             elseif isempty(obj.positiveLabels)
                 fprintf('%s\n',Constants.kPositiveLabelsNotSetWarning);
             else
@@ -81,7 +81,7 @@ classdef DetectionResultsComputer < handle
             mappedAnnotations = repmat(EventAnnotation,1,nAnnotations);
             for i = 1 : nAnnotations
                 eventAnnotation = eventAnnotations(i);
-                newLabel = obj.labelingStrategy.labelForClass(eventAnnotation.label);
+                newLabel = obj.labelGrouping.labelForClass(eventAnnotation.label);
                 mappedAnnotations(i) = EventAnnotation(eventAnnotation.sample,newLabel);
             end
         end

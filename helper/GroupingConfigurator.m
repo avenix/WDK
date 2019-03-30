@@ -2,38 +2,38 @@
 classdef GroupingConfigurator < handle
     
     properties (Access = public)
-        labelingStrategies;
+        labelGroupings;
     end
     
     properties (Access = private)
-        labelingStrategiesList;
+        labelGroupingsList;
         selectedLabelsTable;
     end
     
     methods (Access = public)
         
-        function obj = GroupingConfigurator(labelingStrategies,labelingStrategiesList,selectedLabelsTable)
-            obj.labelingStrategiesList = labelingStrategiesList;
-            obj.labelingStrategies = labelingStrategies;
+        function obj = GroupingConfigurator(labelGroupings,labelGroupingsList,selectedLabelsTable)
+            obj.labelGroupingsList = labelGroupingsList;
+            obj.labelGroupings = labelGroupings;
             if nargin > 2
                 obj.selectedLabelsTable = selectedLabelsTable;
             end
             
-            if ~isempty(labelingStrategies)
-                obj.fillLabelingStrategiesList();
+            if ~isempty(labelGroupings)
+                obj.fillLabelGroupingsList();
                 
-                obj.labelingStrategiesList.Value = obj.labelingStrategiesList.Items{1};
+                obj.labelGroupingsList.Value = obj.labelGroupingsList.Items{1};
                 
                 if ~isempty(obj.selectedLabelsTable)
                     obj.fillGroupingTable();
-                    obj.labelingStrategiesList.ValueChangedFcn = @obj.handleSelectedLabelingStrategyChanged;
+                    obj.labelGroupingsList.ValueChangedFcn = @obj.handleSelectedLabelGroupingChanged;
                 end
             end
         end
         
-        function labelingStrategy = getCurrentLabelingStrategy(obj)
-            labelingStrategyIdx = obj.getSelectedLabelingIdx();
-            labelingStrategy = obj.labelingStrategies(labelingStrategyIdx);
+        function labelGrouping = getCurrentLabelGrouping(obj)
+            labelGroupingIdx = obj.getSelectedLabelingIdx();
+            labelGrouping = obj.labelGroupings(labelGroupingIdx);
         end
         
         %returns a logical array
@@ -44,30 +44,30 @@ classdef GroupingConfigurator < handle
     
     methods (Access = private)
         
-        function handleSelectedLabelingStrategyChanged(obj,~,~)
+        function handleSelectedLabelGroupingChanged(obj,~,~)
             obj.fillGroupingTable();
         end
         
         function idx = getSelectedLabelingIdx(obj)
-            idxStr = obj.labelingStrategiesList.Value;
-            [~,idx] = ismember(idxStr,obj.labelingStrategiesList.Items);
+            idxStr = obj.labelGroupingsList.Value;
+            [~,idx] = ismember(idxStr,obj.labelGroupingsList.Items);
         end
         
-        function fillLabelingStrategiesList(obj)
-            nLabelingStrategies = length(obj.labelingStrategies);
-            labelingStrategyNames = cell(1,nLabelingStrategies);
-            for i = 1 : nLabelingStrategies
-                labelingStrategy = obj.labelingStrategies(i);
-                labelingStrategyNames{i} = labelingStrategy.name;
+        function fillLabelGroupingsList(obj)
+            nLabelGroupings = length(obj.labelGroupings);
+            labelGroupingNames = cell(1,nLabelGroupings);
+            for i = 1 : nLabelGroupings
+                labelGrouping = obj.labelGroupings(i);
+                labelGroupingNames{i} = labelGrouping.name;
             end
-            obj.labelingStrategiesList.Items = labelingStrategyNames;
+            obj.labelGroupingsList.Items = labelGroupingNames;
         end
         
         function fillGroupingTable(obj)
-            labelingStrategy = obj.getCurrentLabelingStrategy();
-            nRows = labelingStrategy.numClasses;
+            labelGrouping = obj.getCurrentLabelGrouping();
+            nRows = labelGrouping.numClasses;
             selected = true(nRows,1);
-            obj.selectedLabelsTable.Data = table(labelingStrategy.classNames',selected);
+            obj.selectedLabelsTable.Data = table(labelGrouping.classNames',selected);
         end
     end
 end

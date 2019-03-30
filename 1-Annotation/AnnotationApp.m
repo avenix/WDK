@@ -386,7 +386,7 @@ classdef AnnotationApp < handle
             obj.rangeAnnotationsPlotter.clearAnnotations();
             obj.annotationSet = [];
         end
-                
+
         function addCurrentRange(obj)
             if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
                 label = obj.getSelectedClass();
