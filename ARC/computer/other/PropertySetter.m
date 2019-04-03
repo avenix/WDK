@@ -18,7 +18,7 @@ classdef PropertySetter < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('%s%s%s',obj.name,obj.node.toString(),obj.property);
+            str = sprintf('%s_%s_%s',obj.name,obj.node.toString(),obj.property);
         end
         
         function editableProperties = getEditableProperties(obj)

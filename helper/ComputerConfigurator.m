@@ -27,9 +27,13 @@ classdef ComputerConfigurator < handle
         
         function reloadUI(obj)
             obj.fillComputersList();
-            if (isempty(obj.computersList.Value) && ~isempty(obj.computersList.Items))
-                obj.computersList.Value = obj.computersList.Items{1};
-                obj.currentComputerProperties = obj.computers{1}.getEditableProperties();
+            if ~isempty(obj.computersList.Items)
+                if isempty(obj.computersList.Value)
+                    obj.computersList.Value = obj.computersList.Items{1};
+                end
+                computerIdx = obj.getSelectedComputerIdx();
+                
+                obj.currentComputerProperties = obj.computers{computerIdx}.getEditableProperties();
                 obj.updatePropertiesTable();
             end
         end

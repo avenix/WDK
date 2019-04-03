@@ -4,7 +4,6 @@ classdef DataLoader < handle
     properties (Access = private)
         annotationsLoader;
         classesMap;
-        labelGroupingsLoader;
     end
 
     methods (Access = public)
@@ -137,9 +136,7 @@ classdef DataLoader < handle
             labelGroupings(1) = LabelGrouping();
             
             if ~isempty(fileNames)          
-                
-                obj.lazyInitLabelGroupingsLoader();
-                
+                                
                 for i = 1 : nLabelGroupings
                     fileName = fileNames{i};
                     labelGroupings(i+1) = obj.loadLabelGrouping(fileName);
@@ -147,9 +144,9 @@ classdef DataLoader < handle
             end
         end
         
-        function labelGrouping = loadLabelGrouping(obj,fileName)
+        function labelGrouping = loadLabelGrouping(~,fileName)
             fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
-            labelGrouping = obj.labelGroupingsLoader.loadLabelGrouping(fullFileName);
+            labelGrouping = LabelGroupingLoader.LoadLabelGrouping(fullFileName);
             labelGrouping.name = Helper.removeFileExtension(fileName);
         end
 
@@ -197,13 +194,7 @@ classdef DataLoader < handle
             str = split(line);
             value = str2double(str{2});
         end
-        
-        function lazyInitLabelGroupingsLoader(obj)
-            if isempty(obj.labelGroupingsLoader)
-                obj.labelGroupingsLoader = LabelGroupingLoader();
-            end
-        end
-        
+                
         function printEventToFile(obj,fileID, event)
             labelStr = obj.classesMap.stringForClassAtIdx(event.label);
             fprintf(fileID, '%s, %d',labelStr,event.sample);
@@ -222,14 +213,14 @@ classdef DataLoader < handle
         end
         
         function computer = LoadJSONComputerFromFile(fileName)
-            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
             text = fileread(fullPath);
             computer = jsondecode(text);
             computer = Computer.CreateWithStruct(computer);
         end
         
         function SaveComputerAsJSON(computer, fileName)
-            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
             jsonFile = jsonencode(computer);
             fileID = fopen(fullPath,'w');
             fprintf(fileID,'%s\n',jsonFile);
@@ -237,7 +228,7 @@ classdef DataLoader < handle
         end
         
         function computer = LoadComputer(fileName)
-            fullPath = sprintf('%s/%s',Constants.kFeaturesPath,fileName);
+            fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
             computer = load(fullPath);
             computer = computer.computer;
         end

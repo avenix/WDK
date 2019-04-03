@@ -6,22 +6,21 @@ The Wearables Development Toolkit (WDK) is a set of tools to facilitate the deve
 
 ## Setup
 
+* ```git clone https://github.com/avenix/WDK.git```
 * install Matlab 2018b or greater. 
-* `git clone git@github.com:avenix/ARC-Tutorial.git`
-* in Matlab, `addpath(genpath('./'))`
-* use the Apps in each directory (e.g. *Data Annotation App* in *1-DataAnnotation/*).
-* this code uses the mRMR library for feature selection. If you get an error 'estpab function not found', then you need to:
+* in Matlab, open the repository and type:  `addpath(genpath('./'))` in the console
+* this code uses the mRMR library for feature selection. If you get an error '*estpab function not found*', then you need to:
 ```
 cd libraries/mRMR_0.9/mi/
 mex -setup C++ 
 makeosmex
 ```
-
-The WDK requires the installation of the Signal Processing Toolbox:
+* use the Apps in each directory (e.g. *AnnotationApp* in *1-Annotation/*).
+* install the Signal Processing Toolbox:
 
 ![Signal Processing Toolbox](doc/images/DSP.png)
 
-*Note: to avoid issues with pathing, Matlab's current path should be set to the root of the WDK directory:* 
+* to avoid issues with pathing, Matlab's current path should be set to the root of the WDK directory: 
 
 ![Checking Matlab Path](doc/images/matlabPath.png)
 
@@ -30,12 +29,12 @@ The WDK requires the installation of the Signal Processing Toolbox:
 The '*/data*' directory should contain the following files and directories defined in the *Constants.m* file:
 
 ```
-classesPath = './data/classes.txt';
-annotationsPath = './data/annotations';
-markersPath = './data/markers';
-dataPath = './data/rawdata';
-precomputedPath = './data/cache';
-labelingStrategiesPath = './data/labeling';
+kAnnotationsPath = './data/annotations';
+kLabelsPath = './data/annotations/labels.txt';
+kMarkersPath = './data/markers';
+kDataPath = './data/rawdata';
+kCachePath = './data/cache';
+kLabelGroupingsPath = './data/labeling';
 kVideosPath = './data/videos';
 ```
 ## Data Collection
@@ -51,7 +50,7 @@ The *Data Loader App* can be used to do a first check on the data after its coll
 
 ## Data Annotation
 
-An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate specific events or activities that have a duration in time. The *Data Annotation App* supports both kinds of annotations.
+An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate specific events or activities that have a duration in time. The *Data Annotation App* supports both kinds of annotations. The following image shows the squared magnitude of the accelerometer signal collected by a motion sensor attached at a hind leg of a cow. The individual strides of the cow have been annotated as event annotations (red) as well as ranges in the signal when the cow was running and walking (black rectangles).
 
 ![Data Annotation App](doc/images/1-DataAnnotationApp.png)
 
@@ -76,13 +75,13 @@ In this application, we asked the subject to applaud three times in front of the
 
 *Note: the AnnotationApp synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of a recording session.*
 
-*Tipp: use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through the data and video.*
+*Tipp: use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.*
 
 To consider:
 
 1. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.extension'.
 2. By default, the *Data Annotation App* loads annotation files from the './data/annotations/', video and synchronisation files from './data/videos' directory. Saved annotation files are located in the root './' directory.
-3. The classes to annotate should be defined in the 'classes.txt' file beforehand.
+3. The labels to annotate should be defined in the 'labels.txt' file beforehand.
 
 ### Annotating with External Markers (optional)
 The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
@@ -123,6 +122,48 @@ The *Event Detection App* can be used to compare the performance of different ev
 Most wearable device applications execute a chain (i.e. sequence) of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain and consists of the following *stages*:
 ![Activity Recognition Chain](doc/images/ARC.png)
 
+Applications in the WDK can be developed visually over [WDK-RED](https://github.com/avenix/WDK-RED), via the user interface provided by the different WDK Apps, or directly via code. 
+
+### Visual Programming
+
+Activity recognition chains can be developed visually in Node-RED using the nodes available in the [WDK-RED platform](https://github.com/avenix/wearable-prototyping). The following image shows an activity recognition chain for detecting and classifying soccer goalkeeper training exercises using a wearable motion sensor attached to a glove worn by a goalkeeper:
+
+![Activity Recognition Chain](doc/images/WDK-RED.png)
+
+Activity Recognition Chains can be imported and executed in the WDK as follows:
+
+- Export the Activity Recognition Chains as described [here](https://github.com/avenix/WDK-RED#exporting).
+- Execute the *convertJSONToWDK.m* script.
+- Use the *Execute from File* button in each App.
+
+
+### Textual Programming
+
+The following text snippet corresponds to the same application as 
+
+```Matlab
+axisSelector = AxisSelector(1:3);%AX AY AZ
+magnitudeSquared = MagnitudeSquared();
+
+simplePeakDetector = SimplePeakDetector();
+simplePeakDetector.minPeakHeight = single(0.8);
+simplePeakDetector.minPeakDistance  = int32(100);
+
+eventSegmentation = EventSegmentation();
+eventSegmentation.segmentSizeLeft = 200;
+eventSegmentation.segmentSizeRight = 30;
+
+labeler = EventSegmentsLabeler();
+featureExtractor = DataLoader.LoadComputer('goalkeeperFeatureChain.mat');
+
+arcChain = Computer.ComputerWithSequence({FileLoader(),PropertyGetter('data'),...
+axisSelector,magnitudeSquared,simplePeakDetector,eventSegmentation,labeler,...
+featureExtractor});
+
+DataLoader.SaveComputer(arcChain,'goalkeeperChain');
+```
+
+## Reusable Components
 The WDK provides the following reusable components:
 
 ### Preprocessing
@@ -190,10 +231,10 @@ The WDK provides the following reusable components:
 | PowerSpectrum    | Distribution of power into frequency components. *Note: returns n/2 coefficients*                                                                                                                                                                                                                                        | 10 * n * log(n) | n   | n/2    |
 | SpectralCentroid | Indicates where the "center of mass" of the spectrum is located. ![SpectralCentroid](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20%5Cbar%7By_i%7D%20y_%7Bi%7D%7D%7B%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20y_i%7D)                                                                           | 10 * n * log(n) | n   | 1    |
 | SpectralEnergy   | The energy of the frequency domain (sum of squared values of dft coefficients). ![SpectralEnergy](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20%5Cbar%7By_i%7D%5E2)                                                                                                                               | 10 * n * log(n) | n   | 1    |
-| SpectralEntropy  | Indicates how chaotic / how much informatiomn there is in the frequency distribution. Calculated as: ![SpectralEntropy](https://latex.codecogs.com/gif.latex?-%5Csum_%7Bi%3D1%7D%5En%7By_i%5Clog_2%20%28y_i%29%7D) where y_i are the coefficients of the power spectrum of the input signal                              | 15 * n * log(n) | n   | 1    |
+| SpectralEntropy  | Indicates how much information is contained in the frequency distribution of a signal. This metrics is calculated as: ![SpectralEntropy](https://latex.codecogs.com/gif.latex?-%5Csum_%7Bi%3D1%7D%5En%7By_i%5Clog_2%20%28y_i%29%7D) where y_i are the coefficients of the power spectrum of the input signal                              | 15 * n * log(n) | n   | 1    |
 | SpectralFlatness | Provides a way to quantify how noise-like a sound is. White noise has peaks in all frequencies making its spectrum look flat. ![SpectralFlatness](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csqrt%5Bn%5D%7B%5Cprod_%7Bi%3D1%7D%5E%7Bn%7D%20x_i%7D%7D%7B%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bi%3D1%7D%5En%20x%28n%29%7D) | 15 * n * log(n) | n   | 1    |
 | SpectralSpread   | Indicates the variance in the distribution of frequencies.                                                                                                                                                                                                                                                               | 15 * n * log(n) | n   | 1    |
- 
+
  ## Evaluation
  
  The iterative development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at each stage of the activity recognition chain and assess its performance. The calculated performance metrics are:
@@ -213,12 +254,11 @@ The WDK provides the following reusable components:
  
  *Note: The generated feature tables can be exported to *.mat* and *.txt* formats. The *.txt* format makes it possible to study the classification on other platforms such as python / tensorFlow and WEKA.*
  
-
  ## Getting started
 1. The WDK loads data from a binary .mat file containing an instance of the *DataFile* class found in *./ARC/model* directory. The *DataConversionApp* can load any file in CSV format and export it to the *DataFile* format. Place your CSV files in the *./data/rawdata/* directory.
-2. The classes used by the WDK should be listed in the *classes.txt* file.
+2. The labels used by the WDK should be listed in the *.data/annotations/labels.txt* file.
 3. Use the *AnnotationApp* to create a ground truth data set.
-4. (optional) Define a labeling strategy. While annotating the data, a developer might not know exactly what the application should detect / classify. In this case, it might be convenient to annotate the data at a greater level of detail than the application will need. A labeling strategy describes how classes are mapped to the groups used by a machine learning classifier. The following labeling strategy maps classes *class1*, *class2* and *class3* into *Group1* and *class4* and *class5* to group *Group2*.
+4. (optional) Define a label grouping. A label grouping describes how labels annotated are mapped to groups used by the different Apps in the WDK. The following label grouping maps labels *label1*, *label2* and *label3* into *Group1* and *label4* and *label5* to *Group2*.
 ```
 #Group1 
 class1
@@ -229,10 +269,11 @@ class3
 class4
 class5
 ```
+If no label grouping is defined, the WDK uses the *defaultLabelingStrategy* which maps each label to a class with the same name.
 
-*Note: Classes mentioned in a labeling strategy should be defined in the './data/classes.txt' file*.
-*Note: Labeling strategies should be placed in the './data/labeling/' directory*.
-*Note: Classes should be mapped to a single group in a labeling strategy. Classes that are left ungrouped in a labeling strategy will be assigned to its own group automatically*.
+*Note: Labels grouped in a label grouping should be defined in the './data/annotations/labels.txt' file*.
+*Note: Label groupings should be placed in the './data/labeling/' directory*.
+*Note: Labels should be mapped to a single group in a labeling strategy. Labels that are left ungrouped in a labeling strategy will be assigned to its own group automatically*.
  
  ## Troubleshooting
 
@@ -242,14 +283,15 @@ Furthermore, errors identified by Matlab will be shown over the console:
 
 > 'Error. Invalid annotation class'. 
 
-An annotation file in *./data/annotations/* contains an invalid label (i.e. a class which is not listed in the *./data/classes.txt* file)  
+An annotation file in *./data/annotations/* contains an invalid label (i.e. a label which is not listed in the *./data/annotations/labels.txt* file).
 
 
 > 'Index in position 1 exceeds array bounds (must not exceed XXX).'
 
 > 'Error. class not defined'
  
- The *ClassesMap* triggers this error when it is requested to map a string of an invalid class. This error might be due to a file in the  *./data/labeling/* directory containing an invalid class name.
+ The *ClassesMap* triggers this error when it is requested to map a string of an invalid label. This error might be due to a file in the  *./data/labeling/* directory containing an invalid class name.
+ This error can also occur when doing changes to the *annotations/labels.txt* file without clearing the *ClassesMap* variable from Matlab's path.
  
  > 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
  
@@ -273,8 +315,8 @@ double-check that your are using Matlab 2018b or later.
 
 1. Matlab tutorial on Activity Recognition for wearables: https://github.com/avenix/ARC-Tutorial/
 2. Andreas Bulling's tutorial on Activity Recognition: https://dl.acm.org/citation.cfm?id=2499621
-2. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
-3. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
+3. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
+4. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
 
 Applications developed with the WDK:
 
@@ -282,7 +324,7 @@ Applications developed with the WDK:
 2. https://dl.acm.org/citation.cfm?id=3267267
 
 ## About
-My name is Juan Haladjian. I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with questions or feature requests. The project is under an MIT license. You are welcome to use the WDK, extend it and redistribute it for any purpose, as long as you give credit for it.
+My name is Juan Haladjian. I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with questions or feature requests. The project is under an MIT license. You are welcome to use the WDK, extend it and redistribute it for any purpose, as long as you give credit for it by copying the *LICENSE.txt* file to any copy of this software.
 
 Email: [haladjia@in.tum.de](mailto:haladjia@in.tum.de)
 

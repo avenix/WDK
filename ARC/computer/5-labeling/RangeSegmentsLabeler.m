@@ -1,3 +1,9 @@
+%labels segments using the rangeAnnotations. If the
+%shouldContainEntireSegment property is set, segments are labeled as the
+%rangeAnnotation that fully contains them ir as NULL otherwise.
+%if the shouldContainEntireSegment is not set, segments are labeled as the
+%rangeAnnotation that contains the middle point of the segment.
+
 classdef RangeSegmentsLabeler < Computer
     
     properties (Access = public)

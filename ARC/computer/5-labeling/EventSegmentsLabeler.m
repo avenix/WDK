@@ -1,3 +1,6 @@
+%labels segments comparing their eventIdx property to event annotations. 
+%The eventIdx prperty is set if an eventSegmentation has been used 
+%to generate the segment
 classdef EventSegmentsLabeler < Computer
     
     methods (Access = public)

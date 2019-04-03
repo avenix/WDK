@@ -1,9 +1,8 @@
 classdef EnsembleClassifier < Computer
-    
+        
     properties (Access = public)
         shouldTrain = false;
         nLearners = 30;
-        ensembleMethod = EnsembleClassifierMethodType.kDecisionTree;
     end
     
     properties (Access = private)
@@ -28,11 +27,9 @@ classdef EnsembleClassifier < Computer
         end
         
         function train(obj,table)
-            template = [];
-            if obj.ensembleMethod == EnsembleClassifierMethodType.kDecisionTree
-                template = templateTree(...
-                    'MaxNumSplits', 1852);
-            end
+            
+            template = templateTree(...
+                'MaxNumSplits', 1852);
             
             if ~isempty(template)
                 obj.classifier = fitcensemble(...

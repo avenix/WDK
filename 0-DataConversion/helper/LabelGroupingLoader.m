@@ -1,15 +1,15 @@
 classdef LabelGroupingLoader < handle
         
-    methods (Access = public)
+    methods (Static, Access = public)
         
-        function labelGrouping = loadLabelGrouping(obj, fileName)
-            labelGrouping = obj.parseLabelGroupingFile(fileName);
+        function labelGrouping = LoadLabelGrouping( fileName)
+            labelGrouping = LabelGroupingLoader.ParseLabelGroupingFile(fileName);
         end
     end
     
-    methods (Access = private)
+    methods (Static,Access = private)
          
-        function labelGrouping = parseLabelGroupingFile(obj,fileName)
+        function labelGrouping = ParseLabelGroupingFile(fileName)
             
             delimiter = ',';
             startRow = 1;
@@ -24,8 +24,8 @@ classdef LabelGroupingLoader < handle
             else
                 dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
                 
-                nGroups = obj.countNumberOfGroups(dataArray{1});
-                labelGroups = obj.parseLabelGroup(dataArray{1},nGroups);
+                nGroups = LabelGroupingLoader.CountNumberOfGroups(dataArray{1});
+                labelGroups = LabelGroupingLoader.ParseLabelGroup(dataArray{1},nGroups);
                 
                 labelGrouping = LabelGrouping(labelGroups);
                 
@@ -33,7 +33,7 @@ classdef LabelGroupingLoader < handle
             end
         end
         
-        function nGroups = countNumberOfGroups(~,dataArray)
+        function nGroups = CountNumberOfGroups(dataArray)
             nGroups = 0;
             nRows = length(dataArray);
             for i = 1 : nRows
@@ -44,7 +44,7 @@ classdef LabelGroupingLoader < handle
             end
         end
         
-        function labelGroups = parseLabelGroup(~,dataArray,nGroups)
+        function labelGroups = ParseLabelGroup(dataArray,nGroups)
             labelGroups = repmat(LabelGroup,1,nGroups);
             
             currentLabelGroup = labelGroups(1);

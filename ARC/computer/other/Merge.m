@@ -1,16 +1,16 @@
 classdef Merge < Computer
-    
+
     properties (Access = public)
         numMessages;
     end
-    
+
     properties (Access = private)
         messageCount;
         partialResult;
     end
-    
+
     methods (Access = public)
-        
+
         function obj = Merge(numMessages)
             if nargin > 0
                 obj.numMessages = numMessages;

@@ -35,8 +35,8 @@ classdef Helper < handle
             end
         end
         
-        function files = listFeatureExtractionFiles()
-            files = Helper.listFilesInDirectory(Constants.kFeaturesPath, {'*.mat'});
+        function files = listARChainFiles()
+            files = Helper.listFilesInDirectory(Constants.kARChainsPath, {'*.mat'});
         end
         
         function files = listLabelGroupings()

@@ -19,6 +19,26 @@ classdef Palette < handle
             labelingStrategyComputers = {EventsLabeler, EventSegmentsLabeler, RangeSegmentsLabeler};
         end
         
+        
+        function featureExtractionComputers = StatisticalFeatureExtractionComputers()
+            featureExtractionComputers = {Min,Max,Mean,Median,Variance,STD,ZCR,...
+                SquaredMagnitudeSum,Skewness,Kurtosis,IQR,AUC};
+        end
+        
+        function featureExtractionComputers = FourierFeatureExtractionComputers()
+            featureExtractionComputers = {FFTDC,MaxFrequency,SpectralCentroid,SpectralEnergy,SpectralEntropy,SpectralFlatness,...
+                SpectralSpread,SquaredMagnitudeSum};
+        end
+        
+        function featureExtractionComputers = FeatureExtractionComputers()
+            featureExtractionComputers = {AAV, AUC, Entropy, FFTDC, IQR, Kurtosis,...
+                MAD,Max,MaxCrossCorr,MaxFrequency,Mean,Median,Min,Octants,...
+                P2P,PowerSpectrum,Quantile,RMS,SignalVectorMagnitude, Skewness,...
+                SpectralCentroid,SpectralEnergy,SpectralEntropy,SpectralFlatness,...
+                SpectralSpread,SquaredMagnitudeSum,STD,Variance,ZCR};
+        end
+        
+        
         function classificationComputers = ClassificationComputers()
             classificationComputers = {SVMClassifier,KNNClassifier,TreeClassifier,LDClassifier,EnsembleClassifier};
         end

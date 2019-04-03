@@ -38,7 +38,7 @@ classdef LeaveOneOutCrossValidator < handle
                 trainTable = obj.tableSet.mergedTableForIndices(trainIndices);
                 testTable = obj.tableSet.mergedTableForIndices(testIndex);
                 
-                waitBarMsg = sprintf('Validating fold %s ...',testIndex);
+                waitBarMsg = sprintf('Validating fold %d ...',testIndex);
                 waitbar(i/nTables,waitBar,waitBarMsg);
                 
                 %normalisation

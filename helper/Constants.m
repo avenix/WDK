@@ -8,13 +8,12 @@ classdef Constants < handle
         kDataPath = './data/rawdata';
         kCachePath = './data/cache';
         kLabelGroupingsPath = './data/labeling';
-        kFeaturesPath = './data/features';
+        kARChainsPath = './data/ARChains';
         kVideosPath = './data/videos';
+        
         kMaxFeatureNameCharacters = 15;
         
-        kSynchronisationClassStr = 'synchronisation';
         kNullClassGroupStr = 'NULL';
-        kSynchronisatonMarker = 3;
         
         kFeaturesTableFileName = 'exportedFeaturesTable';
         kNormalisationFileName = 'normalisationValues.txt';
@@ -25,7 +24,7 @@ classdef Constants < handle
         kInconsistentAnnotationAndDataFiles = 'Error - the number of annotation files is different than the number of data files';
         kNoLabelingStrategyAvailableError = 'Error - no labeling strategy file found. Double check that Matlabs path and Constants.m file are consistent';
         kInvalidAnnotationClassError = 'Error - invalid annotation class';
-        kUndefinedClassError = 'Error - class not defined. Double check that the the strings in the annotations files are defined in the classes file';
+        kUndefinedClassError = 'Error - class not defined. Double check that the strings in the annotations files are defined in the classes file';
         kInvalidInputSegmentError = 'Error - FeatureExtractor - input segment has different amount of columns than expected';
         kInvalidFilterComputedError = 'Error - Filtered Data is empty. Double-check input parameters passed to a computer';
         kInvalidInputError = 'Error - the input data provided does not match the expected input';
