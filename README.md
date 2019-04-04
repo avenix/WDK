@@ -16,37 +16,31 @@ mex -setup C++
 makeosmex
 ```
 * use the Apps in each directory (e.g. *AnnotationApp* in *1-Annotation/*).
-* install the Signal Processing Toolbox:
-
-![Signal Processing Toolbox](doc/images/DSP.png)
-
+* install the [Signal Processing Toolbox](https://www.mathworks.com/products/signal.html) by clicking on the *Get More Apps* button on Matlab's toolbar.
 * to avoid issues with pathing, Matlab's current path should be set to the root of the WDK directory: 
 
 ![Checking Matlab Path](doc/images/matlabPath.png)
 
-### Data Structure
-
-The '*/data*' directory should contain the following files and directories defined in the *Constants.m* file:
+* the '*./data*' directory should contain the following files and directories defined in the *Constants.m* file:
 
 ```
-kAnnotationsPath = './data/annotations';
 kLabelsPath = './data/annotations/labels.txt';
+kAnnotationsPath = './data/annotations';
 kMarkersPath = './data/markers';
 kDataPath = './data/rawdata';
 kCachePath = './data/cache';
 kLabelGroupingsPath = './data/labeling';
+kARChainsPath = './data/ARChains';
 kVideosPath = './data/videos';
 ```
 ## Data Collection
 
-The *Data Loader App* can be used to do a first check on the data after its collection. It offers the following features:
-- Load any tabularized ".txt" data file and save it to Matlab's binary format, which is used by the rest of the toolkit.
-- Check whether there has been data loss. For this purpose, a timestamp / counter signal and an sampling interval should be provided.
+The *DataConversionApp* can be used to do a first check on the data after its collection. It offers the following features:
+- Load any tabularized *.txt* data file and save it to the binary format used by the rest of the toolkit.
+- Check whether there has been data loss using a user-specified timestamp signal and sampling interval.
 - Visualize the different signals.
 
-![DataLoaderApp](doc/images/0-DataLoaderApp.png)
-
-*Note: by default, the DataLoaderApp loads data files from the ./data/rawdata/ directory. Files are saved to the ./ root directory.*
+*Note: by default, the DataLoaderApp loads data files from the ./data/rawdata/ directory. Converted files are saved to the ./ root directory.*
 
 ## Data Annotation
 
@@ -54,7 +48,7 @@ An annotated data set is needed to train a machine learning algorithm and to ass
 
 ![Data Annotation App](doc/images/1-DataAnnotationApp.png)
 
-### Annotating with Video (optional)
+### Annotating with video (optional)
 
 The *Data Annotation App* can load and display videos next to the data. The video is synchronised to the data by matching two data samples to two video frames as defined in a synchronisation file. The format of a synchronisation file is:
 
@@ -73,17 +67,15 @@ In this application, we asked the subject to applaud three times in front of the
 
 ![Event Annotations](doc/images/1-synchronisation.png)
 
-*Note: the AnnotationApp synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of a recording session.*
+Please note:
 
-*Tipp: use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.*
+1. The AnnotationApp synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of a recording session.*
+2. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.extension'.
+3. By default, the *Data Annotation App* loads annotation files from the './data/annotations/', video and synchronisation files from './data/videos' directory. Saved annotation files are located in the root './' directory.
+4. The labels to annotate should be defined in the 'labels.txt' file beforehand.
+5. You can use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.
 
-To consider:
-
-1. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.extension'.
-2. By default, the *Data Annotation App* loads annotation files from the './data/annotations/', video and synchronisation files from './data/videos' directory. Saved annotation files are located in the root './' directory.
-3. The labels to annotate should be defined in the 'labels.txt' file beforehand.
-
-### Annotating with External Markers (optional)
+### Importing external markers (optional)
 The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
 
 ![DaVinciResolve](doc/images/1-markers.png)
@@ -106,14 +98,14 @@ The *Data Visualization App* displays segments of data grouped by class. This is
 2. Select where the segments should come from. *Manual annotations* creates segments from the range annotations and loads event annotations to create segments using the *ManualSegmentationStrategy*. The *Automatic segmentation* uses a preprocessing, event detection and segmentation algorithms selected over the user interface to create segments.
 3. (in Automatic segmentation mode) Select the signals to use, a preprocessing algorithm and (optionally) an event detection algorithm.
 4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Create* button. At this point the segments are created.
-6. Select signals and classes to visualize and a plot style. 
+6. Select signals and classes to visualize and a plot style (i.e. overlapping or sequential). 
 
 ![Data Annotation App](doc/images/2-VisualizationApp.png)
 
 ## Event Detection
 Some wearable applications need to detect the occurrence of specific events in a stream of sensor values. The challenge is to detect the relevant events (also called target-class or true positives) while ignoring irrelevant events (also called non-target class or false positives). 
 
-The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes the amount of relevant and irrelevant events detected for each file / subject and the amount of events detected of each class. The *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. For this purpose, a developer might zoom into the data and observe the detected and missed events together with the data. 
+The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes the amount of relevant and irrelevant events detected for each recording session / file and the amount of events detected of each class. The *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. For this purpose, a developer might zoom into the data and observe the detected and missed events together with the data. 
 
 ![Data Annotation App](doc/images/3-EventDetectionApp.png)
 
@@ -139,7 +131,7 @@ Activity Recognition Chains can be imported and executed in the WDK as follows:
 
 ### Textual Programming
 
-The following text snippet corresponds to the same application as 
+The following text snippet creates a chain of computations and saves it to the goalkeeperChain.mat file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file. This chain of computations produces a feature table that can be used within the *EvaluationApp* to study the performance of different machine learning algorithms. 
 
 ```Matlab
 axisSelector = AxisSelector(1:3);%AX AY AZ
@@ -160,7 +152,7 @@ arcChain = Computer.ComputerWithSequence({FileLoader(),PropertyGetter('data'),..
 axisSelector,magnitudeSquared,simplePeakDetector,eventSegmentation,labeler,...
 featureExtractor});
 
-DataLoader.SaveComputer(arcChain,'goalkeeperChain');
+DataLoader.SaveComputer(arcChain,'goalkeeperChain.mat');
 ```
 
 ## Reusable Components
@@ -237,7 +229,7 @@ The WDK provides the following reusable components:
 
  ## Evaluation
  
- The iterative development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *Data Evaluation App* enables developers to design an algorithm by selecting reusable components at each stage of the activity recognition chain and assess its performance. The calculated performance metrics are:
+ The development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *EvaluationApp* enables developers to design an algorithm by selecting reusable components at each stage of the activity recognition chain and to assess its performance. The calculated performance metrics are:
  
  Recognition Performance:
  - Accuracy
@@ -252,7 +244,7 @@ The WDK provides the following reusable components:
  
  ![Data Annotation App](doc/images/4-EvaluationApp.png)
  
- *Note: The generated feature tables can be exported to *.mat* and *.txt* formats. The *.txt* format makes it possible to study the classification on other platforms such as python / tensorFlow and WEKA.*
+ *Note: Feature tables generated with a particular activity recognition algorithm can be exported to *.txt* formats to study the classification on other platforms such as python / tensorFlow and WEKA.*
  
  ## Getting started
 1. The WDK loads data from a binary .mat file containing an instance of the *DataFile* class found in *./ARC/model* directory. The *DataConversionApp* can load any file in CSV format and export it to the *DataFile* format. Place your CSV files in the *./data/rawdata/* directory.
