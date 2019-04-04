@@ -118,7 +118,7 @@ Applications in the WDK can be developed visually over [WDK-RED](https://github.
 
 ### Visual Programming
 
-Activity recognition chains can be developed visually in Node-RED using the nodes available in the [WDK-RED platform](https://github.com/avenix/wearable-prototyping). The following image shows an activity recognition chain for detecting and classifying soccer goalkeeper training exercises using a wearable motion sensor attached to a glove worn by a goalkeeper:
+Activity recognition applications can be developed visually in Node-RED using the nodes available in the [WDK-RED platform](https://github.com/avenix/wearable-prototyping). The following image shows an activity recognition chain for detecting and classifying soccer goalkeeper training exercises using a wearable motion sensor attached to a glove worn by a goalkeeper:
 
 ![Activity Recognition Chain](doc/images/WDK-RED.png)
 
@@ -131,7 +131,16 @@ Activity Recognition Chains can be imported and executed in the WDK as follows:
 
 ### Textual Programming
 
-The following text snippet creates a chain of computations and saves it to the goalkeeperChain.mat file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file. This chain of computations produces a feature table that can be used within the *EvaluationApp* to study the performance of different machine learning algorithms. 
+Activity recognition applications can be developed directly in Matlab as long as the WDK is in Matlab's path. The *Computer* class is the superclass of every reusable component. Every *Computer* has the following properties and methods:
+
+```Matlab
+inputPort; %describes the type of the input this computer takes
+outputPort; %describes the type of the output this computer produces
+nextComputers; %array of computers this computer is connected to
+output = compute(obj,input); %the method that executes implemented in each subclass 
+```
+
+The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file. This chain of computations produces a feature table that can be used within the *EvaluationApp* to study the performance of different machine learning algorithms.
 
 ```Matlab
 axisSelector = AxisSelector(1:3);%AX AY AZ
@@ -229,7 +238,7 @@ The WDK provides the following reusable components:
 
  ## Evaluation
  
- The development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *EvaluationApp* enables developers to design an algorithm by selecting reusable components at each stage of the activity recognition chain and to assess its performance. The calculated performance metrics are:
+ The development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *EvaluationApp* enables developers to design algorithms by selecting reusable components at each stage of the activity recognition chain and to assess their performance. The calculated performance metrics are:
  
  Recognition Performance:
  - Accuracy
