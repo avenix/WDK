@@ -11,8 +11,8 @@ classdef AxisSelector < Computer
                 obj.axes = axes;
             end
             obj.name = 'AxisSelector';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignalN);
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal);
+            obj.inputPort = ComputerDataType.kSignalN;
+            obj.outputPort = ComputerDataType.kSignal;
         end
         
         function computedSignal = compute(obj,signal)

@@ -13,8 +13,8 @@ classdef HighPassFilter < Computer
                 obj.cutoff = cutoff;
             end
             obj.name = 'highPass';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kSignal;
         end
         
         function dataFiltered = compute(obj, data)

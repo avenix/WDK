@@ -1,7 +1,7 @@
 classdef Constants < handle
     
     properties (Access = public, Constant)
-
+        
         kLabelsPath = './data/annotations/labels.txt';
         kAnnotationsPath = './data/annotations';
         kMarkersPath = './data/markers';
