@@ -187,9 +187,8 @@ classdef AnnotationApp < handle
         
         function plotTimelineMarker(obj)
             if ~isempty(obj.timeLineMarker)
-                maxY = obj.plotAxes.Position(4);
                 obj.timeLineMarkerHandle = line(obj.plotAxes,[obj.timeLineMarker, obj.timeLineMarker],...
-                    [-maxY / 2, maxY / 2],...
+                    [obj.plotAxes.YLim(1), obj.plotAxes.YLim(2)],...
                     'Color','red','LineWidth',2,'LineStyle','-');
             end
         end

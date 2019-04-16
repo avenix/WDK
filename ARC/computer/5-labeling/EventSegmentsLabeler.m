@@ -7,8 +7,8 @@ classdef EventSegmentsLabeler < Computer
         
         function obj = EventSegmentsLabeler()
             obj.name = 'eventSegmentsLabeler';
-            obj.inputPort = ComputerPort(ComputerPortType.kSegment);
-            obj.outputPort = ComputerPort(ComputerPortType.kSegment);
+            obj.inputPort = ComputerDataType.kSegment;
+            obj.outputPort = ComputerDataType.kSegment;
         end
         
         function labeledSegments = compute(~,segments)

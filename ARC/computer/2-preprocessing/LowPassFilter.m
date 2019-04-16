@@ -14,8 +14,8 @@ classdef LowPassFilter < Computer
                 obj.cutoff = cutoff;
             end
             obj.name = 'lowPass';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kSignal;
         end
         
         function dataFiltered = compute(obj,data)

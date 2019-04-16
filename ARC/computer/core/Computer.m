@@ -31,6 +31,12 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             obj.nextComputers{end+1} = computer;
         end
         
+        function addNextComputers(obj, computers)
+            for i = 1 : length(computers)
+                obj.addNextComputer(computers{i});
+            end
+        end
+        
         function str = toString(obj)
             str = sprintf('%s',obj.name);
         end

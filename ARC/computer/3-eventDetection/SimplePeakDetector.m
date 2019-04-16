@@ -13,8 +13,8 @@ classdef SimplePeakDetector < Computer
                 obj.minPeakDistance = minPeakDistance;
             end
             obj.name = 'simplePeakDet';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kEvent);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kEvent;
         end
         
         function str = toString(obj)

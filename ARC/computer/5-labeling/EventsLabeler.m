@@ -8,8 +8,8 @@ classdef EventsLabeler < Computer
         
         function obj = EventsLabeler()
             obj.name = 'eventsLabeler';
-            obj.inputPort = ComputerPort(ComputerPortType.kEvent);
-            obj.outputPort = ComputerPort(ComputerPortType.kEvent);
+            obj.inputPort = ComputerDataType.kEvent;
+            obj.outputPort = ComputerDataType.kEvent;
         end
         
         function labeledEvents = compute(obj, events)

@@ -7,8 +7,8 @@ classdef EventSegmentation < Computer
     methods (Access = public)
         function obj = EventSegmentation()
             obj.name = 'eventSegmentation';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kSegment);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kSegment;
         end
         
         function segments = compute(obj,events)            

@@ -14,8 +14,8 @@ classdef SVMClassifier < Computer
         
         function obj = SVMClassifier()
             obj.name = 'SVM';
-            obj.inputPort = ComputerPort(ComputerPortType.kTable);
-            obj.outputPort = ComputerPort(ComputerPortType.kTable);
+            obj.inputPort = ComputerDataType.kTable;
+            obj.outputPort = ComputerDataType.kTable;
         end
         
         function dataOut = compute(obj,data)

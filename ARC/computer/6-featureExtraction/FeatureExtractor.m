@@ -11,8 +11,8 @@ classdef FeatureExtractor < Computer
                 obj.computers = computers;
             end
             obj.name = 'FeatureExtractor';
-            obj.inputPort = ComputerPort(ComputerPortType.kSegment);
-            obj.outputPort = ComputerPort(ComputerPortType.kTable);
+            obj.inputPort = ComputerDataType.kSegment;
+            obj.outputPort = ComputerDataType.kTable;
         end
         
         %creates a table from a set of segments
@@ -98,6 +98,26 @@ classdef FeatureExtractor < Computer
     
     methods (Static)
         
+        function featureExtractor = FeatureExtractorWithAxes(axisSelectors,featureExtractors)
+            nFeatureExtractors = length(featureExtractors);
+            nAxisSelectors = length(axisSelectors);
+            
+            featureExtractionComputers = cell(1,nFeatureExtractors * nAxisSelectors);
+            
+            count = 1;
+            for i = 1 : length(featureExtractors)
+                for j = 1 : length(axisSelectors)
+                    featureExtractor = featureExtractors{i}.copy();
+                    axisSelector = axisSelectors(j).copy();
+                    featureExtractionComputer = Computer.ComputerWithSequence({axisSelector,featureExtractor});
+                    featureExtractionComputers{count} = featureExtractionComputer;
+                    count = count + 1;
+                end
+            end
+            
+            featureExtractor = FeatureExtractor(featureExtractionComputers);
+        end
+        
         function featureExtractors = CreateDefaultFeatureExtractors()
             featureExtractors = {Min(), Max(), Mean(), Median(), Variance(), STD(),...
                 AUC(), AAV(), MAD(),IQR(),RMS(),Skewness(),Kurtosis()};
@@ -107,6 +127,14 @@ classdef FeatureExtractor < Computer
             axisSelectors = repmat(AxisSelector,1,numSignals);
             for i = 1 : numSignals
                 axisSelectors(i) = AxisSelector(i);
+            end
+        end
+        
+        function axisSelectors = CreateAxisSelectorsForAxes(axes)
+            nAxes = length(axes);
+            axisSelectors = repmat(AxisSelector,1,nAxes);
+            for i = 1 : nAxes
+                axisSelectors(i) = AxisSelector(axes(i));
             end
         end
         

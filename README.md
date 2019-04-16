@@ -44,7 +44,7 @@ The *DataConversionApp* can be used to do a first check on the data after its co
 
 ## Data Annotation
 
-An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate specific events or activities that have a duration in time. The *Data Annotation App* supports both kinds of annotations. The following image shows the squared magnitude of the accelerometer signal collected by a motion sensor attached at a hind leg of a cow. The individual strides of the cow have been annotated as event annotations (red) as well as ranges in the signal when the cow was running and walking (black rectangles).
+An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate *events* that occurr at a specific moment in time or activities that have a duration in time, called *ranges*. The following image shows the squared magnitude of the accelerometer signal collected by a motion sensor attached at a hind leg of a cow. The individual strides of the cow have been annotated as event annotations (red) and the walking and running activities as ranges (black rectangles).
 
 ![Data Annotation App](doc/images/1-DataAnnotationApp.png)
 
@@ -102,13 +102,6 @@ The *Data Visualization App* displays segments of data grouped by class. This is
 
 ![Data Annotation App](doc/images/2-VisualizationApp.png)
 
-## Event Detection
-Some wearable applications need to detect the occurrence of specific events in a stream of sensor values. The challenge is to detect the relevant events (also called target-class or true positives) while ignoring irrelevant events (also called non-target class or false positives). 
-
-The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes the amount of relevant and irrelevant events detected for each recording session / file and the amount of events detected of each class. The *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. For this purpose, a developer might zoom into the data and observe the detected and missed events together with the data. 
-
-![Data Annotation App](doc/images/3-EventDetectionApp.png)
-
 ## Application Development
 
 Most wearable device applications execute a chain (i.e. sequence) of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain and consists of the following *stages*:
@@ -129,18 +122,18 @@ Activity Recognition Chains can be imported and executed in the WDK as follows:
 - Use the *Execute from File* button in each App.
 
 
-### Textual Programming
+### Text-based Programming
 
 Activity recognition applications can be developed directly in Matlab as long as the WDK is in Matlab's path. The *Computer* class is the superclass of every reusable component. Every *Computer* has the following properties and methods:
 
 ```Matlab
-inputPort; %describes the type of the input this computer takes
-outputPort; %describes the type of the output this computer produces
+inputPort; %type of the input this computer takes
+outputPort; %type of the output this computer produces
 nextComputers; %array of computers this computer is connected to
-output = compute(obj,input); %the method that executes implemented in each subclass 
+output = compute(obj,input); %the method executed when this computer is visited (implemented in each subclass) 
 ```
 
-The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file. This chain of computations produces a feature table that can be used within the *EvaluationApp* to study the performance of different machine learning algorithms.
+The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file.
 
 ```Matlab
 axisSelector = AxisSelector(1:3);%AX AY AZ
@@ -155,6 +148,7 @@ eventSegmentation.segmentSizeLeft = 200;
 eventSegmentation.segmentSizeRight = 30;
 
 labeler = EventSegmentsLabeler();
+
 featureExtractor = DataLoader.LoadComputer('goalkeeperFeatureChain.mat');
 
 arcChain = Computer.ComputerWithSequence({FileLoader(),PropertyGetter('data'),...
@@ -163,6 +157,7 @@ featureExtractor});
 
 DataLoader.SaveComputer(arcChain,'goalkeeperChain.mat');
 ```
+This chain of computations produces a feature table that can be used within the *EvaluationApp* to study the performance of different machine learning algorithms.
 
 ## Reusable Components
 The WDK provides the following reusable components:
@@ -172,8 +167,8 @@ The WDK provides the following reusable components:
 | Name             | Desscription                                                                                                                                                                                                                                                                | Flops     | Mem | Comm |
 |------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|-----|------|
 | HighPassFilter   | Butterworth High-pass filter                                                                                                                                                                                                                                                | order * n | n   | n    |
-| LowPassFilter    | Butterworth High-pass filter                                                                                                                                                                                                                                                | order * n | n   | n    |
-| Magnitude        | ![Magnitude](https://latex.codecogs.com/gif.latex?M%28x_i%29%20%3D%20%5Csqrt%7Ba_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2%29%7D)                                                                                                              | 5 * n     | n   | n    |
+| LowPassFilter    | Butterworth Low-pass filter                                                                                                                                                                                                                                                | order * n | n   | n    |
+| Magnitude        | ![Magnitude](https://latex.codecogs.com/gif.latex?M%28x_i%29%20%3D%20%5Csqrt%7Ba_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2%7D)                                                                                                              | 5 * n     | n   | n    |
 | SquaredMagnitude | ![Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)                                                                                                                                 | 5 * n     | n   | n    |
 | Norm             | ![Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)                                                              | 5 * n     | n   | n    |
 | S1               | ![S1](https://latex.codecogs.com/gif.latex?S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7Bmax%28x_i%20-%20x_%7Bi-1%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)                                         | n * k     | n   | n    |
@@ -218,7 +213,7 @@ The WDK provides the following reusable components:
 | SignalVectorMagnitude | ![SignalVectorMagnitude](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csum_%7Bi%3D1%7D%5En%20%5Csqrt%7Bx_i%5E2%20&plus;%20y_i%5E2%29%7D%7D%7Bn%7D)                                                                                                            | 7 * n      | 1                  | 1                  |
 | Skewness              | A measure of the asymmetry in the distribution of values in the input signal calculated as: ![Skewness](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20%5Cleft%20%28%20%5Cfrac%7Bx_i%20-%20%5Cbar%7Bx%7D%29%7D%7B%5Csigma%7D%5Cright%29%5E3) | 10 * n     | 5                  | 1                  |
 | SMA                   | Sum of absolute values on each input signal.                                                                                                                                                                                                                      | 3 * n * n  | 1                  | 1                  |
-| SquaredMagnitudeSum   | Sum of squared values of input signal.                                                                                                                                                                                                                            | 3 * n      | 1                  | 1                  |
+| Energy   | Sum of squared values of input signal.                                                                                                                                                                                                                            | 3 * n      | 1                  | 1                  |
 | STD                   | Standard Deviation of the input signal.                                                                                                                                                                                                                           | 6 * n      | 2                  | 1                  |
 | Variance              | Variance of the input signal.                                                                                                                                                                                                                                     | 6 * n      | 2                  | 1                  |
 | ZCR                   | Zero Crossing Rate. Amount of times the signal crosses the zero line.                                                                                                                                                                                             | 7 * n      | 1                  | 1                  |
@@ -233,12 +228,19 @@ The WDK provides the following reusable components:
 | SpectralCentroid | Indicates where the "center of mass" of the spectrum is located. ![SpectralCentroid](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20%5Cbar%7By_i%7D%20y_%7Bi%7D%7D%7B%5Csum_%7Bi%3D1%7D%5E%7Bn-1%7D%20y_i%7D)                                                                           | 10 * n * log(n) | n   | 1    |
 | SpectralEnergy   | The energy of the frequency domain (sum of squared values of dft coefficients). ![SpectralEnergy](https://latex.codecogs.com/gif.latex?%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%20%5Cbar%7By_i%7D%5E2)                                                                                                                               | 10 * n * log(n) | n   | 1    |
 | SpectralEntropy  | Indicates how much information is contained in the frequency distribution of a signal. This metrics is calculated as: ![SpectralEntropy](https://latex.codecogs.com/gif.latex?-%5Csum_%7Bi%3D1%7D%5En%7By_i%5Clog_2%20%28y_i%29%7D) where y_i are the coefficients of the power spectrum of the input signal                              | 15 * n * log(n) | n   | 1    |
-| SpectralFlatness | Provides a way to quantify how noise-like a sound is. White noise has peaks in all frequencies making its spectrum look flat. ![SpectralFlatness](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csqrt%5Bn%5D%7B%5Cprod_%7Bi%3D1%7D%5E%7Bn%7D%20x_i%7D%7D%7B%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bi%3D1%7D%5En%20x%28n%29%7D) | 15 * n * log(n) | n   | 1    |
+| SpectralFlatness | Provides a way to quantify how noise-like a signal is. White noise has peaks in all frequencies making its spectrum look flat. ![SpectralFlatness](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csqrt%5Bn%5D%7B%5Cprod_%7Bi%3D1%7D%5E%7Bn%7D%20x_i%7D%7D%7B%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bi%3D1%7D%5En%20x%28n%29%7D) | 15 * n * log(n) | n   | 1    |
 | SpectralSpread   | Indicates the variance in the distribution of frequencies.                                                                                                                                                                                                                                                               | 15 * n * log(n) | n   | 1    |
+
+## Event Detection
+Some wearable applications need to detect the occurrence of specific events in a stream of sensor values. The challenge is to detect the relevant events (also called target-class or true positives) while ignoring irrelevant events (also called non-target class or false positives). 
+
+The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes the amount of relevant and irrelevant events detected for each recording session / file and the amount of events detected of each class. The *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. For this purpose, a developer might zoom into the data and observe the detected and missed events together with the data. 
+
+![Data Annotation App](doc/images/3-EventDetectionApp.png)
 
  ## Evaluation
  
- The development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort. The *EvaluationApp* enables developers to design algorithms by selecting reusable components at each stage of the activity recognition chain and to assess their performance. The calculated performance metrics are:
+ The development and evaluation of an activity recognition algorithm usually takes a large fraction of the development effort of the application. The *EvaluationApp* enables developers to design algorithms by selecting reusable components at each stage of the activity recognition chain and to assess their performance. The calculated performance metrics are:
  
  Recognition Performance:
  - Accuracy
@@ -273,7 +275,9 @@ class5
 If no label grouping is defined, the WDK uses the *defaultLabelingStrategy* which maps each label to a class with the same name.
 
 *Note: Labels grouped in a label grouping should be defined in the './data/annotations/labels.txt' file*.
+
 *Note: Label groupings should be placed in the './data/labeling/' directory*.
+
 *Note: Labels should be mapped to a single group in a labeling strategy. Labels that are left ungrouped in a labeling strategy will be assigned to its own group automatically*.
  
  ## Troubleshooting

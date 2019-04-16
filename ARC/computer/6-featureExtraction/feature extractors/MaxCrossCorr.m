@@ -4,8 +4,8 @@ classdef MaxCrossCorr < Computer
         
         function obj = MaxCrossCorr()
             obj.name = 'MaxCrossCorr';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal2);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal2;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         function result = compute(~,signal)

@@ -4,8 +4,8 @@ classdef STD < Computer
         
         function obj = STD()
             obj.name = 'STD';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         function result = compute(~,signal)

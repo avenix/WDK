@@ -2,8 +2,8 @@ classdef AnnotationRangeAnnotationsPlotter < handle
     
     properties (Access = public,Constant)
         AnnotationColor = 'black';
-        LineWidth = 1;
-        FontSize = 22;
+        LineWidth = 3;
+        FontSize = 24;
         RectangleYPosToDataRatio = 1.025;
         LabelYPosToRectangleRatio = 1.05;
         RectangleCurvature = 0.1;

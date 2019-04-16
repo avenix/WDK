@@ -15,8 +15,8 @@ classdef RangeSelector < Computer
                 obj.rangeStart = 1;
             end
             obj.name = 'RangeSelector';
-            obj.inputPort = ComputerPort(ComputerPortType.kSegment);
-            obj.outputPort = ComputerPort(ComputerPortType.kSegment);
+            obj.inputPort = ComputerDataType.kSegment;
+            obj.outputPort = ComputerDataType.kSegment;
         end
         
         function shorterSegment = compute(obj,segment)

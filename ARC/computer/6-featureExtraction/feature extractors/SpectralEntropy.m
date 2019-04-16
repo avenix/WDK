@@ -5,8 +5,8 @@ classdef SpectralEntropy < Computer
         
         function obj = SpectralEntropy()
             obj.name = 'SpectralEntropy';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         %receives a fourier transform

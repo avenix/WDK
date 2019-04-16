@@ -20,6 +20,9 @@ classdef HighPassFilter < Computer
         function dataFiltered = compute(obj, data)
             [b, a] = butter(obj.order,obj.cutoff/(obj.samplingFrequency/2),'high');
             dataFiltered = abs(filtfilt(b, a, double(data)));
+            
+            
+            
         end
         
         function str = toString(obj)

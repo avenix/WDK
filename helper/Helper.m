@@ -182,7 +182,10 @@ classdef Helper < handle
         end
         
         %% Helper methods
-        
+        function b = IsPowerOf2(x)
+            b = (bitand(x, x - 1) == 0);
+        end
+
         function labeledSegments = LabelSegmentsWithValidLabels(segments,labels)
             
             isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);

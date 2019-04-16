@@ -1,22 +1,23 @@
-classdef SignalVectorMagnitude < Computer
+classdef Correlation < Computer
     
     methods (Access = public)
         
-        function obj = SignalVectorMagnitude()
-            obj.name = 'SignalVectorMagnitude';
+        function obj = Correlation()
+            obj.name = 'Correlation';
             obj.inputPort = ComputerDataType.kSignal2;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.outputPort = ComputerDataType.kSignal;
         end
         
         function result = compute(~,signal)
-            result = sum(sqrt(signal(:,1).^2 + signal(:,2).^2)) / size(signal,1);
+            result = corrcoef(signal);
         end
         
+        %TODO: recalculate these metrics
         function metrics = computeMetrics(~,input)
             n = size(input,1);
-            flops = 7 * n;
+            flops = 18 * n;
             memory = 4;
-            outputSize = 4;
+            outputSize = 1;
             metrics = Metric(flops,memory,outputSize);
         end
     end

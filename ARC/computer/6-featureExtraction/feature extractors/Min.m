@@ -4,8 +4,8 @@ classdef Min < Computer
         
         function obj = Min()
             obj.name = 'Min';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         function dataOut = compute(~,signal)

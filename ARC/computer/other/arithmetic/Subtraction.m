@@ -4,8 +4,8 @@ classdef Subtraction < Computer
         
         function obj = Subtraction()
             obj.name = 'subtraction';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal,ComputerSizeType.kN);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kSignal;
         end
         
         function computedSignal = compute(~,dataIn)

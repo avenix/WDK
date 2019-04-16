@@ -1,14 +1,21 @@
-classdef OverlappingWindowSegmentation < Computer
+classdef SlidingWindowSegmentation < Computer
     properties (Access = public)
         windowSize = 300;
         iterationSize = 150;
     end
 
     methods (Access = public)
-        function obj = OverlappingWindowSegmentation()
-            obj.name = 'overlappingWindow';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kSegment);
+        function obj = SlidingWindowSegmentation(windowSize,iterationSize)
+            if nargin > 0
+                obj.windowSize = windowSize;
+                if nargin > 1
+                    obj.iterationSize = iterationSize;
+                end
+            end
+            
+            obj.name = 'slidingWindow';
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kSegment;
         end
         
         function segments = compute(obj,data)

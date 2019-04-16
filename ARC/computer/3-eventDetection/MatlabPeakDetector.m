@@ -9,8 +9,8 @@ classdef MatlabPeakDetector < Computer
         
         function obj = MatlabPeakDetector()
             obj.name = 'matlabPeakDet';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kEvent);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kEvent;
         end
         
         function str = toString(obj)

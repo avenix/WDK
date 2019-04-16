@@ -16,8 +16,8 @@ classdef Merge < Computer
                 obj.numMessages = numMessages;
             end
             obj.name = 'Merge';
-            obj.inputPort = ComputerPort(ComputerPortType.kAny);
-            obj.outputPort = ComputerPort(ComputerPortType.kAny);
+            obj.inputPort = ComputerDataType.kAny;
+            obj.outputPort = ComputerDataType.kAny;
             obj.messageCount = 0;
         end
         

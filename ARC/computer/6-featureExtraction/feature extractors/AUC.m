@@ -8,8 +8,8 @@ classdef AUC < Computer
         
         function obj = AUC()
             obj.name = 'AUC';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         function result = compute(obj,signal)

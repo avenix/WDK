@@ -4,8 +4,8 @@ classdef Norm < Computer
         
         function obj = Norm()
             obj.name = 'Norm';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal3);
-            obj.outputPort = ComputerPort(ComputerPortType.kSignal);
+            obj.inputPort = ComputerDataType.kSignal3;
+            obj.outputPort = ComputerDataType.kSignal;
         end
         
         function dataOut = compute(~,x)

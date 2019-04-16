@@ -5,8 +5,8 @@ classdef SpectralCentroid < Computer
         
         function obj = SpectralCentroid()
             obj.name = 'SpectralCentroid';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         %receives a fourier transform

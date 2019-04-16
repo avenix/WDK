@@ -8,8 +8,8 @@ classdef FeatureSelector < Computer
     methods (Access = public)
         function obj =  FeatureSelector()
             obj.name = 'FeatureSelector';
-            obj.inputPort = ComputerPort(ComputerPortType.kTable);
-            obj.outputPort = ComputerPort(ComputerPortType.kTable);
+            obj.inputPort = ComputerDataType.kTable;
+            obj.outputPort = ComputerDataType.kTable;
         end
         
         function table = compute(obj,table)

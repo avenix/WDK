@@ -4,8 +4,8 @@ classdef AAV < Computer
         
         function obj = AAV()
             obj.name = 'AAV';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         function result = compute(~,signal)

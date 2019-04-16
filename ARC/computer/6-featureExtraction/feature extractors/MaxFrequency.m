@@ -4,8 +4,8 @@ classdef MaxFrequency < Computer
         
         function obj = MaxFrequency()
             obj.name = 'MaxFrequency';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         %receives a fourier transform

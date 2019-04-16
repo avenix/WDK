@@ -12,10 +12,17 @@ classdef KNNClassifier < Computer
     
     methods (Access = public)
         
-        function obj = KNNClassifier()
+        function obj = KNNClassifier(nNeighbors,distanceMetric)
+            if nargin > 0
+                obj.nNeighbors = nNeighbors;
+                if nargin > 1
+                    obj.distanceMetric = distanceMetric;
+                end
+            end
+            
             obj.name = 'KNN';
-            obj.inputPort = ComputerPort(ComputerPortType.kTable);
-            obj.outputPort = ComputerPort(ComputerPortType.kTable);
+            obj.inputPort = ComputerDataType.kTable;
+            obj.outputPort = ComputerDataType.kTable;
         end
         
         function dataOut = compute(obj,data)

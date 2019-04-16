@@ -4,8 +4,8 @@ classdef MAD < Computer
         
         function obj = MAD()
             obj.name = 'MAD';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         function result = compute(~,signal)

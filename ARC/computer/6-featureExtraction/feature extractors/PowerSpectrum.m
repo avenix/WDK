@@ -4,8 +4,8 @@ classdef PowerSpectrum < Computer
         
         function obj = PowerSpectrum()
             obj.name = 'PowerSpectrum';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         %receives a fourier transform

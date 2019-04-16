@@ -12,10 +12,14 @@ classdef RangeSegmentsLabeler < Computer
     
     methods (Access = public)
         
-        function obj = RangeSegmentsLabeler()
+        function obj = RangeSegmentsLabeler(shouldContainEntireSegment)
+            if nargin > 0
+                obj.shouldContainEntireSegment = shouldContainEntireSegment;
+            end
+            
             obj.name = 'rangeSegmentsLabeler';
-            obj.inputPort = ComputerPort(ComputerPortType.kSegment);
-            obj.outputPort = ComputerPort(ComputerPortType.kSegment);
+            obj.inputPort = ComputerDataType.kSegment;
+            obj.outputPort = ComputerDataType.kSegment;
         end
         
         function labeledSegments = compute(obj,segments)

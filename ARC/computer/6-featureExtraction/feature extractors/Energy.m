@@ -1,11 +1,11 @@
-classdef SquaredMagnitudeSum < Computer
+classdef Energy < Computer
     
     methods (Access = public)
         
-        function obj = SquaredMagnitudeSum()
-            obj.name = 'SquaredMagnitudeSum';
-            obj.inputPort = ComputerPort(ComputerPortType.kSignal);
-            obj.outputPort = ComputerPort(ComputerPortType.kFeature);
+        function obj = Energy()
+            obj.name = 'Energy';
+            obj.inputPort = ComputerDataType.kSignal;
+            obj.outputPort = ComputerDataType.kFeature;
         end
         
         function result = compute(~,signal)

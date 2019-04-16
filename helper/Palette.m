@@ -12,7 +12,7 @@ classdef Palette < handle
         end
         
         function segmentationComputers = SegmentationComputers()
-            segmentationComputers = {EventSegmentation, OverlappingWindowSegmentation};
+            segmentationComputers = {EventSegmentation, SlidingWindowSegmentation};
         end
         
         function labelingStrategyComputers = LabelingStrategyComputers()
