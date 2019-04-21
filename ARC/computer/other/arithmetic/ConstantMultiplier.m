@@ -1,7 +1,7 @@
 classdef ConstantMultiplier < Computer
     
     properties (Access = public)
-        constant;
+        constant = 1;
     end
     
     methods (Access = public)

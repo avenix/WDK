@@ -19,6 +19,14 @@ classdef PropertyGetter < Computer
             computedSignal = data.(obj.property);
         end
         
+        function metrics = computeMetrics(obj,input)
+            flops = 1;
+            computedSignal = input.(obj.property);
+            memory = Helper.ComputeObjectSize(computedSignal);
+            outputSize = memory;
+            metrics = Metric(flops,memory,outputSize);
+        end
+        
         function str = toString(obj)
             str = sprintf('%s_%s',obj.name,obj.property);
         end

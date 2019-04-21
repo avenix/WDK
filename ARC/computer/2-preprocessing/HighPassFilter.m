@@ -20,9 +20,6 @@ classdef HighPassFilter < Computer
         function dataFiltered = compute(obj, data)
             [b, a] = butter(obj.order,obj.cutoff/(obj.samplingFrequency/2),'high');
             dataFiltered = abs(filtfilt(b, a, double(data)));
-            
-            
-            
         end
         
         function str = toString(obj)
@@ -36,7 +33,7 @@ classdef HighPassFilter < Computer
         end
         
         function metrics = computeMetrics(obj,input)
-            flops = obj.order * size(input,1); %assumes filter swipes once the entire signal
+            flops = 13 * obj.order * size(input,1);
             memory = size(input,1) * 4;
             outputSize = size(input,1) * 4;
             metrics = Metric(flops,memory,outputSize);

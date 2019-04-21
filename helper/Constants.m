@@ -12,6 +12,7 @@ classdef Constants < handle
         kVideosPath = './data/videos';
         
         kMaxFeatureNameCharacters = 15;
+        kReferenceComputingTime = 6.5394e-04;
         
         kNullClassGroupStr = 'NULL';
         

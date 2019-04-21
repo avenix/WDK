@@ -1,7 +1,7 @@
 classdef AxisMerger < Computer
     
     properties (Access = public)
-        nAxes;
+        nAxes = 2;
     end
     
     properties (Access = private)

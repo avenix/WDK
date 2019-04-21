@@ -39,4 +39,4 @@ spectral energy
 \sum_{i=1}^{n} \bar{y_i}^2
 
 spectral flatness
-\frac{\sqrt[n]{\prod_{i=1}^{n} x_i}}{\frac{1}{n}\sum_{i=1}^n x(n)}
+\frac{\sqrt[n]{\prod_{i=1}^{n} x_i}}{\frac{1}{n}\sum_{i=1}^n x_n}

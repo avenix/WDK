@@ -3,6 +3,7 @@ classdef FeatureNormalizer < Computer
     properties (Access = public)
         means;
         stds;
+        shouldComputeNormalizationValues = false;
     end
     
     methods (Access = public)
@@ -19,7 +20,12 @@ classdef FeatureNormalizer < Computer
         end
         
         function table = compute(obj,table)
-            table = obj.normalize(table);
+            if obj.shouldComputeNormalizationValues
+                obj.fit(table);
+                table = [];
+            else
+                table = obj.normalize(table);
+            end
         end
         
         function table = normalize(obj,table)

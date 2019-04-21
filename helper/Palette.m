@@ -20,22 +20,21 @@ classdef Palette < handle
         end
         
         
-        function featureExtractionComputers = StatisticalFeatureExtractionComputers()
+        function featureExtractionComputers = TimeDomainFeatureExtractionComputers()
             featureExtractionComputers = {Min,Max,Mean,Median,Variance,STD,ZCR,...
-                SquaredMagnitudeSum,Skewness,Kurtosis,IQR,AUC};
+                Skewness,Kurtosis,IQR,AUC,AAV,Correlation,...
+                Energy,MAD,MaxCrossCorr,Octants,P2P,Quantile,RMS,SignalVectorMagnitude,SMA, Entropy};
         end
         
-        function featureExtractionComputers = FourierFeatureExtractionComputers()
-            featureExtractionComputers = {FFTDC,MaxFrequency,SpectralCentroid,SpectralEnergy,SpectralEntropy,SpectralFlatness,...
-                SpectralSpread,SquaredMagnitudeSum};
+        function featureExtractionComputers = FrequencyDomainFeatureExtractionComputers()
+            featureExtractionComputers = {FFT,FFTDC,MaxFrequency,PowerSpectrum,SpectralCentroid,SpectralEnergy,SpectralEntropy,SpectralFlatness,...
+                SpectralSpread};
         end
         
         function featureExtractionComputers = FeatureExtractionComputers()
-            featureExtractionComputers = {AAV, AUC, Entropy, FFTDC, IQR, Kurtosis,...
-                MAD,Max,MaxCrossCorr,MaxFrequency,Mean,Median,Min,Octants,...
-                P2P,PowerSpectrum,Quantile,RMS,SignalVectorMagnitude, Skewness,...
-                SpectralCentroid,SpectralEnergy,SpectralEntropy,SpectralFlatness,...
-                SpectralSpread,SquaredMagnitudeSum,STD,Variance,ZCR};
+            timeDomainFeatures = Helper.TimeDomainFeatureExtractionComputers();
+            frequencyDomainFeatures = Helper.FrequencyDomainFeatureExtractionComputers();
+            featureExtractionComputers = [timeDomainFeatures; frequencyDomainFeatures];
         end
         
         

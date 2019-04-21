@@ -70,6 +70,13 @@ classdef C45Classifier < Computer
             labels = use_tree(table.features,1:N^2, obj.classifier, discrete_dim, unique(train_targets));
         end
         
+        function metrics = computeMetrics(obj,input)
+            flops = timeit(@()obj.test(input)) / Constants.kReferenceComputingTime;
+            memory = Helper.ComputeObjectSize(obj.classifier);
+            outputSize = 4;
+            metrics = Metric(flops,memory,outputSize);
+        end
+        
         function str = toString(obj)
             str = sprintf('%s_%d_%d',obj.name,obj.nLearners,obj.ensembleMethod);
         end

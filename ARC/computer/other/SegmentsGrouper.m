@@ -1,5 +1,9 @@
-classdef SegmentsGrouper < handle
+classdef SegmentsGrouper < Computer
         
+    properties (Access = public)
+        numClasses;
+    end
+    
     properties (Access = private)
         classesMap;
     end
@@ -8,9 +12,17 @@ classdef SegmentsGrouper < handle
         
         function obj = SegmentsGrouper()
             obj.classesMap = ClassesMap.instance();
+            
+            obj.name = 'SegmentsGrouper';
+            obj.inputPort = ComputerDataType.kSegment;
+            obj.outputPort = ComputerDataType.kAny;
         end
         
-        %takes input from ManualSegmentsLoader.loadSegments()
+        
+        function groupedSegments = compute(obj,segments)
+            groupedSegments = obj.groupSegments(segments,obj.numClasses);
+        end
+        
         %returns cell array. In each cell i, contains segments of class i
         function groupedSegments = groupSegments(obj,segments,nClasses)
             

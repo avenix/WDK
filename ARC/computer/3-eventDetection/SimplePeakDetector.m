@@ -38,11 +38,13 @@ classdef SimplePeakDetector < Computer
             outputSize = 0;
             metrics = Metric(flops,memory,outputSize);
         end
+        
     end
     
     methods (Access = private)
+        
         function peakLocations = detectEvents(obj,signal)
-                        
+            
             signal = single(signal);
             lastPeakLocation = -1000;
             lastPeak = 0;

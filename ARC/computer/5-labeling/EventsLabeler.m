@@ -45,6 +45,7 @@ classdef EventsLabeler < Computer
 
     methods (Static)
         
+        
         function idx = findIdxOfSampleNearEventAnnotations(sample,eventAnnotations,tolerance)
             idx = -1;
             for i = 1 : length(eventAnnotations)

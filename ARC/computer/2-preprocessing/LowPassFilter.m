@@ -35,7 +35,7 @@ classdef LowPassFilter < Computer
         end
         
         function metrics = computeMetrics(obj,input)
-            flops = obj.order * size(input,1); %assumes filter swipes once the entire signal
+            flops = 31 * obj.order * size(input,1);
             memory = size(input,1) * 4;
             outputSize = size(input,1) * 4;
             metrics = Metric(flops,memory,outputSize);

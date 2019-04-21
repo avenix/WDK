@@ -123,7 +123,6 @@ classdef Helper < handle
         end
         
         %% Conversion methods
-
         function array = cellArray2FlatArray(cellArray)
             
             n = Helper.nElementsInCellArray(cellArray);
@@ -182,6 +181,17 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        function totalSize = ComputeObjectSize(obj)
+            props = properties(obj);
+            totalSize = 0;
+            
+            for i = 1:length(props)
+                currentProperty = getfield(obj, char(props(i)));
+                s = whos('currentProperty');
+                totalSize = totalSize + s.bytes;
+            end
+        end
+        
         function b = IsPowerOf2(x)
             b = (bitand(x, x - 1) == 0);
         end
@@ -228,11 +238,11 @@ classdef Helper < handle
         
         function events = CreateEventsWithEventLocations(eventLocations)
             nEvents = length(eventLocations);
-            events = repmat(EventAnnotation,1,nEvents);
+            events = repmat(Event,1,nEvents);
             
             for i = 1 : nEvents
                 eventLocation = eventLocations(i);
-                events(i) = EventAnnotation(eventLocation,[]);
+                events(i) = Event(eventLocation,[]);
             end
         end
         

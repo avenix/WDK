@@ -1,8 +1,8 @@
 classdef MatlabPeakDetector < Computer
     
-    properties
-        minPeakHeight = single(0.5);
-        minPeakDistance = int32(400);
+    properties (Access = public)
+        minPeakHeight = single(0.8);
+        minPeakDistance = int32(100);
     end
     
     methods  (Access = public)

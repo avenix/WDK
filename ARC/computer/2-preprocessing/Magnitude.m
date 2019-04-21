@@ -13,7 +13,7 @@ classdef Magnitude < Computer
         end
         
         function metrics = computeMetrics(~,input)
-            flops = 5 * size(input,1) + 1;
+            flops = 4 * size(input,1);
             memory = size(input,1) * 4;
             outputSize = size(input,1) * 4;
             metrics = Metric(flops,memory,outputSize);

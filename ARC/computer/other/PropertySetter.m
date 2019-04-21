@@ -13,8 +13,8 @@ classdef PropertySetter < Computer
         end
         
         function computedSignal = compute(obj,data)
-            setExpression = sprintf('obj.node.%s=%d;',obj.property,data);
-            computedSignal = eval(setExpression);
+            obj.node.(obj.property) = data;
+            computedSignal = [];
         end
         
         function str = toString(obj)

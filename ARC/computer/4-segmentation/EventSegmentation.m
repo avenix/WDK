@@ -3,14 +3,14 @@ classdef EventSegmentation < Computer
         segmentSizeLeft = 200;
         segmentSizeRight = 30;
     end
-     
+
     methods (Access = public)
         function obj = EventSegmentation()
             obj.name = 'eventSegmentation';
-            obj.inputPort = ComputerDataType.kSignal;
+            obj.inputPort = ComputerDataType.kEvent;
             obj.outputPort = ComputerDataType.kSegment;
         end
-        
+
         function segments = compute(obj,events)            
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             segments = Helper.CreateSegmentsWithEvents(events,file,obj.segmentSizeLeft,obj.segmentSizeRight);
@@ -21,8 +21,9 @@ classdef EventSegmentation < Computer
         end
         
         function metrics = computeMetrics(obj,input)
-            flops = 4 * length(input);
-            memory = 8 * length(input);
+            n = length(input);
+            flops = 11 * n;
+            memory = 1;
             outputSize = obj.segmentSizeLeft + obj.segmentSizeRight;
             metrics = Metric(flops,memory,outputSize);
         end
