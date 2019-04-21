@@ -37,6 +37,14 @@ classdef RangeSelector < Computer
             
             editableProperties = [rangeStartProperty,rangeEndProperty];
         end
+        
+        function metrics = computeMetrics(obj,input)
+            n = size(input,1);
+            flops = 2 * n;
+            memory = obj.rangeEnd - obj.rangeStart + 1;
+            outputSize = obj.rangeEnd - obj.rangeStart + 1;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
     
 end

@@ -26,5 +26,13 @@ classdef ConstantMultiplier < Computer
         function editableProperties = getEditableProperties(obj)
             editableProperties = Property('constant',obj.constant);
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = n;
+            memory = n;
+            outputSize = n;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

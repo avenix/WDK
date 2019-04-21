@@ -24,5 +24,9 @@ classdef PropertySetter < Computer
         function editableProperties = getEditableProperties(obj)
             editableProperties = Property('property',obj.property);
         end
+        
+        function metrics = computeMetrics(~,input)
+            metrics = Metric(1,1,0);
+        end
     end
 end

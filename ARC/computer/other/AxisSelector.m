@@ -34,5 +34,14 @@ classdef AxisSelector < Computer
             editableProperties = Property('axes',axesStr);
             editableProperties.type = PropertyType.kArray;
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            m = size(input,2);
+            flops = 1;
+            memory = n * m;
+            outputSize = n * m;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

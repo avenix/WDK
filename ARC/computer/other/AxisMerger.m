@@ -42,5 +42,14 @@ classdef AxisMerger < Computer
             editableProperties = Property('nAxes',obj.nAxes);
             editableProperties.type = PropertyType.kNumber;
         end
+        
+        function metrics = computeMetrics(obj,input)
+            n = size(input,1);
+            m = size(input,2);
+            flops = 3 * n;
+            memory = n * m;
+            outputSize = n * m;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

@@ -11,5 +11,13 @@ classdef Subtractor < Computer
         function computedSignal = compute(~,dataIn)
             computedSignal = dataIn(:,1) - dataIn(:,2);
         end
+        
+        function metrics = computeMetrics(~,input)
+            n = size(input,1);
+            flops = 2 * n;
+            memory = n;
+            outputSize = n;
+            metrics = Metric(flops,memory,outputSize);
+        end
     end
 end

@@ -11,8 +11,8 @@ classdef NoOp < Computer
         end
         
         function metrics = computeMetrics(~,input)
-            outputSize = size(input,1) * size(input,2) * 4;
-            metrics = Metric(0,0,outputSize);
+            outputSize = Helper.ComputeObjectSize(input);
+            metrics = Metric(1,1,outputSize);
         end
     end
 end
