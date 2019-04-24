@@ -1,9 +1,9 @@
 %contains arrays of ManualEvents: goodEvents, missedEvents, badEvents
 classdef DetectionResult < handle
     properties
-        goodEvents;
-        missedEvents;
-        badEvents;
+        goodEvents;%array of Event
+        missedEvents;%array of EventAnnotation
+        badEvents;%array of Event
     end
     
     properties (Dependent)

@@ -1,6 +1,7 @@
 classdef VisualizationSegmentsPlotter < handle
     properties (Access = public)
         fontSize = 24;
+        axesFontSize = 20;
         colorsPerSignal = {[0,0,1,0.3],[1,0,0,0.3],[1,0,1,0.3]};
         paddingX = 80;
         lineColor = 'black';
@@ -71,7 +72,8 @@ classdef VisualizationSegmentsPlotter < handle
                 
                 hold(currentAxes,'on');
                 title(currentAxes,groupNames{i},'FontSize',obj.fontSize);
-                
+                set(currentAxes,'FontSize',obj.axesFontSize);
+
                 segmentsCurrentGroup = groupedSegments{i};
                 
                 if(obj.sequentialSegments)

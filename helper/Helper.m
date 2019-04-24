@@ -204,8 +204,8 @@ classdef Helper < handle
             segmentCounter = 1;
             
             for i = 1 : length(segments)
-                segment = segments(i);
                 if isValidLabel(i)
+                    segment = segments(i);
                     segment.label = labels(i);
                     labeledSegments(segmentCounter) = segment;
                     segmentCounter = segmentCounter + 1;
@@ -217,7 +217,7 @@ classdef Helper < handle
             isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
             
             nValidEvents = sum(isValidLabel);
-            labeledEvents = repmat(EventAnnotation,1,nValidEvents);
+            labeledEvents = repmat(Event,1,nValidEvents);
             eventCounter = 1;
             for i = 1 : length(events)
                 if isValidLabel(i)

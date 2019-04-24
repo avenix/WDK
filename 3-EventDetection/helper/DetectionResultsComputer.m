@@ -67,7 +67,7 @@ classdef DetectionResultsComputer < handle
             eventAnnotations = obj.removeIgnoredAnnotations(eventAnnotations);
             mappedEventAnnotations = obj.mapAnnotations(eventAnnotations);
             
-            missedEvents = obj.computeMissedEvents(detectedEvents,mappedEventAnnotations);
+            missedEvents = obj.computeMissedEventAnnotations(detectedEvents,mappedEventAnnotations);
             detectionResult = DetectionResult(goodEvents,missedEvents,badEvents);
         end
         
@@ -90,7 +90,7 @@ classdef DetectionResultsComputer < handle
             nGoodEvents = sum(isGoodEvent);
             goodEvents = [];
             if nGoodEvents > 0
-                goodEvents = repmat(EventAnnotation(),1,nGoodEvents);
+                goodEvents = repmat(Event(),1,nGoodEvents);
                 goodEventCount = 1;
                 for i = 1 : length(detectedEvents)
                     if isGoodEvent(i)
@@ -105,7 +105,7 @@ classdef DetectionResultsComputer < handle
             nBadEvents = sum(~isGoodEvent);
             badEvents = [];
             if nBadEvents > 0
-                badEvents = repmat(EventAnnotation(),1,nBadEvents);
+                badEvents = repmat(Event(),1,nBadEvents);
                 eventCount = 1;
                 for i = 1 : length(detectedEvents)
                     if ~isGoodEvent(i)
@@ -116,7 +116,7 @@ classdef DetectionResultsComputer < handle
             end
         end
         
-        function missedEvents = computeMissedEvents(obj,detectedEvents,eventAnnotations)
+        function missedEvents = computeMissedEventAnnotations(obj,detectedEvents,eventAnnotations)
             didMissEvent = obj.computeDidMissEvent(detectedEvents,eventAnnotations);
             missedEvents = [];
             nMissedEvents = sum(didMissEvent);
