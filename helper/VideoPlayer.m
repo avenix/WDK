@@ -66,11 +66,9 @@ classdef VideoPlayer < handle
     methods (Access = private)
         
         function timerTick(obj,~,~)
-            if ishandle(obj.currentFrame) && ishandle(obj.delegate)
-                if(obj.currentFrame ~= obj.previousFrame)
-                    obj.previousFrame = obj.currentFrame;
-                    obj.delegate.handleFrameChanged(obj.previousFrame);
-                end
+            if(obj.currentFrame ~= obj.previousFrame)
+                obj.previousFrame = obj.currentFrame;
+                obj.delegate.handleFrameChanged(obj.previousFrame);
             end
         end
         

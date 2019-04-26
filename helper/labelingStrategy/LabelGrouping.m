@@ -44,8 +44,11 @@ classdef LabelGrouping < handle
         end
         
         function labelsStr = labelsToString(obj,labels)
-            
-            labelsStr = obj.classNames(labels);
+            labelsStr = cellfun(@obj.labelToString, labels);
+        end
+        
+        function labelStr = labelToString(obj,label)
+            labelStr = Helper.StringForClass(label,obj.classNames);
         end
     end
     

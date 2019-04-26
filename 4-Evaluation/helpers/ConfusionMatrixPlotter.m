@@ -10,8 +10,8 @@ classdef ConfusionMatrixPlotter < handle
             axis(obj.plotAxes, 'tight');
         end
         
-        function plotConfusionMatrix(obj, confusionMatrix, labels)
-            confusionMatrixData = confusionMatrix.data;
+        function plotConfusionMatrix(obj, confusionMatrix)
+            confusionMatrixData = confusionMatrix.confusionMatrixData;
             
             confusionMatrixData(isnan(confusionMatrixData)) = 0; % in case there are NaN elements
             numClasses = size(confusionMatrixData, 1); % number of classes
@@ -21,10 +21,6 @@ classdef ConfusionMatrixPlotter < handle
             
             % plotting the colors
             imagesc(obj.plotAxes,confpercent);
-            
-            title(obj.plotAxes,sprintf('Accuracy: %.2f%% Recall: %.2f%% Precision: %.2f%%',...
-                100 * confusionMatrix.accuracy, 100 * confusionMatrix.recall,...
-                100 * confusionMatrix.precision));
             
             xlabel(obj.plotAxes,'Predicted Class');
             ylabel(obj.plotAxes,'True Class');
@@ -53,9 +49,9 @@ classdef ConfusionMatrixPlotter < handle
             
             % Setting the axis labels
             set(obj.plotAxes,'XTick',1:numClasses,...
-                'XTickLabel',labels,...
+                'XTickLabel',confusionMatrix.classNames,...
                 'YTick',1:numClasses,...
-                'YTickLabel',labels,...
+                'YTickLabel',confusionMatrix.classNames,...
                 'TickLength',[0 0]);
             
         end

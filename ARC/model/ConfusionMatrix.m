@@ -1,53 +1,37 @@
 classdef ConfusionMatrix < handle
     properties (GetAccess = public)
-        data;
-        accuracy;
-        precisionPerClass;
-        recallPerClass;
-        precision;
-        recall;
+        confusionMatrixData;
         nClasses;
         containsNullClass;
+        classNames;
     end
     
     methods (Access = public)
-        function obj = ConfusionMatrix(data)
-            obj.data = data;
-            obj.computeAccuracy();
-            obj.computePrecisionPerClass();
-            obj.computeRecallPerClass();
-            obj.nClasses = size(obj.data,1);
+        function obj = ConfusionMatrix(truthClasses,predictedClasses,classes,classNames)
+            if nargin > 1
+                if nargin == 3
+                    classNames = [];
+                end
+                
+                if(any(predictedClasses == ClassesMap.kNullClass))
+                    obj.confusionMatrixData = confusionmat(truthClasses,predictedClasses,'Order',[classes 0]);
+                    obj.classNames = [classNames, Constants.kNullClassGroupStr];
+                    obj.containsNullClass = true;
+                else
+                    obj.confusionMatrixData = confusionmat(truthClasses,predictedClasses,'Order',classes);
+                    obj.classNames = classNames;
+                    obj.containsNullClass = false;
+                end
+                
+                obj.nClasses = size(obj.confusionMatrixData,1);
+            end
         end
     end
     
-    methods (Access = private)
-        function computeAccuracy(obj)
-            obj.accuracy = trace(obj.data)/sum(obj.data(:));
-        end
-        
-        function computeRecallPerClass(obj)
-            numClasses = size(obj.data,1);
-            obj.recallPerClass = zeros(1,numClasses);
-            
-            for i = 1 : numClasses
-                obj.recallPerClass(i) = obj.data(i,i)/sum(obj.data(i,:));
-            end
-            
-            obj.recallPerClass(isnan(obj.recallPerClass))=[];
-            obj.recall = nanmean(obj.recallPerClass);
-        end
-        
-        function computePrecisionPerClass(obj)
-            
-            numClasses = size(obj.data,1);
-            obj.precisionPerClass = zeros(1,numClasses);
-            
-            for i = 1 : numClasses
-                obj.precisionPerClass(i) = obj.data(i,i) / sum(obj.data(:,i));
-            end
-            
-            obj.precisionPerClass(isnan(obj.precisionPerClass))=[];
-            obj.precision = nanmean(obj.precisionPerClass);
+    methods (Access = public, Static)
+        function confusionMatrix = CreateConfusionMatrixWithData(confusionMatrixData)
+            confusionMatrix = ConfusionMatrix();
+            confusionMatrix.confusionMatrixData = confusionMatrixData;
         end
     end
     

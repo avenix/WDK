@@ -1,19 +1,18 @@
 classdef DetectionEventsPlotter < handle
     
     properties (Access = public)
-        labelGrouping;
+        labelGrouping LabelGrouping;
         textFontSize = 22;
         symbolSize = 10;
-        defaultFigureSize = [2048, 768];
     end
     
     properties (Access = private)
         showingDetectedEventsPrivate = true;
         showingMissedEventsPrivate = true;
         showingFalsePositiveEventsPrivate = true;
-        %zoomModePrivate;
         
         %data
+        dataLoader;
         fileNames;
         signalsPerFile;
         resultsPerFile;
@@ -38,14 +37,12 @@ classdef DetectionEventsPlotter < handle
         timeLineMarker;
         timeLineMarkerHandle;
         
-        dataLoader;
     end
     
     properties (Dependent)
         showingDetectedEvents;
         showingMissedEvents;
         showingFalsePositiveEvents;
-        %zoomMode;
     end
     
     methods

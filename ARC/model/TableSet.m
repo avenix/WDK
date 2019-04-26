@@ -35,7 +35,8 @@ classdef TableSet < handle
         end
         
         function labels = getAllLabels(obj)
-            labels = cat(1,obj.tables.label);
+            labels = {obj.tables.label};
+            %labels = cat(1,obj.tables.label);
         end
     end
     

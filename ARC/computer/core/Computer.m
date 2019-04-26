@@ -165,17 +165,21 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
-        function [data, metricSum] = ExecuteChain(computer, data, shouldCache)
+        function [data, metricSum, graphString] = ExecuteChain(computer, data, shouldCache, dataCacheIdentifier)
             if isempty(computer)
                 metricSum = [];
             else
-                if nargin < 3
-                    shouldCache = false;
+                if nargin < 4
+                    dataCacheIdentifier = '';
+                    if nargin < 3
+                        shouldCache = false;
+                    end
                 end
                 
                 isDataLoaded = false;
                 if shouldCache
                     graphString = Computer.GraphToString(computer);
+                    graphString = [dataCacheIdentifier graphString];
                     [isDataLoaded, loadedData, metricSum] = Computer.LoadCacheDataForGraphString(graphString);
                     if isDataLoaded
                         data = loadedData;

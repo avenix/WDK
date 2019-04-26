@@ -181,6 +181,15 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        
+        function classStr = StringForClass(class, classNames)
+            if class == ClassesMap.kNullClass
+                classStr = Constants.kNullClassGroupStr;
+            else
+                classStr = classNames{class};
+            end
+        end
+            
         function totalSize = ComputeObjectSize(obj)
             props = properties(obj);
             totalSize = 0;
