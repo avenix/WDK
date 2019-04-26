@@ -1,4 +1,4 @@
-classdef AnnotationVideoPlayer < handle
+classdef VideoPlayer < handle
     
     properties (Access = public)
         delegate;
@@ -27,7 +27,7 @@ classdef AnnotationVideoPlayer < handle
     
     methods (Access = public)
         
-        function obj = AnnotationVideoPlayer(fileName,delegate)
+        function obj = VideoPlayer(fileName,delegate)
             obj.videoPlayerHandle = implay(fileName);
             obj.delegate = delegate;
             obj.figureHandle = obj.videoPlayerHandle.Parent;
@@ -66,9 +66,11 @@ classdef AnnotationVideoPlayer < handle
     methods (Access = private)
         
         function timerTick(obj,~,~)
-            if(obj.currentFrame ~= obj.previousFrame)
-                obj.previousFrame = obj.currentFrame;
-                obj.delegate.handleFrameChanged(obj.previousFrame);
+            if ishandle(obj.currentFrame) && ishandle(obj.delegate)
+                if(obj.currentFrame ~= obj.previousFrame)
+                    obj.previousFrame = obj.currentFrame;
+                    obj.delegate.handleFrameChanged(obj.previousFrame);
+                end
             end
         end
         

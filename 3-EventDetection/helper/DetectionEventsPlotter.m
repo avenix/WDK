@@ -211,7 +211,7 @@ classdef DetectionEventsPlotter < handle
                 if ~isempty(obj.videoPlayer)
                     delete(obj.videoPlayer);
                 end
-                obj.videoPlayer = AnnotationVideoPlayer(videoFileName,obj);
+                obj.videoPlayer = VideoPlayer(videoFileName,obj);
                 obj.updateVideoFrame();
             end
         end

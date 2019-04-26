@@ -100,8 +100,7 @@ classdef AnnotationApp < handle
         end
         
         function handleVideoPlayerWindowClosed(obj)
-            delete(obj.videoPlayer);
-            obj.videoPlayer = [];
+            obj.deleteVideoPlayer();
         end
     end
     
@@ -124,6 +123,7 @@ classdef AnnotationApp < handle
             obj.uiHandles.addRangeAnnotationButton.Callback = @obj.handleAddRangeClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
             obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
+            obj.uiHandles.mainFigure.DeleteFcn = @obj.handleWindowClosed;
             
             obj.resetUI();
             obj.loadPlotAxes();
@@ -253,8 +253,10 @@ classdef AnnotationApp < handle
             obj.deleteAllAnnotations();
             obj.deleteData();
             obj.deleteRangeSelection();
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.close();
+            end
             obj.deleteTimelineMarker();
-            obj.deleteVideoPlayer();
         end
         
         function deleteData(obj)
@@ -283,10 +285,12 @@ classdef AnnotationApp < handle
             videoFileName = obj.getVideoFileName();
             
             if ~isempty(videoFileName)
+                
                 if ~isempty(obj.videoPlayer)
-                    delete(obj.videoPlayer);
+                    obj.videoPlayer.close();
                 end
-                obj.videoPlayer = AnnotationVideoPlayer(videoFileName,obj);
+                
+                obj.videoPlayer = VideoPlayer(videoFileName,obj);
                 obj.updateVideoFrame();
             end
         end
@@ -336,9 +340,8 @@ classdef AnnotationApp < handle
         end
         
         function deleteVideoPlayer(obj)
-            if ~isempty(obj.videoPlayer)
-                obj.videoPlayer.close();
-            end
+            delete(obj.videoPlayer);
+            obj.videoPlayer = [];
         end
         
         function deleteTimelineMarker(obj)
@@ -643,6 +646,13 @@ classdef AnnotationApp < handle
             obj.timeLineMarker = x;
             obj.updateTimelineMarker();
             obj.updateVideoFrame();
+        end
+        
+        function handleWindowClosed(obj,~,~)
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.close();
+                obj.deleteVideoPlayer();
+            end
         end
         
         %% Helper methods
