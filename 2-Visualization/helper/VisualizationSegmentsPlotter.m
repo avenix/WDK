@@ -42,7 +42,7 @@ classdef VisualizationSegmentsPlotter < handle
                 obj.axesHandles(i).XLimMode = 'auto';
             end
             
-            obj.setAxesLimits();
+            obj.setYAxesLimits();
             
             if obj.isZoom
                 obj.setZoom(obj.isZoom);
@@ -67,13 +67,13 @@ classdef VisualizationSegmentsPlotter < handle
             
             obj.findSegmentsLimits(groupedSegments);
             
+            %lastSample = 
             for i = 1 : nClasses
                 currentAxes = subplot(subplotN,subplotM,i,'Parent',obj.plotParent);
                 
                 hold(currentAxes,'on');
                 title(currentAxes,groupNames{i},'FontSize',obj.fontSize);
                 set(currentAxes,'FontSize',obj.axesFontSize);
-
                 segmentsCurrentGroup = groupedSegments{i};
                 
                 if(obj.sequentialSegments)
@@ -85,7 +85,7 @@ classdef VisualizationSegmentsPlotter < handle
                 obj.axesHandles(i) = currentAxes;
             end
             
-            obj.setAxesLimits();
+            obj.setYAxesLimits();
             obj.updateLinkAxes();
             
             if obj.isZoom
@@ -111,7 +111,7 @@ classdef VisualizationSegmentsPlotter < handle
     
     methods (Access = private)
         
-        function setAxesLimits(obj)
+        function setYAxesLimits(obj)
             
              height = obj.maxSegmentValue - obj.minSegmentValue;
             for i = 1 : length(obj.axesHandles)
@@ -147,6 +147,11 @@ classdef VisualizationSegmentsPlotter < handle
                     plotHandle = plot(plotAxes,data(:,signal),'Color',obj.colorsPerSignal{signal},'LineWidth',0.4);
                     plotHandle.Color(4) = 0.4;
                 end
+            end
+            if length(segments) > 1
+                firstSegment = segment(1);
+                numSamples = length(firstSegment.data);
+                xlim(plotAxes,[1,numSamples]);
             end
         end
         

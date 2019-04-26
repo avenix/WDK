@@ -1,47 +1,54 @@
 classdef DetectionEventsPlotter < handle
     
-    properties (Access = private)
-        plotAxes;
-        detectedEventHandles;
-        missedEventHandles;
-        falsePositiveEventHandles;
-    end
-    
     properties (Access = public)
         labelGrouping;
         textFontSize = 22;
         symbolSize = 10;
+        defaultFigureSize = [2048, 768];
     end
     
     properties (Access = private)
         showingDetectedEventsPrivate = true;
         showingMissedEventsPrivate = true;
         showingFalsePositiveEventsPrivate = true;
-        zoomModePrivate;
+        %zoomModePrivate;
+        
+        %data
+        fileNames;
+        signalsPerFile;
+        resultsPerFile;
+        
+        %ui handles
+        figureHandle;
+        plotAxes;
+        uiHandles;
+        
+        %events
+        detectedEventHandles;
+        missedEventHandles;
+        falsePositiveEventHandles;
+        
+        %video
+        videoPlayer;
+        synchronisationFile;
+        videoFileNames;
+        videoFileNamesNoExtension;
+        
+        %timeline marker
+        timeLineMarker;
+        timeLineMarkerHandle;
+        
+        dataLoader;
     end
     
     properties (Dependent)
         showingDetectedEvents;
         showingMissedEvents;
         showingFalsePositiveEvents;
-        zoomMode;
+        %zoomMode;
     end
     
     methods
-        
-        function value = get.zoomMode(obj)
-            value = obj.zoomModePrivate;
-        end
-        
-        function set.zoomMode(obj,value)
-            obj.zoomModePrivate = value;
-            if(value)
-                zoom(obj.plotAxes,'on');
-            else
-                %zoom(app.plotAxes,'off');
-                pan(obj.plotAxes,'on');
-            end
-        end
         
         function set.showingDetectedEvents(obj,value)
             obj.showingDetectedEventsPrivate = value;
@@ -66,18 +73,88 @@ classdef DetectionEventsPlotter < handle
     end
     
     methods (Access = public)
-        function obj = DetectionEventsPlotter(plotAxes)
-            obj.plotAxes = plotAxes;
-            hold(obj.plotAxes,'on');
+        function obj = DetectionEventsPlotter(signalsPerFile,resultsPerFile,fileNames)
+            
+            obj.signalsPerFile = signalsPerFile;
+            obj.resultsPerFile = resultsPerFile;
+            obj.fileNames = fileNames;
+            
+            
+            obj.dataLoader = DataLoader();
+            
+            obj.videoFileNames = Helper.listVideoFiles();
+            obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
+            
+            obj.timeLineMarker = 1;
+            
+            obj.loadUI();
         end
         
-        function plotResults(obj,currentFileResults,signal)
+        function handleFrameChanged(obj,~)
+            if ~isempty(obj.synchronisationFile)
+                obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
+                if ~isempty(obj.timeLineMarkerHandle)
+                    obj.updateTimelineMarker();
+                end
+            end
+        end
+        
+        function handleVideoPlayerWindowClosed(obj)
+            obj.deleteVideoPlayer();
+        end
+        
+        function clearPlot(obj)
+            cla(obj.plotAxes);
+        end
+    end
+    
+    methods (Access = private)
+        %% init
+        function loadUI(obj)
             
-            obj.clearPlot();
-            
-            plot(obj.plotAxes,signal);
-            
+            obj.uiHandles = guihandles(DetectionEventsPlotterUI);
+            obj.figureHandle = obj.uiHandles.mainFigure;
+            obj.plotAxes = obj.uiHandles.plotAxes;
+            obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
             hold(obj.plotAxes,'on');
+            
+            obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
+            obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
+            
+            obj.uiHandles.showDetectedCheckBox.Callback = @obj.handleShowDetectedEventsCheckBoxChanged;
+            obj.uiHandles.showMissedCheckBox.Callback = @obj.handleShowMissedEventsCheckBoxChanged;
+            obj.uiHandles.showFalsePositivesCheckBox.Callback = @obj.handleShowFalsePositiveEventsCheckBoxChanged;
+            
+            %populate files
+            obj.uiHandles.filesList.String = obj.fileNames;
+            obj.figureHandle.DeleteFcn = @obj.handleWindowClosed;
+        end
+        
+        function setUserClickHandle(obj)
+            dataCursorMode = datacursormode(obj.uiHandles.mainFigure);
+            dataCursorMode.SnapToDataVertex = 'on';
+            dataCursorMode.DisplayStyle = 'window';
+            set(dataCursorMode,'UpdateFcn',@obj.handleUserClickOnAxes);
+        end
+        
+        %% plotting
+        
+        function plotSignal(obj,signal)
+            hold(obj.plotAxes,'on');
+            n = length(signal);
+            xlim(obj.plotAxes,[1,n]);
+            plot(obj.plotAxes,signal);
+        end
+        
+        function plotTimelineMarker(obj)
+            if ~isempty(obj.timeLineMarker)
+                obj.timeLineMarkerHandle = line(obj.plotAxes,[obj.timeLineMarker, obj.timeLineMarker],...
+                    [obj.plotAxes.YLim(1), obj.plotAxes.YLim(2)],...
+                    'Color','red','LineWidth',2,'LineStyle','-');
+            end
+        end
+        
+        function plotAllEvents(obj,signal,currentFileResults)
             
             obj.detectedEventHandles = obj.plotEvents(currentFileResults.goodEvents,signal,'green');
             obj.missedEventHandles = obj.plotEvents(currentFileResults.missedEvents,signal,[1,0.5,0]);
@@ -95,16 +172,6 @@ classdef DetectionEventsPlotter < handle
                 obj.toggleEventsVisibility(obj.falsePositiveEventHandles,false);
             end
         end
-        
-        function clearPlot(obj)
-            cla(obj.plotAxes);
-            cla(obj.plotAxes,'reset');
-            obj.zoomMode = obj.zoomModePrivate;
-        end
-        
-    end
-    
-    methods (Access = private)
         
         function eventHandles = plotEvents(obj,events,signal,symbolColor)
             eventHandles = [];
@@ -132,11 +199,128 @@ classdef DetectionEventsPlotter < handle
             end
         end
         
+        function plotVideo(obj)
+            fileIdx = obj.uiHandles.filesList.Value;
+            fileName = obj.uiHandles.filesList.String{fileIdx};
+            
+            [videoFileName, synchronisationFileName] = obj.getVideoAndSynchronisationFileName(fileName);
+            
+            obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(synchronisationFileName);
+            
+            if ~isempty(videoFileName)
+                if ~isempty(obj.videoPlayer)
+                    delete(obj.videoPlayer);
+                end
+                obj.videoPlayer = AnnotationVideoPlayer(videoFileName,obj);
+                obj.updateVideoFrame();
+            end
+        end
+        
+        
+        %% other
+        function idx = getSelectedFileIdx(obj)
+            idx = obj.uiHandles.filesList.Value;
+        end
+        
+        
         function toggleEventsVisibility(~,eventHandles,visible)
             for i = 1 : length(eventHandles)
                 eventHandle = eventHandles(i);
                 eventHandle.setVisible(visible);
             end
+        end
+        
+        function [videoFileName, synchronisationFileName] = getVideoAndSynchronisationFileName(obj,fileName)
+            fileName = Helper.removeFileExtension(fileName);
+            [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
+            if idx > 0
+                videoFileName = obj.videoFileNames{idx};
+                synchronisationFileName = Helper.addSynchronisationFileExtension(fileName);
+            else
+                videoFileName = [];
+                synchronisationFileName = [];
+            end
+        end
+        
+        
+        function updateVideoFrame(obj)
+            if ~isempty(obj.synchronisationFile) && ~isempty(obj.videoPlayer)
+                videoFrame = obj.synchronisationFile.sampleToVideoFrame(obj.timeLineMarker);
+                obj.videoPlayer.displayFrame(videoFrame);
+            end
+        end
+        function updateTimelineMarker(obj)
+            set(obj.timeLineMarkerHandle,'XData',[obj.timeLineMarker, obj.timeLineMarker]);
+            drawnow;
+        end
+        
+        
+        function deleteVideoPlayer(obj)
+            delete(obj.videoPlayer);
+            obj.videoPlayer = [];
+        end
+        
+        
+        %% Handles
+        function handleVisualizeClicked(obj,~,~)
+            selectedIdx = obj.getSelectedFileIdx();
+            currentSignal = obj.signalsPerFile{selectedIdx};
+            currentResults = obj.resultsPerFile(selectedIdx);
+            
+            if ~isempty(obj.plotAxes)
+                obj.clearPlot();
+            end
+            
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.close();
+            end
+            
+            obj.plotSignal(currentSignal);
+            obj.plotTimelineMarker();
+            obj.plotAllEvents(currentSignal,currentResults);
+            obj.plotVideo();
+        end
+        
+        function handleUserClickOnAxes(obj,~,~)
+            x = pos(1);
+            obj.timeLineMarker = x;
+            obj.updateTimelineMarker();
+            obj.updateVideoFrame();
+        end
+        
+        function handleKeyPress(obj, source, event)
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.handleKeyPress(source,event);
+            end
+        end
+        
+        function handleFigureClick(obj,~,event)
+            x = event.IntersectionPoint(1);
+            obj.timeLineMarker = x;
+            obj.updateTimelineMarker();
+            obj.updateVideoFrame();
+        end
+        
+        function handleWindowClosed(obj,~,~)
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.close();
+                obj.deleteVideoPlayer();
+            end
+        end
+        
+        function handleShowDetectedEventsCheckBoxChanged(obj,~,~)
+            value = obj.uiHandles.showDetectedCheckBox.Value;
+            obj.showingDetectedEvents = value;
+        end
+        
+        function handleShowMissedEventsCheckBoxChanged(obj,~,~)
+            value = obj.uiHandles.showMissedCheckBox.Value;
+            obj.showingMissedEvents = value;
+        end
+        
+        function handleShowFalsePositiveEventsCheckBoxChanged(obj,~,~)
+            value = obj.uiHandles.showFalsePositivesCheckBox.Value;
+            obj.showingFalsePositiveEvents = value;
         end
     end
     
