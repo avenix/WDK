@@ -166,6 +166,12 @@ classdef FeatureExtractionConfigurator < handle
             b = (selectedButton == obj.selectManuallyRadio);
         end
         
+        function updateSegmentRangeVisibility(obj)
+            visible = obj.featureFullSegmentCheckBox.Value;
+            obj.featureStartRangeEditText.Visible = visible;
+            obj.featureEndRangeEditText.Visible = visible;
+        end
+        
         function handleSelectionTypeChanged(obj,~,~)
             selectedButton = obj.selectionTypeButtonGroup.SelectedObject;
             if selectedButton == obj.selectManuallyRadio
@@ -249,6 +255,8 @@ classdef FeatureExtractionConfigurator < handle
         end
         
         function handleFullSegmentCheckBoxChanged(obj,~,~)
+            obj.updateSegmentRangeVisibility();
+            
             obj.currentSelectedFeature = obj.getSelectedFeature();
             if ~isempty(obj.currentSelectedFeature)
                 rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
@@ -256,12 +264,8 @@ classdef FeatureExtractionConfigurator < handle
                 value = obj.featureFullSegmentCheckBox.Value;
                 if (value)
                     rangeSelector.rangeEnd = [];
-                    obj.featureStartRangeEditText.Visible = false;
-                    obj.featureEndRangeEditText.Visible = false;
                 else
                     rangeSelector.rangeEnd = obj.featureEndRangeEditText.Value;
-                    obj.featureStartRangeEditText.Visible = true;
-                    obj.featureEndRangeEditText.Visible = true;
                 end
                 obj.updateCurrentSelectedFeatureName();
             end

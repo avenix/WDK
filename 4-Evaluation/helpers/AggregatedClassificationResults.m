@@ -8,8 +8,23 @@ classdef AggregatedClassificationResults < handle
         f1Score;
     end
     
+    properties (Access = private)
+        confusionMatrix ConfusionMatrix;
+    end
+    
+    properties (Dependent)
+        classNames;
+    end
+    
+    methods
+        function classNames = get.classNames(obj)
+            classNames = obj.confusionMatrix.classNames;
+        end
+    end
+    
     methods (Access = public)
         function obj = AggregatedClassificationResults(confusionMatrix)
+            obj.confusionMatrix = confusionMatrix;
             obj.computeAccuracy(confusionMatrix);
             obj.computePrecisionPerClass(confusionMatrix);
             obj.computeRecallPerClass(confusionMatrix);
