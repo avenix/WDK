@@ -119,10 +119,6 @@ classdef AnnotationsLoader < handle
                     ts = uint32(str2double(tsString));
                     classString = classStrings{i};
                     
-                    if ts == 0
-                        disp(ts);
-                    end
-                    
                     if obj.classesMap.isValidLabel(classString)
                         class = obj.classesMap.idxOfClassWithString(classString);
                         eventAnnotations(eventCounter) = EventAnnotation(ts,class);

@@ -14,7 +14,7 @@ classdef Median < Computer
         
         function metrics = computeMetrics(~,input)
             n = size(input,1);
-            flops = 15 * n
+            flops = 15 * n;
             memory = 1;
             outputSize = 1;
             metrics = Metric(flops,memory,outputSize);

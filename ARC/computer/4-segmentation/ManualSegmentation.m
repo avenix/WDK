@@ -104,7 +104,7 @@ classdef ManualSegmentation < Computer
             for i = 1 : length(rangeAnnotations)
                 rangeAnnotation = rangeAnnotations(i);
                 window = dataFile.data(rangeAnnotation.startSample:rangeAnnotation.endSample,:);
-                segments(i) = Segment(dataFile.fileName,window,rangeAnnotation.label,-1);
+                segments(i) = Segment(dataFile.fileName,window,rangeAnnotation.label);
                 segments(i).startSample = rangeAnnotation.startSample;
                 segments(i).endSample = rangeAnnotation.endSample;
             end

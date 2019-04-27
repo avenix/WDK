@@ -7,7 +7,7 @@ classdef ClassificationResultsPlotter < handle
         FontSize = 18;
         LineWidth = 2;
         RectangleYPosToDataRatio = 1.03;
-        LabelYPosToRectangleRatio = 1.05;
+        LabelYPosToRectangleRatios = [0.9,0.95];
         RectangleCurvature = 0.1;
     end
     
@@ -19,6 +19,7 @@ classdef ClassificationResultsPlotter < handle
         classificationResults;
         plotAxes;
         classNames;
+        isUpperYPos = false;
     end
     
     methods (Access = public)
@@ -31,7 +32,12 @@ classdef ClassificationResultsPlotter < handle
             nSegments = length(classificationResults.segments);
             for i = 1 : nSegments
                 segment = classificationResults.segments(i);
-                y = signal(segment.eventIdx);
+                if ~isempty(segment.eventIdx)
+                    y = signal(segment.eventIdx);
+                else
+                    y = [];
+                end
+                
                 truthClass = classificationResults.truthClasses(i);
                 predictedClass = classificationResults.predictedClasses(i);
                 obj.plotClassificationResult(segment,y,truthClass,predictedClass);
@@ -52,14 +58,17 @@ classdef ClassificationResultsPlotter < handle
             %plot text
             textStr = obj.getTextForPrediction(truthClass,predictedClass);
             xPos = (double(segment.startSample) + double(segment.endSample)) / 2;
-            yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatio;
+            
+            yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatios(obj.isUpperYPos+1);
+            
             textHandle = text(obj.plotAxes,xPos,yPos, textStr,...
                 'FontSize',obj.FontSize,'HorizontalAlignment','center','Color',colorStr);
             set(textHandle, 'Clipping', 'on');
+            obj.isUpperYPos = ~obj.isUpperYPos;
             
             %plot symbol
             symbolHandle = [];
-            if ~isempty(segment.eventIdx)
+            if ~isempty(segmentEventY)
                 x = segment.eventIdx;
                 symbolHandle = plot(obj.plotAxes,x,segmentEventY,'*','Color',colorStr);
             end
@@ -72,7 +81,7 @@ classdef ClassificationResultsPlotter < handle
             
             if truthClass ~= predictedClass
                 truthClassStr = Helper.StringForClass(truthClass,obj.classNames);
-                textStr = sprintf('%s\n (was: %s)',predictedClassStr,truthClassStr);
+                textStr = sprintf('%s\n (truth: %s)',predictedClassStr,truthClassStr);
             else
                 textStr = predictedClassStr;
             end            
