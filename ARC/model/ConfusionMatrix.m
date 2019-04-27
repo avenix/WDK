@@ -2,8 +2,8 @@ classdef ConfusionMatrix < handle
     properties (GetAccess = public)
         confusionMatrixData;
         nClasses;
-        containsNullClass;
         classNames;
+        containsNullClass;
     end
     
     methods (Access = public)

@@ -4,6 +4,7 @@ classdef DetectionEventsPlotter < handle
         labelGrouping LabelGrouping;
         textFontSize = 22;
         symbolSize = 10;
+        delegate;
     end
     
     properties (Access = private)
@@ -67,15 +68,24 @@ classdef DetectionEventsPlotter < handle
                 obj.toggleEventsVisibility(obj.falsePositiveEventHandles,value);
             end
         end
+        
+        function delete(obj)
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.delegate = [];
+                obj.videoPlayer.close();
+                obj.deleteVideoPlayer();
+            end
+        end
+
     end
     
     methods (Access = public)
-        function obj = DetectionEventsPlotter(signalsPerFile,resultsPerFile,fileNames)
+        function obj = DetectionEventsPlotter(delegate,signalsPerFile,resultsPerFile,fileNames, figurePosition)
             
+            obj.delegate = delegate;
             obj.signalsPerFile = signalsPerFile;
             obj.resultsPerFile = resultsPerFile;
             obj.fileNames = fileNames;
-            
             
             obj.dataLoader = DataLoader();
             
@@ -85,6 +95,10 @@ classdef DetectionEventsPlotter < handle
             obj.timeLineMarker = 1;
             
             obj.loadUI();
+            if nargin > 3
+                obj.figureHandle.OuterPosition(1) = figurePosition(1);
+                obj.figureHandle.OuterPosition(2) = figurePosition(2);
+            end
         end
         
         function handleFrameChanged(obj,~)
@@ -100,6 +114,10 @@ classdef DetectionEventsPlotter < handle
             obj.deleteVideoPlayer();
         end
         
+        function close(obj)
+            close(obj.figureHandle);
+        end
+        
         function clearPlot(obj)
             cla(obj.plotAxes);
         end
@@ -111,6 +129,7 @@ classdef DetectionEventsPlotter < handle
             
             obj.uiHandles = guihandles(DetectionEventsPlotterUI);
             obj.figureHandle = obj.uiHandles.mainFigure;
+            
             obj.plotAxes = obj.uiHandles.plotAxes;
             obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
             hold(obj.plotAxes,'on');
@@ -208,7 +227,13 @@ classdef DetectionEventsPlotter < handle
                 if ~isempty(obj.videoPlayer)
                     delete(obj.videoPlayer);
                 end
-                obj.videoPlayer = VideoPlayer(videoFileName,obj);
+                
+                currentWindowPosition = obj.figureHandle.OuterPosition;
+                currentHeight = currentWindowPosition(4);
+                positionX = currentWindowPosition(1) + currentWindowPosition(3);                
+                windowPosition = [positionX, currentWindowPosition(2), currentHeight, currentHeight];
+                
+                obj.videoPlayer = VideoPlayer(videoFileName,obj,windowPosition);
                 obj.updateVideoFrame();
             end
         end
@@ -251,12 +276,10 @@ classdef DetectionEventsPlotter < handle
             drawnow;
         end
         
-        
         function deleteVideoPlayer(obj)
             delete(obj.videoPlayer);
             obj.videoPlayer = [];
         end
-        
         
         %% Handles
         function handleVisualizeClicked(obj,~,~)
@@ -298,11 +321,8 @@ classdef DetectionEventsPlotter < handle
             obj.updateVideoFrame();
         end
         
-        function handleWindowClosed(obj,~,~)
-            if ~isempty(obj.videoPlayer)
-                obj.videoPlayer.close();
-                obj.deleteVideoPlayer();
-            end
+        function handleWindowClosed(obj,~,~)            
+            obj.delegate.handleEventsPlotterWindowClosed();
         end
         
         function handleShowDetectedEventsCheckBoxChanged(obj,~,~)

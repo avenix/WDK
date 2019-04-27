@@ -18,7 +18,6 @@ classdef SegmentsGrouper < Computer
             obj.outputPort = ComputerDataType.kAny;
         end
         
-        
         function groupedSegments = compute(obj,segments)
             groupedSegments = obj.groupSegments(segments,obj.numClasses);
         end

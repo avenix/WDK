@@ -27,8 +27,12 @@ classdef VideoPlayer < handle
     
     methods (Access = public)
         
-        function obj = VideoPlayer(fileName,delegate)
+        function obj = VideoPlayer(fileName,delegate,windowPosition)
             obj.videoPlayerHandle = implay(fileName);
+            if nargin > 2
+                obj.videoPlayerHandle.Parent.OuterPosition = windowPosition;
+            end
+            
             obj.delegate = delegate;
             obj.figureHandle = obj.videoPlayerHandle.Parent;
             obj.numFrames = str2double(obj.videoPlayerHandle.Visual.VideoInfo.PlaybackInfo.Widgets{2,2});
@@ -55,7 +59,9 @@ classdef VideoPlayer < handle
                     obj.videoPlayerHandle.DataSource.Controls.playPause();
             end
             obj.previousFrame = obj.currentFrame;
-            obj.delegate.handleFrameChanged(obj.currentFrame);
+            if ~isempty(obj.delegate)
+                obj.delegate.handleFrameChanged(obj.currentFrame);
+            end
         end
         
         function close(obj)
@@ -68,7 +74,9 @@ classdef VideoPlayer < handle
         function timerTick(obj,~,~)
             if(obj.currentFrame ~= obj.previousFrame)
                 obj.previousFrame = obj.currentFrame;
-                obj.delegate.handleFrameChanged(obj.previousFrame);
+                if ~isempty(obj.delegate)
+                    obj.delegate.handleFrameChanged(obj.previousFrame);
+                end
             end
         end
         
@@ -76,7 +84,9 @@ classdef VideoPlayer < handle
             stop(obj.timer);
             delete(obj.timer);
             delete(obj.figureHandle);
-            obj.delegate.handleVideoPlayerWindowClosed();
+            if ~isempty(obj.delegate)
+                obj.delegate.handleVideoPlayerWindowClosed();
+            end
         end
     end
 end

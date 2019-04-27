@@ -380,6 +380,7 @@ double-check that your are using Matlab 2018b or later.
 2. Andreas Bulling's tutorial on Activity Recognition: https://dl.acm.org/citation.cfm?id=2499621
 3. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
 4. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
+5. [Nick Gillian's Gesture Recognition Toolki](https://github.com/nickgillian/grt)
 
 Applications developed with the WDK:
 
