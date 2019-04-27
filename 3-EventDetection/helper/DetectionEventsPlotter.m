@@ -37,7 +37,6 @@ classdef DetectionEventsPlotter < handle
         %timeline marker
         timeLineMarker;
         timeLineMarkerHandle;
-        
     end
     
     properties (Dependent)
@@ -76,7 +75,6 @@ classdef DetectionEventsPlotter < handle
                 obj.deleteVideoPlayer();
             end
         end
-
     end
     
     methods (Access = public)
@@ -225,7 +223,7 @@ classdef DetectionEventsPlotter < handle
             
             if ~isempty(videoFileName)
                 if ~isempty(obj.videoPlayer)
-                    delete(obj.videoPlayer);
+                    obj.videoPlayer.close();
                 end
                 
                 currentWindowPosition = obj.figureHandle.OuterPosition;

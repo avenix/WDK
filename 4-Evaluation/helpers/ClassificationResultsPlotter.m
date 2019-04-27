@@ -6,7 +6,7 @@ classdef ClassificationResultsPlotter < handle
         MissedColor = 'orange';
         FontSize = 18;
         LineWidth = 2;
-        RectangleYPosToDataRatio = 1.025;
+        RectangleYPosToDataRatio = 1.03;
         LabelYPosToRectangleRatio = 1.05;
         RectangleCurvature = 0.1;
     end

@@ -1,6 +1,7 @@
 classdef DetailedClassificationViewer < handle
     properties (Access = public)
         detailedClassificationResults DetailedClassificationResults;
+        delegate;
     end
     
     properties (Access = private)
@@ -32,7 +33,8 @@ classdef DetailedClassificationViewer < handle
     end
     
     methods (Access = public)
-        function  obj = DetailedClassificationViewer(detailedClassificationResults, classNames)
+        function  obj = DetailedClassificationViewer(delegate,detailedClassificationResults, classNames)
+            obj.delegate = delegate;
             obj.detailedClassificationResults = detailedClassificationResults;
             
             obj.classNames = classNames;
@@ -55,6 +57,20 @@ classdef DetailedClassificationViewer < handle
         function handleVideoPlayerWindowClosed(obj)
             obj.deleteVideoPlayer();
         end
+        
+        function close(obj)
+            close(obj.uiHandles.mainFigure);
+        end
+    end
+    
+    methods
+        function delete(obj)
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.delegate = [];
+                obj.videoPlayer.close();
+                obj.deleteVideoPlayer();
+            end
+        end
     end
     
     methods (Access = private)
@@ -62,8 +78,9 @@ classdef DetailedClassificationViewer < handle
         function loadUI(obj)
             
             obj.uiHandles = guihandles(PerformanceAssessmentDetailUI);
-            obj.uiHandles.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
-            hold(obj.uiHandles.plotAxes,'on');
+            obj.initPlotAxes();
+            movegui(obj.uiHandles.mainFigure,'center');
+            obj.uiHandles.mainFigure.Visible = 'On';
             
             obj.uiHandles.loadDataButton.Callback = @obj.handleLoadDataClicked;
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
@@ -80,6 +97,11 @@ classdef DetailedClassificationViewer < handle
                 obj.uiHandles.signalComputerVariablesTable);
             
             obj.classificationResultsPlotter = ClassificationResultsPlotter(obj.uiHandles.plotAxes,obj.classNames);
+        end
+        
+        function initPlotAxes(obj)
+            obj.uiHandles.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
+            hold(obj.uiHandles.plotAxes,'on');
         end
         
         function setUserClickHandle(obj)
@@ -103,25 +125,7 @@ classdef DetailedClassificationViewer < handle
                     'Color','red','LineWidth',2,'LineStyle','-');
             end
         end
-                
-        function plotVideo(obj)
-            fileIdx = obj.uiHandles.filesList.Value;
-            fileName = obj.uiHandles.filesList.String{fileIdx};
-            
-            [videoFileName, synchronisationFileName] = obj.getVideoAndSynchronisationFileName(fileName);
-            
-            obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(synchronisationFileName);
-            
-            if ~isempty(videoFileName)
-                if ~isempty(obj.videoPlayer)
-                    delete(obj.videoPlayer);
-                end
-                obj.videoPlayer = VideoPlayer(videoFileName,obj);
-                obj.updateVideoFrame();
-            end
-        end
-        
-        
+                        
         %% other
         function idx = getSelectedFileIdx(obj)
             idx = obj.uiHandles.filesList.Value;
@@ -260,10 +264,8 @@ classdef DetailedClassificationViewer < handle
         end
         
         function clearDataPlots(obj)
-            for i = 1 : length(obj.signalPlotHandles)
-                plotHandle =  obj.signalPlotHandles{i};
-                delete(plotHandle);
-            end
+            cla(obj.uiHandles.plotAxes,'reset');
+            obj.initPlotAxes();
             obj.signalPlotHandles = [];
         end
         
@@ -290,7 +292,12 @@ classdef DetailedClassificationViewer < handle
                     obj.videoPlayer.close();
                 end
                 
-                obj.videoPlayer = VideoPlayer(videoFileName,obj);
+                currentWindowPosition = obj.uiHandles.mainFigure.OuterPosition;
+                currentHeight = currentWindowPosition(4);
+                positionX = currentWindowPosition(1) + currentWindowPosition(3);                
+                windowPosition = [positionX, currentWindowPosition(2), currentHeight, currentHeight];
+                
+                obj.videoPlayer = VideoPlayer(videoFileName,obj,windowPosition);
                 obj.updateVideoFrame();
             end
         end
@@ -350,10 +357,7 @@ classdef DetailedClassificationViewer < handle
         end
         
         function handleWindowClosed(obj,~,~)
-            if ~isempty(obj.videoPlayer)
-                obj.videoPlayer.close();
-                obj.deleteVideoPlayer();
-            end
+            obj.delegate.handleDetailedClassificationViewerClosed();
         end
     end
 end
