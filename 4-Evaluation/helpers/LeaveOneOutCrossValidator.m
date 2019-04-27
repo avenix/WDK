@@ -1,49 +1,55 @@
 %performs leave one subject out cross validation
-classdef LeaveOneOutCrossValidator < handle
+classdef LeaveOneOutCrossValidator < Computer
     properties (Access = public)
-        nFeatures = 20;
-        shouldNormalizeFeatures = false;
         classifier;
-        tableSet;
+        shouldNormalizeFeatures = false;
+        progressNotificationDelegate = [];
     end
     
     properties (Access = private)
-        dataNormalizer;
+        featureNormalizer;
     end
     
     methods (Access = public)
         
         function obj = LeaveOneOutCrossValidator()
-            obj.dataNormalizer = FeatureNormalizer();
+            obj.featureNormalizer = FeatureNormalizer();
+            
+            obj.name = 'leaveOneOutValidator';
+            obj.inputPort = ComputerDataType.kTableSet;
+            obj.outputPort = ComputerDataType.kLabels;
         end
         
-        function truthLabels = getTruthLabels(obj)
-            truthLabels = obj.tableSet.getAllLabels();
+        function labels = compute(obj,tableSet)
+            labels = obj.validate(tableSet);
         end
         
         %receives a table set, cross validates and
         %returns a cell array with an array of labels in each cell
-        function labels = validate(obj)
+        function labels = validate(obj,tableSet)
             
-            nTables = obj.tableSet.nTables;
+            nTables = tableSet.nTables;
             labels = cell(1,nTables);
             
-            waitBar = waitbar(0,'Validating...');
-                
+            if ~isempty(obj.progressNotificationDelegate)
+                obj.progressNotificationDelegate.handleValidationStarted();
+            end
+            
             for testIndex = 1 : nTables
                 trainIndices = [1 : testIndex-1, testIndex+1 : nTables];
                 
-                trainTable = obj.tableSet.mergedTableForIndices(trainIndices);
-                testTable = obj.tableSet.tables(testIndex);
+                trainTable = tableSet.mergedTableForIndices(trainIndices);
+                testTable = tableSet.tables(testIndex);
                 
-                waitBarMsg = sprintf('Validating fold %d ...',testIndex);
-                waitbar(testIndex/nTables,waitBar,waitBarMsg);
+                if ~isempty(obj.progressNotificationDelegate)
+                    obj.progressNotificationDelegate.handleValidationProgress(testIndex,nTables);
+                end
                 
                 %normalisation
                 if(obj.shouldNormalizeFeatures)
-                    obj.dataNormalizer.fit(trainTable);
-                    trainTable = obj.dataNormalizer.normalize(trainTable);
-                    testTable = obj.dataNormalizer.normalize(testTable);
+                    obj.featureNormalizer.fit(trainTable);
+                    trainTable = obj.featureNormalizer.normalize(trainTable);
+                    testTable = obj.featureNormalizer.normalize(testTable);
                 end
                 
                 %classification
@@ -51,9 +57,19 @@ classdef LeaveOneOutCrossValidator < handle
                 labels{testIndex} = obj.classifier.test(testTable);
             end
             
-            close(waitBar);
+            if ~isempty(obj.progressNotificationDelegate)
+                obj.progressNotificationDelegate.handleValidationFinished();
+            end
             
             %labels = cat(1,labels{:});
+        end
+        
+        function str = toString(obj)
+            str = sprintf('%s_%s_%d',obj.name,obj.classifier.toString(),obj.shouldNormalizeFeatures);
+        end
+        
+        function editableProperties = getEditableProperties(obj)
+            editableProperties = Property('shouldNormalizeFeatures',obj.shouldNormalizeFeatures,false,true,PropertyType.kBoolean);
         end
     end
 end

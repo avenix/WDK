@@ -37,6 +37,9 @@ classdef Palette < handle
             featureExtractionComputers = [timeDomainFeatures; frequencyDomainFeatures];
         end
         
+        function validationComputers = ValidationComputers()
+            validationComputers = {HoldOutValidator()};
+        end
         
         function classificationComputers = ClassificationComputers()
             classificationComputers = {SVMClassifier,KNNClassifier,TreeClassifier,LDClassifier,EnsembleClassifier};

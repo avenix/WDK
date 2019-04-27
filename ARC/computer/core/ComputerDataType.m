@@ -10,7 +10,9 @@ classdef ComputerDataType
         kFeature = 7;
         kFeatureVector = 8;
         kTable = 9;
-        kAny = 10;
-        kNull = 11;
+        kTableSet = 10;
+        kLabels = 11;
+        kAny = 12;
+        kNull = 13;
     end
 end
