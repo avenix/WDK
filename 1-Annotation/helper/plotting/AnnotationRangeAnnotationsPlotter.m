@@ -1,11 +1,11 @@
 classdef AnnotationRangeAnnotationsPlotter < handle
     
-    properties (Access = public,Constant)
+    properties (Access = private,Constant)
         AnnotationColor = 'black';
         LineWidth = 3;
-        FontSize = 24;
-        RectangleYPosToDataRatio = 1.025;
-        LabelYPosToRectangleRatio = 1.05;
+        FontSize = 20;
+        RectangleYPosToDataRatio = 1.03;
+        LabelYPosToRectangleRatios = [1.06, 1.1];
         RectangleCurvature = 0.1;
     end
     
@@ -18,6 +18,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
     properties (Access = private)
         annotationsMap;
         classesMap;
+        shouldPlotUpperYLabel = false;
     end
     
     methods
@@ -47,24 +48,24 @@ classdef AnnotationRangeAnnotationsPlotter < handle
         
         function plotAnnotation(obj, plotAxes, rangeAnnotation)
             
-            classStr = obj.classesMap.stringForClassAtIdx(rangeAnnotation.label);
             
+            %plot rectangle
             rectangleHeight = (obj.yRange(2) - obj.yRange(1)) * obj.RectangleYPosToDataRatio;
             yOffset = (rectangleHeight - (obj.yRange(2) - obj.yRange(1))) / 2;
             rectangleWidth = single(rangeAnnotation.endSample - rangeAnnotation.startSample);
             rectanglePosition = [single(rangeAnnotation.startSample), obj.yRange(1) - yOffset, single(rectangleWidth), rectangleHeight];
-            
             segmentRectangleHandle = rectangle('Position',rectanglePosition,'Curvature',[obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.LineWidth);
 
+            %plot label
+            classStr = obj.classesMap.stringForClassAtIdx(rangeAnnotation.label);
             xPos = (double(rangeAnnotation.startSample) + double(rangeAnnotation.endSample)) / 2;
-            yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatio;
-            
-            segmentTextHandle = text(plotAxes,xPos,yPos, classStr,...
+            yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatios(obj.shouldPlotUpperYLabel+1);
+            segmentTextHandle = text(plotAxes,xPos,yPos,classStr,...
                 'FontSize',obj.FontSize,'HorizontalAlignment','center');
-            
             set(segmentTextHandle, 'Clipping', 'on');
             segmentTextHandle.Tag = int2str(rangeAnnotation.startSample);
             segmentTextHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
+            obj.shouldPlotUpperYLabel = ~obj.shouldPlotUpperYLabel;
             
             annotationHandle = AnnotationRangePlotHandle(rangeAnnotation,...
                 segmentRectangleHandle,segmentTextHandle);

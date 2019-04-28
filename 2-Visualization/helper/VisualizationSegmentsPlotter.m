@@ -112,10 +112,11 @@ classdef VisualizationSegmentsPlotter < handle
     methods (Access = private)
         
         function setYAxesLimits(obj)
-            
-             height = obj.maxSegmentValue - obj.minSegmentValue;
-            for i = 1 : length(obj.axesHandles)
-                ylim(obj.axesHandles(i),[obj.minSegmentValue - height * 0.1, obj.maxSegmentValue + height * 0.1]);
+            if obj.maxSegmentValue > obj.minSegmentValue
+                height = obj.maxSegmentValue - obj.minSegmentValue;
+                for i = 1 : length(obj.axesHandles)
+                    ylim(obj.axesHandles(i),[obj.minSegmentValue - height * 0.1, obj.maxSegmentValue + height * 0.1]);
+                end
             end
         end
         

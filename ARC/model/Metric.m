@@ -22,7 +22,6 @@ classdef Metric < handle
             obj.flops = obj.flops + metric.flops;
             obj.memory = obj.memory + metric.memory;
             obj.outputSize = obj.outputSize + metric.outputSize;
-            
         end
     end
 end

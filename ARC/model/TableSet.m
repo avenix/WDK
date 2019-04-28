@@ -36,7 +36,10 @@ classdef TableSet < handle
         
         function labels = getAllLabels(obj)
             labels = {obj.tables.label};
-            %labels = cat(1,obj.tables.label);
+        end
+        
+        function labels = labelsForIndex(obj,index)
+            labels = obj.tables(index).label;
         end
     end
     

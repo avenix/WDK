@@ -1,10 +1,11 @@
+%represents a group of labels
 classdef LabelGroup < handle
-    properties
+    properties (Access = public)
         labelName;
         groupsMap;
     end
         
-    methods
+    methods (Access = public)
         function obj = LabelGroup(labelName)
             if nargin > 0
                 obj.labelName = labelName;

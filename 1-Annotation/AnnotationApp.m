@@ -5,6 +5,7 @@ classdef AnnotationApp < handle
         AutoFindPeakRadius = 100;
         SamplingFrequency = 200;
         SegmentHeight = 30;
+        AxisToDataRatio = 1.3;
     end
     
     properties (Access = private)
@@ -76,6 +77,7 @@ classdef AnnotationApp < handle
             obj.rangeAnnotationsPlotter.delegate = obj;
             
             obj.loadUI();
+          
         end
 
         function handleAnnotationClicked(obj,source,~)
@@ -109,6 +111,10 @@ classdef AnnotationApp < handle
         %% methods
         function loadUI(obj)
             obj.uiHandles = guihandles(AnnotationUI);
+            
+            obj.uiHandles.mainFigure.Visible = false;
+            movegui(obj.uiHandles.mainFigure,'center');
+            obj.uiHandles.mainFigure.Visible = true;
             
             obj.uiHandles.fileNamesList.Callback = @obj.handleSelectionChanged;
             obj.uiHandles.loadDataButton.Callback = @obj.handleLoadDataClicked;
@@ -171,9 +177,10 @@ classdef AnnotationApp < handle
         end
         
         function loadPlotAxes(obj)
-            obj.plotAxes = axes(obj.uiHandles.mainFigure);
+            %obj.plotAxes = axes(obj.uiHandles.mainFigure);
+            obj.plotAxes = obj.uiHandles.plotAxes;
             obj.plotAxes.Units = 'characters';
-            obj.plotAxes.Position  = [35 4 230 57];
+            %obj.plotAxes.Position  = [35 4 230 57];
             obj.plotAxes.Visible = 'On';
             obj.plotAxes.Box = 'off';
         end
@@ -236,7 +243,7 @@ classdef AnnotationApp < handle
                 obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude);
                 
                 n = size(obj.magnitude,1);
-                axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * 1.1, obj.plottedSignalYRange(2) * 1.1]);
+                axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * AnnotationApp.AxisToDataRatio, obj.plottedSignalYRange(2) * AnnotationApp.AxisToDataRatio]);
             end
         end
         
@@ -290,9 +297,18 @@ classdef AnnotationApp < handle
                     obj.videoPlayer.close();
                 end
                 
-                obj.videoPlayer = VideoPlayer(videoFileName,obj);
+                videoPlayerWindowPosition = obj.getVideoPlayerWindowPosition();
+                
+                obj.videoPlayer = VideoPlayer(videoFileName,obj,videoPlayerWindowPosition);
                 obj.updateVideoFrame();
             end
+        end
+        
+        function videoPlayerWindowPosition = getVideoPlayerWindowPosition(obj)
+            currentWindowPosition = obj.uiHandles.mainFigure.OuterPosition;
+            currentHeight = currentWindowPosition(4);
+            positionX = currentWindowPosition(1) + currentWindowPosition(3);
+            videoPlayerWindowPosition = [positionX, currentWindowPosition(2), currentHeight, currentHeight];
         end
         
         function updateVideoFrame(obj)
@@ -365,7 +381,7 @@ classdef AnnotationApp < handle
         end
         
         function updateLoadDataTextbox(obj,~,~)
-            obj.uiHandles.loadDataTextbox.String = sprintf('data size: %d x %d',obj.dataFile.numRows,obj.dataFile.numColumns);
+            obj.uiHandles.loadDataTextbox.String = sprintf('data size:\n %d x %d',obj.dataFile.numRows,obj.dataFile.numColumns);
         end
  
         function populateClassesList(obj)

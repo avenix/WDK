@@ -25,9 +25,10 @@ classdef HoldOutValidator < Computer
             labels = obj.validate(tableSet);
         end
         
-        function labels = validate(obj,tableSet)
+        %returns an instance of ClassificationResult
+        function classificationResults = validate(obj,tableSet)
             if isempty(obj.trainIndices) || isempty(obj.testIndices)
-                labels = {};
+                classificationResults = [];
             else
                 
                 %train
@@ -39,7 +40,8 @@ classdef HoldOutValidator < Computer
                 
                 %test
                 nTestTables = length(obj.testIndices);
-                labels = cell(1,nTestTables);
+                classificationResults = repmat(ClassificationResult, 1,nTestTables);
+                
                 for i = 1 : nTestTables
                     testIdx = obj.testIndices(i);
                     testTable = tableSet.mergedTableForIndices(testIdx);
@@ -49,7 +51,9 @@ classdef HoldOutValidator < Computer
                         testTable = obj.featureNormalizer.normalize(testTable);
                     end
                     
-                    labels{i} = obj.classifier.test(testTable);
+                    truthClasses = tableSet.labelsForIndex(testIdx);
+                    predictedClasses = obj.classifier.test(testTable);
+                    classificationResults(i) = ClassificationResult(predictedClasses,truthClasses);
                 end
             end
         end
@@ -75,8 +79,8 @@ classdef HoldOutValidator < Computer
             
             editableProperties = [property1,property2,property3];
         end
-        
     end
+    
     methods (Access = private)
         function [validFeatureIdxs, trainTable] = normalizeTrainingTable(obj,trainTable)
             validFeatureIdxs = FeatureNormalizer.ComputeValidFeaturesForTable(trainTable);

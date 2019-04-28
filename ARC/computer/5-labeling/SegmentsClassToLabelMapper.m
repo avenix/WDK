@@ -1,4 +1,4 @@
-classdef LabelMapper < Computer
+classdef SegmentsClassToLabelMapper < Computer
     
     properties (Access = public)
         labelingStrategy;
@@ -6,12 +6,12 @@ classdef LabelMapper < Computer
     
     methods (Access = public)
         
-        function obj = LabelMapper(labelingStrategy)
+        function obj = SegmentsClassToLabelMapper(labelingStrategy)
             if nargin > 0
                 obj.labelingStrategy = labelingStrategy;
             end
             
-            obj.name = 'labelMapper';
+            obj.name = 'segmentsClassToLabelMapper';
             obj.inputPort = ComputerDataType.kSegment;
             obj.outputPort = ComputerDataType.kSegment;
         end

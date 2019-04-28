@@ -11,6 +11,7 @@ shortDiveLeft
 catchHand
 catchBody
 catchGround
+catchGroundDive
 jumpCatchStand
 jumpCatchRun
 throwHigh
