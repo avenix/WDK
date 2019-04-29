@@ -1,6 +1,6 @@
 classdef DetailedClassificationViewer < handle
     properties (Access = public)
-        detailedClassificationResults DetailedClassificationResults;
+        detailedClassificationResults;
         delegate;
     end
     
@@ -9,7 +9,6 @@ classdef DetailedClassificationViewer < handle
         dataLoader;
         dataFile;
         magnitude;
-        classNames;
         
         %ui handles
         uiHandles;
@@ -33,11 +32,10 @@ classdef DetailedClassificationViewer < handle
     end
     
     methods (Access = public)
-        function  obj = DetailedClassificationViewer(delegate,detailedClassificationResults, classNames)
+        function  obj = DetailedClassificationViewer(delegate,detailedClassificationResults)
             obj.delegate = delegate;
             obj.detailedClassificationResults = detailedClassificationResults;
             
-            obj.classNames = classNames;
             obj.videoFileNames = Helper.listVideoFiles();
             obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
             obj.timeLineMarker = 1;
@@ -96,7 +94,10 @@ classdef DetailedClassificationViewer < handle
                 obj.uiHandles.signalComputerList,...
                 obj.uiHandles.signalComputerVariablesTable);
             
-            obj.classificationResultsPlotter = ClassificationResultsPlotter(obj.uiHandles.plotAxes,obj.classNames);
+            if ~isempty(obj.detailedClassificationResults)
+                classNames = obj.detailedClassificationResults(1).validationResult.classNames;
+                obj.classificationResultsPlotter = ClassificationResultsPlotter(obj.uiHandles.plotAxes,classNames);
+            end
         end
         
         function initPlotAxes(obj)

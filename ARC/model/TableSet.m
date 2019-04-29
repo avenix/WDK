@@ -25,6 +25,10 @@ classdef TableSet < handle
             obj.tables = tables;
         end
         
+        function table = tableAtIndex(obj,index)
+            table = obj.tables(index);
+        end
+        
         function table = mergedTableForIndices(obj,indices)
             selectedTables = obj.tables(indices);
             table = TableSet.MergeTables(selectedTables);
@@ -38,7 +42,7 @@ classdef TableSet < handle
             labels = {obj.tables.label};
         end
         
-        function labels = labelsForIndex(obj,index)
+        function labels = labelsAtIndex(obj,index)
             labels = obj.tables(index).label;
         end
     end
@@ -64,7 +68,7 @@ classdef TableSet < handle
                     
                     mergedTable = array2table(mergedTableArray);
                     mergedTable.Properties.VariableNames = firstTable.Properties.VariableNames;
-                    mergedTable = Table(mergedTable);
+                    mergedTable = Table(mergedTable,tables(1).classNames);
                 end
             end
         end

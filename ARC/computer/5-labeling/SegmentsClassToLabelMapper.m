@@ -1,14 +1,14 @@
 classdef SegmentsClassToLabelMapper < Computer
     
     properties (Access = public)
-        labelingStrategy;
+        labelGrouping;
     end
     
     methods (Access = public)
         
-        function obj = SegmentsClassToLabelMapper(labelingStrategy)
+        function obj = SegmentsClassToLabelMapper(labelGrouping)
             if nargin > 0
-                obj.labelingStrategy = labelingStrategy;
+                obj.labelGrouping = labelGrouping;
             end
             
             obj.name = 'segmentsClassToLabelMapper';
@@ -19,12 +19,12 @@ classdef SegmentsClassToLabelMapper < Computer
         function segments = compute(obj,segments)
 
             for i = 1 : length(segments)
-                segments(i).label = obj.labelingStrategy.labelForClass(segments(i).label);
+                segments(i).label = obj.labelGrouping.labelForClass(segments(i).label);
             end
         end
         
         function str = toString(obj)
-            str = sprintf('%s_%s',obj.name,obj.labelingStrategy.name);
+            str = sprintf('%s_%s',obj.name,obj.labelGrouping.name);
         end
     end
 end

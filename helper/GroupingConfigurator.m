@@ -3,6 +3,7 @@ classdef GroupingConfigurator < handle
     
     properties (Access = public)
         labelGroupings;
+        delegate = [];
     end
     
     properties (Access = private)
@@ -12,11 +13,15 @@ classdef GroupingConfigurator < handle
     
     methods (Access = public)
         
-        function obj = GroupingConfigurator(labelGroupings,labelGroupingsList,selectedLabelsTable)
+        function obj = GroupingConfigurator(labelGroupings,labelGroupingsList,selectedLabelsTable,delegate)
             obj.labelGroupingsList = labelGroupingsList;
             obj.labelGroupings = labelGroupings;
             if nargin > 2
                 obj.selectedLabelsTable = selectedLabelsTable;
+            end
+            
+            if nargin > 3
+                obj.delegate = delegate;
             end
             
             if ~isempty(labelGroupings)
@@ -46,6 +51,10 @@ classdef GroupingConfigurator < handle
         
         function handleSelectedLabelGroupingChanged(obj,~,~)
             obj.fillGroupingTable();
+            if ~isempty(obj.delegate)
+                labelGrouping = obj.getCurrentLabelGrouping();
+                obj.delegate.handleSelectedLabelGroupingChanged(labelGrouping);
+            end
         end
         
         function idx = getSelectedLabelingIdx(obj)

@@ -20,16 +20,17 @@ classdef LeaveOneOutCrossValidator < Computer
             obj.outputPort = ComputerDataType.kLabels;
         end
         
-        function labels = compute(obj,tableSet)
-            labels = obj.validate(tableSet);
+        function classificationResults = compute(obj,tableSet)
+            classificationResults = obj.validate(tableSet);
         end
         
         %receives a table set, cross validates and
         %returns a cell array with an array of labels in each cell
-        function labels = validate(obj,tableSet)
+        function classificationResults = validate(obj,tableSet)
             
             nTables = tableSet.nTables;
-            labels = cell(1,nTables);
+            
+            classificationResults = repmat(ClassificationResult, 1,nTables);
             
             if ~isempty(obj.progressNotificationDelegate)
                 obj.progressNotificationDelegate.handleValidationStarted();
@@ -39,7 +40,7 @@ classdef LeaveOneOutCrossValidator < Computer
                 trainIndices = [1 : testIndex-1, testIndex+1 : nTables];
                 
                 trainTable = tableSet.mergedTableForIndices(trainIndices);
-                testTable = tableSet.tables(testIndex);
+                testTable = tableSet.mergedTableForIndices(testIndex);
                 
                 if ~isempty(obj.progressNotificationDelegate)
                     obj.progressNotificationDelegate.handleValidationProgress(testIndex,nTables);
@@ -48,13 +49,16 @@ classdef LeaveOneOutCrossValidator < Computer
                 %normalisation
                 if(obj.shouldNormalizeFeatures)
                     obj.featureNormalizer.fit(trainTable);
-                    trainTable = obj.featureNormalizer.normalize(trainTable);
-                    testTable = obj.featureNormalizer.normalize(testTable);
+                    obj.featureNormalizer.normalize(trainTable);
+                    obj.featureNormalizer.normalize(testTable);
                 end
                 
                 %classification
-                obj.classifier.train(trainTable);
-                labels{testIndex} = obj.classifier.test(testTable);
+                obj.classifier.train(trainTable);                
+                
+                truthClasses = tableSet.labelsAtIndex(testIndex);
+                predictedClasses = obj.classifier.test(testTable);
+                classificationResults(testIndex) = ClassificationResult(predictedClasses,truthClasses,testTable.classNames);
             end
             
             if ~isempty(obj.progressNotificationDelegate)

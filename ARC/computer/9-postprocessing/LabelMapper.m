@@ -1,7 +1,11 @@
 classdef LabelMapper < Computer
     
-    properties (Access = private)
+    properties (Access = public)
         hashMap;
+    end
+    
+    properties (Access = public)
+        classNames;
     end
     
     methods (Access = public)
@@ -11,16 +15,26 @@ classdef LabelMapper < Computer
             obj.outputPort = ComputerDataType.kLabels;
             
             obj.hashMap = containers.Map(uint32(0), uint32(1));
-            remove(obj.hashMap,0)
+            remove(obj.hashMap,0);
         end
         
-        %receives an instance of ClassificationResult
+        %receives an array of instances of ClassificationResult
         function classificationResults = compute(obj,classificationResults)
             nClassificationResults = length(classificationResults);
             for i = 1 : nClassificationResults
-                classificationResults = classificationResults(i);
-                classificationResults.truthClasses = obj.mappingForLabels(classificationResults.truthClasses);
-                classificationResults.predictedClasses = obj.mappingForLabels(classificationResults.predictedClasses);
+                classificationResult = classificationResults(i);
+                classificationResult.truthClasses = obj.mappingForLabels(classificationResult.truthClasses);
+                classificationResult.predictedClasses = obj.mappingForLabels(classificationResult.predictedClasses);
+                classificationResult.classNames = obj.classNames;
+            end
+        end
+        
+        function printLabelsForGrouping(obj,grouping)
+            mapKeys = keys(obj.hashMap);
+            for i = 1 : length(mapKeys)
+                key = mapKeys{i};
+                classStr = grouping.classNames{i};
+                fprintf('%s - %d %d\n',classStr,key,obj.hashMap(key));
             end
         end
         
@@ -46,11 +60,11 @@ classdef LabelMapper < Computer
         function str = toString(obj)
             mapKeys = keys(obj.hashMap);
             mapValues = values(obj.hashMap);
-            valuesStr = sprintf('[%s],[%s]',...
+            hashMapStr = sprintf('[%s],[%s]',...
                 Helper.arrayToString(mapKeys),...
                 Helper.arrayToString(mapValues));
             
-            str = sprintf('%s_%s',obj.name,valuesStr);
+            str = sprintf('%s_%s',obj.name,hashMapStr);
         end
     end
 end

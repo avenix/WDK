@@ -4,8 +4,8 @@ classdef HoldOutValidator < Computer
         testIndices;
         trainIndices;
         classifier;
+        progressNotificationDelegate = [];
         shouldNormalizeFeatures = true;
-        progressNotificationDelegate;
     end
 
     properties (Access = private)
@@ -21,8 +21,8 @@ classdef HoldOutValidator < Computer
             obj.featureNormalizer = FeatureNormalizer();
         end
         
-        function labels = compute(obj,tableSet)
-            labels = obj.validate(tableSet);
+        function classificationResults = compute(obj,tableSet)
+            classificationResults = obj.validate(tableSet);
         end
         
         %returns an instance of ClassificationResult
@@ -30,7 +30,6 @@ classdef HoldOutValidator < Computer
             if isempty(obj.trainIndices) || isempty(obj.testIndices)
                 classificationResults = [];
             else
-                
                 %train
                 trainTable = tableSet.mergedTableForIndices(obj.trainIndices);
                 if obj.shouldNormalizeFeatures
@@ -48,12 +47,12 @@ classdef HoldOutValidator < Computer
                     
                     if obj.shouldNormalizeFeatures
                         testTable.filterTableToColumns([validFeatureIdxs true]);
-                        testTable = obj.featureNormalizer.normalize(testTable);
+                        obj.featureNormalizer.normalize(testTable);
                     end
                     
-                    truthClasses = tableSet.labelsForIndex(testIdx);
+                    truthClasses = tableSet.labelsAtIndex(testIdx);
                     predictedClasses = obj.classifier.test(testTable);
-                    classificationResults(i) = ClassificationResult(predictedClasses,truthClasses);
+                    classificationResults(i) = ClassificationResult(predictedClasses,truthClasses,testTable.classNames);
                 end
             end
         end
@@ -86,7 +85,7 @@ classdef HoldOutValidator < Computer
             validFeatureIdxs = FeatureNormalizer.ComputeValidFeaturesForTable(trainTable);
             trainTable.filterTableToColumns([validFeatureIdxs true]);
             obj.featureNormalizer.fit(trainTable);
-            trainTable = obj.featureNormalizer.normalize(trainTable);
+            obj.featureNormalizer.normalize(trainTable);
         end
     end
 end

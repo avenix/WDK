@@ -28,14 +28,12 @@ classdef FeatureNormalizer < Computer
             end
         end
         
-        function table = normalize(obj,table)
-            table = table.table;
-            data = table2array(table(:,1:end-1));
+        function normalize(obj,table)
+            data = table2array(table.table(:,1:end-1));
             N = length(data(:,1));
             normalizedData = data - repmat(obj.means,N,1);
             normalizedData = normalizedData ./ repmat(obj.stds,N,1);
-            table(:,1:end-1) = array2table(normalizedData);
-            table = Table(table);
+            table.table(:,1:end-1) = array2table(normalizedData);
         end
     end
     

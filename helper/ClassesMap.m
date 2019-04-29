@@ -9,7 +9,6 @@ classdef ClassesMap < handle
     end
     
     properties (Access = public)
-        
         numClasses;
         classesList;
     end

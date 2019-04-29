@@ -2,6 +2,7 @@ classdef Table < handle
     
     properties (Access = public)
         table;
+        classNames;
     end
     
     properties (Dependent)
@@ -39,9 +40,12 @@ classdef Table < handle
     end
     
     methods (Access = public)
-        function obj = Table(table)
+        function obj = Table(table,classNames)
             if nargin > 0
                 obj.table = table;
+                if nargin > 1
+                    obj.classNames = classNames;
+                end
             end
         end
         

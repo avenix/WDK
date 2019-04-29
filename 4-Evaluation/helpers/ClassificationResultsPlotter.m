@@ -38,8 +38,8 @@ classdef ClassificationResultsPlotter < handle
                     y = [];
                 end
                 
-                truthClass = classificationResults.truthClasses(i);
-                predictedClass = classificationResults.predictedClasses(i);
+                truthClass = classificationResults.validationResult.truthClasses(i);
+                predictedClass = classificationResults.validationResult.predictedClasses(i);
                 obj.plotClassificationResult(segment,y,truthClass,predictedClass);
             end
         end

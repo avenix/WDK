@@ -1,12 +1,12 @@
-classdef DetailedClassificationResults < handle
+classdef DetailedClassificationResult < handle
     properties (Access = public)
         fileName; 
         segments;
-        validationResult;
+        validationResult ClassificationResult;
     end
     
     methods (Access = public)
-        function obj = DetailedClassificationResults()
+        function obj = DetailedClassificationResult()
         end
         
         function labels = getAllTruthLabels(obj)

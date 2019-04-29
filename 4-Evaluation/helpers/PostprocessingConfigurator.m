@@ -1,31 +1,38 @@
 %this class retrieves a preprocessing computer from the UI
 classdef PostprocessingConfigurator < handle
-    
-    properties (Access = private)
-        computersList;
-        computersPropertiesTable;
-        postprocessingMapperFilesList;
-        currentComputerProperties;
-    end
-    
+        
     properties (Access = public)
         computers;
     end
     
+    properties (Access = private)
+        computersList;
+        computersPropertiesTable;
+        currentComputerProperties;
+        currentLabelGrouping;
+    end
+   
     methods (Access = public)
-        function obj = ComputerConfigurator(computers, computersList,computersPropertiesTable,postprocessingMapperFilesList,labelGroupings)
+        function obj = PostprocessingConfigurator(computers,computersList,computersPropertiesTable,currentLabelGrouping)
             obj.computers = computers;
             obj.computersList = computersList;
             obj.computersPropertiesTable = computersPropertiesTable;
-            obj.postprocessingMapperFilesList = postprocessingMapperFilesList;
+            obj.currentLabelGrouping = currentLabelGrouping;
 
             obj.computersPropertiesTable.CellEditCallback = @obj.handlePropertiesTableEditFinished;
             obj.computersList.ValueChangedFcn = @obj.handleSelectionChanged;
             
             if ~isempty(obj.computers)
                 obj.fillComputersList();
-                obj.fillMapperFilesList(labelGroupings);
                 obj.reloadUI();
+            end
+        end
+        
+        function setCurrentLabelGrouping(obj,labelGrouping)
+            obj.currentLabelGrouping = labelGrouping;
+            
+            if obj.isLabelMapperMode()
+                obj.updatePropertiesTableWithLabelGrouping();
             end
         end
         
@@ -35,9 +42,9 @@ classdef PostprocessingConfigurator < handle
                     obj.computersList.Value = obj.computersList.Items{1};
                 end
                 computerIdx = obj.getSelectedComputerIdx();
-                
-                obj.currentComputerProperties = obj.computers{computerIdx}.getEditableProperties();
-                obj.updatePropertiesTable();
+                currentComputer = obj.computers{computerIdx};
+                obj.currentComputerProperties = currentComputer.getEditableProperties();
+                obj.updatePropertiesTable(currentComputer);
             end
         end
         
@@ -45,13 +52,12 @@ classdef PostprocessingConfigurator < handle
             computer = obj.getSelectedComputer();
             computer = computer.copy();
             
-            data = obj.computersPropertiesTable.Data;
-            for i = 1 : size(data,1)
-                propertyName = data{i,1};
-                propertyValue = data{i,2};
-                property = Property(propertyName,propertyValue);
-                computer.setProperty(property);
+            if isa(computer,'LabelMapper')
+                obj.setLabelMapperProperties(computer);
+            else
+                obj.updateComputerPropertieFromsInTable(computer);
             end
+            
         end
         
         function idx = getSelectedComputerIdx(obj)
@@ -63,53 +69,91 @@ classdef PostprocessingConfigurator < handle
             idx = obj.getSelectedComputerIdx();
             computer = obj.computers{idx};
         end
-        
-        function addComputer(obj,computer)
-            obj.computers{end+1} = computer;
-        end
-        
-        function removeSelectedComputer(obj)
-            idx = obj.getSelectedComputer;
-            obj.computers{idx} = [];
-            obj.reloadUI();
-        end
     end
     
     methods(Access = private)
         
-        function handlePropertiesTableEditFinished(obj,~,callbackData)
-            row = callbackData.Indices(1);
+        function b = isLabelMapperMode(obj)
             computer = obj.getSelectedComputer();
-            property = obj.currentComputerProperties(row);
-            property.value = callbackData.NewData;
-            computer.setProperty(property);
+            b = isa(computer,'LabelMapper');
+        end
+        
+        function setLabelMapperProperties(obj,labelMapper)
+            targetClassesMap = containers.Map();
+            data = obj.computersPropertiesTable.Data;
+            
+            nSourceClasses = size(data,1);
+            labelMapper.classNames = cell(nSourceClasses,1);
+            
+            %maps target class strings to integers
+            targetClassCount = 0;
+            for sourceClass = 1 : nSourceClasses
+                targetClassStr = data{sourceClass,2};
+                if ~strcmp(targetClassStr, Constants.kNullClassGroupStr) && ~isKey(targetClassesMap,targetClassStr)
+                    targetClassCount = targetClassCount + 1;
+                    targetClassesMap(targetClassStr) = targetClassCount;
+                    labelMapper.classNames{targetClassCount} = targetClassStr;
+                end
+            end
+            targetClassesMap(Constants.kNullClassGroupStr) = ClassesMap.kNullClass;
+            labelMapper.classNames = labelMapper.classNames(1:targetClassCount);
+            
+            %adds mapings to labelMapper
+            for sourceClass = 1 : nSourceClasses
+                targetClassStr = data{sourceClass,2};
+                targetClass = targetClassesMap(targetClassStr);
+                labelMapper.addMapping(sourceClass,targetClass);
+            end
+        end
+        
+        function updateComputerPropertieFromsInTable(obj,computer)
+            data = obj.computersPropertiesTable.Data;
+            for i = 1 : size(data,1)
+                propertyName = data{i,1};
+                propertyValue = data{i,2};
+                property = Property(propertyName,propertyValue);
+                computer.setProperty(property);
+            end
+        end
+        
+        function handlePropertiesTableEditFinished(obj,~,callbackData)
+            
+            if ~obj.isLabelMapperMode()
+                row = callbackData.Indices(1);
+                computer = obj.getSelectedComputer();
+                property = obj.currentComputerProperties(row);
+                property.value = callbackData.NewData;
+                computer.setProperty(property);
+            end
         end
         
         function handleSelectionChanged(obj,~,~)
             computer = obj.getSelectedComputer();
-            if isa(computer,'LabelMapper')
-                obj.computersPropertiesTable.Visible = false;
-                obj.postprocessingMapperFilesList.Visible = true;
-            else
-                obj.postprocessingMapperFilesList.Visible = false;
-                obj.computersPropertiesTable.Visible = true;
-                
-                obj.currentComputerProperties = computer.getEditableProperties();
-                obj.updatePropertiesTable();
-            end
+            
+            obj.currentComputerProperties = computer.getEditableProperties();
+            obj.updatePropertiesTable();
         end
         
         function fillComputersList(obj)
             obj.computersList.Items = Helper.generateComputerNamesArray(obj.computers);
         end
         
-        function fillMapperFilesList(obj)
-            
-            obj.postprocessingMapperFilesList.Items = Helper.generateComputerNamesArray(obj.computers);
+        function updatePropertiesTable(obj,currentComputer)
+            if isa(currentComputer,'LabelMapper')
+                obj.updatePropertiesTableWithLabelGrouping();
+            else
+                obj.computersPropertiesTable.ColumnName = {'Computer','Variable'};
+                obj.computersPropertiesTable.Data = Helper.propertyArrayToCellArray(obj.currentComputerProperties);
+            end
         end
         
-        function updatePropertiesTable(obj)
-            obj.computersPropertiesTable.Data = Helper.propertyArrayToCellArray(obj.currentComputerProperties);
+        function updatePropertiesTableWithLabelGrouping(obj)
+            numClasses = obj.currentLabelGrouping.numClasses;
+            data = cell(numClasses,2);
+            obj.computersPropertiesTable.ColumnName = {'Source Classes','Target Classes'};
+            data(:,1) = obj.currentLabelGrouping.classNames;
+            data(:,2) = obj.currentLabelGrouping.classNames;
+            obj.computersPropertiesTable.Data = data;
         end
         
         function nProperties = countNProperties(~,propertiesCell)

@@ -1,4 +1,3 @@
-
 classdef LabelGrouping < handle
     
     properties (Access = public)
@@ -13,7 +12,6 @@ classdef LabelGrouping < handle
     end
     
     methods (Access = public)
-        
         function obj = LabelGrouping(classGroups)
             obj.defaultClassesMap = ClassesMap.instance();
             if nargin == 0 
@@ -99,7 +97,6 @@ classdef LabelGrouping < handle
         end
 
         function isClassCovered = computeIsClassCovered(obj,classGroups)
-            
             nClasses = obj.defaultClassesMap.numClasses;
             isClassCovered = false(1,nClasses);
             if ~isempty(classGroups)
