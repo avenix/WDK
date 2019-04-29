@@ -1,4 +1,4 @@
-classdef DetailedClassificationResult < handle
+classdef AssessmentDetailedClassificationResult < handle
     properties (Access = public)
         fileName; 
         segments;
@@ -6,7 +6,7 @@ classdef DetailedClassificationResult < handle
     end
     
     methods (Access = public)
-        function obj = DetailedClassificationResult()
+        function obj = AssessmentDetailedClassificationResult()
         end
         
         function labels = getAllTruthLabels(obj)

@@ -1,11 +1,11 @@
-classdef ConfusionMatrixPlotter < handle
+classdef AssessmentConfusionMatrixPlotter < handle
     
     properties (Access  = private)
         plotAxes;
     end
     
     methods (Access = public)
-        function obj = ConfusionMatrixPlotter(plotAxes)
+        function obj = AssessmentConfusionMatrixPlotter(plotAxes)
             obj.plotAxes = plotAxes;
             axis(obj.plotAxes, 'tight');
         end

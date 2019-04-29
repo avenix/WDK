@@ -1,4 +1,4 @@
-classdef AggregatedClassificationResults < handle
+classdef AssessmentAggregatedClassificationResults < handle
     properties (Access = public)
         precisionPerClass;
         recallPerClass;
@@ -23,7 +23,7 @@ classdef AggregatedClassificationResults < handle
     end
     
     methods (Access = public)
-        function obj = AggregatedClassificationResults(confusionMatrix)
+        function obj = AssessmentAggregatedClassificationResults(confusionMatrix)
             obj.confusionMatrix = confusionMatrix;
             obj.computeAccuracy(confusionMatrix);
             obj.computePrecisionPerClass(confusionMatrix);

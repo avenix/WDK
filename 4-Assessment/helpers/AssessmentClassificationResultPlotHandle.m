@@ -1,4 +1,4 @@
-classdef ClassificationResultPlotHandle < handle
+classdef AssessmentClassificationResultPlotHandle < handle
     properties (Access = public)
         rectangleHandle;
         textHandle;
@@ -6,7 +6,7 @@ classdef ClassificationResultPlotHandle < handle
     end
     
     methods (Access = public)
-        function obj = ClassificationResultPlotHandle(rectangleHandle,textHandle,symbolHandle)
+        function obj = AssessmentClassificationResultPlotHandle(rectangleHandle,textHandle,symbolHandle)
             if nargin > 0
                 obj.rectangleHandle = rectangleHandle;
                 if nargin > 1

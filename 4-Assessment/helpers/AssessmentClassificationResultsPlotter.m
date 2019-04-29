@@ -1,4 +1,4 @@
-classdef ClassificationResultsPlotter < handle
+classdef AssessmentClassificationResultsPlotter < handle
     
     properties (Access = public, Constant)
         CorrectColor = 'green';
@@ -23,7 +23,7 @@ classdef ClassificationResultsPlotter < handle
     end
     
     methods (Access = public)
-        function obj = ClassificationResultsPlotter(plotAxes,classNames)
+        function obj = AssessmentClassificationResultsPlotter(plotAxes,classNames)
             obj.plotAxes = plotAxes;
             obj.classNames = classNames;
         end
@@ -73,7 +73,7 @@ classdef ClassificationResultsPlotter < handle
                 symbolHandle = plot(obj.plotAxes,x,segmentEventY,'*','Color',colorStr);
             end
             
-            plotHandle = ClassificationResultPlotHandle(rectangleHandle, textHandle, symbolHandle);
+            plotHandle = AssessmentClassificationResultPlotHandle(rectangleHandle, textHandle, symbolHandle);
         end
         
         function textStr = getTextForPrediction(obj,truthClass,predictedClass)
@@ -89,9 +89,9 @@ classdef ClassificationResultsPlotter < handle
         
         function colorStr = getColorForPrediction(~,truthClass,predictedClass)
             if truthClass == predictedClass
-                colorStr = ClassificationResultsPlotter.CorrectColor;
+                colorStr = AssessmentClassificationResultsPlotter.CorrectColor;
             else
-                colorStr = ClassificationResultsPlotter.WrongColor;
+                colorStr = AssessmentClassificationResultsPlotter.WrongColor;
             end
         end
     end

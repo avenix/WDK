@@ -1,4 +1,4 @@
-classdef DetailedClassificationViewer < handle
+classdef AssessmentClassificationResultsViewer < handle
     properties (Access = public)
         detailedClassificationResults;
         delegate;
@@ -26,13 +26,13 @@ classdef DetailedClassificationViewer < handle
         
         %preprocessing
         preprocessingConfigurator;
-        classificationResultsPlotter ClassificationResultsPlotter;
+        classificationResultsPlotter AssessmentClassificationResultsPlotter;
         
         plottedSignalYRange;
     end
     
     methods (Access = public)
-        function  obj = DetailedClassificationViewer(delegate,detailedClassificationResults)
+        function  obj = AssessmentClassificationResultsViewer(delegate,detailedClassificationResults)
             obj.delegate = delegate;
             obj.detailedClassificationResults = detailedClassificationResults;
             
@@ -96,7 +96,7 @@ classdef DetailedClassificationViewer < handle
             
             if ~isempty(obj.detailedClassificationResults)
                 classNames = obj.detailedClassificationResults(1).validationResult.classNames;
-                obj.classificationResultsPlotter = ClassificationResultsPlotter(obj.uiHandles.plotAxes,classNames);
+                obj.classificationResultsPlotter = AssessmentClassificationResultsPlotter(obj.uiHandles.plotAxes,classNames);
             end
         end
         
