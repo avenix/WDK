@@ -83,7 +83,7 @@ classdef PostprocessingConfigurator < handle
             data = obj.computersPropertiesTable.Data;
             
             nSourceClasses = size(data,1);
-            labelMapper.classNames = cell(nSourceClasses,1);
+            labelMapper.classNames = cell(1,nSourceClasses);
             
             %maps target class strings to integers
             targetClassCount = 0;

@@ -1,20 +1,14 @@
 # Wearables Development Toolkit (WDK)
 
-The Wearables Development Toolkit (WDK) is a set of tools to facilitate the development of wearable device / activity recognition applications. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm evaluation and deployment (i.e. integration of the code into the wearable device): 
+The Wearables Development Toolkit (WDK) is a set of tools to facilitate the development of activity recognition applications with wearable devices. The usual activities involved in the development of such applications are: data collection, data annotation, algorithm development, algorithm assessment and deployment (i.e. integration of the code into the wearable device): 
 
 ![Activity Recognition Chain Development](doc/images/ARCDevelopment.png)
 
 ## Setup
 
 * ```git clone https://github.com/avenix/WDK.git```
-* install Matlab 2018b or greater. 
+* install Matlab 2019a or greater. 
 * in Matlab, open the repository and type:  `addpath(genpath('./'))` in the console
-* this code uses the mRMR library for feature selection. If you get an error '*estpab function not found*', then you need to:
-```
-cd libraries/mRMR_0.9/mi/
-mex -setup C++ 
-makeosmex
-```
 * use the Apps in each directory (e.g. *AnnotationApp* in *1-Annotation/*).
 * install the [Signal Processing Toolbox](https://www.mathworks.com/products/signal.html) by clicking on the *Get More Apps* button on Matlab's toolbar.
 * to avoid issues with pathing, Matlab's current path should be set to the root of the WDK directory: 
@@ -35,12 +29,12 @@ kVideosPath = './data/videos';
 ```
 ## Data Collection
 
-The *DataConversionApp* can be used to do a first check on the data after its collection. It offers the following features:
+The *Data Conversion App* can be used to do a first check on the data after its collection. It offers the following features:
 - Load any tabularized *.txt* data file and save it to the binary format used by the rest of the toolkit.
 - Check whether there has been data loss using a user-specified timestamp signal and sampling interval.
 - Visualize the different signals.
 
-*Note: by default, the DataLoaderApp loads data files from the ./data/rawdata/ directory. Converted files are saved to the ./ root directory.*
+*Note: by default, the Data Conversion App loads data files from the ./data/rawdata/ directory. Converted files are saved to the ./ root directory.*
 
 ## Data Annotation
 
@@ -59,9 +53,9 @@ frame1: 3302
 frame2: 45284
 ```
 
-The exact frames of a specific event in a video can be found by iterating the video frame by frame. The current video frame is shown at the bottom right of the window:
+The exact frames of a specific event in a video are displayed on the Movie Player at the bottom right of the window:
 
-![Video Player App](doc/images/1-VideoPlayer.png)
+![Movie Player](doc/images/1-VideoPlayer.png)
 
 In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). We visualized the peak energy (i.e. squared magnitude) of the accelerometer signal and annotated each applause with the *synchronisation* label. When a data samples is selected on the plot, its timestamp is printed on Matlab's console. We copy the first synchronisation timestamp to the sample1 field of the synchronisation file. We do the same for the sample with timestamp *450209*. The respective annotated synchronisation events are shown in the following image:
 
@@ -69,18 +63,16 @@ In this application, we asked the subject to applaud three times in front of the
 
 Please note:
 
-1. The AnnotationApp synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of a recording session.*
-2. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named 'S1-annotations.txt', its marker file 'S1-markers.edl', its synchronisation file 'S1-synchronisation.txt' and the video 'S1-video.extension'.
-3. By default, the *Data Annotation App* loads annotation files from the './data/annotations/', video and synchronisation files from './data/videos' directory. Saved annotation files are located in the root './' directory.
-4. The labels to annotate should be defined in the 'labels.txt' file beforehand.
+1. The *Data Annotation App* synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of a recording.
+2. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named '*S1-annotations.txt*', its marker file '*S1-markers.edl*', its synchronisation file '*S1-synchronisation.txt*' and the video '*S1-video.videoFormat*'.
+3. By default, the *Data Annotation App* loads annotation files from the '*./data/annotations/*', video and synchronisation files from '*./data/videos*' directory. Saved annotation files are located in the root '*./*' directory.
+4. The labels to annotate should be defined in the '*labels.txt*' file beforehand.
 5. You can use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.
 
 ### Importing external markers (optional)
 The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
 
-![DaVinciResolve](doc/images/1-markers.png)
-
-Before the markers can be displayed properly on top of the time series data, they need to be synchronised to the time series data. In order to do this, the *.edl* file should contain a synchronisation marker in the beginning and another one in the end of the file. Currently, the first and last green marker are matched to the first and last event annotation of the class *synchronisaton*. In order to annotate data:
+In order to synchronise video markers and time series data, the *.edl* file should contain a synchronisation marker in the beginning and another one in the end of the file. Currently, the first and last green marker are matched to the first and last event annotation with the label *synchronisaton*. In order to annotate data:
 
 1. Annotate the video using DaVinci Resolve. Use a green marker to annotate a special event, ideally in the beginning and end of the file. (e.g. the user shakes the sensor three times in front of the camera).
 2. Export the markers to an *.edl* file.
@@ -97,8 +89,8 @@ The *Data Visualization App* displays segments of data grouped by class. This is
 1. Select one or more input data files.
 2. Select where the segments should come from. *Manual annotations* creates segments from the range annotations and loads event annotations to create segments using the *ManualSegmentationStrategy*. The *Automatic segmentation* uses a preprocessing, event detection and segmentation algorithms selected over the user interface to create segments.
 3. (in Automatic segmentation mode) Select the signals to use, a preprocessing algorithm and (optionally) an event detection algorithm.
-4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Create* button. At this point the segments are created.
-6. Select signals and classes to visualize and a plot style (i.e. overlapping or sequential). 
+4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Create* button. At this point the segments are created. A grouping strategy maps annotated labels to classes, usually by grouping different labels into classes.
+5. Select signals and classes to visualize and a plot style (i.e. overlapping or sequential). 
 
 ![Data Annotation App](doc/images/2-VisualizationApp.png)
 
@@ -157,7 +149,7 @@ featureExtractor});
 
 DataLoader.SaveComputer(arcChain,'goalkeeperChain.mat');
 ```
-This chain of computations produces a feature table that can be used within the *EvaluationApp* to study the performance of different machine learning algorithms.
+This chain of computations produces a feature table that can be used within the *Assessment App* to study the performance of different machine learning algorithms.
 
 ## Reusable Components
 
@@ -294,15 +286,15 @@ Some wearable applications need to detect the occurrence of specific events in a
 
 The *Event Detection App* can be used to compare the performance of different event detection algorithms. This includes the amount of relevant and irrelevant events detected for each recording session / file and the amount of events detected of each class.
 
-![Data Annotation App](doc/images/3-EventDetectionApp.png)
+![Event Detection App](doc/images/3-EventDetectionApp.png)
 
 The *Detail View* of the *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. Developers can zoom into the data and observe the detected and missed events together with the video. 
 
-![Data Annotation App Detail View](doc/images/3-EventDetectionAppDetail.png)
+![Event Detection App Detail View](doc/images/3-EventDetectionAppDetail.png)
 
- ## Evaluation
+ ## Assessment
  
- The development and evaluation of an activity recognition algorithm usually represents a large fraction of the effort to develop the entire application. The *EvaluationApp* enables developers to design algorithms by selecting reusable components at each stage of the activity recognition chain and to assess their performance. The recognition performance metrics provided by this tool are:
+ The development and assessement / evaluation of an activity recognition algorithm usually represents a large fraction of the effort to develop the entire application. The *Assessment App* enables developers to design algorithms by selecting reusable components at each stage of the activity recognition chain and to assess their performance. The recognition performance metrics provided by this tool are:
  
  - Accuracy
  - Precision
@@ -315,14 +307,14 @@ The *Detail View* of the *Event Detection App* enables developers to gain insigh
  - Memory: Amount of memory consumed by the algorithm (in bytes) for the input data set
  - Communication: Amount of bytes generated by the last component in the recognition chain 
  
- ![Data Annotation App](doc/images/4-EvaluationApp.png)
+ ![Assessment App](doc/images/4-AssessmentApp.png)
  
  *Note: Feature tables generated with a particular activity recognition algorithm can be exported to *.txt* formats to study the classification on other platforms such as python / tensorFlow and WEKA.*
  
  ## Getting started
-1. The WDK loads data from a binary .mat file containing an instance of the *DataFile* class found in *./ARC/model* directory. The *DataConversionApp* can load any file in CSV format and export it to the *DataFile* format. Place your CSV files in the *./data/rawdata/* directory.
+1. The WDK loads data from a binary .mat file containing an instance of the *DataFile* class found in *./ARC/model* directory. The *Data Conversion App* can load any file in CSV format and export it to the *DataFile* format. Place your CSV files in the *./data/rawdata/* directory.
 2. The labels used by the WDK should be listed in the *.data/annotations/labels.txt* file.
-3. Use the *AnnotationApp* to create a ground truth data set.
+3. Use the *Data Annotation App* to create a ground truth data set.
 4. (optional) Define a label grouping. A label grouping describes how labels annotated are mapped to groups used by the different Apps in the WDK. The following label grouping maps labels *label1*, *label2* and *label3* into *Group1* and *label4* and *label5* to *Group2*.
 ```
 #Group1 
@@ -377,6 +369,13 @@ double-check that your are using Matlab 2018b or later.
 *Note: Double-check that the './data/annotations/' directory contains an annotation file for each data file in './data/rawdata/'.* 
 
 *Note: A common error happens due to selecting incompatible computer nodes. As the WDK does not do type-checking on the computers selected, the first computer that received incompatible data will crash. If Matlab produces an error message with 'Computer.ExecuteChain' in its stack-trace, it is most likely due to an incompatible set of computers being used. In this case, double-check the input and output types of each computer.*
+
+* the feature selection feature in the WDK uses the mRMR library for feature selection. If you get an error '*estpab function not found*', then you need to:
+```
+cd libraries/mRMR_0.9/mi/
+mex -setup C++ 
+makeosmex
+```
 
 ## References
 

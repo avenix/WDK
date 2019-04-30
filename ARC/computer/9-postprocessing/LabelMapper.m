@@ -1,6 +1,6 @@
 classdef LabelMapper < Computer
     
-    properties (Access = public)
+    properties (Access = private)
         hashMap;
     end
     
@@ -26,15 +26,6 @@ classdef LabelMapper < Computer
                 classificationResult.truthClasses = obj.mappingForLabels(classificationResult.truthClasses);
                 classificationResult.predictedClasses = obj.mappingForLabels(classificationResult.predictedClasses);
                 classificationResult.classNames = obj.classNames;
-            end
-        end
-        
-        function printLabelsForGrouping(obj,grouping)
-            mapKeys = keys(obj.hashMap);
-            for i = 1 : length(mapKeys)
-                key = mapKeys{i};
-                classStr = grouping.classNames{i};
-                fprintf('%s - %d %d\n',classStr,key,obj.hashMap(key));
             end
         end
         
