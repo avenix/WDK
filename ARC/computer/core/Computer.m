@@ -187,35 +187,40 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 end
                 
                 if ~isDataLoaded
-                    
-                    metricSum = Metric();
-                    stack = Stack();
-                    dataStack = Stack();
-                    
-                    stack.push(computer);
-                    dataStack.push(data);
-                    
-                    while ~stack.isempty()
-                        computer = stack.pop();
-                        data = dataStack.pop();
-                        metric = computer.computeMetrics(data);
-                        data = computer.compute(data);
-                        
-                        metricSum.addMetric(metric);
-                        
-                        if ~isempty(data)
-                            for i = 1 : length(computer.nextComputers)
-                                dataStack.push(data);
-                                stack.push(computer.nextComputers{i});
-                            end
-                        end
-                    end
-                    
+                    [data, metricSum] = Computer.ExecuteChainNoCache(computer,data);
                     if shouldCache
                         Computer.SaveGraphToCache(data,metricSum,graphString);
                     end
                 end
             end
+        end
+        
+        function [data, metricSum] = ExecuteChainNoCache(computer, data)
+            stack = Stack();
+            dataStack = Stack();
+            
+            stack.push(computer);
+            dataStack.push(data);
+            
+            metricSum = Metric();
+            
+            while ~stack.isempty()
+                computer = stack.pop();
+                data = dataStack.pop();
+                
+                metric = computeMetrics(computer,data);
+                metricSum.addMetrics(metric);
+                
+                data = computer.compute(data);
+                
+                if ~isempty(data)
+                    for i = 1 : length(computer.nextComputers)
+                        dataStack.push(data);
+                        stack.push(computer.nextComputers{i});
+                    end
+                end
+            end
+            
         end
         
         function root = ComputerWithSequence(sequence)

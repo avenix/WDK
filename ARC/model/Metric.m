@@ -1,25 +1,30 @@
 classdef Metric < handle
     properties (Access = public)
         flops = 0;
-        memory = 0; %in bytes
-        outputSize = 0; %in bytes
+        memory = 0;
+        permanentMemory = 0;
+        outputSize = 0;
     end
     
     methods (Access = public)
-        function obj = Metric(flops,memory,outputSize)
+        function obj = Metric(flops,memory,outputSize,permanentMemory)
             if nargin > 0
                 obj.flops = flops;
                 obj.memory = memory;
                 obj.outputSize = outputSize;
+                if nargin > 3
+                    obj.permanentMemory = permanentMemory;
+                end
             end
         end
         
-        function addMetric(obj,metric)
-            if ~isempty(metric)
-                obj.flops = obj.flops + metric.flops;
-                obj.memory = obj.memory + metric.memory;
-                obj.outputSize = obj.outputSize + metric.outputSize;
+        function addMetrics(obj,metrics)
+            if ~isempty(metrics)
+                obj.flops = obj.flops + metrics.flops;
+                obj.permanentMemory = obj.permanentMemory + metrics.permanentMemory;
+                obj.outputSize = obj.outputSize + metrics.outputSize;
             end
+            obj.memory = max(obj.memory,obj.permanentMemory + metrics.memory);
         end
     end
 end

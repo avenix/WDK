@@ -73,12 +73,11 @@ classdef FeatureExtractor < Computer
         
         function metricSum = computeMetrics(obj,segments)
             metricSum = Metric();
-            
             for i = 1 : length(segments)
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
                     [~, metrics] = Computer.ExecuteChain(obj.computers{j},segment.data);
-                    metricSum.addMetric(metrics);
+                    metricSum.addMetrics(metrics);
                 end
             end
         end

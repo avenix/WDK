@@ -39,11 +39,12 @@ classdef SlidingWindowSegmentation < Computer
         end
         
         function metrics = computeMetrics(obj,input)
-            n = length(input);
-            flops = 1787 * n;
-            memory = obj.windowSize;
-            outputSize = obj.windowSize;
-            metrics = Metric(flops,memory,outputSize);
+            file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
+            flops = 1787 * length(input);
+            memory = 1;
+            outputSize = obj.windowSize * file.numColumns;
+            permanentMemory = obj.windowSize * file.numColumns;
+            metrics = Metric(flops,memory,outputSize,permanentMemory);
         end
         
         function editableProperties = getEditableProperties(obj)

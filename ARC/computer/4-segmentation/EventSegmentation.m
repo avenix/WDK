@@ -20,12 +20,16 @@ classdef EventSegmentation < Computer
             str = sprintf('%s%d%d',obj.name,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
         
-        function metrics = computeMetrics(obj,input)
-            n = length(input);
-            flops = 11 * n;
+        function metrics = computeMetrics(obj,events)
+            file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
+            n = obj.segmentSizeLeft + obj.segmentSizeRight;
+            m = file.numColumns;
+            
+            flops = 11 * length(events);
             memory = 1;
-            outputSize = obj.segmentSizeLeft + obj.segmentSizeRight;
-            metrics = Metric(flops,memory,outputSize);
+            outputSize = n * m;
+            permanentMemory = n * m;
+            metrics = Metric(flops,memory,outputSize,permanentMemory);
         end
         
         function editableProperties = getEditableProperties(obj)

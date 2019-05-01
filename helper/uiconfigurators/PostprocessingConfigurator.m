@@ -131,7 +131,7 @@ classdef PostprocessingConfigurator < handle
             computer = obj.getSelectedComputer();
             
             obj.currentComputerProperties = computer.getEditableProperties();
-            obj.updatePropertiesTable();
+            obj.updatePropertiesTable(computer);
         end
         
         function fillComputersList(obj)
