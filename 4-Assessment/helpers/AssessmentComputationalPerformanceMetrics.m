@@ -20,7 +20,7 @@ classdef AssessmentComputationalPerformanceMetrics < handle
         end
         
         function m = get.communication(obj)
-            m = obj.metric.outputSize;
+            m = obj.metric.outputSize / obj.numSamples;
         end
     end
     

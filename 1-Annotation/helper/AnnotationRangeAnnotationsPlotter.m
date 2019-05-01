@@ -5,7 +5,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
         LineWidth = 3;
         FontSize = 20;
         RectangleYPosToDataRatio = 1.03;
-        LabelYPosToRectangleRatios = [1.06, 1.1];
+        LabelYPosToRectangleRatios = [1.0, 1.1];
         RectangleCurvature = 0.1;
     end
     

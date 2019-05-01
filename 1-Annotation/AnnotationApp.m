@@ -652,6 +652,14 @@ classdef AnnotationApp < handle
         end
         
         function handleKeyPress(obj, source, event)
+            
+            switch event.Key
+                case 'uparrow'
+                    datacursormode toggle;
+                case 'downarrow'
+                    datacursormode toggle;
+            end
+            
             if ~isempty(obj.videoPlayer)
                 obj.videoPlayer.handleKeyPress(source,event);
             end

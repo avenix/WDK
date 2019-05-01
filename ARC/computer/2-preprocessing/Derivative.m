@@ -7,10 +7,12 @@ classdef Derivative < Computer
     end
     
     methods (Access = public)
-        function obj = Derivative(order, cutoff)
+        function obj = Derivative(order, delta)
             if nargin > 0
                 obj.order = order;
-                obj.cutoff = cutoff;
+                if nargin > 1
+                    obj.delta = delta;
+                end
             end
             obj.name = 'derivative';
             obj.inputPort = ComputerDataType.kSignal;
@@ -22,7 +24,7 @@ classdef Derivative < Computer
                 derivative = data;
             else
                 if obj.order == 1
-                    derivative = obj.computeFirstDerivative(data);
+                    derivative = obj.computeFirstOrderDerivative(data);
                 elseif obj.order == 2
                     derivative = obj.computeSecondOrderDerivative(data);
                 else
@@ -31,15 +33,15 @@ classdef Derivative < Computer
             end
         end
         
-        function derivative = computeFirstOrderDerivative(data)
+        function derivative = computeFirstOrderDerivative(obj,data)
             n = length(data);
             derivative = zeros(1,n);
-            for i = 2 : numInputDimensions
+            for i = 2 : n
                 derivative(n) = (data(i) - data(i-1)) / obj.delta;
             end
         end
         
-        function derivative = computeSecondOrderDerivative(data)
+        function derivative = computeSecondOrderDerivative(obj,data)
             n = length(data);
             derivative = zeros(1,n);
             
@@ -53,12 +55,12 @@ classdef Derivative < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('%s_%d_%d',obj.name,obj.order,obj.cutoff);
+            str = sprintf('%s_%d_%.2f',obj.name,obj.order,obj.delta);
         end
         
         function editableProperties = getEditableProperties(obj)
             property1 = Property('order',obj.order,1,2);
-            property2 = Property('delta',obj.cutoff,1,200);
+            property2 = Property('delta',obj.delta);
             editableProperties = [property1,property2];
         end
         
