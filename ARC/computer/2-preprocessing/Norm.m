@@ -15,7 +15,7 @@ classdef Norm < Computer
             dataOut = abs(x(:,1)) + abs(x(:,2)) + abs(x(:,3));
         end
         
-        function metrics = computeMetrics(~,input)
+        function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 2 * n;
             if obj.inPlaceComputation

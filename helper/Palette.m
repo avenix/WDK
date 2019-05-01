@@ -46,7 +46,7 @@ classdef Palette < handle
         end
         
         function validationComputers = PostprocessingComputers()
-            validationComputers = {LabelMapper()};
+            validationComputers = {NoOp, LabelMapper()};
         end
         
         function otherComputers = OtherComputers()

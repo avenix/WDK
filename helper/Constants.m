@@ -36,6 +36,7 @@ classdef Constants < handle
         kPositiveLabelsNotSetWarning = 'Warning - DetectionResultsComputer - calling computeDetectionResults but positiveLabels not set'
         kIncorretlyMappedClassWarning = 'Warning - GroupedClassLabeling - class is not mapped correctly';
         kConstantFeaturesWarning = 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
+        kAlgorithmExecutionFailedWarning = 'Warning - Algorithm execution failed';
         
         kLoadingVideoMessage = 'Message - AnnotationVideoPlayer - loading video ';
         

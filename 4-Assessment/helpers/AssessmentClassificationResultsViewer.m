@@ -358,7 +358,9 @@ classdef AssessmentClassificationResultsViewer < handle
         end
         
         function handleWindowClosed(obj,~,~)
-            obj.delegate.handleDetailedClassificationViewerClosed();
+            if ~isempty(obj.delegate)
+                obj.delegate.handleDetailedClassificationViewerClosed();
+            end
         end
     end
 end
