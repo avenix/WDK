@@ -7,7 +7,7 @@ classdef AssessmentClassificationResultsPlotter < handle
         FontSize = 18;
         LineWidth = 2;
         RectangleYPosToDataRatio = 1.03;
-        LabelYPosToRectangleRatios = [0.9,0.95];
+        LabelYPosToRectangleRatios = [0.8,0.95];
         RectangleCurvature = 0.1;
     end
     

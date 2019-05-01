@@ -100,22 +100,31 @@
 120166, synchronisation
 120338, synchronisation
 121531, catchGround
+121682, catchGroundDive
 122307, pass
 123052, catchGround
+123171, catchGroundDive
 123791, pass
 124502, catchGround
+124615, catchGroundDive
 125410, pass
 126043, catchGround
+126189, catchGroundDive
 126739, pass
 127486, catchGround
+127777, catchGroundDive
 128455, pass
 129125, catchGround
+129341, catchGroundDive
 129848, pass
 130623, catchGround
+130783, catchGroundDive
 131350, pass
 132205, catchGround
+132390, catchGroundDive
 133111, pass
 134043, catchGround
+134150, catchGroundDive
 135451, synchronisation
 135581, synchronisation
 135724, synchronisation
@@ -320,7 +329,7 @@
 65516 - 65916, diveHighRight
 70954 - 71313, diveHighRight
 75231 - 75665, diveHighRight
-80848 - 80974, diveLowLeft
+80710 - 80983, diveHighLeft
 82179 - 82535, diveHighLeft
 84818 - 85164, diveHighLeft
 87828 - 88171, diveHighLeft
@@ -392,11 +401,10 @@
 132947 - 133317, pass
 133992 - 134216, catchGround
 153044 - 153359, diveStandLowRight
-155653 - 156071, diveStandLowRight
+155705 - 155942, diveLowRight
 158549 - 158793, diveLowRight
 163952 - 164174, diveLowLeft
 166677 - 167062, diveStandLowLeft
-170056 - 170548, diveStandLowLeft
 178222 - 178722, diveStandHighRight
 181198 - 181666, diveStandHighRight
 184263 - 184657, diveStandHighRight

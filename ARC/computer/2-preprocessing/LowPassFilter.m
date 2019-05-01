@@ -4,6 +4,7 @@ classdef LowPassFilter < Computer
         samplingFrequency = 200;
         order = 1;
         cutoff = 20;
+        inPlaceComputation = false;
     end
     
     methods (Access = public)
@@ -35,9 +36,15 @@ classdef LowPassFilter < Computer
         end
         
         function metrics = computeMetrics(obj,input)
+            
+            n = size(input,1);
             flops = 31 * obj.order * size(input,1);
-            memory = size(input,1) * 4;
-            outputSize = size(input,1) * 4;
+            if obj.inPlaceComputation
+                memory = obj.order;
+            else
+                memory = n + obj.order;
+            end
+            outputSize = n;
             metrics = Metric(flops,memory,outputSize);
         end
         

@@ -1,11 +1,11 @@
-classdef AssessmentValidationConfigurator < handle
+classdef ValidationConfigurator < handle
     properties (Access = private)
-        uiElements AssessmentValidationConfiguratorUIElements;
+        uiElements ValidationConfiguratorUIElements;
         fileNames;
     end
     
     methods (Access = public)
-        function obj = AssessmentValidationConfigurator(uiElements)
+        function obj = ValidationConfigurator(uiElements)
             obj.uiElements = uiElements;
             
             uiElements.validationTypeRadioButtonGroup.SelectionChangedFcn = @obj.handleValidationTypeChanged;

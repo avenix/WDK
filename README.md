@@ -157,17 +157,18 @@ Here you can find a list of the reusable components, their configurable properti
 
 ### Preprocessing
 
-| Name             | Description                                                                                                                                                                                                                                                                 | Flops     | Memory |
-|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|-----|
-| HighPassFilter   | Butterworth High-pass filter with order *k*                                                                                                                                                                                                                                 | 13 *k* n  | n   |
-| LowPassFilter    | Butterworth Low-pass filter with order *k*                                                                                                                                                                                                                                  | 31 *k* n  | n   |
-| Magnitude        | ![Magnitude](https://latex.codecogs.com/gif.latex?M%28x_i%29%20%3D%20%5Csqrt%7Ba_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2%7D)                                                                                                                 | 4 n       | n   |
-| SquaredMagnitude | ![Energy](https://latex.codecogs.com/gif.latex?E%28x_i%29%20%3D%20a_x%28x_i%29%5E2%20&plus;%20a_y%28x_i%29%5E2%20&plus;%20a_z%28x_i%29%5E2)                                                                                                                                 | 2 n       | n   |
-| Norm             | ![Norm](https://latex.codecogs.com/gif.latex?N%28x_i%29%20%3D%20%5Cleft%7C%20a_x%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_y%28x_i%29%20%5Cright%7C%20&plus;%20%5Cleft%7C%20a_z%28x_i%29%20%5Cright%7C)                                                              | 2 n       | n   |
-| S1               | ![S1](https://latex.codecogs.com/gif.latex?S_1%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7Bmax%28x_i%20-%20x_%7Bi-1%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)                                         | 40 *k* n  | n   |
-| S2               | ![S2](https://latex.codecogs.com/gif.latex?S_2%28k%2Ci%2CX_i%2CT%29%20%3D%20%5Cfrac%7B%5Cfrac%7Bmax%28x_i%20-%20x_%7Bi-1%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20&plus;%20%5Cfrac%7Bmax%28x_i-x_%7Bi&plus;1%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7Bk%7D%7D%7B2%7D) | 203 *k* n | n   |
+| Name             | Description                                                                                                                                                                                                                                                                               | Flops     | Memory |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|--------|
+| HighPassFilter   | Butterworth High-pass filter with order *k*                                                                                                                                                                                                                                               | 13 *k* n  | 1 / n  |
+| LowPassFilter    | Butterworth Low-pass filter with order *k*                                                                                                                                                                                                                                                | 31 *k* n  | 1 / n  |
+| Magnitude        | ![Magnitude](https://latex.codecogs.com/gif.latex?M_i%28x%2Cy%2Cz%29%20%3D%20%5Csqrt%7Bx_i%5E2%20&plus;%20y_i%5E2%20&plus;%20z_i%5E2%7D)                                                                                                                                                  | 4 n       | 1 / n  |
+| SquaredMagnitude | ![Energy](https://latex.codecogs.com/gif.latex?E_i%28x%2Cy%2Cz%29%20%3D%20x_i%5E2%20&plus;%20y_i%5E2%20&plus;%20z_i%5E2)                                                                                                                                                                  | 2 n       | 1 / n  |
+| Norm             | ![Norm](https://latex.codecogs.com/gif.latex?N_i%28x%2Cy%2Cz%29%20%3D%20%5Cleft%7C%20x_i%20%5Cright%7C%20&plus;%20%5Cleft%7C%20y_i%20%5Cright%7C%20&plus;%20%5Cleft%7C%20z_i%20%5Cright%7C)                                                                                               | 2 n       | 1 / n  |
+| Derivative       | First derivative: https://latex.codecogs.com/gif.latex?D%27_i%28x%29%20%3D%20%28x_i%20-%20x_%7Bi&plus;1%7D%29%20/%20%5Cdelta. Second derivative: https://latex.codecogs.com/gif.latex?D%27%27_i%28x%29%20%3D%20%28x_%7Bi-1%7D%20-%20x_i%20&plus;%20x_%7Bi&plus;1%7D%29%20/%20%5Cdelta%5E2 |           |        |
+| S1               | ![S1](https://latex.codecogs.com/gif.latex?S1_i%28x%29%20%3D%20%5Cfrac%7Bmax%28x_i%20-%20x_%7Bi-1%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%20&plus;%20max%28x_i-x_%7Bi&plus;1%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7B2%7D)                                                                    | 40 *k* n  | n      |
+| S2               | ![S2](https://latex.codecogs.com/gif.latex?S2_i%28x%29%20%3D%20%5Cfrac%7B%5Cfrac%7Bmax%28x_i%20-%20x_%7Bi-1%7D%2C...%2Cx_i%20-%20x_%7Bi-k%7D%29%7D%7Bk%7D%20&plus;%20%5Cfrac%7Bmax%28x_i-x_%7Bi&plus;1%7D%2C...%2Cx_i-x_%7Bi&plus;k%7D%29%7D%7Bk%7D%7D%7B2%7D)                            | 203 *k* n | n      |
 
-Invocations to preprocessing algorithms produce *n* values.
+Invocations to preprocessing algorithms produce *n* values. The memory consumption of most preprocessing algorithms is *1* if the *inPlaceComputation* property is set to *true* or *n* otherwise.
 
 ### Event Detection
 
@@ -184,10 +185,11 @@ An invocation to an event detection algorithm produces 0 or 1 value.
 
 ### Segmentation
 
-| Name              | Description                                                                                                                                                                                                    | Flops                                  | Memory                                    |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|----------------------------------------|
-| SlidingWindow     | Creates a segment of size *segmentSize* after every *sampleInterval* samples. E.g. *segmentSize* = 200 and *sampleInterval* = 100 creates segments with a 50% overlapping. *Note: receives a signal as input.* | *segmentSize*                          | *segmentSize*                          |
-| EventSegmentation | Creates a segment around an event by taking *segmentSizeLeft* samples to the left and *segmentSizeRight* to the right of the event. *Note: receives an event as input.*                                        | *segmentSizeLeft* + *segmentSizeRight* | *segmentSizeLeft* + *segmentSizeRight* |
+| Name               | Description                                                                                                                                                                                                                                            | Flops                                  | Memory                                 |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|----------------------------------------|
+| SlidingWindow      | Creates a segment of size *segmentSize* after every *sampleInterval* samples. E.g. *segmentSize* = 200 and *sampleInterval* = 100 creates segments with a 50% overlapping. *Note: receives a signal as input.*                                         | *segmentSize*                          | *segmentSize*                          |
+| EventSegmentation  | Creates a segment around an event by taking *segmentSizeLeft* samples to the left and *segmentSizeRight* to the right of the event. *Note: receives an event as input.*                                                                                | *segmentSizeLeft* + *segmentSizeRight* | *segmentSizeLeft* + *segmentSizeRight* |
+| ManualSegmentation | Creates segments for each annotation (converts RangeAnnotations to segments and creates segments around each EventAnnotations). This segmentation strategy cannot be used in a real application, but is useful to study the quality of the annotations | -                                      | -                                      |
 
 An invocation to a segmentation algorithm produces a segment (of *segmentSize* or *segmentSizeLeft* + *segmentSizeRight* values) .
 
@@ -288,7 +290,7 @@ The *Event Detection App* can be used to compare the performance of different ev
 
 ![Event Detection App](doc/images/3-EventDetectionApp.png)
 
-The *Detail View* of the *Event Detection App* enables developers to gain insight into the performance of a particular event detection algorithm. Developers can zoom into the data and observe the detected and missed events together with the video. 
+The *Event Detection Detail View* enables developers to gain insight into the performance of a particular event detection algorithm. Developers can zoom into the data and observe the detected and missed events together with the video. 
 
 ![Event Detection App Detail View](doc/images/3-EventDetectionAppDetail.png)
 

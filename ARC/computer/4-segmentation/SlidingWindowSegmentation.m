@@ -41,7 +41,7 @@ classdef SlidingWindowSegmentation < Computer
         function metrics = computeMetrics(obj,input)
             n = length(input);
             flops = 1787 * n;
-            memory = n;
+            memory = obj.windowSize;
             outputSize = obj.windowSize;
             metrics = Metric(flops,memory,outputSize);
         end

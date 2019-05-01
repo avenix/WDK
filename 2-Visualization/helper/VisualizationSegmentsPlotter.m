@@ -87,12 +87,13 @@ classdef VisualizationSegmentsPlotter < handle
             
             obj.setYAxesLimits();
             obj.updateLinkAxes();
-            
+            %{
             if obj.isZoom
                 obj.setZoom(true);
             else
                 obj.setPan(true);
             end
+            %}
         end
         
         function setSameScale(obj,sameScaleParam)

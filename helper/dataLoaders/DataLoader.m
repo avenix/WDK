@@ -120,7 +120,7 @@ classdef DataLoader < handle
         
         %% Markers
         function markers = loadMarkers(~,markerFileName)
-            markersLoader = AnnotationMarkersLoader();
+            markersLoader = MarkersLoader();
             
             markerFileName = sprintf('%s/%s',Constants.kMarkersPath,markerFileName);
             markers = markersLoader.loadMarkers(markerFileName);

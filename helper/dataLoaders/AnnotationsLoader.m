@@ -90,6 +90,7 @@ classdef AnnotationsLoader < handle
                     endSample = uint32(str2double(endSampleStr));
                     
                     classString = classStrings{i};
+                    classString = strrep(classString,' ','');
                     
                     if obj.classesMap.isValidLabel(classString)
                         label = obj.classesMap.idxOfClassWithString(classString);
@@ -118,6 +119,7 @@ classdef AnnotationsLoader < handle
                 if ~contains(tsString,'-')
                     ts = uint32(str2double(tsString));
                     classString = classStrings{i};
+                    classString = strrep(classString,' ','');
                     
                     if obj.classesMap.isValidLabel(classString)
                         class = obj.classesMap.idxOfClassWithString(classString);

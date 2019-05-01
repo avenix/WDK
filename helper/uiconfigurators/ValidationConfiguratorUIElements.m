@@ -1,4 +1,4 @@
-classdef AssessmentValidationConfiguratorUIElements < handle
+classdef ValidationConfiguratorUIElements < handle
     properties
         validationTypeRadioButtonGroup;
         holdoutRadio;

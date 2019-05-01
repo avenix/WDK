@@ -1,4 +1,4 @@
-classdef AnnotationMarkersLoader < handle
+classdef MarkersLoader < handle
     
     properties (Access = public)
         videoFrameRate = 23.976;
@@ -17,9 +17,7 @@ classdef AnnotationMarkersLoader < handle
             fileID = fopen(fileName,'r');
             
             if fileID == -1
-                markers = [];
-                fprintf('Markers file %s not found.\n',fileName);
-                
+                markers = [];                
             else
                 textscan(fileID, '%[^\n\r]', startRow(1)-1, 'WhiteSpace', '', 'ReturnOnError', false);
                 dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string', 'ReturnOnError', false, 'EndOfLine', '\r\n');

@@ -1,5 +1,9 @@
 classdef Magnitude < Computer
     
+    properties (Access = public)
+        inPlaceComputation = false;
+    end
+    
     methods (Access = public)
         
         function obj = Magnitude()
@@ -13,9 +17,17 @@ classdef Magnitude < Computer
         end
         
         function metrics = computeMetrics(~,input)
-            flops = 4 * size(input,1);
-            memory = size(input,1) * 4;
-            outputSize = size(input,1) * 4;
+            n = size(input,1);
+            
+            flops = 4 * n;
+            
+            if obj.inPlaceComputation
+                memory = 1;
+            else
+                memory = n;
+            end
+            
+            outputSize = n;
             metrics = Metric(flops,memory,outputSize);
         end
     end
