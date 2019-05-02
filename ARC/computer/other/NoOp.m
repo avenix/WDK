@@ -3,7 +3,7 @@ classdef NoOp < Computer
     methods (Access = public)
         
         function obj = NoOp()
-            obj.name = 'noOp';
+            obj.name = 'none';
         end
         
         function out = compute(~, dataIn)

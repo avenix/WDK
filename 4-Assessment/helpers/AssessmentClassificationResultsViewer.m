@@ -95,7 +95,7 @@ classdef AssessmentClassificationResultsViewer < handle
                 obj.uiHandles.signalComputerVariablesTable);
             
             if ~isempty(obj.detailedClassificationResults)
-                classNames = obj.detailedClassificationResults(1).validationResult.classNames;
+                classNames = obj.detailedClassificationResults(1).classificationResult.classNames;
                 obj.classificationResultsPlotter = AssessmentClassificationResultsPlotter(obj.uiHandles.plotAxes,classNames);
             end
         end

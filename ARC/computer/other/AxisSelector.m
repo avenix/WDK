@@ -39,7 +39,7 @@ classdef AxisSelector < Computer
             n = size(input,1);
             m = size(input,2);
             flops = 1;
-            memory = n * m;
+            memory = 1;
             outputSize = n * m;
             metrics = Metric(flops,memory,outputSize);
         end

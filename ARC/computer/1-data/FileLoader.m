@@ -8,7 +8,11 @@ classdef FileLoader < Computer
     end
     
     methods (Access = public)
-        function obj = FileLoader()
+        function obj = FileLoader(fileName)
+            if nargin > 0
+                obj.fileName = fileName;
+            end
+            
             obj.name = 'fileLoader';
             obj.inputPort = ComputerDataType.kNull;
             obj.outputPort = ComputerDataType.kDataFile;

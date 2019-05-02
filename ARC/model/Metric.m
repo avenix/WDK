@@ -22,9 +22,9 @@ classdef Metric < handle
             if ~isempty(metrics)
                 obj.flops = obj.flops + metrics.flops;
                 obj.permanentMemory = obj.permanentMemory + metrics.permanentMemory;
-                obj.outputSize = obj.outputSize + metrics.outputSize;
+                obj.memory = max(obj.memory,obj.permanentMemory + metrics.memory);
+                obj.outputSize = metrics.outputSize;
             end
-            obj.memory = max(obj.memory,obj.permanentMemory + metrics.memory);
         end
     end
 end

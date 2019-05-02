@@ -1,7 +1,7 @@
 classdef MagnitudeSquared < Computer
     
     properties (Access = public)
-        inPlaceComputation = false;
+        inPlaceComputation = true;
     end
     
     methods (Access = public)

@@ -46,7 +46,6 @@ classdef DetectionEventsPlotter < handle
     end
     
     methods
-        
         function set.showingDetectedEvents(obj,value)
             obj.showingDetectedEventsPrivate = value;
             if ~isempty(obj.detectedEventHandles)

@@ -1,4 +1,4 @@
-%computes an array of DetectionResults (which contain arrays of labelled events: goodEvents, missedEvents, badEvents) per
+%computes an array of DetectionResults (which contain arrays of labeled events: goodEvents, missedEvents, badEvents) per
 %file
 classdef DetectionResultsComputer < handle
     properties (Access = public)
@@ -16,7 +16,7 @@ classdef DetectionResultsComputer < handle
         end
         
         %returns an array of DetectionResults (one for each cell)
-        function detectionResults = computeDetectionResults(obj,eventsCellArray,annotationsCellArray)
+        function detectionResults = computeDetectionResults(obj,eventsCellArray,annotationsArray)
             if isempty(obj.labelGrouping)
                 fprintf('%s\n',Constants.kLabelGroupingNotSetWarning);
             elseif isempty(obj.positiveLabels)
@@ -26,7 +26,7 @@ classdef DetectionResultsComputer < handle
                 nCells = length(eventsCellArray);
                 detectionResults(1,nCells) = DetectionResult();
                 for i = 1 : nCells
-                    annotationSet = annotationsCellArray(i);
+                    annotationSet = annotationsArray(i);
                     detectedEvents = eventsCellArray{i};
                     detectionResults(i) = obj.computeDetectionResult(detectedEvents,annotationSet.eventAnnotations);
                 end

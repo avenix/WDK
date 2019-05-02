@@ -50,9 +50,8 @@ classdef HoldOutValidator < Computer
                         obj.featureNormalizer.normalize(testTable);
                     end
                     
-                    truthClasses = tableSet.labelsAtIndex(testIdx);
                     predictedClasses = obj.classifier.test(testTable);
-                    classificationResults(i) = ClassificationResult(predictedClasses,truthClasses,testTable.classNames);
+                    classificationResults(i) = ClassificationResult(predictedClasses,testTable);
                 end
             end
         end

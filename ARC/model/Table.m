@@ -1,6 +1,7 @@
 classdef Table < handle
     
     properties (Access = public)
+        file;
         table;
         classNames;
     end
@@ -40,11 +41,14 @@ classdef Table < handle
     end
     
     methods (Access = public)
-        function obj = Table(table,classNames)
+        function obj = Table(table,classNames,file)
             if nargin > 0
                 obj.table = table;
                 if nargin > 1
                     obj.classNames = classNames;
+                    if nargin > 2
+                        obj.file = file;
+                    end
                 end
             end
         end

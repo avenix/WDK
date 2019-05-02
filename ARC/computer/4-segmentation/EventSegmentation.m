@@ -22,12 +22,13 @@ classdef EventSegmentation < Computer
         
         function metrics = computeMetrics(obj,events)
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
+            nEvents = length(events);
             n = obj.segmentSizeLeft + obj.segmentSizeRight;
             m = file.numColumns;
             
-            flops = 11 * length(events);
+            flops = 11 * nEvents;
             memory = 1;
-            outputSize = n * m;
+            outputSize = n * m * nEvents;
             permanentMemory = n * m;
             metrics = Metric(flops,memory,outputSize,permanentMemory);
         end

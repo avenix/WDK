@@ -68,7 +68,7 @@ classdef TableSet < handle
                     
                     mergedTable = array2table(mergedTableArray);
                     mergedTable.Properties.VariableNames = firstTable.Properties.VariableNames;
-                    mergedTable = Table(mergedTable,tables(1).classNames);
+                    mergedTable = Table(mergedTable,tables(1).classNames,tables.file);
                 end
             end
         end

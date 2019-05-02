@@ -56,16 +56,14 @@ classdef LeaveOneOutCrossValidator < Computer
                 %classification
                 obj.classifier.train(trainTable);                
                 
-                truthClasses = tableSet.labelsAtIndex(testIndex);
+                %truthClasses = tableSet.labelsAtIndex(testIndex);
                 predictedClasses = obj.classifier.test(testTable);
-                classificationResults(testIndex) = ClassificationResult(predictedClasses,truthClasses,testTable.classNames);
+                classificationResults(testIndex) = ClassificationResult(predictedClasses,testTable);
             end
             
             if ~isempty(obj.progressNotificationDelegate)
                 obj.progressNotificationDelegate.handleValidationFinished();
             end
-            
-            %labels = cat(1,labels{:});
         end
         
         function str = toString(obj)

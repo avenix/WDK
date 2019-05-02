@@ -68,11 +68,11 @@ classdef AssessmentAggregatedClassificationResults < handle
     end
     
     methods (Static)
-        function aggregatedClassificationResults = CreateAggregatedClassificationResultsFromDetailed(detailedClassificationResult)
-            classNames = detailedClassificationResult.validationResult.classNames;
+        function aggregatedClassificationResults = CreateClassificationResultsFromDetailed(detailedClassificationResult)
+            classNames = detailedClassificationResult.classificationResult.classNames;
             classes = 1 : length(classNames);
-            confusionMatrix = ConfusionMatrix(detailedClassificationResult.validationResult.truthClasses,...
-                detailedClassificationResult.validationResult.predictedClasses,...
+            confusionMatrix = ConfusionMatrix(detailedClassificationResult.classificationResult.truthClasses,...
+                detailedClassificationResult.classificationResult.predictedClasses,...
                 classes, classNames);
             aggregatedClassificationResults = AssessmentAggregatedClassificationResults(confusionMatrix);
         end

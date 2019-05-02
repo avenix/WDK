@@ -1,18 +1,29 @@
 classdef ClassificationResult < handle
     properties (Access = public)
         predictedClasses;
-        truthClasses;
+        table;
+    end
+    
+    properties (Dependent)
         classNames;
+        truthClasses;
+    end
+    
+    methods
+        function classNnames = get.classNames(obj)
+            classNnames = obj.table.classNames;
+        end
+        
+        function truthClasses = get.truthClasses(obj)
+            truthClasses = obj.table.label;
+        end
     end
     
     methods (Access = public)
-        function obj = ClassificationResult(predictedClasses,truthClasses,classNames)
+        function obj = ClassificationResult(predictedClasses,table)
             if nargin > 0
                 obj.predictedClasses = predictedClasses;
-                obj.truthClasses = truthClasses;
-                if nargin == 3
-                    obj.classNames = classNames;
-                end
+                obj.table = table;
             end
         end
     end

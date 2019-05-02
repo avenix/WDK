@@ -1,8 +1,18 @@
 classdef AssessmentDetailedClassificationResult < handle
     properties (Access = public)
-        fileName; 
         segments;
-        validationResult ClassificationResult;
+        annotations;
+        classificationResult ClassificationResult;
+    end
+    
+    properties (Dependent)
+        fileName;
+    end
+    
+    methods
+        function fn = get.fileName(obj)
+            fn = obj.classificationResult.table.file.fileName;
+        end
     end
     
     methods (Access = public)
@@ -10,11 +20,11 @@ classdef AssessmentDetailedClassificationResult < handle
         end
         
         function labels = getAllTruthLabels(obj)
-            labels = vertcat(obj.validationResult.truthClasses);
+            labels = vertcat(obj.classificationResult.truthClasses);
         end
         
         function labels = getAllPredictedLabels(obj)
-            labels = vertcat(obj.validationResult.predictedClasses);
+            labels = vertcat(obj.classificationResult.predictedClasses);
         end
     end
 end

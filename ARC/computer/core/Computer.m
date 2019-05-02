@@ -46,7 +46,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         end
         
         function metrics = computeMetrics(~,~)
-            metrics = Metric();
+            metrics = [];
         end
     end
     
@@ -220,7 +220,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                     end
                 end
             end
-            
         end
         
         function root = ComputerWithSequence(sequence)

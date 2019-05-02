@@ -16,7 +16,6 @@ classdef AssessmentClassificationResultsPlotter < handle
     end
     
     properties (Access = private)
-        classificationResults;
         plotAxes;
         classNames;
         isUpperYPos = false;
@@ -28,19 +27,22 @@ classdef AssessmentClassificationResultsPlotter < handle
             obj.classNames = classNames;
         end
         
-        function plotClassificationResults(obj, classificationResults, signal)
-            nSegments = length(classificationResults.segments);
+        function plotClassificationResults(obj, detailedClassificationResults, signal)
+            nSegments = length(detailedClassificationResults.segments);
             for i = 1 : nSegments
-                segment = classificationResults.segments(i);
+                segment = detailedClassificationResults.segments(i);
                 if ~isempty(segment.eventIdx)
                     y = signal(segment.eventIdx);
                 else
                     y = [];
                 end
                 
-                truthClass = classificationResults.validationResult.truthClasses(i);
-                predictedClass = classificationResults.validationResult.predictedClasses(i);
-                obj.plotClassificationResult(segment,y,truthClass,predictedClass);
+                truthClass = detailedClassificationResults.classificationResult.truthClasses(i);
+                predictedClass = detailedClassificationResults.classificationResult.predictedClasses(i);
+                
+                if truthClass ~= predictedClass || truthClass ~= ClassesMap.kNullClass
+                    obj.plotClassificationResult(segment,y,truthClass,predictedClass);
+                end
             end
         end
     end
