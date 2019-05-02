@@ -14,6 +14,10 @@ classdef Constants < handle
         kMaxFeatureNameCharacters = 15;
         kReferenceComputingTime = 6.5394e-04;
         
+        kCorrectColor = 'green';
+        kWrongColor = 'red';
+        kMissedEventColor = [1,0.5,0];
+        
         kNullClassGroupStr = 'NULL';
         
         kFeaturesTableFileName = 'exportedFeaturesTable';

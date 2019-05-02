@@ -1,35 +1,35 @@
-function varargout = PerformanceAssessmentDetailUI(varargin)
-% PERFORMANCEASSESSMENTDETAILUI MATLAB code for PerformanceAssessmentDetailUI.fig
-%      PERFORMANCEASSESSMENTDETAILUI, by itself, creates a new PERFORMANCEASSESSMENTDETAILUI or raises the existing
+function varargout = AssessmentClassificationResultsViewerUI(varargin)
+% ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI MATLAB code for AssessmentClassificationResultsViewerUI.fig
+%      ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI, by itself, creates a new ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI or raises the existing
 %      singleton*.
 %
-%      H = PERFORMANCEASSESSMENTDETAILUI returns the handle to a new PERFORMANCEASSESSMENTDETAILUI or the handle to
+%      H = ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI returns the handle to a new ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI or the handle to
 %      the existing singleton*.
 %
-%      PERFORMANCEASSESSMENTDETAILUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in PERFORMANCEASSESSMENTDETAILUI.M with the given input arguments.
+%      ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI.M with the given input arguments.
 %
-%      PERFORMANCEASSESSMENTDETAILUI('Property','Value',...) creates a new PERFORMANCEASSESSMENTDETAILUI or raises the
+%      ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI('Property','Value',...) creates a new ASSESSMENTCLASSIFICATIONRESULTSVIEWERUI or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before PerformanceAssessmentDetailUI_OpeningFcn gets called.  An
+%      applied to the GUI before AssessmentClassificationResultsViewerUI_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to PerformanceAssessmentDetailUI_OpeningFcn via varargin.
+%      stop.  All inputs are passed to AssessmentClassificationResultsViewerUI_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help PerformanceAssessmentDetailUI
+% Edit the above text to modify the response to help AssessmentClassificationResultsViewerUI
 
-% Last Modified by GUIDE v2.5 26-Apr-2019 14:14:33
+% Last Modified by GUIDE v2.5 02-May-2019 17:46:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @PerformanceAssessmentDetailUI_OpeningFcn, ...
-                   'gui_OutputFcn',  @PerformanceAssessmentDetailUI_OutputFcn, ...
+                   'gui_OpeningFcn', @AssessmentClassificationResultsViewerUI_OpeningFcn, ...
+                   'gui_OutputFcn',  @AssessmentClassificationResultsViewerUI_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,26 +44,26 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before PerformanceAssessmentDetailUI is made visible.
-function PerformanceAssessmentDetailUI_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before AssessmentClassificationResultsViewerUI is made visible.
+function AssessmentClassificationResultsViewerUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to PerformanceAssessmentDetailUI (see VARARGIN)
+% varargin   command line arguments to AssessmentClassificationResultsViewerUI (see VARARGIN)
 
-% Choose default command line output for PerformanceAssessmentDetailUI
+% Choose default command line output for AssessmentClassificationResultsViewerUI
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes PerformanceAssessmentDetailUI wait for user response (see UIRESUME)
+% UIWAIT makes AssessmentClassificationResultsViewerUI wait for user response (see UIRESUME)
 % uiwait(handles.mainFigure);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = PerformanceAssessmentDetailUI_OutputFcn(hObject, eventdata, handles) 
+function varargout = AssessmentClassificationResultsViewerUI_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -96,13 +96,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in visualizeButton.
-function visualizeButton_Callback(hObject, eventdata, handles)
-% hObject    handle to visualizeButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --- Executes on selection change in signalComputerList.
 function signalComputerList_Callback(hObject, eventdata, handles)
 % hObject    handle to signalComputerList (see GCBO)
@@ -124,6 +117,13 @@ function signalComputerList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in visualizeButton.
+function visualizeButton_Callback(hObject, eventdata, handles)
+% hObject    handle to visualizeButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
 
 % --- Executes on selection change in filesList.

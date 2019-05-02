@@ -10,12 +10,20 @@ classdef ClassificationResult < handle
     end
     
     methods
-        function classNnames = get.classNames(obj)
-            classNnames = obj.table.classNames;
+        function classNames = get.classNames(obj)
+            classNames = obj.table.classNames;
+        end
+        
+        function set.classNames(obj, classNames)
+            obj.table.classNames = classNames;
         end
         
         function truthClasses = get.truthClasses(obj)
             truthClasses = obj.table.label;
+        end
+        
+        function set.truthClasses(obj, truthClasses)
+            obj.table.label = truthClasses;
         end
     end
     

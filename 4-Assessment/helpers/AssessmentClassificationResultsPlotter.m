@@ -1,11 +1,9 @@
 classdef AssessmentClassificationResultsPlotter < handle
     
     properties (Access = public, Constant)
-        CorrectColor = 'green';
-        WrongColor = 'red';
-        MissedColor = 'orange';
         FontSize = 18;
         LineWidth = 2;
+        MissedEventSymbolSize = 16;
         RectangleYPosToDataRatio = 1.03;
         LabelYPosToRectangleRatios = [0.8,0.95];
         RectangleCurvature = 0.1;
@@ -13,6 +11,7 @@ classdef AssessmentClassificationResultsPlotter < handle
     
     properties (Access = public)
         yRange = [];
+        missedEvents;
     end
     
     properties (Access = private)
@@ -28,6 +27,7 @@ classdef AssessmentClassificationResultsPlotter < handle
         end
         
         function plotClassificationResults(obj, detailedClassificationResults, signal)
+            
             nSegments = length(detailedClassificationResults.segments);
             for i = 1 : nSegments
                 segment = detailedClassificationResults.segments(i);
@@ -43,6 +43,10 @@ classdef AssessmentClassificationResultsPlotter < handle
                 if truthClass ~= predictedClass || truthClass ~= ClassesMap.kNullClass
                     obj.plotClassificationResult(segment,y,truthClass,predictedClass);
                 end
+            end
+            
+            if ~isempty(obj.missedEvents)
+                obj.plotMissedEventAnnotations(signal);
             end
         end
     end
@@ -91,10 +95,29 @@ classdef AssessmentClassificationResultsPlotter < handle
         
         function colorStr = getColorForPrediction(~,truthClass,predictedClass)
             if truthClass == predictedClass
-                colorStr = AssessmentClassificationResultsPlotter.CorrectColor;
+                colorStr = Constants.kCorrectColor;
             else
-                colorStr = AssessmentClassificationResultsPlotter.WrongColor;
+                colorStr = Constants.kWrongColor;
             end
+        end
+        
+        function plotMissedEventAnnotations(obj,signal)
+            for i = 1 : length(obj.missedEvents)
+                missedEvent = obj.missedEvents(i);
+                obj.plotMissedEventAnnotation(missedEvent,signal);
+            end
+        end
+        
+        function plotMissedEventAnnotation(obj,event,signal)
+            eventX = event.sample;
+            eventY = signal(eventX);
+            class = event.label;
+            
+            classStr = Helper.StringForClass(class,obj.classNames);
+            
+            plot(obj.plotAxes,eventX,eventY,'*','Color',Constants.kMissedEventColor,'LineWidth',AssessmentClassificationResultsPlotter.MissedEventSymbolSize);
+            textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr,'FontSize',AssessmentClassificationResultsPlotter.FontSize);
+            set(textHandle, 'Clipping', 'on');
         end
     end
 end

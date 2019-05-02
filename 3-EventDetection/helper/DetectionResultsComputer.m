@@ -9,30 +9,29 @@ classdef DetectionResultsComputer < handle
 
     methods (Access = public)
         
-        function obj = DetectionResultsComputer(labelGrouping)
-            if nargin > 1
+        function obj = DetectionResultsComputer(labelGrouping,positiveLabels)
+            if nargin > 0
                 obj.labelGrouping = labelGrouping;
+                if nargin > 1
+                    obj.positiveLabels = positiveLabels;
+                else
+                    obj.positiveLabels = ones(1,labelGrouping.numClasses);
+                end
             end
         end
         
         %returns an array of DetectionResults (one for each cell)
         function detectionResults = computeDetectionResults(obj,eventsCellArray,annotationsArray)
-            if isempty(obj.labelGrouping)
-                fprintf('%s\n',Constants.kLabelGroupingNotSetWarning);
-            elseif isempty(obj.positiveLabels)
-                fprintf('%s\n',Constants.kPositiveLabelsNotSetWarning);
-            else
-                
-                nCells = length(eventsCellArray);
-                detectionResults(1,nCells) = DetectionResult();
-                for i = 1 : nCells
-                    annotationSet = annotationsArray(i);
-                    detectedEvents = eventsCellArray{i};
-                    detectionResults(i) = obj.computeDetectionResult(detectedEvents,annotationSet.eventAnnotations);
-                end
+            
+            nCells = length(eventsCellArray);
+            detectionResults(1,nCells) = DetectionResult();
+            for i = 1 : nCells
+                annotationSet = annotationsArray(i);
+                detectedEvents = eventsCellArray{i};
+                detectionResults(i) = obj.computeDetectionResult(detectedEvents,annotationSet.eventAnnotations);
             end
         end
-
+        
     end
     
     methods (Access = private)

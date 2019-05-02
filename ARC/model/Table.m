@@ -15,6 +15,7 @@ classdef Table < handle
     end
     
     methods
+        
         function l = get.label(obj)
             l = obj.table.label;
         end

@@ -1,9 +1,12 @@
 classdef DetectionEventsPlotter < handle
     
+    properties (Access = public, Constant)
+        FontSize = 22;
+        SymbolSize = 10;
+    end
+    
     properties (Access = public)
         labelGrouping LabelGrouping;
-        textFontSize = 22;
-        symbolSize = 10;
         delegate;
     end
     
@@ -169,9 +172,9 @@ classdef DetectionEventsPlotter < handle
         
         function plotAllEvents(obj,signal,currentFileResults)
             
-            obj.detectedEventHandles = obj.plotEvents(currentFileResults.goodEvents,signal,'green');
-            obj.missedEventHandles = obj.plotEvents(currentFileResults.missedEvents,signal,[1,0.5,0]);
-            obj.falsePositiveEventHandles = obj.plotEvents(currentFileResults.badEvents,signal,'red');
+            obj.detectedEventHandles = obj.plotEvents(currentFileResults.goodEvents,signal,Constants.kCorrectColor);
+            obj.missedEventHandles = obj.plotEvents(currentFileResults.missedEvents,signal,Constants.kMissedEventColor);
+            obj.falsePositiveEventHandles = obj.plotEvents(currentFileResults.badEvents,signal,Constants.kWrongColor);
             
             if ~obj.showingDetectedEventsPrivate
                 obj.toggleEventsVisibility(obj.detectedEventHandles,false);
@@ -202,8 +205,8 @@ classdef DetectionEventsPlotter < handle
                         classStr = obj.labelGrouping.classNames{label};
                     end
                     
-                    symbolHandle = plot(obj.plotAxes,eventX,eventY,'*','Color',symbolColor,'LineWidth',obj.symbolSize);
-                    textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr,'FontSize',obj.textFontSize);
+                    symbolHandle = plot(obj.plotAxes,eventX,eventY,'*','Color',symbolColor,'LineWidth',DetectionEventsPlotter.SymbolSize);
+                    textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr,'FontSize',DetectionEventsPlotter.FontSize);
                     set(textHandle, 'Clipping', 'on');
                     
                     eventHandle = DetectionEventHandle(event,symbolHandle,textHandle);

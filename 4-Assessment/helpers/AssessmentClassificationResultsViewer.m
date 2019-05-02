@@ -1,4 +1,8 @@
 classdef AssessmentClassificationResultsViewer < handle
+    properties (Access = public, Constant)
+        kAxesFontSize = 16;
+    end
+    
     properties (Access = public)
         detailedClassificationResults;
         delegate;
@@ -9,11 +13,12 @@ classdef AssessmentClassificationResultsViewer < handle
         dataLoader;
         dataFile;
         magnitude;
+        missedEventsPerFile;
         
         %ui handles
         uiHandles;
         signalPlotHandles;
-                
+
         %video
         videoPlayer;
         synchronisationFile;
@@ -28,21 +33,22 @@ classdef AssessmentClassificationResultsViewer < handle
         preprocessingConfigurator;
         classificationResultsPlotter AssessmentClassificationResultsPlotter;
         
+        %other
         plottedSignalYRange;
     end
     
     methods (Access = public)
-        function  obj = AssessmentClassificationResultsViewer(delegate,detailedClassificationResults)
+        function  obj = AssessmentClassificationResultsViewer(delegate,detailedClassificationResults,labelGrouping)
             obj.delegate = delegate;
             obj.detailedClassificationResults = detailedClassificationResults;
-            
             obj.videoFileNames = Helper.listVideoFiles();
             obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
             obj.timeLineMarker = 1;
             obj.dataLoader = DataLoader();
             obj.loadUI();
+            obj.createMissedEvents(labelGrouping);
         end
-        
+
         function handleFrameChanged(obj,~)
             if ~isempty(obj.synchronisationFile)
                 obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
@@ -75,7 +81,7 @@ classdef AssessmentClassificationResultsViewer < handle
         %% init
         function loadUI(obj)
             
-            obj.uiHandles = guihandles(PerformanceAssessmentDetailUI);
+            obj.uiHandles = guihandles(AssessmentClassificationResultsViewerUI);
             obj.initPlotAxes();
             movegui(obj.uiHandles.mainFigure,'center');
             obj.uiHandles.mainFigure.Visible = 'On';
@@ -103,6 +109,7 @@ classdef AssessmentClassificationResultsViewer < handle
         function initPlotAxes(obj)
             obj.uiHandles.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
             hold(obj.uiHandles.plotAxes,'on');
+            set(obj.uiHandles.plotAxes, 'FontSize', AssessmentClassificationResultsViewer.kAxesFontSize);
         end
         
         function setUserClickHandle(obj)
@@ -113,10 +120,10 @@ classdef AssessmentClassificationResultsViewer < handle
         end
         
         function plotSignal(obj,signal)
-            hold(obj.plotAxes,'on');
+            hold(obj.uiHandles.plotAxes,'on');
             n = length(signal);
-            xlim(obj.plotAxes,[1,n]);
-            plot(obj.plotAxes,signal);
+            xlim(obj.uiHandles.plotAxes,[1,n]);
+            plot(obj.uiHandles.plotAxes,signal);
         end
         
         function plotTimelineMarker(obj)
@@ -271,6 +278,55 @@ classdef AssessmentClassificationResultsViewer < handle
         end
         
         %% loading
+        function createMissedEvents(obj,labelGrouping)
+            obj.missedEventsPerFile = [];
+            if obj.shouldUseEventDetection()
+                resultsComputer = DetectionResultsComputer(labelGrouping);
+                eventsCellArray = obj.createEventsCellArrayFromSegments();
+                detectionResults = resultsComputer.computeDetectionResults(eventsCellArray,[obj.detailedClassificationResults.annotations]);
+                obj.missedEventsPerFile = {detectionResults.missedEvents};
+                obj.mapMissedEventLabels(labelGrouping);
+            end
+        end
+        
+        function shouldUseEventDetection = shouldUseEventDetection(obj)
+            shouldUseEventDetection = false;
+            if ~isempty(obj.detailedClassificationResults)
+                firstResults = obj.detailedClassificationResults(1);
+                if ~isempty(firstResults.segments)
+                    firstSegment = firstResults.segments(1);
+                    shouldUseEventDetection = ~isempty(firstSegment.eventIdx);
+                end
+            end
+        end
+        
+        function eventsCellArray = createEventsCellArrayFromSegments(obj)
+            nResults = length(obj.detailedClassificationResults);
+            eventsCellArray = cell(1,nResults);
+            for i = 1 : nResults
+                detailedClassificationResult = obj.detailedClassificationResults(i);
+                eventsCellArray{i} = obj.createEventsWithEventIdxs(detailedClassificationResult.segments);
+            end
+        end
+        
+        function events = createEventsWithEventIdxs(~,segments)
+            nEvents = length(segments);
+            events = repmat(Event,1,nEvents);
+            for i = 1 : nEvents
+                segment = segments(i);
+                events(i) = Event(segment.eventIdx,segment.label);
+            end
+        end
+        
+        function mapMissedEventLabels(obj,labelGrouping)
+            for i = 1 : length(obj.missedEventsPerFile)
+                missedEvents = obj.missedEventsPerFile{i};
+                for j = 1 : length(missedEvents)
+                    missedEvents(j).label = labelGrouping.labelForClass(missedEvents(j).label);
+                end
+            end
+        end
+        
         function loadSynchronisationFile(obj)
             fileName = obj.getSynchronisationFileName();
             obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(fileName);
@@ -333,6 +389,9 @@ classdef AssessmentClassificationResultsViewer < handle
                 currentResults = obj.detailedClassificationResults(selectedIdx);
                 
                 obj.classificationResultsPlotter.yRange = obj.plottedSignalYRange;
+                if ~isempty(obj.missedEventsPerFile)
+                    obj.classificationResultsPlotter.missedEvents = obj.missedEventsPerFile{selectedIdx};
+                end
                 obj.classificationResultsPlotter.plotClassificationResults(currentResults,obj.magnitude);
             end
         end
