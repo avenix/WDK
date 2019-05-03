@@ -104,7 +104,9 @@ classdef AssessmentClassificationResultsPlotter < handle
         function plotMissedEventAnnotations(obj,signal)
             for i = 1 : length(obj.missedEvents)
                 missedEvent = obj.missedEvents(i);
-                obj.plotMissedEventAnnotation(missedEvent,signal);
+                if missedEvent.label ~= ClassesMap.kNullClass
+                    obj.plotMissedEventAnnotation(missedEvent,signal);
+                end
             end
         end
         

@@ -181,6 +181,29 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        function groupedAnnotations = GroupedAnnotationsArray(annotations,labelGrouping)
+            nAnnotations = length(annotations);
+            groupedAnnotations = repmat(AnnotationSet,1,nAnnotations);
+            for i = 1 : nAnnotations
+                groupedAnnotations(i) = Helper.GroupAnnotations(annotations(i),labelGrouping);
+            end
+        end
+        
+        function annotationSet = GroupAnnotations(annotations,labelGrouping)
+            annotationSet = AnnotationSet();
+            annotationSet.eventAnnotations = Helper.GroupEventAnnotations(annotations.eventAnnotations,labelGrouping);
+            annotationSet.rangeAnnotations = annotations.rangeAnnotations;
+        end
+        
+        function groupedEventAnnotations = GroupEventAnnotations(eventAnnotations,labelGrouping)
+            nAnnotations = length(eventAnnotations);
+            groupedEventAnnotations = repmat(EventAnnotation,1,nAnnotations);
+            for i = 1 : nAnnotations
+                eventAnnotation = eventAnnotations(i);
+                newLabel = labelGrouping.labelForClass(eventAnnotation.label);
+                groupedEventAnnotations(i) = EventAnnotation(eventAnnotation.sample,newLabel);
+            end
+        end
         
         function classStr = StringForClass(class, classNames)
             if class == ClassesMap.kNullClass

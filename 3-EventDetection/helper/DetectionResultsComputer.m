@@ -3,20 +3,14 @@
 classdef DetectionResultsComputer < handle
     properties (Access = public)
         tolerance = 10;
-        labelGrouping;
-        positiveLabels;
+        positiveLabels = [];
     end
 
     methods (Access = public)
         
-        function obj = DetectionResultsComputer(labelGrouping,positiveLabels)
+        function obj = DetectionResultsComputer(positiveLabels)
             if nargin > 0
-                obj.labelGrouping = labelGrouping;
-                if nargin > 1
-                    obj.positiveLabels = positiveLabels;
-                else
-                    obj.positiveLabels = ones(1,labelGrouping.numClasses);
-                end
+                obj.positiveLabels = positiveLabels;
             end
         end
         
@@ -31,7 +25,6 @@ classdef DetectionResultsComputer < handle
                 detectionResults(i) = obj.computeDetectionResult(detectedEvents,annotationSet.eventAnnotations);
             end
         end
-        
     end
     
     methods (Access = private)
@@ -52,6 +45,8 @@ classdef DetectionResultsComputer < handle
          function b = isRelevantLabel(obj,label)
              if label == ClassesMap.kNullClass
                  b = false;
+             elseif isempty(obj.positiveLabels)
+                 b = true;
              else
                  b = obj.positiveLabels(label);
              end
@@ -64,9 +59,8 @@ classdef DetectionResultsComputer < handle
             badEvents = obj.computeBadEvents(detectedEvents,isGoodEvent);
             
             eventAnnotations = obj.removeIgnoredAnnotations(eventAnnotations);
-            mappedEventAnnotations = obj.mapAnnotations(eventAnnotations);
             
-            missedEvents = obj.computeMissedEventAnnotations(detectedEvents,mappedEventAnnotations);
+            missedEvents = obj.computeMissedEventAnnotations(detectedEvents,eventAnnotations);
             detectionResult = DetectionResult(goodEvents,missedEvents,badEvents);
         end
         
@@ -74,17 +68,7 @@ classdef DetectionResultsComputer < handle
             isValidLabel = ~ClassesMap.ShouldIgnoreLabels([eventAnnotations.label]);
             eventAnnotations = eventAnnotations(isValidLabel);
         end
-        
-        function mappedAnnotations = mapAnnotations(obj,eventAnnotations)
-            nAnnotations = length(eventAnnotations);
-            mappedAnnotations = repmat(EventAnnotation,1,nAnnotations);
-            for i = 1 : nAnnotations
-                eventAnnotation = eventAnnotations(i);
-                newLabel = obj.labelGrouping.labelForClass(eventAnnotation.label);
-                mappedAnnotations(i) = EventAnnotation(eventAnnotation.sample,newLabel);
-            end
-        end
-        
+                
         function goodEvents = computeGoodEvents(~,detectedEvents, isGoodEvent)
             nGoodEvents = sum(isGoodEvent);
             goodEvents = [];

@@ -13,7 +13,6 @@ classdef AssessmentClassificationResultsViewer < handle
         dataLoader;
         dataFile;
         magnitude;
-        missedEventsPerFile;
         
         %ui handles
         uiHandles;
@@ -38,7 +37,7 @@ classdef AssessmentClassificationResultsViewer < handle
     end
     
     methods (Access = public)
-        function  obj = AssessmentClassificationResultsViewer(delegate,detailedClassificationResults,labelGrouping)
+        function  obj = AssessmentClassificationResultsViewer(delegate,detailedClassificationResults)
             obj.delegate = delegate;
             obj.detailedClassificationResults = detailedClassificationResults;
             obj.videoFileNames = Helper.listVideoFiles();
@@ -46,7 +45,6 @@ classdef AssessmentClassificationResultsViewer < handle
             obj.timeLineMarker = 1;
             obj.dataLoader = DataLoader();
             obj.loadUI();
-            obj.createMissedEvents(labelGrouping);
         end
 
         function handleFrameChanged(obj,~)
@@ -80,7 +78,6 @@ classdef AssessmentClassificationResultsViewer < handle
     methods (Access = private)
         %% init
         function loadUI(obj)
-            
             obj.uiHandles = guihandles(AssessmentClassificationResultsViewerUI);
             obj.initPlotAxes();
             movegui(obj.uiHandles.mainFigure,'center');
@@ -277,56 +274,7 @@ classdef AssessmentClassificationResultsViewer < handle
             obj.signalPlotHandles = [];
         end
         
-        %% loading
-        function createMissedEvents(obj,labelGrouping)
-            obj.missedEventsPerFile = [];
-            if obj.shouldUseEventDetection()
-                resultsComputer = DetectionResultsComputer(labelGrouping);
-                eventsCellArray = obj.createEventsCellArrayFromSegments();
-                detectionResults = resultsComputer.computeDetectionResults(eventsCellArray,[obj.detailedClassificationResults.annotations]);
-                obj.missedEventsPerFile = {detectionResults.missedEvents};
-                obj.mapMissedEventLabels(labelGrouping);
-            end
-        end
-        
-        function shouldUseEventDetection = shouldUseEventDetection(obj)
-            shouldUseEventDetection = false;
-            if ~isempty(obj.detailedClassificationResults)
-                firstResults = obj.detailedClassificationResults(1);
-                if ~isempty(firstResults.segments)
-                    firstSegment = firstResults.segments(1);
-                    shouldUseEventDetection = ~isempty(firstSegment.eventIdx);
-                end
-            end
-        end
-        
-        function eventsCellArray = createEventsCellArrayFromSegments(obj)
-            nResults = length(obj.detailedClassificationResults);
-            eventsCellArray = cell(1,nResults);
-            for i = 1 : nResults
-                detailedClassificationResult = obj.detailedClassificationResults(i);
-                eventsCellArray{i} = obj.createEventsWithEventIdxs(detailedClassificationResult.segments);
-            end
-        end
-        
-        function events = createEventsWithEventIdxs(~,segments)
-            nEvents = length(segments);
-            events = repmat(Event,1,nEvents);
-            for i = 1 : nEvents
-                segment = segments(i);
-                events(i) = Event(segment.eventIdx,segment.label);
-            end
-        end
-        
-        function mapMissedEventLabels(obj,labelGrouping)
-            for i = 1 : length(obj.missedEventsPerFile)
-                missedEvents = obj.missedEventsPerFile{i};
-                for j = 1 : length(missedEvents)
-                    missedEvents(j).label = labelGrouping.labelForClass(missedEvents(j).label);
-                end
-            end
-        end
-        
+        %% loading        
         function loadSynchronisationFile(obj)
             fileName = obj.getSynchronisationFileName();
             obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(fileName);
@@ -361,7 +309,6 @@ classdef AssessmentClassificationResultsViewer < handle
         
         %% Handles
         function handleLoadDataClicked(obj,~,~)
-            
             obj.deleteAll();
             
             obj.loadData();
@@ -389,9 +336,7 @@ classdef AssessmentClassificationResultsViewer < handle
                 currentResults = obj.detailedClassificationResults(selectedIdx);
                 
                 obj.classificationResultsPlotter.yRange = obj.plottedSignalYRange;
-                if ~isempty(obj.missedEventsPerFile)
-                    obj.classificationResultsPlotter.missedEvents = obj.missedEventsPerFile{selectedIdx};
-                end
+                obj.classificationResultsPlotter.missedEvents = currentResults.missedEvents;
                 obj.classificationResultsPlotter.plotClassificationResults(currentResults,obj.magnitude);
             end
         end

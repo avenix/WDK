@@ -7,7 +7,7 @@ classdef AnnotationSet < handle
    
    methods (Access = public)
        function obj = AnnotationSet(eventAnnotations,rangeAnnotations)
-           if nargin >= 1
+           if nargin > 0
                obj.eventAnnotations = eventAnnotations;
                if nargin > 1
                    obj.rangeAnnotations = rangeAnnotations;
@@ -40,4 +40,12 @@ classdef AnnotationSet < handle
            end
        end
    end
+   
+   methods (Static)
+       function copyAnnotationSet = CopyAnnotationSet(annotationSet)
+           copyAnnotationSet = AnnotationSet(annotationSet.eventAnnotations,annotationSet.rangeAnnotations);
+           copyAnnotationSet.fileName = annotationSet.fileName;
+       end
+   end
+   
 end
