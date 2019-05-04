@@ -27,9 +27,9 @@ classdef SimplePeakDetector < Computer
             editableProperties = [minPeakHeightProperty,minPeakDistanceProperty];
         end
         
-        function computedSignal = compute(obj,signal)
+        function events = compute(obj,signal)
             eventLocations = obj.detectEvents(signal);
-            computedSignal = Helper.CreateEventsWithEventLocations(eventLocations);
+            events = Helper.CreateEventsWithEventLocations(eventLocations);
         end
         
         function metrics = computeMetrics(~,input)

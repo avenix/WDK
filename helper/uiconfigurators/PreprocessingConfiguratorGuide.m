@@ -1,7 +1,7 @@
 %this class retrieves a preprocessing algorithm from the UI
 %this file duplicats the PreprocessingConfigurator and should be removed as
 %soon as Matlab releases support for datacursor mode using App Designer
-classdef PreprocessingConfiguratorAnnotationApp < handle
+classdef PreprocessingConfiguratorGuide < handle
 
     properties (Access = private)
         %data
@@ -20,7 +20,7 @@ classdef PreprocessingConfiguratorAnnotationApp < handle
     end
     
     methods (Access = public)
-        function obj = PreprocessingConfiguratorAnnotationApp(signalComputers, signalsList,signalComputersList,signalComputerVariablesTable)
+        function obj = PreprocessingConfiguratorGuide(signalComputers, signalsList,signalComputersList,signalComputerVariablesTable)
             obj.signalComputers = signalComputers;
             obj.signalsList = signalsList;
             obj.signalComputersList = signalComputersList;
@@ -33,7 +33,7 @@ classdef PreprocessingConfiguratorAnnotationApp < handle
             obj.updateSignalComputerVariablesTable();
         end
         
-        function setDefaultColumnNames(obj)
+        function setDefaultSignals(obj)
             dataLoader = DataLoader();
             dataFiles = Helper.listDataFiles();
             if ~isempty(dataFiles)
@@ -43,7 +43,7 @@ classdef PreprocessingConfiguratorAnnotationApp < handle
             obj.fillSignalsList();
         end
         
-        function setColumnNames(obj,columnNames)
+        function setSignals(obj,columnNames)
             obj.columnNames = columnNames;
             obj.fillSignalsList();
         end
@@ -76,11 +76,6 @@ classdef PreprocessingConfiguratorAnnotationApp < handle
             computer = CompositeComputer(axisSelector,{signalComputer});
             
             %computer = CompositeComputer.ComputerWithSequence({axisSelector, signalComputer});
-        end
-        
-        function updateSignalsList(obj)
-            str = Helper.cellArrayToString(obj.columnNames);
-            obj.signalsList.String = str;
         end
     end
     

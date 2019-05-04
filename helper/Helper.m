@@ -181,6 +181,17 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        function signals = LoadSignals()
+            dataLoader = DataLoader();
+            dataFiles = Helper.listDataFiles();
+            signals = [];
+            if ~isempty(dataFiles)
+                fileName = dataFiles{1};
+                dataFile = dataLoader.loadData(fileName);
+                signals = dataFile.columnNames;
+            end
+        end
+        
         function groupedAnnotations = GroupedAnnotationsArray(annotations,labelGrouping)
             nAnnotations = length(annotations);
             groupedAnnotations = repmat(AnnotationSet,1,nAnnotations);

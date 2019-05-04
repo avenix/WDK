@@ -140,7 +140,7 @@ classdef AnnotationApp < handle
             obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
             
             signalComputers = Palette.PreprocessingComputers();
-            obj.preprocessingConfigurator = PreprocessingConfiguratorAnnotationApp(...
+            obj.preprocessingConfigurator = PreprocessingConfiguratorGuide(...
                 signalComputers,...
                 obj.uiHandles.signalsList,...
                 obj.uiHandles.signalComputerList,...
@@ -562,7 +562,7 @@ classdef AnnotationApp < handle
             obj.loadAll();
             
             if ~isempty(obj.dataFile)
-                obj.preprocessingConfigurator.setColumnNames(obj.dataFile.columnNames);
+                obj.preprocessingConfigurator.setSignals(obj.dataFile.columnNames);
                 obj.updateLoadDataTextbox();
             end
         end

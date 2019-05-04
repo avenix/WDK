@@ -37,5 +37,9 @@ classdef DataFile < handle
             table = array2table(obj.data);
             table.Properties.VariableNames = obj.columnNames;
         end
+        
+        function file = createFileWithColumnIndices(obj,columnIndices)
+            file = DataFile(obj.fileName,obj.data(:,columnIndices),obj.columnNames(columnIndices));
+        end
     end
 end

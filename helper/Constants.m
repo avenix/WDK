@@ -45,6 +45,7 @@ classdef Constants < handle
         kLoadingVideoMessage = 'Message - AnnotationVideoPlayer - loading video ';
         
         kSharedVariableCurrentDataFile = 'currentFile';
+        kSharedVariableCurrentData = 'currentData';
         kSharedVariableCurrentAnnotationFile = 'annotationFile';
         kSharedVariableCurrentLabelingStrategy = 'currentLabelingStrategy';
     end

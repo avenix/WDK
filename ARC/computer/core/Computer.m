@@ -53,7 +53,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
     methods (Static, Access = private)
         
         function computers = ListAllComputers(computer)
-            
             nComputers = Computer.CountComputers(computer);
             if nComputers == 0
                 computers = [];
@@ -82,7 +81,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         end
         
         function [isDataCached, data, metricSum] = LoadCacheDataForGraphString(graphString)
-                        
             cache = Cache.SharedInstance();
             if cache.containsVariable(graphString)
                 loadedData = cache.loadVariable(graphString);
@@ -184,6 +182,8 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                     if isDataLoaded
                         data = loadedData;
                     end
+                else
+                    graphString = [];
                 end
                 
                 if ~isDataLoaded

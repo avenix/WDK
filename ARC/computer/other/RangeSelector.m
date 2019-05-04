@@ -20,10 +20,7 @@ classdef RangeSelector < Computer
         end
         
         function shorterSegment = compute(obj,segment)
-            endIdx = obj.rangeEnd;
-            if isempty(endIdx)
-                endIdx = size(segment,1);
-            end
+            endIdx = obj.endIndexForSegment(segment);
             shorterSegment = segment(obj.rangeStart:endIdx,:);
         end
         
@@ -38,12 +35,22 @@ classdef RangeSelector < Computer
             editableProperties = [rangeStartProperty,rangeEndProperty];
         end
         
-        function metrics = computeMetrics(obj,input)
-            n = size(input,1);
+        function metrics = computeMetrics(obj,segment)
+            n = size(segment,1);
             flops = 2 * n;
-            memory = obj.rangeEnd - obj.rangeStart + 1;
-            outputSize = obj.rangeEnd - obj.rangeStart + 1;
+            endIdx = obj.endIndexForSegment(segment);
+            memory = endIdx - obj.rangeStart + 1;
+            outputSize = endIdx - obj.rangeStart + 1;
             metrics = Metric(flops,memory,outputSize);
+        end
+    end
+    
+    methods (Access = private)
+        function endIdx = endIndexForSegment(obj,segment)
+            endIdx = obj.rangeEnd;
+            if isempty(endIdx)
+                endIdx = size(segment,1);
+            end
         end
     end
     

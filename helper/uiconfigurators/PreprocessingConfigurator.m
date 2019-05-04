@@ -1,9 +1,9 @@
 %this class retrieves a preprocessing algorithm from the UI
 classdef PreprocessingConfigurator < handle
-
+    
     properties (Access = private)
         %data
-        columnNames;
+        signals;
         
         %computers
         signalComputers;
@@ -19,8 +19,10 @@ classdef PreprocessingConfigurator < handle
     end
     
     methods (Access = public)
-        function obj = PreprocessingConfigurator(signalComputers, signalsList,signalComputersList,signalComputerVariablesTable)
+        function obj = PreprocessingConfigurator(signals,signalComputers, signalsList,...
+                signalComputersList,signalComputerVariablesTable)
             
+            obj.signals = signals;
             obj.signalComputers = signalComputers;
             obj.signalsList = signalsList;
             obj.signalComputersList = signalComputersList;
@@ -28,6 +30,7 @@ classdef PreprocessingConfigurator < handle
             obj.signalComputersList.ValueChangedFcn = @obj.handleSelectedSignalComputerChanged;
             
             if ~isempty(obj.signalComputersList)
+                obj.updateSignalsList();
                 obj.fillSignalComputersList();
                 obj.selectFirstSignalComputer();
                 
@@ -36,20 +39,9 @@ classdef PreprocessingConfigurator < handle
             end
         end
         
-        function setDefaultColumnNames(obj)
-            dataLoader = DataLoader();
-            dataFiles = Helper.listDataFiles();
-            if ~isempty(dataFiles)
-                fileName = dataFiles{1};
-                dataFile = dataLoader.loadData(fileName);
-                obj.columnNames = dataFile.columnNames;
-            end
-            obj.fillSignalsList();
-        end
-        
-        function setColumnNames(obj,columnNames)
-            obj.columnNames = columnNames;
-            obj.fillSignalsList();
+        function setSignals(obj,signals)
+            obj.signals = signals;
+            obj.updateSignalsList();
         end
         
         function signalComputer = getCurrentSignalComputer(obj)
@@ -63,44 +55,69 @@ classdef PreprocessingConfigurator < handle
             [~,signalIdxs] = ismember(idxStr,obj.signalsList.Items);
         end
         
-        function computer = createSignalComputerWithUIParameters(obj)
-            signalComputer = obj.getCurrentSignalComputer();
-            
-            data = obj.signalComputerVariablesTable.Data;
-            for i = 1 : size(data,1)
-                variableName = data{i,1};
-                variableValue = data{i,2};
-                property = Property(variableName,variableValue);
-                signalComputer.setProperty(property);
+        function computer = createPreprocessingComputerWithUIParameters(obj)
+            axisSelector = obj.createAxisSelectorWithUIParameters();
+            if isempty(axisSelector)
+                computer = [];
+            else
+                signalComputer = obj.createSignalComputerWithUIParameters();
+                if isempty(signalComputer)
+                    computer = [];
+                else
+                    axisSelector.addNextComputer(signalComputer);
+                    computer = CompositeComputer(axisSelector,{signalComputer});
+                end
             end
-            
-            selectedSignals = obj.getSelectedSignalIdxs();
-            axisSelector = AxisSelector();
-            axisSelector.axes = selectedSignals;
-            
-            axisSelector.addNextComputer(signalComputer);
-            computer = CompositeComputer(axisSelector,{signalComputer});
         end
         
-        function updateSignalsList(obj)
-            str = Helper.cellArrayToString(obj.columnNames);
-            obj.signalsList.String = str;
+        function axisSelector = createAxisSelectorWithUIParameters(obj)
+            selectedSignalIndices = obj.getSelectedSignalIdxs();
+            if isempty(selectedSignalIndices)
+                axisSelector = [];
+            else
+                axisSelector = AxisSelector();
+                axisSelector.axes = selectedSignalIndices;
+            end
         end
+        
+        function signalComputer = createSignalComputerWithUIParameters(obj)
+            signalComputer = obj.getCurrentSignalComputer();
+            if isa(signalComputer,'NoOp')
+                signalComputer = [];
+            else
+                signalComputer = signalComputer.copy();
+                data = obj.signalComputerVariablesTable.Data;
+                for i = 1 : size(data,1)
+                    variableName = data{i,1};
+                    variableValue = data{i,2};
+                    property = Property(variableName,variableValue);
+                    signalComputer.setProperty(property);
+                end
+            end
+        end
+        
     end
     
     methods (Access = private)
         
         %ui
+        function updateSignalsList(obj)
+            obj.signalsList.Items = obj.signals;
+        end
+        
+        function signals = getSelectedSignals(obj)
+            %returns signals in order
+            [~, signalIndices] = ismember(obj.signalsList.Value,obj.signalsList.Items);
+            signalIndices = sort(signalIndices);
+            signals = obj.signalsList.Items(signalIndices);
+        end
+        
         function selectFirstSignalComputer(obj)
             obj.signalComputersList.Value = obj.signalComputersList.Items{1};
         end
         
         function selectFirstSignal(obj)
             obj.signalsList.Value = obj.signalsList.Items{1};
-        end
-        
-        function fillSignalsList(obj)
-            obj.signalsList.Items = obj.columnNames;
         end
         
         function updateSignalComputerVariablesTable(obj)
@@ -117,11 +134,8 @@ classdef PreprocessingConfigurator < handle
             obj.signalComputersList.Items = Helper.generateComputerNamesArray(obj.signalComputers);
         end
         
-        function fillSignalList(obj)
-            obj.signalsList.String = obj.columnNames;
-        end        
-        
         %handles
+        
         function handleSelectedSignalComputerChanged(obj,~,~)
             obj.updateSelectedSignalComputer();
             obj.updateSignalComputerVariablesTable();

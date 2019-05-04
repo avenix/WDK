@@ -91,7 +91,7 @@ classdef AssessmentClassificationResultsViewer < handle
             obj.uiHandles.mainFigure.DeleteFcn = @obj.handleWindowClosed;
             
             signalComputers = Palette.PreprocessingComputers();
-            obj.preprocessingConfigurator = PreprocessingConfiguratorAnnotationApp(...
+            obj.preprocessingConfigurator = PreprocessingConfiguratorGuide(...
                 signalComputers,...
                 obj.uiHandles.signalsList,...
                 obj.uiHandles.signalComputerList,...
@@ -106,7 +106,7 @@ classdef AssessmentClassificationResultsViewer < handle
         function initPlotAxes(obj)
             obj.uiHandles.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
             hold(obj.uiHandles.plotAxes,'on');
-            set(obj.uiHandles.plotAxes, 'FontSize', AssessmentClassificationResultsViewer.kAxesFontSize);
+            obj.uiHandles.plotAxes.FontSize = AssessmentClassificationResultsViewer.kAxesFontSize;
         end
         
         function setUserClickHandle(obj)
@@ -319,7 +319,7 @@ classdef AssessmentClassificationResultsViewer < handle
             obj.loadVideo();
             
             if ~isempty(obj.dataFile)
-                obj.preprocessingConfigurator.setColumnNames(obj.dataFile.columnNames);
+                obj.preprocessingConfigurator.setSignals(obj.dataFile.columnNames);
                 obj.updateLoadDataTextbox();
             end
         end
