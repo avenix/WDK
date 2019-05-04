@@ -313,7 +313,7 @@ The *Event Detection Detail View* enables developers to gain insight into the pe
  
  ![Assessment App](doc/images/4-AssessmentApp.png)
  
- The *Performance Asessment Detail View* displays the classification results on top of the data and  next to the corresponding video. Green overlays indicate correctly classified segments and red overlays indicate misclassified segments.
+ The *Performance Asessment Detail View* displays the classification results on top of the data and next to the corresponding video. Green overlays indicate correctly classified segments and red overlays indicate misclassified segments.
  
  ![Assessment App Detail View](doc/images/4-AssessmentAppDetail.png)
  

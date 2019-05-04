@@ -1,3 +1,5 @@
+%maps labels. Can be used when the annotations contain a greater level of
+%detail than needed by the application
 classdef LabelMapper < Computer
     
     properties (Access = private)
@@ -9,13 +11,17 @@ classdef LabelMapper < Computer
     end
     
     methods (Access = public)
-        function obj = LabelMapper()
+        function obj = LabelMapper(hashMap)
+            if nargin > 0
+                obj.hashMap = hashMap;
+            else
+                obj.hashMap = containers.Map(uint32(0), uint32(1));
+                remove(obj.hashMap,0);
+            end
+            
             obj.name = 'labelMapper';
             obj.inputPort = ComputerDataType.kLabels;
             obj.outputPort = ComputerDataType.kLabels;
-            
-            obj.hashMap = containers.Map(uint32(0), uint32(1));
-            remove(obj.hashMap,0);
         end
         
         %receives an array of instances of ClassificationResult
@@ -56,6 +62,25 @@ classdef LabelMapper < Computer
                 Helper.arrayToString(mapValues));
             
             str = sprintf('%s_%s',obj.name,hashMapStr);
+        end
+        
+        function metrics = computeMetrics(obj,classificationResults)
+            n = obj.countNumPredictions(classificationResults);
+            nClasses = obj.hashMap.Count;
+            flops = 4 * n;
+            memory = 1;
+            permanentMemory = nClasses;
+            outputSize = n;
+            metrics = Metric(flops,memory,outputSize,permanentMemory);
+        end
+    end
+    
+    methods (Access = private)
+        function n = countNumPredictions(~, classificationResults)
+            n = 0;
+            for i = 1 : length(classificationResults)
+                n  = n + length(classificationResults(i).predictedClasses);
+            end
         end
     end
 end

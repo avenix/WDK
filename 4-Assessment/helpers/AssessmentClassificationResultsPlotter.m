@@ -4,7 +4,7 @@ classdef AssessmentClassificationResultsPlotter < handle
         FontSize = 18;
         LineWidth = 2;
         MissedEventSymbolSize = 16;
-        RectangleYPosToDataRatio = 1.03;
+        RectangleYPosToDataRatios = [1.0, 1.05];
         LabelYPosToRectangleRatios = [0.8,0.95];
         RectangleCurvature = 0.1;
     end
@@ -55,7 +55,7 @@ classdef AssessmentClassificationResultsPlotter < handle
         function plotHandle = plotClassificationResult(obj, segment, segmentEventY, truthClass, predictedClass)
             colorStr = obj.getColorForPrediction(truthClass,predictedClass);
             
-            rectangleHeight = (obj.yRange(2) - obj.yRange(1)) * obj.RectangleYPosToDataRatio;
+            rectangleHeight = (obj.yRange(2) - obj.yRange(1)) * obj.RectangleYPosToDataRatios(obj.isUpperYPos+1);
             yOffset = (rectangleHeight - (obj.yRange(2) - obj.yRange(1))) / 2;
             rectangleWidth = single(segment.endSample - segment.startSample);
             rectanglePosition = [single(segment.startSample), obj.yRange(1) - yOffset, single(rectangleWidth), rectangleHeight];
@@ -64,9 +64,7 @@ classdef AssessmentClassificationResultsPlotter < handle
             %plot text
             textStr = obj.getTextForPrediction(truthClass,predictedClass);
             xPos = (double(segment.startSample) + double(segment.endSample)) / 2;
-            
             yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatios(obj.isUpperYPos+1);
-            
             textHandle = text(obj.plotAxes,xPos,yPos, textStr,...
                 'FontSize',obj.FontSize,'HorizontalAlignment','center','Color',colorStr);
             set(textHandle, 'Clipping', 'on');

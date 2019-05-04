@@ -5,9 +5,8 @@ classdef DetectionResultsComputer < handle
         tolerance = 10;
         positiveLabels = [];
     end
-
+    
     methods (Access = public)
-        
         function obj = DetectionResultsComputer(positiveLabels)
             if nargin > 0
                 obj.positiveLabels = positiveLabels;
@@ -28,8 +27,7 @@ classdef DetectionResultsComputer < handle
     end
     
     methods (Access = private)
-        
-         function r = isRelevantEvents(obj,detectedEvents)
+        function r = isRelevantEvents(obj,detectedEvents)
             if isempty(detectedEvents)
                 r = [];
             else
@@ -40,20 +38,20 @@ classdef DetectionResultsComputer < handle
                     r(i) = obj.isRelevantLabel(labels(i));
                 end
             end
-         end
-         
-         function b = isRelevantLabel(obj,label)
-             if label == ClassesMap.kNullClass
-                 b = false;
-             elseif isempty(obj.positiveLabels)
-                 b = true;
-             else
-                 b = obj.positiveLabels(label);
-             end
-         end
-         
-         function detectionResult = computeDetectionResult(obj,detectedEvents,eventAnnotations)
-
+        end
+        
+        function b = isRelevantLabel(obj,label)
+            if label == ClassesMap.kNullClass
+                b = false;
+            elseif isempty(obj.positiveLabels)
+                b = true;
+            else
+                b = obj.positiveLabels(label);
+            end
+        end
+        
+        function detectionResult = computeDetectionResult(obj,detectedEvents,eventAnnotations)
+            
             isGoodEvent = obj.isRelevantEvents(detectedEvents);
             goodEvents = obj.computeGoodEvents(detectedEvents,isGoodEvent);
             badEvents = obj.computeBadEvents(detectedEvents,isGoodEvent);
@@ -68,7 +66,7 @@ classdef DetectionResultsComputer < handle
             isValidLabel = ~ClassesMap.ShouldIgnoreLabels([eventAnnotations.label]);
             eventAnnotations = eventAnnotations(isValidLabel);
         end
-                
+        
         function goodEvents = computeGoodEvents(~,detectedEvents, isGoodEvent)
             nGoodEvents = sum(isGoodEvent);
             goodEvents = [];
@@ -120,14 +118,14 @@ classdef DetectionResultsComputer < handle
             if isempty(detectedEvents)
                 didMissEvent = true(1,nEvents);
             else
-
+                
                 didMissEvent = false(1,nEvents);
-                                
+                
                 detectedEventLocations = [detectedEvents.sample];
                 
                 segmentStartings = detectedEventLocations - obj.tolerance;
                 segmentEndings = detectedEventLocations + obj.tolerance;
-                                
+                
                 for i = 1 : length(annotations)
                     if obj.isRelevantLabel(annotations(i).label)
                         eventLocation = annotations(i).sample;

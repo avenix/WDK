@@ -12,7 +12,12 @@ classdef SVMClassifier < Computer
     
     methods (Access = public)
         
-        function obj = SVMClassifier()
+        function obj = SVMClassifier(order, boxConstraint)
+            if nargin > 0
+                obj.order = order;
+                obj.boxConstraint = boxConstraint;
+            end
+            
             obj.name = 'SVM';
             obj.inputPort = ComputerDataType.kTable;
             obj.outputPort = ComputerDataType.kTable;
@@ -45,7 +50,7 @@ classdef SVMClassifier < Computer
         function metrics = computeMetrics(obj,input)
             flops = timeit(@()obj.test(input)) / Constants.kReferenceComputingTime;
             memory = Helper.ComputeObjectSize(obj.classifier);
-            outputSize = 4;
+            outputSize = 1;
             metrics = Metric(flops,memory,outputSize);
         end
         

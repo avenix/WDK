@@ -12,7 +12,11 @@ classdef LeaveOneOutCrossValidator < Computer
     
     methods (Access = public)
         
-        function obj = LeaveOneOutCrossValidator()
+        function obj = LeaveOneOutCrossValidator(classifier)
+            if nargin > 0
+                obj.classifier = classifier;
+            end
+            
             obj.featureNormalizer = FeatureNormalizer();
             
             obj.name = 'leaveOneOutValidator';

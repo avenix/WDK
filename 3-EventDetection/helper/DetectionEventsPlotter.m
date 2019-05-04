@@ -206,7 +206,7 @@ classdef DetectionEventsPlotter < handle
                     end
                     
                     symbolHandle = plot(obj.plotAxes,eventX,eventY,'*','Color',symbolColor,'LineWidth',DetectionEventsPlotter.SymbolSize);
-                    textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr,'FontSize',DetectionEventsPlotter.FontSize);
+                    textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr,'FontSize',DetectionEventsPlotter.FontSize, 'Color',symbolColor);
                     set(textHandle, 'Clipping', 'on');
                     
                     eventHandle = DetectionEventHandle(event,symbolHandle,textHandle);

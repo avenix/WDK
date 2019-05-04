@@ -73,7 +73,7 @@ classdef C45Classifier < Computer
         function metrics = computeMetrics(obj,input)
             flops = timeit(@()obj.test(input)) / Constants.kReferenceComputingTime;
             memory = Helper.ComputeObjectSize(obj.classifier);
-            outputSize = 4;
+            outputSize = 1;
             metrics = Metric(flops,memory,outputSize);
         end
         

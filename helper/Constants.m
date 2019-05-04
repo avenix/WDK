@@ -14,7 +14,7 @@ classdef Constants < handle
         kMaxFeatureNameCharacters = 15;
         kReferenceComputingTime = 6.5394e-04;
         
-        kCorrectColor = 'green';
+        kCorrectColor = [25,110,16]/255;
         kWrongColor = 'red';
         kMissedEventColor = [1,0.5,0];
         

@@ -1,7 +1,7 @@
 classdef SlidingWindowSegmentation < Computer
     properties (Access = public)
-        windowSize = 300;
-        iterationSize = 150;
+        windowSize = 512;
+        iterationSize = 256;
     end
 
     methods (Access = public)

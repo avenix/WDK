@@ -46,7 +46,6 @@ classdef AssessmentDetailedClassificationResult < handle
                 obj.missedEvents = detectionResults.missedEvents;
                 if isa(postProcessingAlgorithm, 'LabelMapper')
                     obj.mapMissedEvents(postProcessingAlgorithm);
-                    %obj.mapEventAnnotations(postProcessingAlgorithm);
                 end
             end
         end
@@ -73,15 +72,5 @@ classdef AssessmentDetailedClassificationResult < handle
                 obj.missedEvents(j).label = labelMapper.mappingForLabel(obj.missedEvents(j).label);
             end
         end
-        
-        %{
-        function mapEventAnnotations(obj,labelMapper)
-            for j = 1 : length(obj.annotations.eventAnnotations)
-                eventAnnotation = obj.annotations.eventAnnotations(j);
-                eventAnnotation.label = labelMapper.mappingForLabel(eventAnnotation.label);
-                obj.annotations.eventAnnotations(j) = eventAnnotation;
-            end
-        end
-        %}
     end
 end
