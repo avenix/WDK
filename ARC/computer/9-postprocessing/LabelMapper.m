@@ -66,12 +66,10 @@ classdef LabelMapper < Computer
         
         function metrics = computeMetrics(obj,classificationResults)
             n = obj.countNumPredictions(classificationResults);
-            nClasses = obj.hashMap.Count;
             flops = 4 * n;
-            memory = 1;
-            permanentMemory = nClasses;
+            memory = obj.hashMap.Count;
             outputSize = n;
-            metrics = Metric(flops,memory,outputSize,permanentMemory);
+            metrics = Metric(flops,memory,outputSize);
         end
     end
     

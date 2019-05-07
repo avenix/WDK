@@ -5,7 +5,6 @@ classdef SegmentsClassToLabelMapper < Computer
     end
     
     methods (Access = public)
-        
         function obj = SegmentsClassToLabelMapper(labelGrouping)
             if nargin > 0
                 obj.labelGrouping = labelGrouping;
@@ -17,7 +16,6 @@ classdef SegmentsClassToLabelMapper < Computer
         end
         
         function segments = compute(obj,segments)
-
             for i = 1 : length(segments)
                 segments(i).label = obj.labelGrouping.labelForClass(segments(i).label);
             end

@@ -1,15 +1,18 @@
 classdef VisualizationSegmentsPlotter < handle
-    properties (Access = public)
-        fontSize = 24;
-        axesFontSize = 20;
-        colorsPerSignal = {[0,0,1,0.3],[1,0,0,0.3],[1,0,1,0.3]};
-        paddingX = 80;
-        lineColor = 'black';
-        separatorLineFontSize = 20;
-        
+    properties (Access = public)        
         sameScale = true;
         sequentialSegments = false;        
         plotParent;
+    end
+    
+    properties (Constant)
+        FontSize = 24;
+        AxesFontSize = 20;
+        ColorsPerSignal = {[0,0,1,0.3],[1,0,0,0.3],[1,0,1,0.3]};
+        PaddingX = 80;
+        LineColor = 'black';
+        SeparatorLineFontSize = 18;
+        SequentialPlotLineWidth = 3;
     end
     
     properties(Access = private)
@@ -67,13 +70,12 @@ classdef VisualizationSegmentsPlotter < handle
             
             obj.findSegmentsLimits(groupedSegments);
             
-            %lastSample = 
             for i = 1 : nClasses
                 currentAxes = subplot(subplotN,subplotM,i,'Parent',obj.plotParent);
                 
                 hold(currentAxes,'on');
-                title(currentAxes,groupNames{i},'FontSize',obj.fontSize);
-                set(currentAxes,'FontSize',obj.axesFontSize);
+                title(currentAxes,groupNames{i},'FontSize',VisualizationSegmentsPlotter.FontSize);
+                set(currentAxes,'FontSize',VisualizationSegmentsPlotter.AxesFontSize);
                 segmentsCurrentGroup = groupedSegments{i};
                 
                 if(obj.sequentialSegments)
@@ -87,13 +89,6 @@ classdef VisualizationSegmentsPlotter < handle
             
             obj.setYAxesLimits();
             obj.updateLinkAxes();
-            %{
-            if obj.isZoom
-                obj.setZoom(true);
-            else
-                obj.setPan(true);
-            end
-            %}
         end
         
         function setSameScale(obj,sameScaleParam)
@@ -146,7 +141,7 @@ classdef VisualizationSegmentsPlotter < handle
                 segment = segments(i);
                 data = segment.data;
                 for signal = 1 : min(size(data,2),3)
-                    plotHandle = plot(plotAxes,data(:,signal),'Color',obj.colorsPerSignal{signal},'LineWidth',0.4);
+                    plotHandle = plot(plotAxes,data(:,signal),'Color',VisualizationSegmentsPlotter.ColorsPerSignal{signal},'LineWidth',0.4);
                     plotHandle.Color(4) = 0.4;
                 end
             end
@@ -171,7 +166,7 @@ classdef VisualizationSegmentsPlotter < handle
                 newX = currentX + nSamples;
                 
                 for signal = 1 : min(size(data,2),3)
-                    plot(plotAxes,currentX:newX-1,data(:,signal),'Color',obj.colorsPerSignal{signal});
+                    plot(plotAxes,currentX:newX-1,data(:,signal),'Color',VisualizationSegmentsPlotter.ColorsPerSignal{signal},'LineWidth',VisualizationSegmentsPlotter.SequentialPlotLineWidth);
                 end
                 
                 if ~strcmp(lastFileName,segment.file)
@@ -180,17 +175,17 @@ classdef VisualizationSegmentsPlotter < handle
 
                     line(plotAxes,[currentX, currentX],...
                         [obj.minSegmentValue - 0.05 * height, obj.maxSegmentValue + 0.05 * height],...
-                        'LineWidth',2,'Color',obj.lineColor);
+                        'LineWidth',3,'Color',VisualizationSegmentsPlotter.LineColor);
                     
-                    textHandle = text(plotAxes,currentX, double(obj.maxSegmentValue + 0.05 * height),...
-                        segment.file,'FontSize',obj.separatorLineFontSize);
+                    textHandle = text(plotAxes,currentX + 50, double(obj.maxSegmentValue + 0.05 * height),...
+                        segment.file,'FontSize',VisualizationSegmentsPlotter.SeparatorLineFontSize);
                     
                     set(textHandle, 'Clipping', 'on');
                     
                     lastFileName = segment.file;
                 end
                 
-                currentX = newX + obj.paddingX;
+                currentX = newX + VisualizationSegmentsPlotter.PaddingX;
             end
             
         end

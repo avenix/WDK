@@ -109,7 +109,11 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         
         function var = GetSharedContextVariable(variableName)
             dict = Computer.SharedContext();
-            var = dict(variableName);
+            if isKey(dict,variableName)
+                var = dict(variableName);
+            else
+                var = [];
+            end
         end
         
         function dict = SharedContext()
@@ -138,6 +142,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
+        %converts composites in flat hierarchy
         function FlattenChain(computer)
             stack = Stack();
             
@@ -209,15 +214,42 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 data = dataStack.pop();
                 
                 metric = computeMetrics(computer,data);
-                metricSum.addMetrics(metric);
+                if ~isempty(metric)
+                    metricSum.flops = metricSum.flops + metric.flops;
+                    metricSum.outputSize = metric.outputSize;
+                    
+                    %count the memory once per computer using the tag
+                    if isempty(computer.tag)
+                        metricSum.memory = metricSum.memory + metric.memory;
+                        computer.tag = true;
+                    end
+                end
                 
                 data = computer.compute(data);
                 
                 if ~isempty(data)
                     for i = 1 : length(computer.nextComputers)
+                        nextComputer = computer.nextComputers{i};
+                        stack.push(nextComputer);
                         dataStack.push(data);
-                        stack.push(computer.nextComputers{i});
                     end
+                end
+            end
+            
+            
+            Computer.ResetComputerTags(computer);
+        end
+        
+        function ResetComputerTags(computer)
+            stack = Stack();
+            stack.push(computer);
+                        
+            while ~stack.isempty()
+                computer = stack.pop();
+                computer.tag = [];
+                for i = 1 : length(computer.nextComputers)
+                    nextComputer = computer.nextComputers{i};
+                    stack.push(nextComputer);
                 end
             end
         end

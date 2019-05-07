@@ -47,10 +47,10 @@ classdef SVMClassifier < Computer
                 'Coding', 'onevsone');
         end
         
-        function metrics = computeMetrics(obj,input)
-            flops = timeit(@()obj.test(input)) / Constants.kReferenceComputingTime;
+        function metrics = computeMetrics(obj,table)
+            flops = timeit(@()obj.test(table)) / Constants.kReferenceComputingTime;
             memory = Helper.ComputeObjectSize(obj.classifier);
-            outputSize = 1;
+            outputSize = table.height;
             metrics = Metric(flops,memory,outputSize);
         end
         

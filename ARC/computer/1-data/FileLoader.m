@@ -2,6 +2,7 @@ classdef FileLoader < Computer
     properties (Access = public)
         fileName;
         selectedSignalIndices;
+        loadedFile;
     end
     
     properties (Access = private)
@@ -24,11 +25,16 @@ classdef FileLoader < Computer
         end
         
         function file = compute(obj,~)
+            file = obj.loadFile();
+            Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentDataFile,file);
+        end
+        
+        function file = loadFile(obj)
             file = obj.dataLoader.loadDataFile(obj.fileName);
             if ~isempty(obj.selectedSignalIndices)
                 file = file.createFileWithColumnIndices(obj.selectedSignalIndices);
             end
-            Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentDataFile,file);
+            obj.loadedFile = file;
         end
         
         function str = toString(obj)

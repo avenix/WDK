@@ -5,7 +5,12 @@ classdef EventSegmentation < Computer
     end
 
     methods (Access = public)
-        function obj = EventSegmentation()
+        function obj = EventSegmentation(segmentSizeLeft, segmentSizeRight)
+            if nargin > 0
+                obj.segmentSizeLeft = segmentSizeLeft;
+                obj.segmentSizeRight = segmentSizeRight;
+            end
+            
             obj.name = 'eventSegmentation';
             obj.inputPort = ComputerDataType.kEvent;
             obj.outputPort = ComputerDataType.kSegment;
@@ -21,16 +26,18 @@ classdef EventSegmentation < Computer
         end
         
         function metrics = computeMetrics(obj,events)
+            
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
-            nEvents = length(events);
+            nSamples = file.numRows;
+            nSegments = Helper.CountNumValidSegments(events,obj.segmentSizeLeft,obj.segmentSizeRight,nSamples);
+            
             n = obj.segmentSizeLeft + obj.segmentSizeRight;
             m = file.numColumns;
             
-            flops = 11 * nEvents;
-            memory = 1;
-            outputSize = n * m * nEvents;
-            permanentMemory = n * m;
-            metrics = Metric(flops,memory,outputSize,permanentMemory);
+            flops = 11 * nSegments;
+            memory = n * m;
+            outputSize = n * m * nSegments;
+            metrics = Metric(flops,memory,outputSize);
         end
         
         function editableProperties = getEditableProperties(obj)

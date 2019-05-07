@@ -39,7 +39,7 @@ classdef RangeSelector < Computer
             n = size(segment,1);
             flops = 2 * n;
             endIdx = obj.endIndexForSegment(segment);
-            memory = endIdx - obj.rangeStart + 1;
+            memory = 1;
             outputSize = endIdx - obj.rangeStart + 1;
             metrics = Metric(flops,memory,outputSize);
         end

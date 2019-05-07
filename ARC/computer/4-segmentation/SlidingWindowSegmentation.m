@@ -43,10 +43,9 @@ classdef SlidingWindowSegmentation < Computer
             nSamples = length(input);
             nSegments = int32 ((nSamples - obj.windowSize + 1) / obj.iterationSize);
             flops = 1787 * length(input);
-            memory = 1;
+            memory = obj.windowSize * file.numColumns;
             outputSize = obj.windowSize * file.numColumns * nSegments;
-            permanentMemory = obj.windowSize * file.numColumns;
-            metrics = Metric(flops,memory,outputSize,permanentMemory);
+            metrics = Metric(flops,memory,outputSize);
         end
         
         function editableProperties = getEditableProperties(obj)

@@ -73,21 +73,19 @@ classdef FeatureExtractor < Computer
         
         function metricSum = computeMetrics(obj,segments)
             metricSum = Metric();
-            outputSizeSum = 0;
             for i = 1 : length(segments)
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
                     [~, metrics] = Computer.ExecuteChain(obj.computers{j},segment.data);
-                    outputSizeSum = outputSizeSum + metrics.outputSize;
-                    metricSum.addMetrics(metrics);
+                    metricSum.flops = metricSum.flops + metrics.flops;
+                    metricSum.memory = max(metricSum.memory + metrics.memory);
+                    metricSum.outputSize = metricSum.outputSize + metrics.outputSize;
                 end
             end
-            metricSum.outputSize = outputSizeSum;
         end
     end
     
     methods (Access = private)
-        
         function labeled = areSegmentsLabeled(~,segments)
             labeled = false;
             if ~isempty(segments)
@@ -100,8 +98,11 @@ classdef FeatureExtractor < Computer
     
     methods (Static)
         
-        function featureExtractor = FeatureExtractorWithAxes(axisSelectors,featureExtractors)
+        function featureExtractor = CreateFeatureExtractor(signalIndices,featureExtractors)
+            
             nFeatureExtractors = length(featureExtractors);
+            axisSelectors = FeatureExtractor.AxisSelectorsForSignalIndices(signalIndices);
+            
             nAxisSelectors = length(axisSelectors);
             
             featureExtractionComputers = cell(1,nFeatureExtractors * nAxisSelectors);
@@ -120,27 +121,20 @@ classdef FeatureExtractor < Computer
             featureExtractor = FeatureExtractor(featureExtractionComputers);
         end
         
-        function featureExtractors = CreateDefaultFeatureExtractors()
+        function featureExtractors = DefaultFeatures()
             featureExtractors = {Min(), Max(), Mean(), Median(), Variance(), STD(),...
                 AUC(), AAV(), MAD(),IQR(),RMS(),Skewness(),Kurtosis()};
         end
         
-        function axisSelectors = CreateAxisSelectorsForSignals(numSignals)
+        function axisSelectors = AxisSelectorsForSignalIndices(signalIndices)
+            numSignals = length(signalIndices);
             axisSelectors = repmat(AxisSelector,1,numSignals);
             for i = 1 : numSignals
-                axisSelectors(i) = AxisSelector(i);
+                axisSelectors(i) = AxisSelector(signalIndices(i));
             end
         end
-        
-        function axisSelectors = CreateAxisSelectorsForAxes(axes)
-            nAxes = length(axes);
-            axisSelectors = repmat(AxisSelector,1,nAxes);
-            for i = 1 : nAxes
-                axisSelectors(i) = AxisSelector(axes(i));
-            end
-        end
-        
-        function rangeSelectors = CreateRangeSelectorsForRanges(ranges)
+                
+        function rangeSelectors = RangeSelectorsForRanges(ranges)
             nRanges = length(ranges);
             rangeSelectors = repmat(RangeSelector,1,nRanges);
             for i = 1 : nRanges

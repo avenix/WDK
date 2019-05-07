@@ -63,10 +63,36 @@ classdef LeaveOneOutCrossValidator < Computer
                 %truthClasses = tableSet.labelsAtIndex(testIndex);
                 predictedClasses = obj.classifier.test(testTable);
                 classificationResults(testIndex) = ClassificationResult(predictedClasses,testTable);
+                
             end
             
             if ~isempty(obj.progressNotificationDelegate)
                 obj.progressNotificationDelegate.handleValidationFinished();
+            end
+        end
+        
+        function metricSum = computeMetrics(obj,tableSet)
+            metricSum = Metric();
+            nTables = tableSet.nTables;
+            for testIndex = 1 : nTables
+                trainIndices = [1 : testIndex-1, testIndex+1 : nTables];
+                trainTable = tableSet.mergedTableForIndices(trainIndices);
+                testTable = tableSet.mergedTableForIndices(testIndex);
+                
+                %normalisation
+                if(obj.shouldNormalizeFeatures)
+                    obj.featureNormalizer.fit(trainTable);
+                    obj.featureNormalizer.normalize(trainTable);
+                    obj.featureNormalizer.normalize(testTable);
+                end
+                
+                %classification
+                obj.classifier.train(trainTable);
+                
+                metrics = obj.classifier.computeMetrics(testTable);
+                metricSum.flops = metricSum.flops + metrics.flops;
+                metricSum.memory = max(metricSum.memory + metrics.memory);
+                metricSum.outputSize = metricSum.outputSize + metrics.outputSize;
             end
         end
         
