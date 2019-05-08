@@ -36,7 +36,7 @@ classdef EventSegmentation < Computer
             
             flops = 11 * nSegments;
             memory = n * m;
-            outputSize = n * m * nSegments;
+            outputSize = n * m * nSegments * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
         

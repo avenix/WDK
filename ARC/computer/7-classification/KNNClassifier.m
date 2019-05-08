@@ -49,7 +49,7 @@ classdef KNNClassifier < Computer
         function metrics = computeMetrics(obj,table)
             flops = timeit(@()obj.test(table)) / Constants.kReferenceComputingTime;
             memory = Helper.ComputeObjectSize(obj.classifier);
-            outputSize = table.height;
+            outputSize = table.height * Constants.kClassificationResultBytes;
             metrics = Metric(flops,memory,outputSize);
         end
         

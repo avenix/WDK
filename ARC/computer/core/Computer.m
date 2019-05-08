@@ -168,14 +168,17 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
-        function [data, metricSum, graphString] = ExecuteChain(computer, data, shouldCache, dataCacheIdentifier)
+        function [data, metricSum, graphString] = ExecuteChain(computer, data, shouldCache, dataCacheIdentifier, outputComputer)
             if isempty(computer)
                 metricSum = [];
             else
-                if nargin < 4
-                    dataCacheIdentifier = '';
-                    if nargin < 3
-                        shouldCache = false;
+                if nargin < 5
+                    outputComputer = [];
+                    if nargin < 4
+                        dataCacheIdentifier = '';
+                        if nargin < 3
+                            shouldCache = false;
+                        end
                     end
                 end
                 
@@ -192,7 +195,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 end
                 
                 if ~isDataLoaded
-                    [data, metricSum] = Computer.ExecuteChainNoCache(computer,data);
+                    [data, metricSum] = Computer.ExecuteChainNoCache(computer,data,outputComputer);
                     if shouldCache
                         Computer.SaveGraphToCache(data,metricSum,graphString);
                     end
@@ -200,7 +203,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
-        function [data, metricSum] = ExecuteChainNoCache(computer, data)
+        function [data, metricSum] = ExecuteChainNoCache(computer, data,outputComputer)
             stack = Stack();
             dataStack = Stack();
             
@@ -216,7 +219,9 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 metric = computeMetrics(computer,data);
                 if ~isempty(metric)
                     metricSum.flops = metricSum.flops + metric.flops;
-                    metricSum.outputSize = metric.outputSize;
+                    if isempty(outputComputer) || computer == outputComputer
+                        metricSum.outputSize = metric.outputSize;
+                    end
                     
                     %count the memory once per computer using the tag
                     if isempty(computer.tag)
@@ -235,7 +240,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                     end
                 end
             end
-            
             
             Computer.ResetComputerTags(computer);
         end

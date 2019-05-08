@@ -40,7 +40,7 @@ classdef S2 < Computer
         function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 203 * obj.k * n;
-            memory = n;
+            memory = 1;
             outputSize = n;
             metrics = Metric(flops,memory,outputSize);
         end

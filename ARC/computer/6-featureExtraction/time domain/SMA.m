@@ -18,7 +18,7 @@ classdef SMA < Computer
             m = size(input,2);
             flops = n * m;
             memory = 1;
-            outputSize = 1;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

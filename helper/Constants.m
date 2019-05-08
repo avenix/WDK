@@ -14,6 +14,10 @@ classdef Constants < handle
         kMaxFeatureNameCharacters = 15;
         kReferenceComputingTime = 6.5394e-04;
         
+        kSensorDataBytes = 2;%short
+        kFeatureBytes = 4;%float
+        kClassificationResultBytes = 9;%ts: 8 bytes, label: 1 byte
+        
         kCorrectColor = [25,110,16]/255;
         kWrongColor = 'red';
         kMissedEventColor = [1,0.5,0];

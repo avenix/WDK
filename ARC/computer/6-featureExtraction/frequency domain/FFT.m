@@ -24,7 +24,7 @@ classdef FFT < Computer
                 flops = n * n;
             end
             memory = n;
-            outputSize = n/2+1;
+            outputSize = n/2  * Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

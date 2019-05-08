@@ -17,7 +17,7 @@ classdef FFTDC < Computer
         function metrics = computeMetrics(~,~)
             flops = 1;
             memory = 1;
-            outputSize = 1;
+            outputSize = Constants.kFeatureDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

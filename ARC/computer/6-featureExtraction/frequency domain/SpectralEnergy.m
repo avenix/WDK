@@ -20,7 +20,7 @@ classdef SpectralEnergy < Computer
             n = size(input,1);
             flops = 2 * n;
             memory = 1;%power spectrum can be added on the fly
-            outputSize = 1;
+            outputSize = Constants.kFeatureDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

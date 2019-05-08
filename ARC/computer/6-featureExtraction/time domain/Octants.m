@@ -47,7 +47,7 @@ classdef Octants < Computer
             n = size(input,1);
             flops = 7 * n;
             memory = 1;
-            outputSize = 1;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

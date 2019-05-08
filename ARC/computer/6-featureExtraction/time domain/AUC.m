@@ -31,7 +31,7 @@ classdef AUC < Computer
         function metrics = computeMetrics(~,input)        
             flops = 8 * size(input,1);
             memory = 1;
-            outputSize = 1;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

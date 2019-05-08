@@ -16,7 +16,7 @@ classdef IQR < Computer
             n = size(input,1);
             flops = 57 * n;
             memory = n;
-            outputSize = 1;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

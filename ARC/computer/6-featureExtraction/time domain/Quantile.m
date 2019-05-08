@@ -30,7 +30,7 @@ classdef Quantile < Computer
             n = size(input,1);
             flops = 2 * n * log(n);
             memory = obj.numQuantileParts;
-            outputSize = obj.numQuantileParts;
+            outputSize = obj.numQuantileParts * Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

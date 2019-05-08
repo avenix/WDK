@@ -37,6 +37,13 @@ classdef FileLoader < Computer
             obj.loadedFile = file;
         end
         
+        function file = getOrCreateFile(obj)
+            if isempty(obj.loadedFile)
+                obj.loadFile();
+            end
+            file = obj.loadedFile;
+        end
+        
         function str = toString(obj)
             selectedSignalsStr = sprintf('[%s]',Helper.arrayToString(obj.selectedSignalIndices,','));
             str = sprintf('%s_%s_%s',obj.name, obj.fileName,selectedSignalsStr);

@@ -17,7 +17,7 @@ classdef MaxCrossCorr < Computer
             n = size(input,1);
             flops = 161 * n;
             memory = n;
-            outputSize = 1;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

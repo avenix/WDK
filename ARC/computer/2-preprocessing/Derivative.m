@@ -67,11 +67,7 @@ classdef Derivative < Computer
         function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 6 * obj.order * size(input,1);
-            if obj.inPlaceComputation
-                memory = 1;
-            else
-                memory = n;
-            end
+            memory = 1;
             outputSize = n;
             metrics = Metric(flops,memory,outputSize);
         end

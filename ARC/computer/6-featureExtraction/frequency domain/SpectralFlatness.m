@@ -21,7 +21,7 @@ classdef SpectralFlatness < Computer
             n = size(input,1);
             flops = 68 * n;
             memory = n;
-            outputSize = 1;
+            outputSize = Constants.kFeatureDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

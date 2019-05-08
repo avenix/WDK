@@ -25,7 +25,7 @@ classdef Entropy < Computer
             n = size(input,1);
             flops = n * n;
             memory = n;
-            outputSize = 1;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

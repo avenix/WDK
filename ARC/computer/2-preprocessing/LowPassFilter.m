@@ -36,14 +36,9 @@ classdef LowPassFilter < Computer
         end
         
         function metrics = computeMetrics(obj,input)
-            
             n = size(input,1);
             flops = 31 * obj.order * size(input,1);
-            if obj.inPlaceComputation
-                memory = obj.order;
-            else
-                memory = n + obj.order;
-            end
+            memory = obj.order;
             outputSize = n;
             metrics = Metric(flops,memory,outputSize);
         end

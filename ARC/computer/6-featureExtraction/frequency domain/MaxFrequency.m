@@ -18,7 +18,7 @@ classdef MaxFrequency < Computer
             n = size(input,1);
             flops = n;
             memory = 1;
-            outputSize = 1;
+            outputSize = Constants.kFeatureDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

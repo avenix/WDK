@@ -18,11 +18,7 @@ classdef Norm < Computer
         function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 2 * n;
-            if obj.inPlaceComputation
-                memory = 1;
-            else
-                memory = n;
-            end
+            memory = 1;
             outputSize = n;
             metrics = Metric(flops,memory,outputSize);
         end

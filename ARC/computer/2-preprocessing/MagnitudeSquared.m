@@ -16,16 +16,10 @@ classdef MagnitudeSquared < Computer
             dataOut = x(:,1).^2 + x(:,2).^2 + x(:,3).^2;
         end
         
-        function metrics = computeMetrics(obj,input)
+        function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 2 * n;
-            
-            if obj.inPlaceComputation
-                memory = 1;
-            else
-                memory = n;
-            end
-            
+            memory = 1;
             outputSize = n;
             metrics = Metric(flops,memory,outputSize);
         end
