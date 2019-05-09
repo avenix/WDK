@@ -3,7 +3,7 @@ classdef Derivative < Computer
     properties (Access = public)    
         order = 1;
         delta = 1;
-        inPlaceComputation = false;
+        inPlaceComputation = true;
     end
     
     methods (Access = public)
@@ -67,8 +67,12 @@ classdef Derivative < Computer
         function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 6 * obj.order * size(input,1);
-            memory = 1;
-            outputSize = n;
+            if obj.inPlaceComputation
+                memory = 1;
+            else
+                memory = n * Constants.kSensorDataBytes;
+            end
+            outputSize = n * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

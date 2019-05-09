@@ -40,8 +40,8 @@ classdef S2 < Computer
         function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 203 * obj.k * n;
-            memory = 1;
-            outputSize = n;
+            memory = n * Constants.kSensorDataBytes;
+            outputSize = n * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

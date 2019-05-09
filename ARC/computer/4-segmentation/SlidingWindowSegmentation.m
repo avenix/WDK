@@ -43,7 +43,7 @@ classdef SlidingWindowSegmentation < Computer
             nSamples = length(input);
             nSegments = int32 ((nSamples - obj.windowSize + 1) / obj.iterationSize);
             flops = 1787 * length(input);
-            memory = obj.windowSize * file.numColumns;
+            memory = obj.windowSize * file.numColumns * Constants.kSensorDataBytes;
             outputSize = obj.windowSize * file.numColumns * nSegments * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end

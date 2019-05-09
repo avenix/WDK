@@ -14,7 +14,6 @@ classdef Correlation < Computer
             result = result(1,2);
         end
         
-        %TODO: recalculate these metrics
         function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 3 * n;

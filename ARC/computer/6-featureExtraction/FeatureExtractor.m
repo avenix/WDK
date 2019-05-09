@@ -76,9 +76,13 @@ classdef FeatureExtractor < Computer
             for i = 1 : length(segments)
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
-                    [~, metrics] = Computer.ExecuteChain(obj.computers{j},segment.data);
+                    computer = obj.computers{j};
+                    [~, metrics] = Computer.ExecuteChain(computer,segment.data);
                     metricSum.flops = metricSum.flops + metrics.flops;
-                    metricSum.memory = max(metricSum.memory + metrics.memory);
+                    if isempty(computer.tag)
+                        metricSum.memory = metricSum.memory + metrics.memory;
+                        computer.tag = true;
+                    end
                     metricSum.outputSize = metricSum.outputSize + metrics.outputSize;
                 end
             end

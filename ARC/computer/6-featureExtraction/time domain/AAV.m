@@ -20,7 +20,7 @@ classdef AAV < Computer
         function metrics = computeMetrics(~,input)
             flops = 5 * size(input,1);
             memory = 1;
-            outputSize = Constants.kFeatureDataBytes;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

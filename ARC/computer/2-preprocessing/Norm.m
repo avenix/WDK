@@ -1,6 +1,6 @@
 classdef Norm < Computer
     properties (Access = public)
-        inPlaceComputation = false;
+        inPlaceComputation = true;
     end
     
     methods (Access = public)
@@ -18,8 +18,12 @@ classdef Norm < Computer
         function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 2 * n;
-            memory = 1;
-            outputSize = n;
+            if obj.inPlaceComputation
+                memory = 1;
+            else
+                memory = n * Constants.kSensorDataBytes;
+            end
+            outputSize = n * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

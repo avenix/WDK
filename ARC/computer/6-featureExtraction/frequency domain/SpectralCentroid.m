@@ -24,7 +24,7 @@ classdef SpectralCentroid < Computer
             n = size(input,1);
             flops = 10 * n;
             memory = 1;
-            outputSize = Constants.kFeatureDataBytes;
+            outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end
         

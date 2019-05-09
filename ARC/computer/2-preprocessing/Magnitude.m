@@ -1,7 +1,7 @@
 classdef Magnitude < Computer
     
     properties (Access = public)
-        inPlaceComputation = false;
+        inPlaceComputation = true;
     end
     
     methods (Access = public)
@@ -16,11 +16,15 @@ classdef Magnitude < Computer
             dataOut = sqrt(x(:,1).^2 + x(:,2).^2 + x(:,3).^2);
         end
         
-        function metrics = computeMetrics(~,input)
+        function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 4 * n;
-            memory = 1;
-            outputSize = n;
+            if obj.inPlaceComputation
+                memory = 1;
+            else
+                memory = n * Constants.kSensorDataBytes;
+            end
+            outputSize = n * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end

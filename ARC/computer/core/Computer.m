@@ -204,6 +204,9 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
         end
         
         function [data, metricSum] = ExecuteChainNoCache(computer, data,outputComputer)
+            
+            Computer.ResetComputerTags(computer);
+            
             stack = Stack();
             dataStack = Stack();
             
@@ -241,7 +244,6 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 end
             end
             
-            Computer.ResetComputerTags(computer);
         end
         
         function ResetComputerTags(computer)

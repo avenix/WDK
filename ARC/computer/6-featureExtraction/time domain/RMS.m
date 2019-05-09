@@ -16,7 +16,7 @@ classdef RMS < Computer
         function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 2 * n;
-            memory = 3;
+            memory = 1;
             outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end

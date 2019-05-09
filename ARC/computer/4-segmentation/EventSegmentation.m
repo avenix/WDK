@@ -35,7 +35,7 @@ classdef EventSegmentation < Computer
             m = file.numColumns;
             
             flops = 11 * nSegments;
-            memory = n * m;
+            memory = n * m * Constants.kSensorDataBytes;
             outputSize = n * m * nSegments * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end

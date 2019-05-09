@@ -4,7 +4,6 @@ classdef HighPassFilter < Computer
         samplingFrequency = 200;
         order = 1;
         cutoff = 20;
-        inPlaceComputation = false;
     end
     
     methods (Access = public)
@@ -36,8 +35,8 @@ classdef HighPassFilter < Computer
         function metrics = computeMetrics(obj,input)
             n = size(input,1);
             flops = 13 * obj.order * n;
-            memory = obj.order;
-            outputSize = n;
+            memory = n * Constants.kSensorDataBytes;
+            outputSize = n * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end
     end
