@@ -6,9 +6,13 @@ classdef FeatureExtractor < Computer
     
     methods (Access = public)
         
-        function obj = FeatureExtractor(computers)
-            if nargin > 0 
-                obj.computers = computers;
+        function obj = FeatureExtractor(computers,signalIndices)
+            if nargin > 0
+                if nargin > 1
+                    obj.computers = FeatureExtractor.CreateFeatureExtractionComputers(signalIndices,computers);
+                else
+                    obj.computers = computers;
+                end
             end
             obj.name = 'FeatureExtractor';
             obj.inputPort = ComputerDataType.kSegment;
@@ -103,12 +107,16 @@ classdef FeatureExtractor < Computer
     methods (Static)
         
         function featureExtractor = CreateFeatureExtractor(signalIndices,featureExtractors)
+            featureExtractionComputers = FeatureExtractor.CreateFeatureExtractionComputers(signalIndices,featureExtractors);
+            featureExtractor = FeatureExtractor(featureExtractionComputers);
+        end
+        
+        function featureExtractionComputers = CreateFeatureExtractionComputers(signalIndices,featureExtractors)
             
             nFeatureExtractors = length(featureExtractors);
             axisSelectors = FeatureExtractor.AxisSelectorsForSignalIndices(signalIndices);
             
             nAxisSelectors = length(axisSelectors);
-            
             featureExtractionComputers = cell(1,nFeatureExtractors * nAxisSelectors);
             
             count = 1;
@@ -121,15 +129,13 @@ classdef FeatureExtractor < Computer
                     count = count + 1;
                 end
             end
-            
-            featureExtractor = FeatureExtractor(featureExtractionComputers);
         end
         
         function featureExtractors = DefaultFeatures()
             featureExtractors = {Min(), Max(), Mean(), Median(), Variance(), STD(),...
-                AUC(), AAV(), MAD(),IQR(),RMS(),Skewness(),Kurtosis()};
+                AUC(), AAV(), MAD(), IQR(), RMS(), Skewness(), Kurtosis()};
         end
-        
+            
         function axisSelectors = AxisSelectorsForSignalIndices(signalIndices)
             numSignals = length(signalIndices);
             axisSelectors = repmat(AxisSelector,1,numSignals);

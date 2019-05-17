@@ -23,7 +23,7 @@ classdef SpectralEntropy < Computer
         function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 21 * n;
-            memory = n;
+            memory = n * 4;
             outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end

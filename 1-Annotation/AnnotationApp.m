@@ -238,9 +238,9 @@ classdef AnnotationApp < handle
                 
                 for i = 1 : nSignals
                     signalIdx = selectedSignals(i);
-                    obj.plotHandles{i} = plot(obj.plotAxes,obj.dataFile.data(:,signalIdx));
+                    %obj.plotHandles{i} = plot(obj.plotAxes,obj.dataFile.data(:,signalIdx));
                 end
-                obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude);
+                obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude,'LineWidth',3);
                 
                 n = size(obj.magnitude,1);
                 axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * AnnotationApp.AxisToDataRatio, obj.plottedSignalYRange(2) * AnnotationApp.AxisToDataRatio]);

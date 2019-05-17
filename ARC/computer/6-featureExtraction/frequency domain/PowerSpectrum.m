@@ -17,7 +17,7 @@ classdef PowerSpectrum < Computer
         function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 4 * n;
-            memory = n;
+            memory = n * 4;
             outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);
         end

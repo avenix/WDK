@@ -12,7 +12,6 @@ classdef MaxCrossCorr < Computer
             result = max(xcorr(signal(:,1),signal(:,2)));
         end
         
-        %TODO: recalculate these metrics
         function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 161 * n;

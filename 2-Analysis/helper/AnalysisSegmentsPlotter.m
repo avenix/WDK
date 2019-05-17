@@ -1,4 +1,4 @@
-classdef VisualizationSegmentsPlotter < handle
+classdef AnalysisSegmentsPlotter < handle
     properties (Access = public)        
         sameScale = true;
         sequentialSegments = false;        
@@ -12,7 +12,7 @@ classdef VisualizationSegmentsPlotter < handle
         PaddingX = 80;
         LineColor = 'black';
         SeparatorLineFontSize = 18;
-        SequentialPlotLineWidth = 3;
+        SequentialPlotLineWidth = 2;
     end
     
     properties(Access = private)
@@ -25,7 +25,7 @@ classdef VisualizationSegmentsPlotter < handle
     
     methods (Access = public)
         
-        function obj = VisualizationSegmentsPlotter(plotParent)
+        function obj = AnalysisSegmentsPlotter(plotParent)
             obj.plotParent = plotParent;
             obj.plotParent.AutoResizeChildren = 'off';
         end
@@ -74,8 +74,8 @@ classdef VisualizationSegmentsPlotter < handle
                 currentAxes = subplot(subplotN,subplotM,i,'Parent',obj.plotParent);
                 
                 hold(currentAxes,'on');
-                title(currentAxes,groupNames{i},'FontSize',VisualizationSegmentsPlotter.FontSize);
-                set(currentAxes,'FontSize',VisualizationSegmentsPlotter.AxesFontSize);
+                title(currentAxes,groupNames{i},'FontSize',AnalysisSegmentsPlotter.FontSize);
+                set(currentAxes,'FontSize',AnalysisSegmentsPlotter.AxesFontSize);
                 segmentsCurrentGroup = groupedSegments{i};
                 
                 if(obj.sequentialSegments)
@@ -136,12 +136,12 @@ classdef VisualizationSegmentsPlotter < handle
             end
         end
         
-        function plotSegmentsOverlapping(obj,plotAxes,segments)
+        function plotSegmentsOverlapping(~,plotAxes,segments)
             for i = 1 : length(segments)
                 segment = segments(i);
                 data = segment.data;
                 for signal = 1 : min(size(data,2),3)
-                    plotHandle = plot(plotAxes,data(:,signal),'Color',VisualizationSegmentsPlotter.ColorsPerSignal{signal},'LineWidth',0.4);
+                    plotHandle = plot(plotAxes,data(:,signal),'Color',AnalysisSegmentsPlotter.ColorsPerSignal{signal},'LineWidth',0.4);
                     plotHandle.Color(4) = 0.4;
                 end
             end
@@ -166,7 +166,7 @@ classdef VisualizationSegmentsPlotter < handle
                 newX = currentX + nSamples;
                 
                 for signal = 1 : min(size(data,2),3)
-                    plot(plotAxes,currentX:newX-1,data(:,signal),'Color',VisualizationSegmentsPlotter.ColorsPerSignal{signal},'LineWidth',VisualizationSegmentsPlotter.SequentialPlotLineWidth);
+                    plot(plotAxes,currentX:newX-1,data(:,signal),'Color',AnalysisSegmentsPlotter.ColorsPerSignal{signal},'LineWidth',AnalysisSegmentsPlotter.SequentialPlotLineWidth);
                 end
                 
                 if ~strcmp(lastFileName,segment.file)
@@ -175,17 +175,17 @@ classdef VisualizationSegmentsPlotter < handle
 
                     line(plotAxes,[currentX, currentX],...
                         [obj.minSegmentValue - 0.05 * height, obj.maxSegmentValue + 0.05 * height],...
-                        'LineWidth',3,'Color',VisualizationSegmentsPlotter.LineColor);
+                        'LineWidth',3,'Color',AnalysisSegmentsPlotter.LineColor);
                     
                     textHandle = text(plotAxes,currentX + 50, double(obj.maxSegmentValue + 0.05 * height),...
-                        segment.file,'FontSize',VisualizationSegmentsPlotter.SeparatorLineFontSize);
+                        segment.file,'FontSize',AnalysisSegmentsPlotter.SeparatorLineFontSize);
                     
                     set(textHandle, 'Clipping', 'on');
                     
                     lastFileName = segment.file;
                 end
                 
-                currentX = newX + VisualizationSegmentsPlotter.PaddingX;
+                currentX = newX + AnalysisSegmentsPlotter.PaddingX;
             end
             
         end

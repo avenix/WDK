@@ -84,7 +84,7 @@ classdef RangeSegmentsLabeler < Computer
             labels = zeros(1,nSegments);
             for i = 1 : nSegments
                 segment = segments(i);
-                midPoint = segment.startSample + segment.endSample / 2;
+                midPoint = (segment.startSample + segment.endSample) / 2;
                 idx = annotationSet.findRangeAnnotationIdxContainingSample(midPoint);
                 if idx > 0
                     rangeAnnotation = annotationSet.rangeAnnotations(idx);
