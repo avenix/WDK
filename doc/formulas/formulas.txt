@@ -2,7 +2,7 @@ formulas: go to https://www.codecogs.com/latex/eqneditor.php and select URL Enco
 
 [//]: # M_i(x,y,z) =  \sqrt{x_i^2 + y_i^2 + z_i^2}
 E_i(x,y,z) =  x_i^2 + y_i^2 + z_i^2
-N_i(x,y,z) =  \left| x_i \right| + \left| y_i \right| + \left| z_i \right|
+N_i(x,y,z) = \left|x_i \right| + \left| y_i \right| + \left| z_i \right|
 D'_i(x) = (x_i - x_{i+1}) / \delta 
 D''_i(x) = (x_{i-1} - x_i + x_{i+1}) / \delta^2
 
