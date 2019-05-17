@@ -21,7 +21,7 @@ Entropy
 \sum_{i=1}^n{p_i\log (p_i)}
 
 Kurtosis
-\sum_{i=1}^{n} \left (  \frac{x_i - \bar{x})}{\sigma}\right)^4
+\sum_{i=1}^{n} \left (\frac{x_i - \bar{x})}{\sigma}\right)^4
 
 MAD
 \sum_{i=1}^{n} \frac{\left |x_i - \bar{x} \right | }{n}
