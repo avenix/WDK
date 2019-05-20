@@ -9,14 +9,12 @@ classdef ManualSegmentation < Computer
     end
     
     properties (Access = private)
-        classesMap;
         currentAnnotations;
     end
     
     methods (Access = public)
         function obj = ManualSegmentation(manualAnnotations)
             obj.createAnnotationsMap(manualAnnotations);
-            obj.classesMap = ClassesMap.instance();
             obj.name = 'manualSegmentation';
             obj.inputPort = ComputerDataType.kSignal;
             obj.outputPort = ComputerDataType.kSegment;
@@ -85,7 +83,7 @@ classdef ManualSegmentation < Computer
             %eliminate invalid
             eventAnnotations = obj.currentAnnotations.eventAnnotations;
             labels = [eventAnnotations.label];
-            validIdxs = (labels ~= obj.classesMap.kSynchronisationClass & labels ~= ClassesMap.kInvalidClass);
+            validIdxs = (labels ~= Labeling.kSynchronisationClass & labels ~= Labeling.kInvalidClass);
             labels = labels(validIdxs);
             eventLocations = [eventAnnotations(validIdxs).sample];
             

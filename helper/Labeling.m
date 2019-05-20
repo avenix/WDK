@@ -1,5 +1,5 @@
 %Singleton class, use instance() to instantiate.
-classdef ClassesMap < handle
+classdef Labeling < handle
     
     properties (Access = public, Constant)
         kSynchronisationClass = -2;
@@ -19,11 +19,11 @@ classdef ClassesMap < handle
         
     methods (Access = public)
         
-        function obj = ClassesMap(classNames)
+        function obj = Labeling(classNames)
             obj.classNames = classNames;
             if ~isempty(classNames)
                 obj.numClasses = length(classNames);
-                obj.createClassesMap(classNames);
+                obj.createLabeling(classNames);
             end
         end
         
@@ -57,17 +57,17 @@ classdef ClassesMap < handle
     
     methods (Static)
         function b = ShouldIgnoreLabels(labels)
-            b = (labels == ClassesMap.kSynchronisationClass | labels == ClassesMap.kInvalidClass);
+            b = (labels == Labeling.kSynchronisationClass | labels == Labeling.kInvalidClass);
         end
     end
     
     methods (Access = private)
         
-        function createClassesMap(obj,classNames)
+        function createLabeling(obj,classNames)
             if ~isempty(classNames)
                 nClasses = length(classNames);
                 obj.classesMap = containers.Map(classNames,int8(1:nClasses));
-                obj.classesMap(ClassesMap.synchronisationStr) = obj.kSynchronisationClass;
+                obj.classesMap(Labeling.synchronisationStr) = obj.kSynchronisationClass;
             end
         end
     end

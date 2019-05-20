@@ -3,16 +3,10 @@ classdef SegmentsGrouper < Computer
     properties (Access = public)
         numClasses;
     end
-    
-    properties (Access = private)
-        classesMap;
-    end
-    
+        
     methods (Access = public)
         
-        function obj = SegmentsGrouper()
-            obj.classesMap = ClassesMap.instance();
-            
+        function obj = SegmentsGrouper()            
             obj.name = 'SegmentsGrouper';
             obj.inputPort = ComputerDataType.kSegment;
             obj.outputPort = ComputerDataType.kAny;

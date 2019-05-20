@@ -122,19 +122,19 @@ classdef LabelMapper < Computer
         end
         
         function labelMapper = CreateLabelMapperWithGroups(sourceLabeling,classGroups,name)
-            [hashMap, classNames] = LabelMapper.GenerateClassesMap(sourceLabeling,classGroups);
-            targetLabeling = ClassesMap(classNames);
+            [hashMap, classNames] = LabelMapper.GenerateLabeling(sourceLabeling,classGroups);
+            targetLabeling = Labeling(classNames);
             labelMapper = LabelMapper(sourceLabeling,targetLabeling,hashMap,name);
         end
     end
     
     methods (Access = private, Static)
                 
-        function [classesMap, classNames] = GenerateClassesMap(sourceLabeling, classGroups)
+        function [labeling, classNames] = GenerateLabeling(sourceLabeling, classGroups)
             nGroups = length(classGroups);
             
             isClassCovered = LabelMapper.computeIsClassCovered(sourceLabeling,classGroups);
-            [classesMap, classNames, classCount] = LabelMapper.mapUncoveredClasses(sourceLabeling,isClassCovered,nGroups);
+            [labeling, classNames, classCount] = LabelMapper.mapUncoveredClasses(sourceLabeling,isClassCovered,nGroups);
 
             for i = 1 : nGroups
                 classCount = classCount + 1;
@@ -143,7 +143,7 @@ classdef LabelMapper < Computer
                 for j = 1 : length(classesInGroup)
                     classStr = classesInGroup{j};
                     classIdx = sourceLabeling.idxOfClassWithString(classStr);
-                    classesMap(classIdx) = classCount;
+                    labeling(classIdx) = classCount;
                 end
                 classNames{classCount} = classGroup.labelName;
             end            

@@ -53,7 +53,7 @@ classdef DetectionResultsComputer < handle
         end
         
         function eventAnnotations = removeIgnoredAnnotations(~, eventAnnotations)
-            isValidLabel = ~ClassesMap.ShouldIgnoreLabels([eventAnnotations.label]);
+            isValidLabel = ~Labeling.ShouldIgnoreLabels([eventAnnotations.label]);
             eventAnnotations = eventAnnotations(isValidLabel);
         end
         

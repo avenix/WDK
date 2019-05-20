@@ -6,7 +6,7 @@ classdef DetectionEventsPlotter < handle
     end
     
     properties (Access = public)
-        labelGrouping ClassesMap;
+        labelGrouping Labeling;
         delegate;
     end
     
@@ -199,7 +199,7 @@ classdef DetectionEventsPlotter < handle
                     eventX = event.sample;
                     eventY = signal(eventX);
                     label = event.label;
-                    if label == ClassesMap.kNullClass
+                    if label == Labeling.kNullClass
                         classStr = Constants.kNullClassGroupStr;
                     else
                         classStr = obj.labelGrouping.classNames{label};

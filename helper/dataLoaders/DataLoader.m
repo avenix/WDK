@@ -118,8 +118,8 @@ classdef DataLoader < handle
             value = str2double(str{2});
         end
         
-        function printEventToFile(~,fileID, event,classesMap)
-            labelStr = classesMap.stringForClassAtIdx(event.label);
+        function printEventToFile(~,fileID, event,labeling)
+            labelStr = labeling.stringForClassAtIdx(event.label);
             fprintf(fileID, '%s, %d',labelStr,event.sample);
         end
     end
@@ -134,28 +134,28 @@ classdef DataLoader < handle
             
             %default label mapping
             classesList = DataLoader.LoadClassesFile();
-            defaultClassesMap = ClassesMap(classesList);
-            labelMappers(1) = LabelMapper.CreateLabelMapperWithLabeling(defaultClassesMap,'defaultClassesMap');
+            defaultLabeling = Labeling(classesList);
+            labelMappers(1) = LabelMapper.CreateLabelMapperWithLabeling(defaultLabeling,'defaultLabeling');
             
             if ~isempty(fileNames)
                 for i = 1 : nLabelGroupings
                     fileName = fileNames{i};
-                    labelMappers(i+1) = DataLoader.LoadLabelMapping(defaultClassesMap,fileName);
+                    labelMappers(i+1) = DataLoader.LoadLabelMapping(defaultLabeling,fileName);
                 end
             end
         end
         
-        function labelMapper = LoadLabelMapping(defaultClassesMap,fileName)
+        function labelMapper = LoadLabelMapping(defaultLabeling,fileName)
             fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
             labelGroups = LabelGroupsLoader.LoadLabelGroups(fullFileName);
             name = Helper.removeFileExtension(fileName);
-            labelMapper = LabelMapper.CreateLabelMapperWithGroups(defaultClassesMap,labelGroups,name);
+            labelMapper = LabelMapper.CreateLabelMapperWithGroups(defaultLabeling,labelGroups,name);
         end
         
         
         %% Annotations
         %returns an array of AnnotationSet.
-        function annotations = LoadAllAnnotations(classesMap)
+        function annotations = LoadAllAnnotations(defaultLabeling)
             dataFileNames = Helper.listDataFiles();
             dataFileNames = Helper.removeFileExtensionForFiles(dataFileNames);
             annotationFiles = Helper.addAnnotationsFileExtensionForFiles(dataFileNames);
@@ -164,35 +164,35 @@ classdef DataLoader < handle
             annotations = repmat(AnnotationSet,1,nAnnotationFiles);
             for i = 1 : length(annotationFiles)
                 annotationsFileName = annotationFiles{i};
-                annotationSet = DataLoader.LoadAnnotationSet(annotationsFileName,classesMap);
+                annotationSet = DataLoader.LoadAnnotationSet(annotationsFileName,defaultLabeling);
                 annotationSet.fileName = annotationsFileName;
                 annotations(i) = annotationSet;
             end
         end
         
-        function annotationSet = LoadAnnotationSet(annotationsFileName,classesMap)
-            annotationsParser = AnnotationsParser(classesMap);
+        function annotationSet = LoadAnnotationSet(annotationsFileName,labeling)
+            annotationsParser = AnnotationsParser(labeling);
             
             annotationsFileName = sprintf('%s/%s',Constants.kAnnotationsPath,annotationsFileName);
             annotationSet = annotationsParser.loadAnnotations(annotationsFileName);
         end
         
-        function SaveAnnotations(annotationsSet,annotationsFileName,classesMap)
-            annotationsParser = AnnotationsParser(classesMap);
+        function SaveAnnotations(annotationsSet,annotationsFileName,labeling)
+            annotationsParser = AnnotationsParser(labeling);
             annotationsParser.saveAnnotations(annotationsSet,annotationsFileName);
         end
         
-        function SaveEvents(events, fileName, classesMap)
+        function SaveEvents(events, fileName, labeling)
             if ~isempty(events) && ~isempty(fileName)
                 fileID = fopen(fileName,'w');
                 
                 for i = 1 : length(events)-1
                     event = events(i);
-                    obj.printEventToFile(fileID,event,classesMap);
+                    obj.printEventToFile(fileID,event,labeling);
                     fprintf(fileID, '\n');
                 end
                 event = events(end);
-                obj.printEventToFile(fileID,event,classesMap);
+                obj.printEventToFile(fileID,event,labeling);
                 fclose(fileID);
             end
         end

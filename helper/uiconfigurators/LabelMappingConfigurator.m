@@ -51,7 +51,7 @@ classdef LabelMappingConfigurator < handle
         end
         
         function setLabelMapperProperties(obj,labelMapper)
-            targetClassesMap = containers.Map();
+            targetLabeling = containers.Map();
             data = obj.labelMappingTable.Data;
             
             nSourceClasses = size(data,1);
@@ -61,23 +61,23 @@ classdef LabelMappingConfigurator < handle
             targetClassCount = 0;
             for sourceClass = 1 : nSourceClasses
                 targetClassStr = data{sourceClass,2};
-                if ~strcmp(targetClassStr, Constants.kNullClassGroupStr) && ~isKey(targetClassesMap,targetClassStr)
+                if ~strcmp(targetClassStr, Constants.kNullClassGroupStr) && ~isKey(targetLabeling,targetClassStr)
                     targetClassCount = targetClassCount + 1;
-                    targetClassesMap(targetClassStr) = targetClassCount;
+                    targetLabeling(targetClassStr) = targetClassCount;
                     classNames{targetClassCount} = targetClassStr;
                 end
             end
-            targetClassesMap(Constants.kNullClassGroupStr) = ClassesMap.kNullClass;
+            targetLabeling(Constants.kNullClassGroupStr) = Labeling.kNullClass;
             classNames = classNames(1:targetClassCount);
             
             %adds mapings to labelMapper
             for sourceClass = 1 : nSourceClasses
                 targetClassStr = data{sourceClass,2};
-                targetClass = targetClassesMap(targetClassStr);
+                targetClass = targetLabeling(targetClassStr);
                 labelMapper.addMapping(int8(sourceClass),int8(targetClass));
             end
             
-            labelMapper.targetLabeling = ClassesMap(classNames);
+            labelMapper.targetLabeling = Labeling(classNames);
         end
         
         function updateMappingsTable(obj)

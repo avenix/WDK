@@ -11,7 +11,7 @@ classdef AnnotationApp < handle
     properties (Access = private)
         
         %class management
-        classesMap;
+        labeling;
         
         %data loading
         currentFile = 1;
@@ -63,17 +63,17 @@ classdef AnnotationApp < handle
         function obj =  AnnotationApp()
             close all;
             obj.dataLoader = DataLoader();
-            obj.loadClassesMap();
+            obj.loadLabeling();
             
             obj.videoFileNames = Helper.listVideoFiles();
             obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
             
             obj.markersPlotter = AnnotationMarkersPlotter();
             
-            obj.eventAnnotationsPlotter = AnnotationEventAnnotationsPlotter(obj.classesMap);
+            obj.eventAnnotationsPlotter = AnnotationEventAnnotationsPlotter(obj.labeling);
             obj.eventAnnotationsPlotter.delegate = obj;
             
-            obj.rangeAnnotationsPlotter = AnnotationRangeAnnotationsPlotter(obj.classesMap);
+            obj.rangeAnnotationsPlotter = AnnotationRangeAnnotationsPlotter(obj.labeling);
             obj.rangeAnnotationsPlotter.delegate = obj;
             
             obj.loadUI();
@@ -148,9 +148,9 @@ classdef AnnotationApp < handle
                 obj.uiHandles.signalComputerVariablesTable);
         end
                 
-        function loadClassesMap(obj)
+        function loadLabeling(obj)
             classesList = obj.dataLoader.LoadClassesFile();
-            obj.classesMap = ClassesMap(classesList);
+            obj.labeling = Labeling(classesList);
         end
         
         function resetUI(obj)
@@ -163,7 +163,7 @@ classdef AnnotationApp < handle
         
         function loadAll(obj)
              obj.loadData();
-            if obj.classesMap.numClasses > 0 && ~isempty(obj.dataFile)
+            if obj.labeling.numClasses > 0 && ~isempty(obj.dataFile)
                 obj.timeLineMarker = 1;
                 obj.loadAnnotations();
                 obj.loadSynchronisationFile();
@@ -392,8 +392,8 @@ classdef AnnotationApp < handle
         end
  
         function populateClassesList(obj)
-            classes = obj.classesMap.classesList;
-            classes{end+1} = obj.classesMap.synchronisationStr;
+            classes = obj.labeling.classNames;
+            classes{end+1} = obj.labeling.synchronisationStr;
             obj.uiHandles.classesList.String = classes;
         end
         
@@ -470,13 +470,13 @@ classdef AnnotationApp < handle
             annotations = AnnotationSet(eventAnnotations,rangeAnnotations);
             if ~isempty(eventAnnotations)
                 fileName = obj.getAnnotationsFileName();
-                DataLoader.SaveAnnotations(annotations,fileName,obj.classesMap);
+                DataLoader.SaveAnnotations(annotations,fileName,obj.labeling);
             end
         end
         
         function loadAnnotations(obj)
             fileName = obj.getAnnotationsFileName();
-            obj.annotationSet = DataLoader.LoadAnnotationSet(fileName,obj.classesMap);
+            obj.annotationSet = DataLoader.LoadAnnotationSet(fileName,obj.labeling);
         end
         
         function loadSynchronisationFile(obj)
@@ -524,7 +524,7 @@ classdef AnnotationApp < handle
         function class = getSelectedClass(obj)
             class = int8(obj.uiHandles.classesList.Value);
             if (class == length(obj.uiHandles.classesList.String))
-                class = ClassesMap.kSynchronisationClass;
+                class = Labeling.kSynchronisationClass;
             end
         end
 
