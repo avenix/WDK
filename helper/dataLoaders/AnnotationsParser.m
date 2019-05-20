@@ -1,12 +1,12 @@
-classdef AnnotationsLoader < handle
+classdef AnnotationsParser < handle
     
-    properties
+    properties (Access = private)
         classesMap;
     end
     
     methods (Access = public)
-        function obj = AnnotationsLoader()
-            obj.classesMap = ClassesMap.instance();
+        function obj = AnnotationsParser(classesMap)
+            obj.classesMap = classesMap;
         end
         
         function annotationSet = loadAnnotations(obj, fileName)
@@ -14,11 +14,11 @@ classdef AnnotationsLoader < handle
         end
         
         function saveAnnotations(obj,annotationSet,fileName)
-               
+            
             fileID = fopen(fileName,'w');
             obj.writeEventAnnotationsToFile(fileID,annotationSet.eventAnnotations);
             if ~isempty(annotationSet.eventAnnotations) && ~isempty(annotationSet.eventAnnotations)
-                 fprintf(fileID, '\n');
+                fprintf(fileID, '\n');
             end
             obj.writeRangeAnnotationsToFile(fileID,annotationSet.rangeAnnotations);
             fclose(fileID);
@@ -26,7 +26,7 @@ classdef AnnotationsLoader < handle
     end
     
     methods (Access = private)
-         
+        
         function annotationSet = parseAnnotationsFile(obj,fileName)
             
             delimiter = ',';

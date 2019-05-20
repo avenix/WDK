@@ -62,9 +62,9 @@ classdef AnnotationApp < handle
         
         function obj =  AnnotationApp()
             close all;
-            clear ClassesMap;
-            obj.classesMap = ClassesMap.instance();
             obj.dataLoader = DataLoader();
+            obj.loadClassesMap();
+            
             obj.videoFileNames = Helper.listVideoFiles();
             obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
             
@@ -109,6 +109,7 @@ classdef AnnotationApp < handle
     methods (Access = private)
 
         %% methods
+        
         function loadUI(obj)
             obj.uiHandles = guihandles(AnnotationUI);
             
@@ -145,6 +146,11 @@ classdef AnnotationApp < handle
                 obj.uiHandles.signalsList,...
                 obj.uiHandles.signalComputerList,...
                 obj.uiHandles.signalComputerVariablesTable);
+        end
+                
+        function loadClassesMap(obj)
+            classesList = obj.dataLoader.LoadClassesFile();
+            obj.classesMap = ClassesMap(classesList);
         end
         
         function resetUI(obj)
@@ -464,13 +470,13 @@ classdef AnnotationApp < handle
             annotations = AnnotationSet(eventAnnotations,rangeAnnotations);
             if ~isempty(eventAnnotations)
                 fileName = obj.getAnnotationsFileName();
-                obj.dataLoader.saveAnnotations(annotations,fileName);
+                DataLoader.SaveAnnotations(annotations,fileName,obj.classesMap);
             end
         end
         
         function loadAnnotations(obj)
             fileName = obj.getAnnotationsFileName();
-            obj.annotationSet = obj.dataLoader.loadAnnotationSet(fileName);
+            obj.annotationSet = DataLoader.LoadAnnotationSet(fileName,obj.classesMap);
         end
         
         function loadSynchronisationFile(obj)

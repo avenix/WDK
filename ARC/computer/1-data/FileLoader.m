@@ -28,7 +28,7 @@ classdef FileLoader < Computer
             file = obj.loadFile();
             Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentDataFile,file);
         end
-        
+                
         function file = loadFile(obj)
             file = obj.dataLoader.loadDataFile(obj.fileName);
             if ~isempty(obj.selectedSignalIndices)
@@ -53,4 +53,5 @@ classdef FileLoader < Computer
             fileNameProperty = Property('fileName',obj.fileName);
         end
     end
+
 end

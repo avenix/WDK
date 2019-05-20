@@ -1,37 +1,67 @@
 %maps labels. Can be used when the annotations contain a greater level of
 %detail than needed by the application
 classdef LabelMapper < Computer
+
+    properties (Access = public)
+        sourceLabeling;
+        targetLabeling;
+    end
     
     properties (Access = private)
         hashMap;
     end
     
-    properties (Access = public)
-        classNames;
+    properties (Dependent)
+        numSourceClasses;
+        numTargetClasses;
+        sourceClassNames;
+        targetClassNames;
+    end
+    
+    methods
+        function n = get.numSourceClasses(obj)
+            n = obj.sourceLabeling.numClasses;
+        end
+        
+        function n = get.numTargetClasses(obj)
+            n = obj.targetLabeling.numClasses;
+        end
+        
+        function classNames = get.sourceClassNames(obj)
+            classNames = obj.sourceLabeling.classNames;
+        end
+        
+        function classNames = get.targetClassNames(obj)
+            classNames = obj.targetLabeling.classNames;
+        end
     end
     
     methods (Access = public)
-        function obj = LabelMapper(hashMap)
+        function obj = LabelMapper(sourceLabeling, targetLabeling, hashMap, name)
             if nargin > 0
                 obj.hashMap = hashMap;
+                obj.sourceLabeling = sourceLabeling;
+                obj.targetLabeling = targetLabeling;
+                if nargin > 3
+                    obj.name = name;
+                end
             else
-                obj.hashMap = containers.Map(uint32(0), uint32(1));
+                obj.hashMap = containers.Map(int8(0), int8(1));
                 remove(obj.hashMap,0);
             end
             
-            obj.name = 'labelMapper';
             obj.inputPort = ComputerDataType.kLabels;
             obj.outputPort = ComputerDataType.kLabels;
         end
         
         %receives an array of instances of ClassificationResult
-        function classificationResults = compute(obj,classificationResults)
-            nClassificationResults = length(classificationResults);
-            for i = 1 : nClassificationResults
-                classificationResult = classificationResults(i);
-                classificationResult.truthClasses = obj.mappingForLabels(classificationResult.truthClasses);
-                classificationResult.predictedClasses = obj.mappingForLabels(classificationResult.predictedClasses);
-                classificationResult.classNames = obj.classNames;
+        function output = compute(obj,labels)
+            if isa(labels(1),'AnnotationSet')
+                annotationSet = obj.mapAnnotations(labels);
+                Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile, annotationSet);
+                output = annotationSet;
+            else
+                output = obj.mappingForLabels(labels);
             end
         end
         
@@ -58,27 +88,102 @@ classdef LabelMapper < Computer
             mapKeys = keys(obj.hashMap);
             mapValues = values(obj.hashMap);
             hashMapStr = sprintf('[%s],[%s]',...
-                Helper.arrayToString(mapKeys),...
-                Helper.arrayToString(mapValues));
+                Helper.arrayToString(cell2mat(mapKeys)),...
+                Helper.arrayToString(cell2mat(mapValues)));
             
             str = sprintf('%s_%s',obj.name,hashMapStr);
-        end
-        
-        function metrics = computeMetrics(obj,classificationResults)
-            n = obj.countNumPredictions(classificationResults);
-            flops = 4 * n;
-            memory = obj.hashMap.Count;
-            outputSize = n;
-            metrics = Metric(flops,memory,outputSize);
         end
     end
     
     methods (Access = private)
-        function n = countNumPredictions(~, classificationResults)
-            n = 0;
-            for i = 1 : length(classificationResults)
-                n  = n + length(classificationResults(i).predictedClasses);
+        
+        function annotationSet = mapAnnotations(obj,annotations)
+            annotationSet = AnnotationSet();
+            annotationSet.eventAnnotations = obj.mapEventAnnotations(annotations.eventAnnotations);
+            annotationSet.rangeAnnotations = annotations.rangeAnnotations;
+        end
+        
+        function mappedEventAnnotations = mapEventAnnotations(obj,eventAnnotations)
+            nAnnotations = length(eventAnnotations);
+            mappedEventAnnotations = repmat(EventAnnotation,1,nAnnotations);
+            for i = 1 : nAnnotations
+                eventAnnotation = eventAnnotations(i);
+                newLabel = obj.mappingForLabel(eventAnnotation.label);
+                mappedEventAnnotations(i) = EventAnnotation(eventAnnotation.sample,newLabel);
             end
         end
     end
+    
+    methods (Static)
+        function labelMapper = CreateLabelMapperWithLabeling(sourceLabeling,name)
+            numClasses = sourceLabeling.numClasses;
+            hashMap = containers.Map(int8(1:numClasses), int8(1:numClasses));
+            labelMapper = LabelMapper(sourceLabeling,sourceLabeling,hashMap,name);
+        end
+        
+        function labelMapper = CreateLabelMapperWithGroups(sourceLabeling,classGroups,name)
+            [hashMap, classNames] = LabelMapper.GenerateClassesMap(sourceLabeling,classGroups);
+            targetLabeling = ClassesMap(classNames);
+            labelMapper = LabelMapper(sourceLabeling,targetLabeling,hashMap,name);
+        end
+    end
+    
+    methods (Access = private, Static)
+                
+        function [classesMap, classNames] = GenerateClassesMap(sourceLabeling, classGroups)
+            nGroups = length(classGroups);
+            
+            isClassCovered = LabelMapper.computeIsClassCovered(sourceLabeling,classGroups);
+            [classesMap, classNames, classCount] = LabelMapper.mapUncoveredClasses(sourceLabeling,isClassCovered,nGroups);
+
+            for i = 1 : nGroups
+                classCount = classCount + 1;
+                classGroup = classGroups(i);
+                classesInGroup = keys(classGroup.groupsMap);
+                for j = 1 : length(classesInGroup)
+                    classStr = classesInGroup{j};
+                    classIdx = sourceLabeling.idxOfClassWithString(classStr);
+                    classesMap(classIdx) = classCount;
+                end
+                classNames{classCount} = classGroup.labelName;
+            end            
+        end
+        
+         function [hashMap, classNames, classCount] = mapUncoveredClasses(sourceLabeling,isClassCovered,nGroups)
+            nClasses = sourceLabeling.numClasses;
+            
+            hashMap = containers.Map(int8(0), int8(1));
+            remove(hashMap,0);
+            
+            classNames = cell(1,nGroups);
+            
+            classCount = 0;
+            for i = 1 : nClasses
+                if ~isClassCovered(i)
+                    classCount = classCount + 1;
+                    hashMap(int8(i)) = int8(classCount);
+                    classNames{classCount} = sourceLabeling.stringForClassAtIdx(i);
+                end
+            end
+        end
+
+        function isClassCovered = computeIsClassCovered(sourceLabeling,classGroups)
+            nClasses = sourceLabeling.numClasses;
+            isClassCovered = false(1,nClasses);
+            if ~isempty(classGroups)
+                nGroups = length(classGroups);
+                for i = 1 : nGroups
+                    classGroup = classGroups(i);
+                    classesInGroup = keys(classGroup.groupsMap);
+                    for j = 1 : length(classesInGroup)
+                        classStr = classesInGroup{j};
+                        classIdx = sourceLabeling.idxOfClassWithString(classStr);
+                        isClassCovered(classIdx) = true;
+                    end
+                end
+            end
+        end
+        
+    end
+    
 end

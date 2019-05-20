@@ -181,7 +181,7 @@ classdef Helper < handle
         end
         
         %% Helper methods
-        function signals = LoadSignals()
+        function signals = LoadSignalNames()
             dataLoader = DataLoader();
             dataFiles = Helper.listDataFiles();
             signals = [];
@@ -191,7 +191,7 @@ classdef Helper < handle
                 signals = dataFile.columnNames;
             end
         end
-        
+        %{
         function groupedAnnotations = GroupedAnnotationsArray(annotations,labelGrouping)
             nAnnotations = length(annotations);
             groupedAnnotations = repmat(AnnotationSet,1,nAnnotations);
@@ -206,6 +206,7 @@ classdef Helper < handle
             annotationSet.rangeAnnotations = annotations.rangeAnnotations;
         end
         
+        
         function groupedEventAnnotations = GroupEventAnnotations(eventAnnotations,labelGrouping)
             nAnnotations = length(eventAnnotations);
             groupedEventAnnotations = repmat(EventAnnotation,1,nAnnotations);
@@ -215,7 +216,8 @@ classdef Helper < handle
                 groupedEventAnnotations(i) = EventAnnotation(eventAnnotation.sample,newLabel);
             end
         end
-        
+        %}
+                
         function classStr = StringForClass(class, classNames)
             if class == ClassesMap.kNullClass
                 classStr = Constants.kNullClassGroupStr;

@@ -260,6 +260,12 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
+        
+        function root = ComputerWithFork(computers)
+            root = NoOp();
+            root.nextComputers = computers;
+        end
+        
         function root = ComputerWithSequence(sequence)
             if isempty(sequence)
                 root = [];

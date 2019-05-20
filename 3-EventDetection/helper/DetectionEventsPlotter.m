@@ -6,7 +6,7 @@ classdef DetectionEventsPlotter < handle
     end
     
     properties (Access = public)
-        labelGrouping LabelGrouping;
+        labelGrouping ClassesMap;
         delegate;
     end
     

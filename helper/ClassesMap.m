@@ -8,29 +8,24 @@ classdef ClassesMap < handle
         synchronisationStr = 'synchronisation';
     end
     
-    properties (Access = public)
+    properties (GetAccess = public)
         numClasses;
-        classesList;
+        classNames;
     end
     
     properties (Access = private)
         classesMap;
     end
-    
-    methods(Static)
         
-        function obj = instance()
-            persistent uniqueInstance
-            if isempty(uniqueInstance)
-                obj = ClassesMap();
-                uniqueInstance = obj;
-            else
-                obj = uniqueInstance;
+    methods (Access = public)
+        
+        function obj = ClassesMap(classNames)
+            obj.classNames = classNames;
+            if ~isempty(classNames)
+                obj.numClasses = length(classNames);
+                obj.createClassesMap(classNames);
             end
         end
-    end
-    
-    methods (Access = public)
         
         function valid = isValidLabel(obj,labelStr)
             valid = isKey(obj.classesMap,labelStr);
@@ -42,7 +37,7 @@ classdef ClassesMap < handle
             elseif idx == obj.kSynchronisationClass
                 classStr = obj.synchronisationStr;
             else
-                classStr = obj.classesList{idx};
+                classStr = obj.classNames{idx};
             end
         end
         
@@ -68,36 +63,10 @@ classdef ClassesMap < handle
     
     methods (Access = private)
         
-        function obj = ClassesMap()
-            
-            obj.classesList = obj.loadClassesFile();
-            if ~isempty(obj.classesList)
-                obj.numClasses = length(obj.classesList);
-                obj.createClassesMap(obj.classesList);
-            end
-            
-        end
-        
-        function classesList = loadClassesFile(~)
-            
-            [fileID,~] = fopen(Constants.kLabelsPath);
-            if (fileID < 0)
-                fprintf('file not found: %s\n',Constants.kLabelsPath);
-                classesList = [];
-            else
-                startRow = 1;
-                endRow = inf;
-                formatSpec = '%s%[^\n\r]';
-                classesList = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
-                classesList = classesList{1};
-                fclose(fileID);
-            end
-        end
-        
-        function createClassesMap(obj,classesList)
-            if ~isempty(classesList)
-                nClasses = length(classesList);
-                obj.classesMap = containers.Map(classesList,int8(1:nClasses));
+        function createClassesMap(obj,classNames)
+            if ~isempty(classNames)
+                nClasses = length(classNames);
+                obj.classesMap = containers.Map(classNames,int8(1:nClasses));
                 obj.classesMap(ClassesMap.synchronisationStr) = obj.kSynchronisationClass;
             end
         end

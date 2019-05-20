@@ -1,15 +1,15 @@
-classdef LabelGroupingLoader < handle
+classdef LabelGroupsLoader < handle
         
     methods (Static, Access = public)
         
-        function labelGrouping = LoadLabelGrouping( fileName)
-            labelGrouping = LabelGroupingLoader.ParseLabelGroupingFile(fileName);
+        function labelGroups = LoadLabelGroups(fileName)
+            labelGroups = LabelGroupsLoader.ParseLabelGroupsFile(fileName);
         end
     end
     
     methods (Static,Access = private)
          
-        function labelGrouping = ParseLabelGroupingFile(fileName)
+        function labelGroups = ParseLabelGroupsFile(fileName)
             
             delimiter = ',';
             startRow = 1;
@@ -20,15 +20,12 @@ classdef LabelGroupingLoader < handle
             [fileID,~] = fopen(fileName);
             if (fileID < 0)
                 fprintf('file not found: %s\n',fileName);
-                labelGrouping = [];
+                labelGroups = [];
             else
                 dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
                 
-                nGroups = LabelGroupingLoader.CountNumberOfGroups(dataArray{1});
-                labelGroups = LabelGroupingLoader.ParseLabelGroup(dataArray{1},nGroups);
-                
-                labelGrouping = LabelGrouping(labelGroups);
-                
+                nGroups = LabelGroupsLoader.CountNumberOfGroups(dataArray{1});
+                labelGroups = LabelGroupsLoader.ParseLabelGroup(dataArray{1},nGroups);                
                 fclose(fileID);
             end
         end

@@ -1,18 +1,9 @@
-%# Use it to save and load data for a file. 
+%# Use it to save and load data for a file.
 classdef DataLoader < handle
     
-    properties (Access = private)
-        annotationsLoader;
-        classesMap;
-    end
-
     methods (Access = public)
         
-        function obj = DataLoader()
-            obj.classesMap = ClassesMap.instance();
-        end
-
-        %% Data Files        
+        %% Data Files
         function data = loadAllDataFiles(obj)
             fileNames = Helper.listDataFiles();
             data = obj.loadDataFiles(fileNames);
@@ -30,7 +21,7 @@ classdef DataLoader < handle
             for i = 1 : length(fileNames)
                 fileName = fileNames{i};
                 dataFiles(i) = obj.loadDataFile(fileName);
-            end 
+            end
         end
         
         function dataFile = loadDataFile(obj,fileName)
@@ -45,7 +36,7 @@ classdef DataLoader < handle
             data = table2array(data);
             dataFile = DataFile(fileName,data,columnNames);
         end
-                
+        
         function dataFile = loadData(obj,fileName)
             fileExtension = Helper.getFileExtension(fileName);
             fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
@@ -73,50 +64,6 @@ classdef DataLoader < handle
             tableExporter.exportTable(table,fileName);
         end
         
-        %% Annotations
-        %returns an array of AnnotationSet.
-        function annotations = loadAllAnnotations(obj)
-            dataFileNames = Helper.listDataFiles();
-            dataFileNames = Helper.removeFileExtensionForFiles(dataFileNames);
-            annotationFiles = Helper.addAnnotationsFileExtensionForFiles(dataFileNames);
-            
-            nAnnotationFiles = length(annotationFiles);
-            annotations = repmat(AnnotationSet,1,nAnnotationFiles);
-            for i = 1 : length(annotationFiles)
-                annotationsFileName = annotationFiles{i};
-                annotationSet = obj.loadAnnotationSet(annotationsFileName);
-                annotationSet.fileName = annotationsFileName;
-                annotations(i) = annotationSet;
-            end
-        end
-        
-        function annotationSet = loadAnnotationSet(obj,annotationsFileName)
-            if isempty(obj.annotationsLoader)
-                obj.annotationsLoader = AnnotationsLoader();
-            end
-            
-            annotationsFileName = sprintf('%s/%s',Constants.kAnnotationsPath,annotationsFileName);
-            annotationSet = obj.annotationsLoader.loadAnnotations(annotationsFileName);
-        end
-        
-        function saveAnnotations(obj,annotationsSet,annotationsFileName)
-            obj.annotationsLoader.saveAnnotations(annotationsSet,annotationsFileName);
-        end
-        
-        function saveEvents(obj,events, fileName)
-            if ~isempty(events) && ~isempty(fileName)
-                fileID = fopen(fileName,'w');
-                
-                for i = 1 : length(events)-1
-                    event = events(i);
-                    obj.printEventToFile(fileID,event);
-                    fprintf(fileID, '\n');
-                end
-                event = events(end);
-                obj.printEventToFile(fileID,event);
-                fclose(fileID);
-            end
-        end
         
         %% Markers
         function markers = loadMarkers(~,markerFileName)
@@ -126,30 +73,6 @@ classdef DataLoader < handle
             markers = markersLoader.loadMarkers(markerFileName);
         end
         
-        %% Label Groupings
-        function labelGroupings = loadAllLabelGroupings(obj)
-            fileNames = Helper.listLabelGroupings();
-            
-            nLabelGroupings = length(fileNames);
-            labelGroupings = repmat(LabelGrouping, 1,nLabelGroupings+1);
-            
-            labelGroupings(1) = LabelGrouping();
-            
-            if ~isempty(fileNames)          
-                                
-                for i = 1 : nLabelGroupings
-                    fileName = fileNames{i};
-                    labelGroupings(i+1) = obj.loadLabelGrouping(fileName);
-                end
-            end
-        end
-        
-        function labelGrouping = loadLabelGrouping(~,fileName)
-            fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
-            labelGrouping = LabelGroupingLoader.LoadLabelGrouping(fullFileName);
-            labelGrouping.name = Helper.removeFileExtension(fileName);
-        end
-
         %% Synchronisation Files
         function synchronisationFiles = loadAllSynchronisationFiles(obj)
             
@@ -194,24 +117,109 @@ classdef DataLoader < handle
             str = split(line);
             value = str2double(str{2});
         end
-                
-        function printEventToFile(obj,fileID, event)
-            labelStr = obj.classesMap.stringForClassAtIdx(event.label);
+        
+        function printEventToFile(~,fileID, event,classesMap)
+            labelStr = classesMap.stringForClassAtIdx(event.label);
             fprintf(fileID, '%s, %d',labelStr,event.sample);
         end
     end
     
     methods (Static)
+        %% Label Mappings
+        function labelMappers = LoadAllLabelMappings()
+            fileNames = Helper.listLabelGroupings();
+            
+            nLabelGroupings = length(fileNames);
+            labelMappers = repmat(LabelMapper,1,nLabelGroupings+1);
+            
+            %default label mapping
+            classesList = DataLoader.LoadClassesFile();
+            defaultClassesMap = ClassesMap(classesList);
+            labelMappers(1) = LabelMapper.CreateLabelMapperWithLabeling(defaultClassesMap,'defaultClassesMap');
+            
+            if ~isempty(fileNames)
+                for i = 1 : nLabelGroupings
+                    fileName = fileNames{i};
+                    labelMappers(i+1) = DataLoader.LoadLabelMapping(defaultClassesMap,fileName);
+                end
+            end
+        end
         
+        function labelMapper = LoadLabelMapping(defaultClassesMap,fileName)
+            fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
+            labelGroups = LabelGroupsLoader.LoadLabelGroups(fullFileName);
+            name = Helper.removeFileExtension(fileName);
+            labelMapper = LabelMapper.CreateLabelMapperWithGroups(defaultClassesMap,labelGroups,name);
+        end
+        
+        
+        %% Annotations
+        %returns an array of AnnotationSet.
+        function annotations = LoadAllAnnotations(classesMap)
+            dataFileNames = Helper.listDataFiles();
+            dataFileNames = Helper.removeFileExtensionForFiles(dataFileNames);
+            annotationFiles = Helper.addAnnotationsFileExtensionForFiles(dataFileNames);
+            
+            nAnnotationFiles = length(annotationFiles);
+            annotations = repmat(AnnotationSet,1,nAnnotationFiles);
+            for i = 1 : length(annotationFiles)
+                annotationsFileName = annotationFiles{i};
+                annotationSet = DataLoader.LoadAnnotationSet(annotationsFileName,classesMap);
+                annotationSet.fileName = annotationsFileName;
+                annotations(i) = annotationSet;
+            end
+        end
+        
+        function annotationSet = LoadAnnotationSet(annotationsFileName,classesMap)
+            annotationsParser = AnnotationsParser(classesMap);
+            
+            annotationsFileName = sprintf('%s/%s',Constants.kAnnotationsPath,annotationsFileName);
+            annotationSet = annotationsParser.loadAnnotations(annotationsFileName);
+        end
+        
+        function SaveAnnotations(annotationsSet,annotationsFileName,classesMap)
+            annotationsParser = AnnotationsParser(classesMap);
+            annotationsParser.saveAnnotations(annotationsSet,annotationsFileName);
+        end
+        
+        function SaveEvents(events, fileName, classesMap)
+            if ~isempty(events) && ~isempty(fileName)
+                fileID = fopen(fileName,'w');
+                
+                for i = 1 : length(events)-1
+                    event = events(i);
+                    obj.printEventToFile(fileID,event,classesMap);
+                    fprintf(fileID, '\n');
+                end
+                event = events(end);
+                obj.printEventToFile(fileID,event,classesMap);
+                fclose(fileID);
+            end
+        end
+        
+        %% Classes File
+        function classesList = LoadClassesFile()
+            [fileID,~] = fopen(Constants.kLabelsPath);
+            if (fileID < 0)
+                fprintf('file not found: %s\n',Constants.kLabelsPath);
+                classesList = [];
+            else
+                startRow = 1;
+                endRow = inf;
+                formatSpec = '%s%[^\n\r]';
+                classesList = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
+                classesList = classesList{1};
+                fclose(fileID);
+            end
+        end
+        
+        %% Video
         function b = CheckVideoFileExists(fileName)
             fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
             b = DataLoader.CheckFileExists(fullFileName);
         end
         
-        function b = CheckFileExists(fullPath)
-            b = exist(fullPath,'file');
-        end
-        
+        %% Computers
         function computer = LoadJSONComputerFromFile(fileName)
             fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
             text = fileread(fullPath);
@@ -236,6 +244,12 @@ classdef DataLoader < handle
         function SaveComputer(computer, fileName)
             fullPath = sprintf('%s',fileName);
             save(fullPath,'computer');
+        end
+        
+        
+        %% Other
+        function b = CheckFileExists(fullPath)
+            b = exist(fullPath,'file');
         end
         
         function printRawData(fileHandle, sample)

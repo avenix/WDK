@@ -57,7 +57,6 @@ classdef PostprocessingConfigurator < handle
             else
                 obj.updateComputerPropertieFromsInTable(computer);
             end
-            
         end
         
         function idx = getSelectedComputerIdx(obj)
@@ -117,7 +116,6 @@ classdef PostprocessingConfigurator < handle
         end
         
         function handlePropertiesTableEditFinished(obj,~,callbackData)
-            
             if ~obj.isLabelMapperMode()
                 row = callbackData.Indices(1);
                 computer = obj.getSelectedComputer();

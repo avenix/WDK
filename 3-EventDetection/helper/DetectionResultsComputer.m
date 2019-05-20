@@ -3,21 +3,17 @@
 classdef DetectionResultsComputer < handle
     properties (Access = public)
         tolerance = 10;
-        positiveLabels = [];
     end
     
     methods (Access = public)
-        function obj = DetectionResultsComputer(positiveLabels)
-            if nargin > 0
-                obj.positiveLabels = positiveLabels;
-            end
+        function obj = DetectionResultsComputer()
         end
         
         %returns an array of DetectionResults (one for each cell)
         function detectionResults = computeDetectionResults(obj,eventsCellArray,annotationsArray)
             
             nCells = length(eventsCellArray);
-            detectionResults(1,nCells) = DetectionResult();
+            detectionResults = repmat(DetectionResult,1,nCells);
             for i = 1 : nCells
                 annotationSet = annotationsArray(i);
                 detectedEvents = eventsCellArray{i};
@@ -40,14 +36,8 @@ classdef DetectionResultsComputer < handle
             end
         end
         
-        function b = isRelevantLabel(obj,label)
-            if label == ClassesMap.kNullClass
-                b = false;
-            elseif isempty(obj.positiveLabels)
-                b = true;
-            else
-                b = obj.positiveLabels(label);
-            end
+        function b = isRelevantLabel(~,label)
+            b = label > 0;
         end
         
         function detectionResult = computeDetectionResult(obj,detectedEvents,eventAnnotations)

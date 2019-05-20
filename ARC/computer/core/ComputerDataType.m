@@ -14,5 +14,6 @@ classdef ComputerDataType
         kLabels = 11;
         kAny = 12;
         kNull = 13;
+        kAnnotation = 14;
     end
 end
