@@ -3,6 +3,10 @@
 %to generate the segment
 classdef EventSegmentsLabeler < Computer
     
+    properties (Access = public)
+        manualAnnotations;
+    end
+    
     methods (Access = public)
         
         function obj = EventSegmentsLabeler()
@@ -11,10 +15,9 @@ classdef EventSegmentsLabeler < Computer
             obj.outputPort = ComputerDataType.kSegment;
         end
         
-        function labeledSegments = compute(~,segments)
-            manualAnnotations = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
+        function labeledSegments = compute(obj,segments)
             eventsLabeler = EventsLabeler();
-            labels = eventsLabeler.labelEventIdxs([segments.eventIdx],manualAnnotations.eventAnnotations);
+            labels = eventsLabeler.labelEventIdxs([segments.eventIdx],obj.manualAnnotations.eventAnnotations);
             
             labeledSegments = Helper.LabelSegmentsWithValidLabels(segments,labels);
         end

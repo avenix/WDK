@@ -2,6 +2,7 @@ classdef EventsLabeler < Computer
     
     properties (Access = public)
         tolerance = 10;
+        manualAnnotations;
     end
     
     methods (Access = public)
@@ -16,9 +17,7 @@ classdef EventsLabeler < Computer
             if isempty(events)
                 labeledEvents = [];
             else
-                manualAnnotations = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
-                labels = obj.labelEventIdxs([events.sample],manualAnnotations.eventAnnotations);
-                
+                labels = obj.labelEventIdxs([events.sample],obj.manualAnnotations.eventAnnotations);
                 labeledEvents = Helper.LabelEventsWithValidLabels(events,labels);
             end
         end
@@ -37,7 +36,7 @@ classdef EventsLabeler < Computer
                     eventAnnotation = eventAnnotations(annotationIdx);
                     labels(i) = eventAnnotation.label;
                 else
-                    labels(i) = ClassesMap.kNullClass;
+                    labels(i) = Labeling.kNullClass;
                 end
             end
         end

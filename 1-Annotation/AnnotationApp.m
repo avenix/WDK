@@ -6,6 +6,7 @@ classdef AnnotationApp < handle
         SamplingFrequency = 200;
         SegmentHeight = 30;
         AxisToDataRatio = 1.3;
+        PlotLineWidth = 2;
     end
     
     properties (Access = private)
@@ -247,7 +248,7 @@ classdef AnnotationApp < handle
                     obj.plotHandles{i} = plot(obj.plotAxes,obj.dataFile.data(:,signalIdx));
                 end
                 
-                obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude,'LineWidth',2);
+                obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude,'LineWidth',AnnotationApp.PlotLineWidth);
                 
                 n = size(obj.magnitude,1);
                 axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * AnnotationApp.AxisToDataRatio, obj.plottedSignalYRange(2) * AnnotationApp.AxisToDataRatio]);

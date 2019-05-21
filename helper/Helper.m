@@ -219,7 +219,7 @@ classdef Helper < handle
         %}
                 
         function classStr = StringForClass(class, classNames)
-            if class == ClassesMap.kNullClass
+            if class == Labeling.kNullClass
                 classStr = Constants.kNullClassGroupStr;
             else
                 classStr = classNames{class};
@@ -243,7 +243,7 @@ classdef Helper < handle
 
         function labeledSegments = LabelSegmentsWithValidLabels(segments,labels)
             
-            isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
+            isValidLabel = ~Labeling.ShouldIgnoreLabels(labels);
             nValidSegments = sum(isValidLabel);
             labeledSegments = repmat(Segment,1,nValidSegments);
             segmentCounter = 1;
@@ -259,7 +259,7 @@ classdef Helper < handle
         end
         
         function labeledEvents = LabelEventsWithValidLabels(events,labels)
-            isValidLabel = ~ClassesMap.ShouldIgnoreLabels(labels);
+            isValidLabel = ~Labeling.ShouldIgnoreLabels(labels);
             
             nValidEvents = sum(isValidLabel);
             labeledEvents = repmat(Event,1,nValidEvents);

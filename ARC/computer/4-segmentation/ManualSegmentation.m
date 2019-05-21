@@ -52,7 +52,9 @@ classdef ManualSegmentation < Computer
     methods (Access = private)
         
         function createAnnotationsMap(obj,annotations)
-            obj.manualAnnotations = containers.Map;
+            obj.manualAnnotations = containers.Map({'a'},{AnnotationSet()});
+            remove(obj.manualAnnotations,'a');
+            
             for i = 1 : length(annotations)
                 fileName = annotations(i).fileName;
                 fileName = Helper.removeAnnotationsExtension(fileName);

@@ -8,6 +8,7 @@ classdef RangeSegmentsLabeler < Computer
     
     properties (Access = public)
         shouldContainEntireSegment = true;
+        manualAnnotations;
     end
     
     methods (Access = public)
@@ -23,12 +24,11 @@ classdef RangeSegmentsLabeler < Computer
         end
         
         function labeledSegments = compute(obj,segments)
-            manualAnnotations = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile);
             
             if obj.shouldContainEntireSegment
-                labels = obj.labelsOfSegmentsContainedInRanges(segments,manualAnnotations);
+                labels = obj.labelsOfSegmentsContainedInRanges(segments,obj.manualAnnotations);
             else
-                labels = obj.labelsOfSegmentMiddlePointsContainedInRanges(segments,manualAnnotations);
+                labels = obj.labelsOfSegmentMiddlePointsContainedInRanges(segments,obj.manualAnnotations);
             end
             
             labeledSegments = Helper.LabelSegmentsWithValidLabels(segments,labels);
@@ -65,13 +65,13 @@ classdef RangeSegmentsLabeler < Computer
                             if rangeAnnotation.label == rangeAnnotation2.label
                                 label = rangeAnnotation.label;
                             else
-                                label = ClassesMap.kInvalidClass;%segment spans multiple annotations
+                                label = Labeling.kInvalidClass;%segment spans multiple annotations
                             end
                         end
                     end
                 end
                 if isempty(label)
-                    labels(i) = ClassesMap.kNullClass;
+                    labels(i) = Labeling.kNullClass;
                 else
                     labels(i) = label;
                 end
@@ -90,7 +90,7 @@ classdef RangeSegmentsLabeler < Computer
                     rangeAnnotation = annotationSet.rangeAnnotations(idx);
                     labels(i) = rangeAnnotation.label;
                 else
-                    labels(i) = ClassesMap.kNullClass;
+                    labels(i) = Labeling.kNullClass;
                 end
             end
         end
