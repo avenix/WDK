@@ -5,7 +5,8 @@ classdef Labeling < handle
         kSynchronisationClass = -2;
         kInvalidClass = -1;
         kNullClass = 0;
-        synchronisationStr = 'synchronisation';
+        kNullClassStr = 'NULL';
+        kSynchronisationStr = 'synchronisation';
     end
     
     properties (GetAccess = public)
@@ -16,9 +17,8 @@ classdef Labeling < handle
     properties (Access = private)
         classesMap;
     end
-        
+    
     methods (Access = public)
-        
         function obj = Labeling(classNames)
             obj.classNames = classNames;
             if ~isempty(classNames)
@@ -32,10 +32,10 @@ classdef Labeling < handle
         end
         
         function classStr = stringForClassAtIdx(obj,idx)
-            if idx == obj.kNullClass
-                classStr = Constants.kNullClassGroupStr;
-            elseif idx == obj.kSynchronisationClass
-                classStr = obj.synchronisationStr;
+            if idx == Labeling.kNullClass
+                classStr = Labeling.kNullClassStr;
+            elseif idx == Labeling.kSynchronisationClass
+                classStr = Labeling.kSynchronisationStr;
             else
                 classStr = obj.classNames{idx};
             end
@@ -62,12 +62,12 @@ classdef Labeling < handle
     end
     
     methods (Access = private)
-        
         function createLabeling(obj,classNames)
             if ~isempty(classNames)
                 nClasses = length(classNames);
                 obj.classesMap = containers.Map(classNames,int8(1:nClasses));
-                obj.classesMap(Labeling.synchronisationStr) = obj.kSynchronisationClass;
+                obj.classesMap(Labeling.kSynchronisationStr) = Labeling.kSynchronisationClass;
+                obj.classesMap(Labeling.kNullClassStr) = Labeling.kNullClass;
             end
         end
     end

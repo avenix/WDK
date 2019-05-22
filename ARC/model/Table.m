@@ -60,7 +60,7 @@ classdef Table < handle
             labels = obj.label;
             for i = 1 : nRows
                 rowLabel = labels(i);
-                if rowLabel == ClassesMap.kNullClass || labelFlags(rowLabel)
+                if rowLabel == Labeling.kNullClass || labelFlags(rowLabel)
                     includeRowIdxs(i) = true;
                 end
             end

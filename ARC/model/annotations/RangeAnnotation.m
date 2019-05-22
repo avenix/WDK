@@ -1,14 +1,14 @@
 
 classdef RangeAnnotation < handle
-    properties
+    properties (Access = public)
         startSample;
         endSample;
         label;
     end
     
-    methods
+    methods (Access = public)
         function obj = RangeAnnotation(startSample,endSample,label)
-            if nargin>1
+            if nargin > 0
                 obj.startSample = startSample;
                 obj.endSample = endSample;
                 obj.label = label;

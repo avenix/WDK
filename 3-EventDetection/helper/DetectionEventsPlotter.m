@@ -200,7 +200,7 @@ classdef DetectionEventsPlotter < handle
                     eventY = signal(eventX);
                     label = event.label;
                     if label == Labeling.kNullClass
-                        classStr = Constants.kNullClassGroupStr;
+                        classStr = Labeling.kNullClassStr;
                     else
                         classStr = obj.labelGrouping.classNames{label};
                     end

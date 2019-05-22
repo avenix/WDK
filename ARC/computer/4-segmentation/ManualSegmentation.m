@@ -7,25 +7,20 @@ classdef ManualSegmentation < Computer
         segmentSizeLeft = 200;
         segmentSizeRight = 30;
     end
-    
-    properties (Access = private)
-        currentAnnotations;
-    end
-    
+        
     methods (Access = public)
         function obj = ManualSegmentation(manualAnnotations)
-            obj.createAnnotationsMap(manualAnnotations);
+            if nargin > 0
+                obj.manualAnnotations = manualAnnotations;
+            end
+            
             obj.name = 'manualSegmentation';
             obj.inputPort = ComputerDataType.kSignal;
             obj.outputPort = ComputerDataType.kSegment;
         end
         
         function segments = compute(obj,data)
-            fileName = Helper.removeFileExtension(data.fileName);
-            if obj.manualAnnotations.isKey(fileName)
-                obj.currentAnnotations = obj.manualAnnotations(fileName);
-                segments = obj.segmentFile(data);
-            end
+            segments = obj.segmentFile(data);
         end
 
         function str = toString(obj)
@@ -50,18 +45,7 @@ classdef ManualSegmentation < Computer
     end
     
     methods (Access = private)
-        
-        function createAnnotationsMap(obj,annotations)
-            obj.manualAnnotations = containers.Map({'a'},{AnnotationSet()});
-            remove(obj.manualAnnotations,'a');
-            
-            for i = 1 : length(annotations)
-                fileName = annotations(i).fileName;
-                fileName = Helper.removeAnnotationsExtension(fileName);
-                obj.manualAnnotations(fileName) = annotations(i);
-            end
-        end
-        
+
         function segments = segmentFile(obj,dataFile)
             
             if(obj.includeEvents)
@@ -81,15 +65,16 @@ classdef ManualSegmentation < Computer
             end
         end
         
-        function segments = createManualSegmentsWithEvents(obj,dataFile)
+        function segments = createManualSegmentsWithEvents(obj, dataFile)
             %eliminate invalid
-            eventAnnotations = obj.currentAnnotations.eventAnnotations;
+            eventAnnotations = obj.manualAnnotations.eventAnnotations;
             labels = [eventAnnotations.label];
             validIdxs = (labels ~= Labeling.kSynchronisationClass & labels ~= Labeling.kInvalidClass);
             labels = labels(validIdxs);
             eventLocations = [eventAnnotations(validIdxs).sample];
             
-            segments = Helper.CreateSegmentsWithEventLocations(eventLocations,dataFile,obj.segmentSizeLeft,obj.segmentSizeRight);  
+            segments = Helper.CreateSegmentsWithEventLocations(eventLocations,...
+                dataFile,obj.segmentSizeLeft,obj.segmentSizeRight);  
             
             %label segments
             for i = 1 : length(segments)
@@ -98,7 +83,7 @@ classdef ManualSegmentation < Computer
         end
         
         function segments = createSegmentsWithRangeAnnotations(obj,dataFile)
-            rangeAnnotations = obj.currentAnnotations.rangeAnnotations;
+            rangeAnnotations = obj.manualAnnotations.rangeAnnotations;
             nSegments = length(rangeAnnotations);
             segments = repmat(Segment,1,nSegments);
             for i = 1 : length(rangeAnnotations)

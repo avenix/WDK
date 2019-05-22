@@ -22,8 +22,6 @@ classdef Constants < handle
         kWrongColor = 'red';
         kMissedEventColor = [1,0.5,0];
         
-        kNullClassGroupStr = 'NULL';
-        
         kFeaturesTableFileName = 'exportedFeaturesTable';
         kNormalisationFileName = 'normalisationValues.txt';
         kDetectedEventsFileName = 'detetedEvents.txt';

@@ -50,6 +50,10 @@ classdef LabelMapper < Computer
                 remove(obj.hashMap,0);
             end
             
+            if isempty(obj.name)
+                obj.name = 'labelMapper';
+            end
+            
             obj.inputPort = ComputerDataType.kLabels;
             obj.outputPort = ComputerDataType.kLabels;
         end
@@ -58,7 +62,6 @@ classdef LabelMapper < Computer
         function output = compute(obj,labels)
             if isa(labels(1),'AnnotationSet')
                 annotationSet = obj.mapAnnotations(labels);
-                Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile, annotationSet);
                 output = annotationSet;
             else
                 output = obj.mappingForLabels(labels);
@@ -100,7 +103,7 @@ classdef LabelMapper < Computer
         function annotationSet = mapAnnotations(obj,annotations)
             annotationSet = AnnotationSet();
             annotationSet.eventAnnotations = obj.mapEventAnnotations(annotations.eventAnnotations);
-            annotationSet.rangeAnnotations = annotations.rangeAnnotations;
+            annotationSet.rangeAnnotations = obj.mapRangeAnnotations(annotations.rangeAnnotations);
         end
         
         function mappedEventAnnotations = mapEventAnnotations(obj,eventAnnotations)
@@ -110,6 +113,17 @@ classdef LabelMapper < Computer
                 eventAnnotation = eventAnnotations(i);
                 newLabel = obj.mappingForLabel(eventAnnotation.label);
                 mappedEventAnnotations(i) = EventAnnotation(eventAnnotation.sample,newLabel);
+            end
+        end
+        
+        function mappedRangeAnnotations = mapRangeAnnotations(obj,rangeAnnotations)
+            nAnnotations = length(rangeAnnotations);
+            mappedRangeAnnotations = repmat(RangeAnnotation,1,nAnnotations);
+            for i = 1 : nAnnotations
+                rangeAnnotation = rangeAnnotations(i);
+                newLabel = obj.mappingForLabel(rangeAnnotation.label);
+                mappedRangeAnnotations(i) = RangeAnnotation(rangeAnnotation.startSample,...
+                    rangeAnnotation.endSample,newLabel);
             end
         end
     end

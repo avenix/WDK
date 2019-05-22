@@ -24,18 +24,32 @@ classdef LabelMappingConfigurator < handle
             
             if ~isempty(labelings)
                 obj.fillLabelMappingsList();
-                obj.labelingsList.Value = obj.labelingsList.Items{1};
                 
+                obj.labelingsList.Value = obj.labelingsList.Items{1};
                 obj.labelingsList.ValueChangedFcn = @obj.handleSelectedLabelMappingChanged;
                 
                 obj.updateMappingsTable();
             end
         end
         
-        function labelMapper = createLabelMapperFromUI(obj)
-            labelMapper = LabelMapper();
-            obj.setLabelMapperProperties(labelMapper);
+        function setLabelings(obj,labelingsParameter)
+            obj.labelings = labelingsParameter;
+            if ~isempty(obj.labelings)
+                obj.updateMappingsTable();
+            end
         end
+        
+        function labelMapper = createLabelMapperFromUI(obj)
+            targetLabelsMap = obj.createTargetLabelsMap();
+            labelMapper = obj.createMapperWithTargetLabelsMap(targetLabelsMap);
+            labelMapper.targetLabeling = obj.createTargetLabelingWithMap(targetLabelsMap);
+        end
+        
+        function targetLabeling = createTargetLabeling(obj)
+            targetLabelsMap = obj.createTargetLabelsMap();
+            targetLabeling = obj.createTargetLabelingWithMap(targetLabelsMap);
+        end
+        
     end
     
     methods (Access = private)
@@ -50,34 +64,10 @@ classdef LabelMappingConfigurator < handle
             labelMapping = obj.labelings(idx);
         end
         
-        function setLabelMapperProperties(obj,labelMapper)
-            targetLabeling = containers.Map();
-            data = obj.labelMappingTable.Data;
-            
-            nSourceClasses = size(data,1);
-            classNames = cell(1,nSourceClasses);
-            
-            %maps target class strings to integers
-            targetClassCount = 0;
-            for sourceClass = 1 : nSourceClasses
-                targetClassStr = data{sourceClass,2};
-                if ~strcmp(targetClassStr, Constants.kNullClassGroupStr) && ~isKey(targetLabeling,targetClassStr)
-                    targetClassCount = targetClassCount + 1;
-                    targetLabeling(targetClassStr) = targetClassCount;
-                    classNames{targetClassCount} = targetClassStr;
-                end
-            end
-            targetLabeling(Constants.kNullClassGroupStr) = Labeling.kNullClass;
-            classNames = classNames(1:targetClassCount);
-            
-            %adds mapings to labelMapper
-            for sourceClass = 1 : nSourceClasses
-                targetClassStr = data{sourceClass,2};
-                targetClass = targetLabeling(targetClassStr);
-                labelMapper.addMapping(int8(sourceClass),int8(targetClass));
-            end
-            
-            labelMapper.targetLabeling = Labeling(classNames);
+        function labeling = createTargetLabelingWithMap(~,targetLabelsMap)
+            classNames = targetLabelsMap.keys;
+            classNames(ismember(classNames,Labeling.kNullClassStr)) = [];
+            labeling = Labeling(classNames);
         end
         
         function updateMappingsTable(obj)
@@ -91,11 +81,43 @@ classdef LabelMappingConfigurator < handle
             obj.labelMappingTable.Data = data;
         end
         
+        function targetLabelsMap = createTargetLabelsMap(obj)
+            targetLabelsMap = containers.Map();
+            data = obj.labelMappingTable.Data;
+            
+            nSourceClasses = size(data,1);
+            
+            %maps target class strings to integers
+            targetClassCount = 0;
+            for sourceClass = 1 : nSourceClasses
+                targetClassStr = data{sourceClass,2};
+                if ~strcmp(targetClassStr, Labeling.kNullClassStr)...
+                        && ~isKey(targetLabelsMap,targetClassStr)
+                    targetClassCount = targetClassCount + 1;
+                    targetLabelsMap(targetClassStr) = targetClassCount;
+                end
+            end
+            
+            targetLabelsMap(Labeling.kNullClassStr) = Labeling.kNullClass;
+        end
+        
+        function labelMapper = createMapperWithTargetLabelsMap(obj,targetLabelsMap)
+            labelMapper = LabelMapper();
+            
+            data = obj.labelMappingTable.Data;
+            nSourceClasses = size(data,1);
+            for sourceClass = 1 : nSourceClasses
+                targetClassStr = data{sourceClass,2};
+                targetClass = targetLabelsMap(targetClassStr);
+                labelMapper.addMapping(int8(sourceClass),int8(targetClass));
+            end
+        end
+        
         function handleSelectedLabelMappingChanged(obj,~,~)
             obj.updateMappingsTable();
             if ~isempty(obj.delegate)
-                labelMapping = obj.getCurrentLabelMapping();
-                obj.delegate.handleSelectedLabelMappingChanged(labelMapping);
+                targetLabeling = obj.createTargetLabeling();
+                obj.delegate.handleSelectedLabelingChanged(targetLabeling);
             end
         end
         

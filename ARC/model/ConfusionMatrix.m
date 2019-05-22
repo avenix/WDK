@@ -13,9 +13,9 @@ classdef ConfusionMatrix < handle
                     classNames = [];
                 end
                 
-                if(any(predictedClasses == ClassesMap.kNullClass))
+                if(any(predictedClasses == Labeling.kNullClass))
                     obj.confusionMatrixData = confusionmat(truthClasses,predictedClasses,'Order',[classes 0]);
-                    obj.classNames = [classNames, Constants.kNullClassGroupStr];
+                    obj.classNames = [classNames, Labeling.kNullClassStr];
                     obj.containsNullClass = true;
                 else
                     obj.confusionMatrixData = confusionmat(truthClasses,predictedClasses,'Order',classes);
