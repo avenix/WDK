@@ -187,6 +187,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                     graphString = Computer.GraphToString(computer);
                     graphString = [dataCacheIdentifier graphString];
                     [isDataLoaded, loadedData, metricSum] = Computer.LoadCacheDataForGraphString(graphString);
+                    
                     if isDataLoaded
                         data = loadedData;
                     end

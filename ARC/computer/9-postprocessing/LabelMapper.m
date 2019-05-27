@@ -91,8 +91,8 @@ classdef LabelMapper < Computer
             mapKeys = keys(obj.hashMap);
             mapValues = values(obj.hashMap);
             hashMapStr = sprintf('[%s],[%s]',...
-                Helper.arrayToString(cell2mat(mapKeys)),...
-                Helper.arrayToString(cell2mat(mapValues)));
+                Helper.arrayToString(cell2mat(mapKeys),' '),...
+                Helper.arrayToString(cell2mat(mapValues),' '));
             
             str = sprintf('%s_%s',obj.name,hashMapStr);
         end

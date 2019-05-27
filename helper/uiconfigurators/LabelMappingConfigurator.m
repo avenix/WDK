@@ -65,8 +65,13 @@ classdef LabelMappingConfigurator < handle
         end
         
         function labeling = createTargetLabelingWithMap(~,targetLabelsMap)
+            
+            idxs = cell2mat(targetLabelsMap.values);
+            idxs(idxs == 0) = [];
+            [~, sortIdxs] = sort(idxs);
             classNames = targetLabelsMap.keys;
             classNames(ismember(classNames,Labeling.kNullClassStr)) = [];
+            classNames = classNames(sortIdxs);
             labeling = Labeling(classNames);
         end
         

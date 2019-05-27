@@ -34,7 +34,7 @@ classdef AnnotationLoader < Computer
         function annotation = compute(obj,~)
             annotationFileName = Helper.removeFileExtension(obj.fileName);
             annotation = obj.annotationsMap(annotationFileName);
-            Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile, annotation);
+            %Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentAnnotationFile, annotation);
         end
         
         function str = toString(obj)
