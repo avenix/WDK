@@ -64,7 +64,17 @@ classdef LabelMapper < Computer
                 annotationSet = obj.mapAnnotations(labels);
                 output = annotationSet;
             else
-                output = obj.mappingForLabels(labels);
+                output = obj.mapForClassificationResults(labels);
+            end
+        end
+        
+        function classificationResults = mapForClassificationResults(obj,classificationResults)
+            nLabels = length(classificationResults);
+            for i = 1 : nLabels
+                classificationResult = classificationResults(i);
+                classificationResult.predictedClasses = obj.mappingForLabels(classificationResult.predictedClasses);
+                classificationResult.truthClasses = obj.mappingForLabels(classificationResult.truthClasses);
+                classificationResult.classNames = obj.targetClassNames;
             end
         end
         

@@ -44,6 +44,7 @@ classdef PostprocessingConfigurator < handle
                 currentComputer = obj.computers{computerIdx};
                 obj.currentComputerProperties = currentComputer.getEditableProperties();
                 obj.updatePropertiesTable();
+                obj.updatePanelsVisibility();
             end
         end
         
