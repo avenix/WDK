@@ -40,7 +40,7 @@ classdef AssessmentClassificationResultsPlotter < handle
                 truthClass = detailedClassificationResults.classificationResult.truthClasses(i);
                 predictedClass = detailedClassificationResults.classificationResult.predictedClasses(i);
                 
-                if truthClass ~= predictedClass || truthClass ~= ClassesMap.kNullClass
+                if truthClass ~= predictedClass || truthClass ~= Labeling.kNullClass
                     obj.plotClassificationResult(segment,y,truthClass,predictedClass);
                 end
             end
@@ -102,7 +102,7 @@ classdef AssessmentClassificationResultsPlotter < handle
         function plotMissedEventAnnotations(obj,signal)
             for i = 1 : length(obj.missedEvents)
                 missedEvent = obj.missedEvents(i);
-                if missedEvent.label ~= ClassesMap.kNullClass
+                if missedEvent.label ~= Labeling.kNullClass
                     obj.plotMissedEventAnnotation(missedEvent,signal);
                 end
             end

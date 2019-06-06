@@ -12,7 +12,7 @@ classdef AnnotationEventAnnotationsPlotter < handle
     end
     
     properties (Access = private)
-        classesMap;
+        labeling;
     end
     
     methods
@@ -23,11 +23,9 @@ classdef AnnotationEventAnnotationsPlotter < handle
     end
     
     methods (Access = public)
-        function obj = AnnotationEventAnnotationsPlotter(classesMap)
+        function obj = AnnotationEventAnnotationsPlotter(labeling)
             if nargin > 0
-                obj.classesMap = classesMap;
-            else
-                obj.classesMap = ClassesMap();
+                obj.labeling = labeling;
             end
             obj.initAnnotationsMap();
         end
@@ -61,7 +59,7 @@ classdef AnnotationEventAnnotationsPlotter < handle
                     
                     annotation.annotation.label = class;
                     annotation.sampleSymbolUI.Color = color;
-                    annotation.textSymbolUI.String = obj.classesMap.stringForClassAtIdx(class);
+                    annotation.textSymbolUI.String = obj.labeling.stringForClassAtIdx(class);
                 end
             end
         end
@@ -125,7 +123,7 @@ classdef AnnotationEventAnnotationsPlotter < handle
         
         function [symbolHandle,textHandle] = plotPeak(obj, plotAxes, x, y, class)
             
-            classStr = obj.classesMap.stringForClassAtIdx(class);
+            classStr = obj.labeling.stringForClassAtIdx(class);
             symbolHandle = plot(plotAxes,x,y,'*','Color',obj.AnnotationColor);
             
             textHandle = text(plotAxes,double(x),double(y), classStr,...

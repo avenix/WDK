@@ -364,11 +364,6 @@ An annotation file in *./data/annotations/* contains an invalid label (i.e. a la
 
 > 'Index in position 1 exceeds array bounds (must not exceed XXX).'
 
-> 'Error. class not defined'
- 
- The *ClassesMap* triggers this error when it is requested to map a string of an invalid label. This error might be due to a file in the  *./data/labeling/* directory containing an invalid class name.
- This error can also occur when doing changes to the *annotations/labels.txt* file without clearing the *ClassesMap* variable from Matlab's path.
- 
  > 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
  
  The current version of the *FeatureSelector* uses the mRMR algorithm to select the most relevant features. The mRMR algorithm will fail if every feature vector contains the same value for a particular feature.

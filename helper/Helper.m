@@ -181,6 +181,19 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        function labeler = FindLabelerInUserChain(classificationChain)
+            
+            labeler = [];
+            graph = ComputerGraph.CreateGraph(classificationChain);
+            for i = 1 : length(graph.nodes)
+                computer = graph.nodes{i};
+                if isa(computer,'EventsLabeler') || isa(computer,'EventSegmentsLabeler') || isa(computer,'RangeSegmentsLabeler')
+                    labeler = computer;
+                    break;
+                end
+            end
+        end
+        
         function signals = LoadSignalNames()
             dataLoader = DataLoader();
             dataFiles = Helper.listDataFiles();

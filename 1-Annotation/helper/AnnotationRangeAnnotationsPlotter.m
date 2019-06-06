@@ -17,7 +17,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
     
     properties (Access = private)
         annotationsMap;
-        classesMap;
+        labeling;
         shouldPlotUpperYLabel = false;
     end
     
@@ -29,11 +29,9 @@ classdef AnnotationRangeAnnotationsPlotter < handle
     end
     
     methods (Access = public)
-        function obj = AnnotationRangeAnnotationsPlotter(classesMap)
+        function obj = AnnotationRangeAnnotationsPlotter(labeling)
             if nargin > 0
-                obj.classesMap = classesMap;
-            else
-                obj.classesMap = ClassesMap();
+                obj.labeling = labeling;
             end
             obj.initAnnotationsMap();
         end
@@ -57,7 +55,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
             segmentRectangleHandle = rectangle('Position',rectanglePosition,'Curvature',[obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.LineWidth);
 
             %plot label
-            classStr = obj.classesMap.stringForClassAtIdx(rangeAnnotation.label);
+            classStr = obj.labeling.stringForClassAtIdx(rangeAnnotation.label);
             xPos = (double(rangeAnnotation.startSample) + double(rangeAnnotation.endSample)) / 2;
             yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatios(obj.shouldPlotUpperYLabel+1);
             segmentTextHandle = text(plotAxes,xPos,yPos,classStr,...
@@ -80,7 +78,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
                 
                 if annotation.annotation.label ~= class
                     annotation.annotation.label = class;
-                    annotation.textSymbolUI.String = obj.classesMap.stringForClassAtIdx(class);
+                    annotation.textSymbolUI.String = obj.labeling.stringForClassAtIdx(class);
                 end
             end
         end

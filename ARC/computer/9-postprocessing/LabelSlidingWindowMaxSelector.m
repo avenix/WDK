@@ -57,7 +57,7 @@ classdef LabelSlidingWindowMaxSelector < Computer
                 if count >= obj.minimumCount
                     filteredPredictedClasses(j) = class;
                 else
-                    filteredPredictedClasses(j) = ClassesMap.kNullClass;
+                    filteredPredictedClasses(j) = Labeling.kNullClass;
                 end
             end
             classificationResult.predictedClasses = filteredPredictedClasses;
@@ -82,14 +82,6 @@ classdef LabelSlidingWindowMaxSelector < Computer
     end
     
     methods (Access = private)
-        %{
-        function fillClassCountBufferForFirstWindow(obj, classes)
-            for i = 1 : obj.windowSize
-                class = classes(i);
-                obj.addClassToClassCountHash(class);
-            end
-        end
-        %}
         
         function addClassToClassCountHash(obj,class)
             if isKey(obj.classCountHash,class)
@@ -101,11 +93,11 @@ classdef LabelSlidingWindowMaxSelector < Computer
         
         function [maxClass, maxCount] = getMaximumClassAndCount(obj)
             keys = obj.classCountHash.keys;
-            maxClass = ClassesMap.kNullClass;
+            maxClass = Labeling.kNullClass;
             maxCount = 0;
             for i = 1 : length(keys)
                 class = keys{i};
-                if class ~= ClassesMap.kNullClass
+                if class ~= Labeling.kNullClass
                     count = obj.classCountHash(class);
                     if(count > maxCount)
                         maxCount = count;

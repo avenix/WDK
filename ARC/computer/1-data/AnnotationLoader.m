@@ -26,7 +26,7 @@ classdef AnnotationLoader < Computer
                 end
             end
             
-            obj.name = 'fileLoader';
+            obj.name = 'annotationsLoader';
             obj.inputPort = ComputerDataType.kNull;
             obj.outputPort = ComputerDataType.kAnnotation;
         end
