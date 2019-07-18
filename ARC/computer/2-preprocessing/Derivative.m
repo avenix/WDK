@@ -35,22 +35,22 @@ classdef Derivative < Computer
         
         function derivative = computeFirstOrderDerivative(obj,data)
             n = length(data);
-            derivative = zeros(1,n);
+            derivative = zeros(n,1);
             for i = 2 : n
-                derivative(n) = (data(i) - data(i-1)) / obj.delta;
+                derivative(i) = (data(i) - data(i-1)) / obj.delta;
             end
         end
         
         function derivative = computeSecondOrderDerivative(obj,data)
             n = length(data);
-            derivative = zeros(1,n);
+            derivative = zeros(n,1);
             
             derivative(1) = (data(2) - data(1)) / obj.delta;
             derivative(n) = (data(n) - data(n-1)) / obj.delta;
             
             deltaSquared = obj.delta * obj.delta;
             for i = 2 : n-1
-                derivative(n) = (data(i-1) - data(i) + data(i+1)) / deltaSquared;
+                derivative(i) = (data(i-1) - data(i) + data(i+1)) / deltaSquared;
             end
         end
         

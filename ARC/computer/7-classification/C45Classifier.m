@@ -2,7 +2,6 @@ classdef C45Classifier < Computer
     
     properties (Access = public)
         shouldTrain = false;
-        nLearners = 30;
         inc_node;
         region;
     end
@@ -78,12 +77,9 @@ classdef C45Classifier < Computer
         end
         
         function str = toString(obj)
-            str = sprintf('%s_%d_%d',obj.name,obj.nLearners,obj.ensembleMethod);
+            str = sprintf('%s_%d',obj.name,obj.ensembleMethod);
         end
         
-        function editableProperties = getEditableProperties(obj)
-            editableProperties = Property('nLearners',obj.nLearners,1,100,PropertyType.kNumber);
-        end
     end
     
     methods (Access = private)

@@ -1,9 +1,5 @@
 classdef MagnitudeSquared < Computer
     
-    properties (Access = public)
-        inPlaceComputation = true;
-    end
-    
     methods (Access = public)
         
         function obj = MagnitudeSquared()
@@ -16,14 +12,10 @@ classdef MagnitudeSquared < Computer
             dataOut = x(:,1).^2 + x(:,2).^2 + x(:,3).^2;
         end
         
-        function metrics = computeMetrics(obj,input)
+        function metrics = computeMetrics(~,input)
             n = size(input,1);
             flops = 2 * n;
-            if obj.inPlaceComputation
-                memory = 1;
-            else
-                memory = n * Constants.kSensorDataBytes;
-            end
+            memory = n * Constants.kSensorDataBytes;
             outputSize = n * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
         end

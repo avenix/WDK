@@ -500,8 +500,8 @@ classdef AnnotationApp < handle
         end
         
         function plotAnnotations(obj)
-            if ~isempty(obj.annotationSet) && ~isempty(obj.magnitude)
                 obj.rangeAnnotationsPlotter.yRange = obj.plottedSignalYRange;
+            if ~isempty(obj.annotationSet) && ~isempty(obj.magnitude)
                 obj.eventAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations,obj.magnitude);
                 obj.rangeAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.rangeAnnotations);
             end
