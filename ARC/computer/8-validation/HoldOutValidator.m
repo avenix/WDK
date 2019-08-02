@@ -6,9 +6,6 @@ classdef HoldOutValidator < Computer
         classifier;
         progressNotificationDelegate = [];
         shouldNormalizeFeatures = true;
-    end
-
-    properties (Access = private)
         featureNormalizer;
     end
     

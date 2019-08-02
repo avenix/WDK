@@ -33,7 +33,12 @@ classdef AnnotationLoader < Computer
         
         function annotation = compute(obj,~)
             annotationFileName = Helper.removeFileExtension(obj.fileName);
-            annotation = obj.annotationsMap(annotationFileName);
+            if isempty(obj.annotationsMap)
+                defaultLabeling = DataLoader.LoadDefaultLabeling();
+                annotation = DataLoader.LoadAnnotationSetFullPath(obj.fileName,defaultLabeling);
+            else
+                annotation = obj.annotationsMap(annotationFileName);
+            end
         end
         
         function str = toString(obj)

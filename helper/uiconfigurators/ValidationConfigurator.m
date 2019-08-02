@@ -9,8 +9,6 @@ classdef ValidationConfigurator < handle
             obj.uiElements = uiElements;
             
             uiElements.validationTypeRadioButtonGroup.SelectionChangedFcn = @obj.handleValidationTypeChanged;
-            uiElements.selectAllTrainingCheckBox.ValueChangedFcn = @obj.handleSelectAllFilesTrainingCheckBoxValueChanged;
-            uiElements.selectAllTestingCheckBox.ValueChangedFcn = @obj.handleSelectAllFilesTestingCheckBoxValueChanged;
             uiElements.moveRightButton.ButtonPushedFcn = @obj.handleMoveRightButtonPushed;
             uiElements.moveLeftButton.ButtonPushedFcn = @obj.handleMoveLeftButtonPushed;
         end
@@ -25,8 +23,8 @@ classdef ValidationConfigurator < handle
         function validator = createValidatorWithUIParameters(obj)
             if obj.isHoldOutValidation()
                 validator = HoldOutValidator();
-                [~,trainIndices] = ismember(obj.uiElements.trainFilesList.Value, obj.fileNames);
-                [~,testIndices] = ismember(obj.uiElements.testFilesList.Value, obj.fileNames);
+                [~,trainIndices] = ismember(obj.uiElements.trainFilesList.Items, obj.fileNames);
+                [~,testIndices] = ismember(obj.uiElements.testFilesList.Items, obj.fileNames);
                 
                 validator.trainIndices = trainIndices;
                 validator.testIndices = testIndices;
@@ -37,7 +35,7 @@ classdef ValidationConfigurator < handle
         
         function testFileNameIndices = getTestFileNameIdxs(obj)
             if obj.isHoldOutValidation()
-                [~,testFileNameIndices] = ismember(obj.uiElements.testFilesList.Value, obj.fileNames);
+                [~,testFileNameIndices] = ismember(obj.uiElements.testFilesList.Items, obj.fileNames);
             else
                 testFileNameIndices = 1:length(obj.fileNames);
             end
@@ -45,7 +43,7 @@ classdef ValidationConfigurator < handle
         
         function valid = isValidConfiguration(obj)
             valid = true;
-            if(isempty(obj.uiElements.trainFilesList.Value) || (obj.isHoldOutValidation() && isempty(obj.uiElements.testFilesList.Value)))
+            if(isempty(obj.uiElements.trainFilesList.Items) || (obj.isHoldOutValidation() && isempty(obj.uiElements.testFilesList.Items)))
                 valid = false;
             end
         end
@@ -70,29 +68,13 @@ classdef ValidationConfigurator < handle
             list.Items(nItems + 1:nItems + nFiles) = files;
         end
         
-        %% handles
-        function handleSelectAllFilesTrainingCheckBoxValueChanged(obj,~,~)
-            value = obj.uiElements.selectAllTrainingCheckBox.Value;
-            if(value == true)
-                obj.uiElements.trainFilesList.Value = obj.uiElements.trainFilesList.Items;
-            end
-        end
-        
-        function handleSelectAllFilesTestingCheckBoxValueChanged(obj,~,~)
-            value = obj.uiElements.selectAllTestingCheckBox.Value;
-            
-            if(value == true)                
-                obj.uiElements.testFilesList.Value = obj.uiElements.testFilesList.Items;
-            end
-        end
-        
+        %% handles        
         function handleValidationTypeChanged(obj,~,~)
             selectedButton = obj.uiElements.validationTypeRadioButtonGroup.SelectedObject;
             if(selectedButton == obj.uiElements.holdoutRadio)
                 obj.uiElements.moveRightButton.Visible = true;
                 obj.uiElements.moveLeftButton.Visible = true;
                 obj.uiElements.testFilesList.Visible = true;
-                obj.uiElements.selectAllTestingCheckBox.Visible = true;
             else
                 nTestItems = length(obj.uiElements.testFilesList.Items);
                 if nTestItems > 0
@@ -101,7 +83,6 @@ classdef ValidationConfigurator < handle
                 obj.uiElements.moveRightButton.Visible = false;
                 obj.uiElements.moveLeftButton.Visible = false;
                 obj.uiElements.testFilesList.Visible = false;
-                obj.uiElements.selectAllTestingCheckBox.Visible = false;
             end
         end
         

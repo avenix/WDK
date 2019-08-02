@@ -58,7 +58,8 @@ classdef LabelMapper < Computer
             obj.outputPort = ComputerDataType.kLabels;
         end
         
-        %receives an array of instances of ClassificationResult
+        %receives an array of instances of ClassificationResult or
+        %AnnotationSets
         function output = compute(obj,labels)
             if isa(labels(1),'AnnotationSet')
                 annotationSet = obj.mapAnnotations(labels);

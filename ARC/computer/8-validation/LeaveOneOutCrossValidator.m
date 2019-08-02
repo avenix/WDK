@@ -4,12 +4,9 @@ classdef LeaveOneOutCrossValidator < Computer
         classifier;
         shouldNormalizeFeatures = false;
         progressNotificationDelegate = [];
-    end
-    
-    properties (Access = private)
         featureNormalizer;
     end
-    
+        
     methods (Access = public)
         
         function obj = LeaveOneOutCrossValidator(classifier)

@@ -125,6 +125,11 @@ classdef DataLoader < handle
     end
     
     methods (Static)
+        function defaultLabeling = LoadDefaultLabeling()
+            classesList = DataLoader.LoadClassesFile();
+            defaultLabeling = Labeling(classesList);
+        end
+        
         %% Label Mappings
         function labelMappers = LoadAllLabelMappings()
             fileNames = Helper.listLabelGroupings();
@@ -133,8 +138,7 @@ classdef DataLoader < handle
             labelMappers = repmat(LabelMapper,1,nLabelGroupings+1);
             
             %default label mapping
-            classesList = DataLoader.LoadClassesFile();
-            defaultLabeling = Labeling(classesList);
+            defaultLabeling = DataLoader.LoadDefaultLabeling();
             labelMappers(1) = LabelMapper.CreateLabelMapperWithLabeling(defaultLabeling,'defaultLabeling');
             
             if ~isempty(fileNames)
@@ -171,9 +175,12 @@ classdef DataLoader < handle
         end
         
         function annotationSet = LoadAnnotationSet(annotationsFileName,labeling)
-            annotationsParser = AnnotationsParser(labeling);
-            
             annotationsFileName = sprintf('%s/%s',Constants.kAnnotationsPath,annotationsFileName);
+            annotationSet = DataLoader.LoadAnnotationSetFullPath(annotationsFileName,labeling);
+        end
+        
+        function annotationSet = LoadAnnotationSetFullPath(annotationsFileName,labeling)
+            annotationsParser = AnnotationsParser(labeling);
             annotationSet = annotationsParser.loadAnnotations(annotationsFileName);
         end
         

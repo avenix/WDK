@@ -16,7 +16,7 @@ classdef EventSegmentation < Computer
             obj.outputPort = ComputerDataType.kSegment;
         end
 
-        function segments = compute(obj,events)            
+        function segments = compute(obj,events)
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             segments = Helper.CreateSegmentsWithEvents(events,file,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
