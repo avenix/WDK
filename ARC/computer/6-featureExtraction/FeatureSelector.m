@@ -22,15 +22,15 @@ classdef FeatureSelector < Computer
         
         %discretizedPredictors will crash if the table contained NaN values
         %or if every instance had the same value on the same feature
-        function findBestFeaturesForTable(obj, table, maxNFeatures)
-            maxNFeatures = min(table.width - 1, maxNFeatures);
+        function findBestFeaturesForTable(obj, table, nFeatures)
+            nFeatures = min(table.width - 1, nFeatures);
             
             predictors = table2array(table.features);
             predictors = obj.discretizedPredictors(predictors,table.columnNames);
             predictors = predictors(:,predictors(1,:) >= 0);
             responses = table.label-1;
             
-            obj.selectedFeatureIdxs = mrmr_mid_d(predictors, responses, maxNFeatures);
+            obj.selectedFeatureIdxs = mrmr_mid_d(predictors, responses, nFeatures);
         end
         
         function bestFeatures = getBestNFeatures(obj, n)

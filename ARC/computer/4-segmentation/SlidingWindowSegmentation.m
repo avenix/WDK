@@ -42,7 +42,7 @@ classdef SlidingWindowSegmentation < Computer
             file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             nSamples = length(input);
             nSegments = int32 ((nSamples - obj.windowSize + 1) / obj.iterationSize);
-            flops = 1787 * length(input);
+            flops = (nSamples - obj.windowSize ) / obj.iterationSize;
             memory = obj.windowSize * file.numColumns * Constants.kSensorDataBytes;
             outputSize = obj.windowSize * file.numColumns * nSegments * Constants.kSensorDataBytes;
             metrics = Metric(flops,memory,outputSize);
