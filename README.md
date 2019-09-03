@@ -4,6 +4,8 @@ The Wearables Development Toolkit (WDK) is a framework and set of tools to facil
 
 ![Activity Recognition Chain Development](doc/images/ARCDevelopment.png)
 
+To get a first insight into Interactex, watch this [demo video:](https://www.youtube.com/watch?v=Ow0b0vkciDs&t=1s)
+
 ## Setup
 
 * ```git clone https://github.com/avenix/WDK.git```
