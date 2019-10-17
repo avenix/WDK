@@ -4,7 +4,7 @@ The Wearables Development Toolkit (WDK) is a framework and set of tools to facil
 
 ![Activity Recognition Chain Development](doc/images/ARCDevelopment.png)
 
-To get a first insight into Interactex, watch this [demo video:](https://www.youtube.com/watch?v=Ow0b0vkciDs&t=1s)
+To get a first insight into the WDK, watch this [demo video:](https://www.youtube.com/watch?v=Ow0b0vkciDs&t=1s)
 
 ## Setup
 
@@ -29,16 +29,20 @@ kLabelGroupingsPath = './data/labeling';
 kARChainsPath = './data/ARChains';
 kVideosPath = './data/videos';
 ```
-## 1- Data Collection
+## 0- Data Conversion
 
-The *Data Conversion App* can be used to do a first check on the data after its collection. It offers the following features:
-- Load any tabularized *.txt* data file and save it to the binary format used by the rest of the toolkit.
-- Check whether there has been data loss using a user-specified timestamp signal and sampling interval.
-- Visualize the different signals.
+The *Data Conversion App* can be used to convert your *.txt* data file to the format needed by the rest of the toolkit. The tool can load comma-separated files that look like:  
+```
+ax,ay,az,gx,gy,gz
+-0.01940918,-0.05337523,-0.00286865,-0.2326506,0.5926659,0.10809
+-0.01986694,-0.05346679,-0.003265379,0.002755165,-0.01103783
+...
+```
+You can save a loaded file in the WDK's format by clicking on *Save Data WDK*. 
 
-*Note: by default, the Data Conversion App loads data files from the ./data/rawdata/ directory. Converted files are saved to the ./ root directory.*
+*Note: by default, the Data Conversion App loads data files from the ./data/rawdata/ directory. Converted files are saved to the ./ root directory. You should copy your converted files to the ./data/rawdata/  directory for the other tools to be able to use them.*
 
-## 2- Data Annotation
+## 1- Data Annotation
 
 An annotated data set is needed to train a machine learning algorithm and to assess its performance. The *Data Annotation App* offers functionality to annotate time series data. Depending on the particular application, one might want to annotate *events* that occurr at a specific moment in time or activities that have a duration in time, called *ranges*. The following image shows the squared magnitude of the accelerometer signal collected by a motion sensor attached at a hind leg of a cow. The individual strides of the cow have been annotated as event annotations (red) and the walking and running activities as ranges (black rectangles).
 
@@ -85,7 +89,7 @@ In order to synchronise video markers and time series data, the *.edl* file shou
 
 *Note: markers in .edl format are read from the './data/markers' directory*.
 
-## 3- Analysis
+## 2- Data Analysis
 The *Data Analysis App* displays segments of data grouped by class. This is useful to study the differences across classes (e.g. to design an event detection or feature extraction algorithm). Segments can be plotted either on top of each other or sequentially (i.e. after each other). In order to visualize data:
 
 1. Select one or more input data files.
@@ -96,7 +100,7 @@ The *Data Analysis App* displays segments of data grouped by class. This is usef
 
 ![Data Annotation App](doc/images/2-VisualizationApp.png)
 
-## 4- Algorithm Development
+## 3- Algorithm Implementation
 
 Most wearable device applications execute a chain (i.e. sequence) of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain and consists of the following *stages*:
 ![Activity Recognition Chain](doc/images/ARC.png)
@@ -153,7 +157,7 @@ DataLoader.SaveComputer(arcChain,'goalkeeperChain.mat');
 ```
 This chain of computations produces a feature table that can be used within the *Assessment App* to study the performance of different machine learning algorithms.
 
-## 5- Assessment
+## 4- Algorithm Assessment
 
 The development and assessement / evaluation of an activity recognition algorithm usually represents a large fraction of the effort to develop the entire application. The *Assessment App* enables developers to design algorithms by selecting reusable components at each stage of the activity recognition chain and to assess their performance. The recognition performance metrics provided by this tool are:
 
