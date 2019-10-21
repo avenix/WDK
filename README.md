@@ -40,7 +40,7 @@ ax,ay,az,gx,gy,gz
 ```
 You can save a loaded file in the WDK's format by clicking on *Save Data WDK*. 
 
-*Note: by default, the Data Conversion App loads data files from the ./data/rawdata/ directory. Converted files are saved to the ./ root directory. You should copy your converted files to the ./data/rawdata/  directory for the other tools to be able to use them.*
+*Note: by default, the Data Conversion App loads data files from the ./data/rawdata/ directory. Converted files are saved to the "./" root directory. You should copy your converted files to the "./data/rawdata/"  directory for the other tools to be able to use them.*
 
 ## 1- Data Annotation
 
@@ -234,7 +234,7 @@ An invocation to an event detection algorithm produces 0 or 1 value.
 | EventSegmentation  | Creates a segment around an event by taking *segmentSizeLeft* samples to the left and *segmentSizeRight* to the right of the event. *Note: receives an event as input.*                                                                                | *segmentSizeLeft* + *segmentSizeRight* | *segmentSizeLeft* + *segmentSizeRight* |
 | ManualSegmentation | Creates segments for each annotation (converts RangeAnnotations to segments and creates segments around each EventAnnotations). This segmentation strategy cannot be used in a real application, but is useful to study the quality of the annotations | -                                      | -                                      |
 
-An invocation to a segmentation algorithm produces a segment (of *segmentSize* or *segmentSizeLeft* + *segmentSizeRight* values) .
+An invocation to a segmentation algorithm produces a segment (of *segmentSize* or *segmentSizeLeft* + *segmentSizeRight* values).
 
 ### Labeling
 
@@ -275,7 +275,7 @@ An invocation to a segmentation algorithm produces a segment (of *segmentSize* o
 | SMV          | ![SignalVectorMagnitude](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csum_%7Bi%3D1%7D%5En%20%5Csqrt%7Bx_i%5E2%20&plus;%20y_i%5E2%29%7D%7D%7Bn%7D)                                                                                                                                                                               | 4 n         | 1                  |
 | SMA          | Sum of absolute values of every sample (takes 2-D inputs) ![SMA](https://latex.codecogs.com/gif.latex?%5Csum%20_%7Bi%3D1%7D%5E%7Bn%7D%20%5Csum%20_%7Bj%3D1%7D%5E%7Bm%7D%20%5Cleft%20%7Cx_%7Bij%7D%20%5Cright%20%7C)                                                                                                                  | n m         | 1                  |
 
-Invocations to time-domain feature extraction algorithms produce a single value except for the Quantile component which produces *numQuantileParts* values
+Invocations to time-domain feature extraction algorithms produce a single value except for the Quantile component which produces *numQuantileParts* values.
 
 #### Frequency-domain features
 
@@ -291,7 +291,7 @@ Invocations to time-domain feature extraction algorithms produce a single value 
 | SpectralFlatness | Provides a way to quantify how noise-like a sound is. White noise has peaks in all frequencies making its spectrum look flat. ![SpectralFlatness](https://latex.codecogs.com/gif.latex?%5Cfrac%7B%5Csqrt%5Bn%5D%7B%5Cprod_%7Bi%3D1%7D%5E%7Bn%7D%20x_i%7D%7D%7B%5Cfrac%7B1%7D%7Bn%7D%5Csum_%7Bi%3D1%7D%5En%20x%28n%29%7D) | 68 n      | 1      |
 | SpectralSpread   | Indicates the variance in the distribution of frequencies.                                                                                                                                                                                                                                                               | 11 n      | 1      |
 
-Invocations to frequency-domain feature extraction algorithms output a single value except for the FFT and PowerSpectrum which produce *n/2* and *n* values respectively
+Invocations to frequency-domain feature extraction algorithms output a single value except for the FFT and PowerSpectrum which produce *n/2* and *n* values respectively.
 
 ### Classification
 
@@ -311,7 +311,7 @@ The performance metrics of each classifier depend on its configuration and are c
 | LabelMapper                   | maps classified labels to different labels. Can be used to group classified labels when a greater level of detail was used in the classification.                                                                                                         |
 | LabelSlidingWindowMaxSelector | replaces every label at index labelIndex in an array of predicted labels with the most frequent label in the range [labelIndex −windowSize/2,labelIndex +windowSize/2, or with the NULL-class if no label occurs at least minimumCount times in the range |
 
-The postprocessing components produce a label as output.  
+The postprocessing components produce a label as output.
 
 ### Utilities
 
