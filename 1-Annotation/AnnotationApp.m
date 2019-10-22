@@ -7,6 +7,8 @@ classdef AnnotationApp < handle
         SegmentHeight = 30;
         AxisToDataRatio = 1.3;
         PlotLineWidth = 2;
+        kToolWidth = 64;
+        kToolPadding = 35;
     end
     
     properties (Access = private)
@@ -21,6 +23,9 @@ classdef AnnotationApp < handle
         videoFileNames;
         videoFileNamesNoExtension;
         
+        %ui images
+        uiImages;
+       
         %data
         dataFile;
         magnitude;
@@ -48,7 +53,7 @@ classdef AnnotationApp < handle
         %ui
         videoFigure;
         plottedSignalYRange;
-        state AnnotationState = AnnotationState.kSelectMode;    
+        state AnnotationState = AnnotationState.kSetTimeline;    
         uiHandles;
         plotAxes;
         rangeSelectionAxis = [];
@@ -83,10 +88,10 @@ classdef AnnotationApp < handle
 
         function handleAnnotationClicked(obj,source,~)
             tag = str2double(source.Tag);
-            if obj.state == AnnotationState.kDeleteMode
+            if obj.state == AnnotationState.kDeleteAnnotationState
                 obj.eventAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
                 obj.rangeAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
-            elseif obj.state == AnnotationState.kModifyMode
+            elseif obj.state == AnnotationState.kModifyAnnotationState
                 currentClass = obj.uiHandles.classesList.Value;
                 obj.eventAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
                 obj.rangeAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
@@ -114,6 +119,9 @@ classdef AnnotationApp < handle
         function loadUI(obj)
             obj.uiHandles = guihandles(AnnotationUI);
             
+            obj.loadUIImages();
+            obj.setUIImages();
+            
             obj.uiHandles.mainFigure.Visible = false;
             movegui(obj.uiHandles.mainFigure,'center');
             obj.uiHandles.mainFigure.Visible = true;
@@ -128,7 +136,6 @@ classdef AnnotationApp < handle
             obj.uiHandles.stateButtonGroup.SelectionChangedFcn = @obj.handleStateChanged;
             obj.uiHandles.findButton.Callback = @obj.handleFindPeaksClicked;
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
-            obj.uiHandles.addRangeAnnotationButton.Callback = @obj.handleAddRangeClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
             obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
             obj.uiHandles.mainFigure.DeleteFcn = @obj.handleWindowClosed;
@@ -148,7 +155,72 @@ classdef AnnotationApp < handle
                 obj.uiHandles.signalComputerList,...
                 obj.uiHandles.signalComputerVariablesTable);
         end
-                
+
+        function loadUIImages(obj)    
+            fileNames = {{'zoomIn','zoomInSelected'},{'zoomOut','zoomOutSelected'},...
+                {'pan','panSelected'},{'setTimeline','setTimelineSelected'},...
+                {'addEvent','addEventSelected'},{'addRange','addRangeSelected'},...
+                {'modifyAnnotation','modifyAnnotationSelected'}, {'deleteAnnotation','deleteAnnotationSelected'}};
+            
+            nImages = size(fileNames,2);
+            obj.uiImages = cell(nImages,2);
+            
+            for i = 1 : nImages
+                fileName = strcat('resources/',fileNames{i}{1},'.png');
+                obj.uiImages{i,1} = imread(fileName);
+                fileName = strcat('resources/',fileNames{i}{2},'.png');
+                obj.uiImages{i,2} = imread(fileName);
+            end
+        end
+        
+        function setUIImages(obj)
+            
+            uiObjects = {obj.uiHandles.zoomInRadio,obj.uiHandles.zoomOutRadio,...
+                obj.uiHandles.panRadio,obj.uiHandles.selectDataRadio,...
+                obj.uiHandles.addEventRadio, obj.uiHandles.addRangeRadio,...
+                obj.uiHandles.modifyAnnotationRadio, obj.uiHandles.deleteAnnotationRadio};
+            
+            obj.layoutTools(uiObjects);            
+            
+            obj.layoutToolLabels(uiObjects);
+            obj.enableSetTimelineMode();
+        end
+        
+        function layoutTools(obj,uiObjects)
+            nObjects = length(uiObjects);
+            
+            for i = 1 : nObjects
+                object = uiObjects{i};
+                object.CData = obj.uiImages{i,1};
+                object.Units = 'pixels';
+                object.Position(2) = 0;
+                object.Position(3) = AnnotationApp.kToolWidth;
+                object.Position(4)= AnnotationApp.kToolWidth;
+            end
+            
+            for i = 2 : nObjects
+                object = uiObjects{i};
+                prevObject = uiObjects{i-1};
+                object.Position(1) = prevObject.Position(1) + AnnotationApp.kToolWidth + AnnotationApp.kToolPadding;
+            end
+            
+        end
+        
+        function layoutToolLabels(obj,uiObjects)
+            uiLabels = {obj.uiHandles.zoomInLabel,obj.uiHandles.zoomOutLabel,...
+                obj.uiHandles.panLabel,obj.uiHandles.selectSamplesLabel,...
+                obj.uiHandles.addEventLabel, obj.uiHandles.addRangeLabel,...
+                obj.uiHandles.modifyAnnotationsLabel, obj.uiHandles.deleteAnnotationsLabel};
+            
+            nObjects = length(uiObjects);
+            
+            for i = 1 : nObjects    
+                object = uiObjects{i};
+                label = uiLabels{i};
+                label.Position(1) = object.Position(1);
+            end
+        end
+        
         function loadLabeling(obj)
             classesList = obj.dataLoader.LoadClassesFile();
             obj.labeling = Labeling(classesList);
@@ -327,28 +399,23 @@ classdef AnnotationApp < handle
         end
         
         function selectRangeAtLocation(obj,x)
-            
-            if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
-                obj.deleteRangeSelection();
-            end
-            
+                       
             if isempty(obj.rangeSelection)
                 obj.rangeSelection = AnnotationSampleRange(x);
             else
                 obj.rangeSelection.addValue(x);
+                obj.addCurrentRange();
             end
             
             obj.updateRangeSelection();
         end
         
-        function updateRangeSelection(obj)
-            if isempty(obj.rangeSelection)
+        function cancelCurrentRangeSelection(obj)    
+            if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
                 obj.deleteRangeSelection();
-            elseif obj.rangeSelection.isValidRange()
-                obj.plotRangeSelection();
             end
         end
-        
+
         function plotRangeSelection(obj)
             selectionRanges = obj.rangeSelection.sample1:obj.rangeSelection.sample2;
             selectionMagnitude = obj.magnitude(selectionRanges,:);
@@ -549,17 +616,17 @@ classdef AnnotationApp < handle
             
             fprintf('%d\n',x);
             
-            if obj.state == AnnotationState.kAddMode
+            if obj.state == AnnotationState.kAddEventState
                 if obj.isSelectingPeaks
                     obj.addPeakAtLocation(x);
                 else
                     obj.addSampleAtLocation(x);
                 end
-            elseif obj.state == AnnotationState.kSelectMode
+            elseif obj.state == AnnotationState.kSelectDataState
                 obj.timeLineMarker = x;
                 obj.updateTimelineMarker();
                 obj.updateVideoFrame();
-            elseif obj.state == AnnotationState.kSelectRangesMode
+            elseif obj.state == AnnotationState.kAddRangeState
                 obj.selectRangeAtLocation(x);
             end
         end
@@ -588,28 +655,149 @@ classdef AnnotationApp < handle
         end
         
         function handleStateChanged(obj,~,~)
-            
-            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
-            cursorModeHandle.Enable = 'on';
-            
-            if obj.state == AnnotationState.kSelectRangesMode
-                obj.deleteRangeSelection();
-            end
+                        
+            obj.disableCurrentState();
             
             switch obj.uiHandles.stateButtonGroup.SelectedObject
-                case (obj.uiHandles.selectRadio)
-                    obj.state = AnnotationState.kSelectMode;
-                case (obj.uiHandles.addRadio)
-                    obj.state = AnnotationState.kAddMode;
-                case (obj.uiHandles.modifyRadio)
-                    obj.state = AnnotationState.kModifyMode;
-                    cursorModeHandle.Enable = 'off';
-                case (obj.uiHandles.deleteRadio)
-                    obj.state = AnnotationState.kDeleteMode;
-                    cursorModeHandle.Enable = 'off';
-                case (obj.uiHandles.selectRangeRadio)
-                    obj.state = AnnotationState.kSelectRangesMode;
+                case (obj.uiHandles.zoomInRadio)
+                    obj.state = AnnotationState.kZoomInState;
+                    obj.enableZoomInMode();
+                case (obj.uiHandles.zoomOutRadio)
+                    obj.state = AnnotationState.kZoomOutState;
+                    obj.enableZoomOutMode();
+                case (obj.uiHandles.panRadio)
+                    obj.state = AnnotationState.kPanState;
+                    obj.enablePanMode();
+                case (obj.uiHandles.selectTimelineRadio)
+                    obj.state = AnnotationState.kSetTimeline;
+                    obj.enableSetTimelineMode();
+                case (obj.uiHandles.addEventRadio)
+                    obj.state = AnnotationState.kAddEventState;
+                    obj.enableAddEventMode();
+                case (obj.uiHandles.addRangeRadio)
+                    obj.state = AnnotationState.kAddRangeState;
+                    obj.enableAddRangeState();
+                case (obj.uiHandles.modifyAnnotationRadio)
+                    obj.state = AnnotationState.kModifyAnnotationState;
+                    obj.enableModifyAnnotationState();
+                case (obj.uiHandles.deleteAnnotationRadio)
+                    obj.state = AnnotationState.kDeleteAnnotationState;
+                    obj.enableDeleteAnnotationState();
+                
             end
+        end
+        
+        function disableCurrentState(obj)
+            switch obj.state
+                case (AnnotationState.kZoomInState)
+                    obj.disableZoomInMode();
+                case (AnnotationState.kZoomOutState)
+                    obj.disableZoomOutMode();
+                case (AnnotationState.kPanState)
+                    obj.disablePanMode();
+                case (AnnotationState.kSetTimeline)
+                    obj.disableSetTimelineMode();
+                case (AnnotationState.kAddEventState)
+                    obj.disableAddEventMode();
+                case (AnnotationState.kAddRangeState)
+                    %obj.deleteRangeSelection();
+                    obj.disableAddRangeState();
+                case (AnnotationState.kModifyAnnotationState)
+                    obj.disableModifyAnnotationState();
+                case (AnnotationState.kDeleteAnnotationState)
+                    obj.disableDeleteAnnotationState();
+                
+            end
+        end
+        
+        function enableZoomInMode(obj)    
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'on';
+            zoomModeHandle.Direction = 'in';
+            obj.uiHandles.zoomInRadio.CData = obj.uiImages{AnnotationState.kZoomInState,2};
+        end
+        
+        function disableZoomInMode(obj)
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'off';
+            obj.uiHandles.zoomInRadio.CData = obj.uiImages{AnnotationState.kZoomInState,1};
+        end
+        
+        function enableZoomOutMode(obj)    
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'on';
+            zoomModeHandle.Direction = 'out';
+            obj.uiHandles.zoomOutRadio.CData = obj.uiImages{AnnotationState.kZoomOutState,2};
+        end
+                
+        function disableZoomOutMode(obj)
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'off';
+            obj.uiHandles.zoomOutRadio.CData = obj.uiImages{AnnotationState.kZoomOutState,1};
+        end
+        
+        function enablePanMode(obj)
+            panModeHandle = pan(obj.uiHandles.mainFigure);
+            panModeHandle.Enable = 'on';
+            obj.uiHandles.panRadio.CData = obj.uiImages{AnnotationState.kPanState,2};
+        end
+        
+        function disablePanMode(obj)
+            panModeHandle = pan(obj.uiHandles.mainFigure);
+            panModeHandle.Enable = 'off';
+            obj.uiHandles.panRadio.CData = obj.uiImages{AnnotationState.kPanState,1};
+        end
+        
+        function enableSetTimelineMode(obj)
+            obj.uiHandles.selectDataRadio.CData = obj.uiImages{AnnotationState.kSetTimeline,2};
+        end
+        
+        function disableSetTimelineMode(obj)    
+            obj.uiHandles.selectDataRadio.CData = obj.uiImages{AnnotationState.kSelectDataState,1};
+        end
+        
+        function enableAddEventMode(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'on';
+            obj.uiHandles.addEventRadio.CData = obj.uiImages{AnnotationState.kAddEventState,2};
+        end
+        
+        function disableAddEventMode(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.addEventRadio.CData = obj.uiImages{AnnotationState.kAddEventState,1};
+        end
+        
+        function enableAddRangeState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'on';
+            obj.uiHandles.addRangeRadio.CData = obj.uiImages{AnnotationState.kAddRangeState,2};
+        end
+        
+        function disableAddRangeState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.addRangeRadio.CData = obj.uiImages{AnnotationState.kAddRangeState,1};
+        end
+        
+        function enableModifyAnnotationState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.modifyAnnotationRadio.CData = obj.uiImages{AnnotationState.kModifyAnnotationState,2};
+        end
+        
+        function disableModifyAnnotationState(obj)
+            obj.uiHandles.modifyAnnotationRadio.CData = obj.uiImages{AnnotationState.kModifyAnnotationState,1};
+        end
+        
+        function enableDeleteAnnotationState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.deleteAnnotationRadio.CData = obj.uiImages{AnnotationState.kDeleteAnnotationState,2};
+        end
+        
+        function disableDeleteAnnotationState(obj)    
+            obj.uiHandles.deleteAnnotationRadio.CData = obj.uiImages{AnnotationState.kDeleteAnnotationState,1};
         end
         
         function handleSelectingPeaksSelected(obj,~,~)
@@ -653,10 +841,6 @@ classdef AnnotationApp < handle
         
         function handleSelectionChanged(obj,~,~)
             obj.updateFileName();
-        end
-        
-        function handleAddRangeClicked(obj,~,~)
-            obj.addCurrentRange();
         end
         
         function handleKeyPress(obj, source, event)

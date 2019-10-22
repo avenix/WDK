@@ -52,7 +52,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
             yOffset = (rectangleHeight - (obj.yRange(2) - obj.yRange(1))) / 2;
             rectangleWidth = single(rangeAnnotation.endSample - rangeAnnotation.startSample);
             rectanglePosition = [single(rangeAnnotation.startSample), obj.yRange(1) - yOffset, single(rectangleWidth), rectangleHeight];
-            segmentRectangleHandle = rectangle('Position',rectanglePosition,'Curvature',[obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.LineWidth);
+            segmentRectangleHandle = rectangle(plotAxes,'Position',rectanglePosition,'Curvature',[obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.LineWidth);
 
             %plot label
             classStr = obj.labeling.stringForClassAtIdx(rangeAnnotation.label);
