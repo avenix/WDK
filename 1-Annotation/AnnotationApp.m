@@ -9,6 +9,11 @@ classdef AnnotationApp < handle
         PlotLineWidth = 2;
         kToolWidth = 64;
         kToolPadding = 35;
+        kVideoTimelineLineWidth = 4;
+        kTimelineColor = [1,0,0];
+        kRangeAnnotationRectangleYPosToDataRatio = 1.03;
+        kMaxPlots = 6;
+        kLegendFontSize = 14;
     end
     
     properties (Access = private)
@@ -28,14 +33,12 @@ classdef AnnotationApp < handle
        
         %data
         dataFile;
-        magnitude;
+        preprocessedSignals;
+        preprocessingAlgorithms;
         
         %synchronisation
         synchronisationFile;
-        
-        %signal computers
-        preprocessingConfigurator;
-                
+                        
         %annotations
         annotationSet;
         eventAnnotationsPlotter;
@@ -51,9 +54,10 @@ classdef AnnotationApp < handle
         timeLineMarkerHandle;
         
         %ui
+        preprocessingDialog;
         videoFigure;
         plottedSignalYRange;
-        state AnnotationState = AnnotationState.kSetTimeline;    
+        state AnnotationState = AnnotationState.kSetTimelineState;    
         uiHandles;
         plotAxes;
         rangeSelectionAxis = [];
@@ -107,8 +111,19 @@ classdef AnnotationApp < handle
             end
         end
         
+        function handlePreprocessedSignalsComputed(obj,preprocessingAlgorithms,~)
+            obj.preprocessingAlgorithms = preprocessingAlgorithms;
+            obj.updateSignalsTable();
+        end
+        
         function handleVideoPlayerWindowClosed(obj)
             obj.deleteVideoPlayer();
+        end
+        
+        function handlePreprocessingDialogClosed(obj,~)
+            delete(obj.preprocessingDialog);
+            obj.uiHandles.addSignalsButton.enable = 'on';
+            obj.preprocessingDialog = [];
         end
     end
     
@@ -122,6 +137,10 @@ classdef AnnotationApp < handle
             obj.loadUIImages();
             obj.setUIImages();
             
+            obj.uiHandles.signalsTable.Data = [];
+            
+            obj.uiHandles.addSignalButton.Enable = 'off';
+            
             obj.uiHandles.mainFigure.Visible = false;
             movegui(obj.uiHandles.mainFigure,'center');
             obj.uiHandles.mainFigure.Visible = true;
@@ -132,6 +151,9 @@ classdef AnnotationApp < handle
             obj.uiHandles.showMarkersCheckBox.Callback = @obj.handleShowMarkersToggled;
             obj.uiHandles.showEventsCheckBox.Callback = @obj.handleShowEventsToggled;
             obj.uiHandles.showRangesCheckBox.Callback = @obj.handleShowRangesToggled;
+            obj.uiHandles.addSignalButton.Callback = @obj.handleAddSignalsClicked;
+            
+            obj.uiHandles.selectAllCheckBox.Callback = @obj.handleSelectAllToggled;
             
             obj.uiHandles.stateButtonGroup.SelectionChangedFcn = @obj.handleStateChanged;
             obj.uiHandles.findButton.Callback = @obj.handleFindPeaksClicked;
@@ -147,13 +169,6 @@ classdef AnnotationApp < handle
             obj.populateClassesList();
 
             obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
-            
-            signalComputers = Palette.PreprocessingComputers();
-            obj.preprocessingConfigurator = PreprocessingConfiguratorGuide(...
-                signalComputers,...
-                obj.uiHandles.signalsList,...
-                obj.uiHandles.signalComputerList,...
-                obj.uiHandles.signalComputerVariablesTable);
         end
 
         function loadUIImages(obj)    
@@ -176,7 +191,7 @@ classdef AnnotationApp < handle
         function setUIImages(obj)
             
             uiObjects = {obj.uiHandles.zoomInRadio,obj.uiHandles.zoomOutRadio,...
-                obj.uiHandles.panRadio,obj.uiHandles.selectDataRadio,...
+                obj.uiHandles.panRadio,obj.uiHandles.setTimelineRadio,...
                 obj.uiHandles.addEventRadio, obj.uiHandles.addRangeRadio,...
                 obj.uiHandles.modifyAnnotationRadio, obj.uiHandles.deleteAnnotationRadio};
             
@@ -193,7 +208,7 @@ classdef AnnotationApp < handle
                 object = uiObjects{i};
                 object.CData = obj.uiImages{i,1};
                 object.Units = 'pixels';
-                object.Position(2) = 0;
+                object.Position(2) = 15;
                 object.Position(3) = AnnotationApp.kToolWidth;
                 object.Position(4)= AnnotationApp.kToolWidth;
             end
@@ -217,7 +232,7 @@ classdef AnnotationApp < handle
             for i = 1 : nObjects    
                 object = uiObjects{i};
                 label = uiLabels{i};
-                label.Position(1) = object.Position(1);
+                label.Position(1) = object.Position(1) - 15;
             end
         end
         
@@ -242,6 +257,7 @@ classdef AnnotationApp < handle
                 obj.loadSynchronisationFile();
                 obj.loadMarkers();
                 obj.loadVideo();
+                obj.uiHandles.addSignalButton.Enable = 'on';
             end
         end
         
@@ -256,10 +272,8 @@ classdef AnnotationApp < handle
         end
         
         function loadPlotAxes(obj)
-            %obj.plotAxes = axes(obj.uiHandles.mainFigure);
             obj.plotAxes = obj.uiHandles.plotAxes;
             obj.plotAxes.Units = 'characters';
-            %obj.plotAxes.Position  = [35 4 230 57];
             obj.plotAxes.Visible = 'On';
             obj.plotAxes.Box = 'off';
         end
@@ -275,13 +289,16 @@ classdef AnnotationApp < handle
             if ~isempty(obj.timeLineMarker)
                 obj.timeLineMarkerHandle = line(obj.plotAxes,[obj.timeLineMarker, obj.timeLineMarker],...
                     [obj.plotAxes.YLim(1), obj.plotAxes.YLim(2)],...
-                    'Color','red','LineWidth',2,'LineStyle','-');
+                    'Color',AnnotationApp.kTimelineColor,'LineWidth',...
+                    AnnotationApp.kVideoTimelineLineWidth,'LineStyle','-');
             end
         end
         
         function updateTimelineMarker(obj)
-            set(obj.timeLineMarkerHandle,'XData',[obj.timeLineMarker, obj.timeLineMarker]);
-            drawnow;
+            if ~isempty(obj.timeLineMarkerHandle) && isvalid(obj.timeLineMarkerHandle)
+                set(obj.timeLineMarkerHandle,'XData',[obj.timeLineMarker, obj.timeLineMarker]);
+                drawnow;
+            end
         end
         
         function loadData(obj)
@@ -307,24 +324,60 @@ classdef AnnotationApp < handle
             end
         end
 
-        function plotData(obj)
+        function selectedSignals = getSelectedSignals(obj)
+            selectedSignals = cell2mat(obj.uiHandles.signalsTable.Data(:,2));
+        end
+        
+        function isDataPlotted = plotData(obj)
+            isDataPlotted = false;
             if ~isempty(obj.dataFile)
                 hold(obj.plotAxes,'on');
                 
-                selectedSignals = obj.preprocessingConfigurator.getSelectedSignalIdxs();
-                nSignals = length(selectedSignals);
-                obj.plotHandles = cell(1,nSignals+1);
+                signalsSelected = obj.getSelectedSignals();
                 
-                for i = 1 : nSignals
-                    signalIdx = selectedSignals(i);
-                    obj.plotHandles{i} = plot(obj.plotAxes,obj.dataFile.data(:,signalIdx));
+                %allocate plot handles
+                nSignals = sum(signalsSelected);
+                
+                if nSignals > 0
+                    isDataPlotted = true;
+                    obj.plotHandles = gobjects(1,nSignals);
+                    
+                    nRawSignals = size(obj.dataFile.data,2);
+                    
+                    signalCount = 0;
+                    for i = 1 : length(signalsSelected)
+                        if signalsSelected(i)
+                            signalCount = signalCount + 1;
+                            if i <= nRawSignals
+                                obj.plotHandles(signalCount) = plot(obj.plotAxes,...
+                                    obj.dataFile.data(:,i),...
+                                    'LineWidth', AnnotationApp.PlotLineWidth,...
+                                    'Color', Constants.kPlotColors{signalCount});
+                            else
+                                obj.plotHandles(signalCount) = plot(obj.plotAxes,...
+                                    obj.preprocessedSignals{i - nRawSignals},...
+                                    'LineWidth', AnnotationApp.PlotLineWidth,...
+                                    'Color', Constants.kPlotColors{signalCount});
+                            end
+                            if signalCount > AnnotationApp.kMaxPlots
+                                break;
+                            end
+                        end
+                    end
                 end
-                
-                obj.plotHandles{nSignals+1} = plot(obj.plotAxes,obj.magnitude,'LineWidth',AnnotationApp.PlotLineWidth);
-                
-                n = size(obj.magnitude,1);
-                axis(obj.plotAxes,[1,n,obj.plottedSignalYRange(1) * AnnotationApp.AxisToDataRatio, obj.plottedSignalYRange(2) * AnnotationApp.AxisToDataRatio]);
             end
+        end
+        
+        function setPlotLegend(obj)
+            signalsSelected = obj.getSelectedSignals();
+            labels = obj.uiHandles.signalsTable.Data(signalsSelected,1);
+            legendHandle = legend(obj.plotHandles,labels,'Location','northeast');
+            legendHandle.FontSize = AnnotationApp.kLegendFontSize;
+        end
+        
+        function setPlotAxes(obj)
+            nSamples = size(obj.dataFile.data,1);
+            axis(obj.plotAxes,[1,nSamples,obj.plottedSignalYRange(1) * AnnotationApp.AxisToDataRatio, obj.plottedSignalYRange(2) * AnnotationApp.AxisToDataRatio]);
         end
         
         function clearAll(obj)
@@ -348,13 +401,12 @@ classdef AnnotationApp < handle
         
         function deleteData(obj)
             obj.clearDataPlots();
-            obj.magnitude = [];
             obj.dataFile = [];
         end
         
         function clearDataPlots(obj)
             for i = 1 : length(obj.plotHandles)
-                plotHandle =  obj.plotHandles{i};
+                plotHandle =  obj.plotHandles(i);
                 delete(plotHandle);
             end
             obj.plotHandles = [];
@@ -415,12 +467,6 @@ classdef AnnotationApp < handle
                 obj.deleteRangeSelection();
             end
         end
-
-        function plotRangeSelection(obj)
-            selectionRanges = obj.rangeSelection.sample1:obj.rangeSelection.sample2;
-            selectionMagnitude = obj.magnitude(selectionRanges,:);
-            obj.rangeSelectionAxis = plot(obj.plotAxes,selectionRanges,selectionMagnitude,'Color','red');
-        end
         
         function deleteRangeSelection(obj)
             if ~isempty(obj.rangeSelectionAxis)
@@ -441,18 +487,17 @@ classdef AnnotationApp < handle
             obj.timeLineMarkerHandle = [];
         end
         
-        function addPeakAtLocation(obj,x)
+        function addPeakEventAtLocation(obj,x)
             peakIdx = obj.findPeakIdxNearLocation(x);
             
             if peakIdx > 0
-                obj.addSampleAtLocation(peakIdx);
+                obj.addEventAtLocation(peakIdx);
             end
         end
         
-        function addSampleAtLocation(obj,x)
-            y = obj.magnitude(x);
+        function addEventAtLocation(obj,x)
             currentClass = obj.getSelectedClass();
-            obj.eventAnnotationsPlotter.addAnnotation(obj.plotAxes,x,y,currentClass);
+            obj.eventAnnotationsPlotter.addAnnotation(obj.plotAxes,x,currentClass);
         end
         
         function updateLoadDataTextbox(obj,~,~)
@@ -553,23 +598,30 @@ classdef AnnotationApp < handle
         end
         
         function computePlottedSignalYRanges(obj)
-            maxY = max(max(obj.magnitude));
-            minY = min(min(obj.magnitude));
+            nPlots = length(obj.plotHandles);
             
-            selectedSignals = obj.preprocessingConfigurator.getSelectedSignalIdxs();
+            totalMaxY = -inf;
+            totalMinY = inf;
             
-            maxYSignals = max(max(obj.dataFile.data(:,selectedSignals)));
-            maxY = max(maxY,maxYSignals);
+            for i = 1 : nPlots
+                plotHandle = obj.plotHandles(i);
+                maxY = max(plotHandle.YData);
+                minY = min(plotHandle.YData);
+                totalMaxY = max(totalMaxY,maxY);
+                totalMinY = min(totalMinY,minY);
+            end
             
-            minYSignals = min(min(obj.dataFile.data(:,selectedSignals)));
-            minY = min(minY,minYSignals);
-            obj.plottedSignalYRange = [minY, maxY];
+            obj.plottedSignalYRange(1) = totalMinY;
+            obj.plottedSignalYRange(2) = totalMaxY;
         end
         
         function plotAnnotations(obj)
-                obj.rangeAnnotationsPlotter.yRange = obj.plottedSignalYRange;
-            if ~isempty(obj.annotationSet) && ~isempty(obj.magnitude)
-                obj.eventAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations,obj.magnitude);
+            obj.eventAnnotationsPlotter.verticalLineYRange = obj.plottedSignalYRange;
+            obj.rangeAnnotationsPlotter.rectanglesYRange = ...
+                obj.plottedSignalYRange * AnnotationApp.kRangeAnnotationRectangleYPosToDataRatio;
+            
+            if ~isempty(obj.annotationSet)
+                obj.eventAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations);
                 obj.rangeAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.rangeAnnotations);
             end
         end
@@ -580,11 +632,16 @@ classdef AnnotationApp < handle
             peakIdx = int32(peakIdx + idx - obj.FindPeaksRadius - 1);
         end
         
-        function computeMagnitude(obj)
-            signalComputer = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
+        function computePreprocessedSignals(obj)
             
-            if ~isempty(signalComputer)
-                obj.magnitude = signalComputer.compute(obj.dataFile.data);
+            nSignals = length(obj.preprocessingAlgorithms);
+            
+            obj.preprocessedSignals = cell(1,nSignals);
+            
+            for i = 1 : nSignals
+                preprocessingAlgorithm = obj.preprocessingAlgorithms{i};
+                preprocessedSignal = preprocessingAlgorithm.compute(obj.dataFile.data);
+                obj.preprocessedSignals{i} = preprocessedSignal;
             end
         end
         
@@ -604,6 +661,31 @@ classdef AnnotationApp < handle
             shouldSelectPeaks = obj.uiHandles.peaksCheckBox.Value;
         end
         
+        function updateSignalsTable(obj)
+            
+            nRawSignals = size(obj.dataFile.data,2);
+            nPreprocessingAlgorithms = size(obj.preprocessingAlgorithms,2);
+            nTotalSignals = nRawSignals + nPreprocessingAlgorithms;
+            
+            tableData = cell(nTotalSignals,2);
+            
+            %fill in raw signal names
+            tableData(1:nRawSignals,1) = obj.dataFile.columnNames;
+            
+            %fill in preprocessed signal names
+            tableData(nRawSignals+1:end,1) = Helper.ComputersToStringsArray(obj.preprocessingAlgorithms);
+            
+            %fill in second column
+            tableData(:,2) = num2cell(false(nTotalSignals,1));
+            
+            obj.uiHandles.signalsTable.Data = tableData;
+        end
+        
+        %% Delegates
+        function handleDidUpdatepreprocessedSignals(obj,~,signals)
+            obj.preprocessedSignals = signals;
+        end
+        
         %% Handles
         function outputTxt = handleUserClick(obj,src,~)
 
@@ -618,11 +700,11 @@ classdef AnnotationApp < handle
             
             if obj.state == AnnotationState.kAddEventState
                 if obj.isSelectingPeaks
-                    obj.addPeakAtLocation(x);
+                    obj.addPeakEventAtLocation(x);
                 else
-                    obj.addSampleAtLocation(x);
+                    obj.addEventAtLocation(x);
                 end
-            elseif obj.state == AnnotationState.kSelectDataState
+            elseif obj.state == AnnotationState.kSetTimelineState
                 obj.timeLineMarker = x;
                 obj.updateTimelineMarker();
                 obj.updateVideoFrame();
@@ -637,20 +719,24 @@ classdef AnnotationApp < handle
             obj.loadAll();
             
             if ~isempty(obj.dataFile)
-                obj.preprocessingConfigurator.setSignals(obj.dataFile.columnNames);
                 obj.updateLoadDataTextbox();
+                obj.updateSignalsTable();
             end
         end
         
         function handleVisualizeClicked(obj,~,~)
             if ~isempty(obj.dataFile)
                 obj.clearAll();
-                obj.computeMagnitude();
-                obj.computePlottedSignalYRanges();
-                obj.plotData();
-                obj.plotAnnotations();
-                obj.plotMarkers();
-                obj.plotTimelineMarker();
+                obj.computePreprocessedSignals();
+                dataPlotted = obj.plotData();
+                if dataPlotted
+                    obj.computePlottedSignalYRanges();
+                    obj.setPlotAxes();
+                    obj.plotAnnotations();
+                    obj.plotMarkers();
+                    obj.plotTimelineMarker();
+                    obj.setPlotLegend();
+                end
             end
         end
         
@@ -668,8 +754,8 @@ classdef AnnotationApp < handle
                 case (obj.uiHandles.panRadio)
                     obj.state = AnnotationState.kPanState;
                     obj.enablePanMode();
-                case (obj.uiHandles.selectTimelineRadio)
-                    obj.state = AnnotationState.kSetTimeline;
+                case (obj.uiHandles.setTimelineRadio)
+                    obj.state = AnnotationState.kSetTimelineState;
                     obj.enableSetTimelineMode();
                 case (obj.uiHandles.addEventRadio)
                     obj.state = AnnotationState.kAddEventState;
@@ -683,7 +769,6 @@ classdef AnnotationApp < handle
                 case (obj.uiHandles.deleteAnnotationRadio)
                     obj.state = AnnotationState.kDeleteAnnotationState;
                     obj.enableDeleteAnnotationState();
-                
             end
         end
         
@@ -695,18 +780,16 @@ classdef AnnotationApp < handle
                     obj.disableZoomOutMode();
                 case (AnnotationState.kPanState)
                     obj.disablePanMode();
-                case (AnnotationState.kSetTimeline)
+                case (AnnotationState.kSetTimelineState)
                     obj.disableSetTimelineMode();
                 case (AnnotationState.kAddEventState)
                     obj.disableAddEventMode();
                 case (AnnotationState.kAddRangeState)
-                    %obj.deleteRangeSelection();
                     obj.disableAddRangeState();
                 case (AnnotationState.kModifyAnnotationState)
                     obj.disableModifyAnnotationState();
                 case (AnnotationState.kDeleteAnnotationState)
                     obj.disableDeleteAnnotationState();
-                
             end
         end
         
@@ -749,17 +832,20 @@ classdef AnnotationApp < handle
         end
         
         function enableSetTimelineMode(obj)
-            obj.uiHandles.selectDataRadio.CData = obj.uiImages{AnnotationState.kSetTimeline,2};
+            obj.uiHandles.setTimelineRadio.CData = obj.uiImages{AnnotationState.kSetTimelineState,2};
         end
         
         function disableSetTimelineMode(obj)    
-            obj.uiHandles.selectDataRadio.CData = obj.uiImages{AnnotationState.kSelectDataState,1};
+            obj.uiHandles.setTimelineRadio.CData = obj.uiImages{AnnotationState.kSetTimelineState,1};
         end
         
         function enableAddEventMode(obj)
             cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
             cursorModeHandle.Enable = 'on';
             obj.uiHandles.addEventRadio.CData = obj.uiImages{AnnotationState.kAddEventState,2};
+            
+            obj.uiHandles.showEventsCheckBox.Value = true;
+            obj.handleShowEventsToggled();
         end
         
         function disableAddEventMode(obj)
@@ -772,6 +858,9 @@ classdef AnnotationApp < handle
             cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
             cursorModeHandle.Enable = 'on';
             obj.uiHandles.addRangeRadio.CData = obj.uiImages{AnnotationState.kAddRangeState,2};
+            
+            obj.uiHandles.showRangesCheckBox.Value = true;
+            obj.handleShowRangesToggled();
         end
         
         function disableAddRangeState(obj)
@@ -843,8 +932,31 @@ classdef AnnotationApp < handle
             obj.updateFileName();
         end
         
-        function handleKeyPress(obj, source, event)
+        function handleAddSignalsClicked(obj,~,~)
             
+            if isempty(obj.preprocessingDialog)
+                obj.preprocessingDialog = PreprocessingDialog(obj,obj.dataFile);
+                
+                positionX = obj.uiHandles.mainFigure.Position(1) + obj.uiHandles.addSignalButton.Position(1);
+                positionY = obj.uiHandles.mainFigure.Position(2) + obj.uiHandles.addSignalButton.Position(2);
+                obj.preprocessingDialog.Figure.Position(1) = positionX;
+                obj.preprocessingDialog.Figure.Position(2) = positionY;
+            else
+                figure(obj.preprocessingDialog.Figure)
+            end
+        end
+        
+        function handleSelectAllToggled(obj,~,~)
+            selectAllChecked = obj.uiHandles.selectAllCheckBox.Value;
+            nSignals = size(obj.uiHandles.signalsTable.Data,1);
+            if selectAllChecked
+                obj.uiHandles.signalsTable.Data(:,2) = num2cell(true(nSignals,1));
+            else
+                obj.uiHandles.signalsTable.Data(:,2) = num2cell(false(nSignals,1));
+            end
+        end
+        
+        function handleKeyPress(obj, source, event)
             switch event.Key
                 case 'uparrow'
                     datacursormode toggle;
@@ -864,10 +976,15 @@ classdef AnnotationApp < handle
             obj.updateVideoFrame();
         end
         
+        
         function handleWindowClosed(obj,~,~)
             if ~isempty(obj.videoPlayer)
                 obj.videoPlayer.close();
                 obj.deleteVideoPlayer();
+            end
+            
+            if ~isempty(obj.preprocessingDialog)
+                delete(obj.preprocessingDialog);
             end
         end
         

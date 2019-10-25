@@ -7,37 +7,37 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:export-ydpi="7.9350562"
-   inkscape:export-xdpi="7.9350562"
-   inkscape:export-filename="/Users/avenix/Desktop/addEventSelected.png"
-   width="200mm"
-   height="200mm"
-   viewBox="0 0 200 200"
-   version="1.1"
-   id="svg8"
+   sodipodi:docname="addEventSelected.svg"
    inkscape:version="1.0beta1 (32d4812, 2019-09-19)"
-   sodipodi:docname="addEventSelected.svg">
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 200 200"
+   height="200mm"
+   width="200mm"
+   inkscape:export-filename="/Users/avenix/Desktop/addEvent.png"
+   inkscape:export-xdpi="8.1280003"
+   inkscape:export-ydpi="8.1280003">
   <defs
      id="defs2" />
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="400"
-     inkscape:cy="560"
-     inkscape:document-units="mm"
-     inkscape:current-layer="svg8"
-     inkscape:document-rotation="0"
+     inkscape:window-maximized="0"
+     inkscape:window-y="23"
+     inkscape:window-x="691"
+     inkscape:window-height="1209"
+     inkscape:window-width="1679"
      showgrid="false"
-     inkscape:window-width="1678"
-     inkscape:window-height="937"
-     inkscape:window-x="184"
-     inkscape:window-y="172"
-     inkscape:window-maximized="0" />
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="560"
+     inkscape:cx="400"
+     inkscape:zoom="0.35"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -51,52 +51,39 @@
     </rdf:RDF>
   </metadata>
   <g
-     style="display:inline"
-     inkscape:label="background"
+     inkscape:groupmode="layer"
      id="layer2"
-     inkscape:groupmode="layer">
+     inkscape:label="background"
+     style="display:inline">
     <rect
-       y="-0.75595242"
-       x="-0.75595242"
-       height="204.86308"
-       width="204.10715"
+       style="fill:#f0f0f0;stroke-width:24"
        id="rect860"
-       style="fill:#f0f0f0;stroke-width:24" />
+       width="204.10715"
+       height="204.86308"
+       x="-0.75595242"
+       y="-0.75595242" />
   </g>
   <g
-     style="display:inline"
-     inkscape:label="Layer 1"
+     id="layer1"
      inkscape:groupmode="layer"
-     id="layer1">
+     inkscape:label="Layer 1"
+     style="display:inline">
     <circle
-       style="fill:#f0f0f0;fill-opacity:1;fill-rule:evenodd;stroke:#bf6c00;stroke-width:23.3333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path10"
-       cx="100.4034"
+       r="87.5"
        cy="100.44122"
-       r="87.5" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:153.75600000000000023px;line-height:1.25;font-family:sans-serif;fill:#bf6c00;fill-opacity:1;stroke:none;stroke-width:0.167633;stroke-miterlimit:4;stroke-dasharray:none;"
-       x="34.076904"
-       y="166.34094"
-       id="text837"
-       transform="scale(0.9940099,1.0060262)"><tspan
-         sodipodi:role="line"
-         id="tspan835"
-         x="34.076904"
-         y="166.34094"
-         style="font-weight:bold;stroke-width:0.167633;stroke-miterlimit:4;stroke-dasharray:none;fill:#bf6c00;fill-opacity:1;">+</tspan></text>
+       cx="100.4034"
+       id="path10"
+       style="fill:#f0f0f0;fill-opacity:1;fill-rule:evenodd;stroke:#bf6c00;stroke-width:23.3333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <g
+       aria-label="+"
+       transform="matrix(0.9940099,0,0,1.0060262,1.5875,-0.52916667)"
+       id="text845"
+       style="font-style:normal;font-weight:normal;font-size:74.08329999999999416px;line-height:1.25;font-family:sans-serif;fill:#bf6c00;fill-opacity:1;stroke:none;stroke-width:0.167633;stroke-miterlimit:4;stroke-dasharray:none">
+      <path
+         d="m 123.89754,100.80319 h -19.28046 v 19.0996 h -9.911539 v -19.0996 H 75.425073 v -9.694498 h 19.280468 v -19.0996 h 9.911539 v 19.0996 h 19.28046 z"
+         style="font-weight:bold;stroke-width:0.167633;stroke-miterlimit:4;stroke-dasharray:none;fill:#bf6c00;fill-opacity:1"
+         id="path847"
+         inkscape:connector-curvature="0" />
+    </g>
   </g>
-  <text
-     id="text20"
-     y="108.71648"
-     x="112.32876"
-     style="font-style:normal;font-weight:normal;font-size:14.84169999999999945px;line-height:1.25;font-family:sans-serif;fill:#bf6c00;fill-opacity:1;stroke:none;stroke-width:0.371043;"
-     xml:space="preserve"
-     transform="scale(0.98751748,1.0126403)"><tspan
-       style="font-weight:bold;font-size:79.15600000000000591px;fill:#bf6c00;fill-opacity:1;stroke-width:0.371043;"
-       y="108.71648"
-       x="112.32876"
-       id="tspan18"
-       sodipodi:role="line">*</tspan></text>
 </svg>

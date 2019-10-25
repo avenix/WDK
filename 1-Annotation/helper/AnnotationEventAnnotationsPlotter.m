@@ -1,18 +1,23 @@
 classdef AnnotationEventAnnotationsPlotter < handle
     
     properties (Access = public,Constant)
-        AnnotationColor = 'red';
+        AnnotationColor = Constants.kUIColors{1};
         AnnotationFont = 20;
+        AnnotationLabelStairsCount = 10;
+        AnnotationLabelStairsYDiff = 0.05;
+        AnnotationLineWidth = 3;
     end
     
     properties (Access = public)
         delegate;
         annotationsMap;
         shouldShowAnnotations = true;
+        verticalLineYRange = [-1, 1];
     end
     
     properties (Access = private)
         labeling;
+        currentLabelStairs = 1;
     end
     
     methods
@@ -30,21 +35,20 @@ classdef AnnotationEventAnnotationsPlotter < handle
             obj.initAnnotationsMap();
         end
         
-        function plotAnnotations(obj, plotAxes, eventAnnotations, signal)
+        function plotAnnotations(obj, plotAxes, eventAnnotations)
             for i = 1 : length(eventAnnotations)
                 eventAnnotation = eventAnnotations(i);
                 x = eventAnnotation.sample;
-                y = signal(x);
                 class = eventAnnotation.label;
-                obj.addAnnotation(plotAxes,x,y,class);
+                obj.addAnnotation(plotAxes,x,class);
             end
             obj.setAnnotationVisibility(obj.shouldShowAnnotations);
         end
         
-        function addAnnotation(obj, plotAxes, x, y, class)
+        function addAnnotation(obj, plotAxes, x, class)
             if ~obj.annotationsMap.isKey(x)
                 eventAnnotation = EventAnnotation(x,class);
-                [symbolHandle,textHandle] = obj.plotPeak(plotAxes,x,y,class);
+                [symbolHandle,textHandle] = obj.plotLineAndLabel(plotAxes,x,class);
                 obj.annotationsMap(x) = AnnotationEventPlotHandle(eventAnnotation,symbolHandle,textHandle);
             end
         end
@@ -121,14 +125,27 @@ classdef AnnotationEventAnnotationsPlotter < handle
             remove(obj.annotationsMap,1);
         end
         
-        function [symbolHandle,textHandle] = plotPeak(obj, plotAxes, x, y, class)
+        function [symbolHandle,textHandle] = plotLineAndLabel(obj, plotAxes, x, class)
             
             classStr = obj.labeling.stringForClassAtIdx(class);
-            symbolHandle = plot(plotAxes,x,y,'*','Color',obj.AnnotationColor);
             
-            textHandle = text(plotAxes,double(x),double(y), classStr,...
+            %plot line
+            symbolHandle = line(plotAxes,[x, x],[obj.verticalLineYRange(1),...
+                obj.verticalLineYRange(2)],'LineWidth',obj.AnnotationLineWidth,'Color',obj.AnnotationColor);
+            
+            %compute label y position
+            rangeDiff = obj.verticalLineYRange(2) - obj.verticalLineYRange(1);
+            yPosition = obj.verticalLineYRange(2) - obj.currentLabelStairs * AnnotationEventAnnotationsPlotter.AnnotationLabelStairsYDiff * rangeDiff;
+            
+            %update label y position for next stair
+            obj.currentLabelStairs = obj.currentLabelStairs + 1;
+            if(obj.currentLabelStairs > AnnotationEventAnnotationsPlotter.AnnotationLabelStairsCount)
+                obj.currentLabelStairs = 1;
+            end
+            
+            textHandle = text(plotAxes,double(x),yPosition, classStr,...
                 'FontSize',AnnotationEventAnnotationsPlotter.AnnotationFont,...
-                'Color',obj.AnnotationColor);
+                'HorizontalAlignment','center','Color',obj.AnnotationColor);
             
             set(textHandle, 'Clipping', 'on');
             textHandle.Tag = int2str(x);

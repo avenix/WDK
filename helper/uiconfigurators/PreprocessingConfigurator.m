@@ -47,7 +47,11 @@ classdef PreprocessingConfigurator < handle
         function signalComputer = getCurrentSignalComputer(obj)
             idxStr = obj.signalComputersList.Value;
             [~,idx] = ismember(idxStr,obj.signalComputersList.Items);
-            signalComputer = obj.signalComputers{idx};
+            if isempty(idx)
+                signalComputer = [];
+            else
+                signalComputer = obj.signalComputers{idx};
+            end
         end
         
         function signalIdxs = getSelectedSignalIdxs(obj)
@@ -84,7 +88,7 @@ classdef PreprocessingConfigurator < handle
             signalComputer = obj.getCurrentSignalComputer();
             if isa(signalComputer,'NoOp')
                 signalComputer = [];
-            else
+            elseif ~isempty(signalComputer)
                 signalComputer = signalComputer.copy();
                 data = obj.signalComputerVariablesTable.Data;
                 for i = 1 : size(data,1)
@@ -126,7 +130,11 @@ classdef PreprocessingConfigurator < handle
         
         function updateSelectedSignalComputer(obj)
             signalComputer = obj.getCurrentSignalComputer();
-            obj.currentSignalComputerVariables = signalComputer.getEditableProperties();
+            if isempty(signalComputer)
+                obj.currentSignalComputerVariables = [];
+            else
+                obj.currentSignalComputerVariables = signalComputer.getEditableProperties();
+            end
         end
         
         %methods
@@ -135,7 +143,6 @@ classdef PreprocessingConfigurator < handle
         end
         
         %handles
-        
         function handleSelectedSignalComputerChanged(obj,~,~)
             obj.updateSelectedSignalComputer();
             obj.updateSignalComputerVariablesTable();

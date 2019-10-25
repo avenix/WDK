@@ -2,16 +2,17 @@ classdef AnnotationRangeAnnotationsPlotter < handle
     
     properties (Access = private,Constant)
         AnnotationColor = 'black';
-        LineWidth = 3;
+        kAnnotationLineWidth = 3;
         FontSize = 20;
-        RectangleYPosToDataRatio = 1.03;
-        LabelYPosToRectangleRatios = [1.0, 1.1];
         RectangleCurvature = 0.1;
+        
+        AnnotationLabelStairsCount = 10;
+        AnnotationLabelStairsYDiff = 0.05;
     end
     
     properties (Access = public)
         delegate;
-        yRange;
+        rectanglesYRange;
         shouldShowAnnotations = true;
     end
     
@@ -19,6 +20,8 @@ classdef AnnotationRangeAnnotationsPlotter < handle
         annotationsMap;
         labeling;
         shouldPlotUpperYLabel = false;
+        
+        currentAnnotationLabelStairs = 1;
     end
     
     methods
@@ -45,30 +48,51 @@ classdef AnnotationRangeAnnotationsPlotter < handle
         end
         
         function plotAnnotation(obj, plotAxes, rangeAnnotation)
-            
-            
             %plot rectangle
-            rectangleHeight = (obj.yRange(2) - obj.yRange(1)) * obj.RectangleYPosToDataRatio;
-            yOffset = (rectangleHeight - (obj.yRange(2) - obj.yRange(1))) / 2;
-            rectangleWidth = single(rangeAnnotation.endSample - rangeAnnotation.startSample);
-            rectanglePosition = [single(rangeAnnotation.startSample), obj.yRange(1) - yOffset, single(rectangleWidth), rectangleHeight];
-            segmentRectangleHandle = rectangle(plotAxes,'Position',rectanglePosition,'Curvature',[obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.LineWidth);
-
+            rectangleHandle = obj.plotRectangle(plotAxes,rangeAnnotation);
+            
             %plot label
-            classStr = obj.labeling.stringForClassAtIdx(rangeAnnotation.label);
-            xPos = (double(rangeAnnotation.startSample) + double(rangeAnnotation.endSample)) / 2;
-            yPos = double(obj.yRange(2)) * obj.LabelYPosToRectangleRatios(obj.shouldPlotUpperYLabel+1);
-            segmentTextHandle = text(plotAxes,xPos,yPos,classStr,...
-                'FontSize',obj.FontSize,'HorizontalAlignment','center');
-            set(segmentTextHandle, 'Clipping', 'on');
-            segmentTextHandle.Tag = int2str(rangeAnnotation.startSample);
-            segmentTextHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
-            obj.shouldPlotUpperYLabel = ~obj.shouldPlotUpperYLabel;
+            textHandle = obj.plotText(plotAxes,rangeAnnotation);
             
             annotationHandle = AnnotationRangePlotHandle(rangeAnnotation,...
-                segmentRectangleHandle,segmentTextHandle);
+                rectangleHandle,textHandle);
             
             obj.annotationsMap(rangeAnnotation.startSample) = annotationHandle;
+        end
+        
+        function rectangleHandle = plotRectangle(obj,plotAxes,rangeAnnotation)
+            rectangleHeight = obj.rectanglesYRange(2) - obj.rectanglesYRange(1);
+            
+            rectangleWidth = single(rangeAnnotation.endSample - rangeAnnotation.startSample);
+            
+            rectanglePosition = [single(rangeAnnotation.startSample), obj.rectanglesYRange(1),...
+                single(rectangleWidth), single(rectangleHeight)];
+            
+            rectangleHandle = rectangle(plotAxes,'Position',rectanglePosition,'Curvature',...
+                [obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.kAnnotationLineWidth);
+        end
+        
+        function textHandle = plotText(obj,plotAxes, rangeAnnotation )
+            classStr = obj.labeling.stringForClassAtIdx(rangeAnnotation.label);
+            xPosition = (double(rangeAnnotation.startSample) + double(rangeAnnotation.endSample)) / 2;
+
+            %compute y position
+            rectangleHeight = obj.rectanglesYRange(2) - obj.rectanglesYRange(1);
+            yPosition = obj.rectanglesYRange(1) + ...
+                obj.currentAnnotationLabelStairs * AnnotationEventAnnotationsPlotter.AnnotationLabelStairsYDiff * rectangleHeight;
+            
+            %update label y position for next stair
+            obj.currentAnnotationLabelStairs = obj.currentAnnotationLabelStairs + 1;
+            if(obj.currentAnnotationLabelStairs > AnnotationEventAnnotationsPlotter.AnnotationLabelStairsCount)
+                obj.currentAnnotationLabelStairs = 1;
+            end
+            
+            %plot text label
+            textHandle = text(plotAxes,xPosition,yPosition,classStr,...
+                'FontSize',obj.FontSize,'HorizontalAlignment','center');
+            set(textHandle, 'Clipping', 'on');
+            textHandle.Tag = int2str(rangeAnnotation.startSample);
+            textHandle.ButtonDownFcn = @obj.handleAnnotationClicked;
         end
         
         function modifyAnnotationToClass(obj,key,class)

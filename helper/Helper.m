@@ -520,6 +520,14 @@ classdef Helper < handle
             end
         end 
         
+        function stringArray = ComputersToStringsArray(computers)
+            numComputers = length(computers);
+            stringArray = cell(1,numComputers);
+            for i = 1 : numComputers
+                stringArray{i} = computers{i}.toString();
+            end
+        end
+        
         function names = generateComputerNamesArray(computers)
             numComputers = length(computers);
             names = cell(1,numComputers);

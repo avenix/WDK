@@ -23,7 +23,7 @@
      inkscape:window-maximized="0"
      inkscape:window-y="23"
      inkscape:window-x="0"
-     inkscape:window-height="937"
+     inkscape:window-height="1209"
      inkscape:window-width="1600"
      showgrid="false"
      inkscape:document-rotation="0"
@@ -74,29 +74,16 @@
        cx="100.4034"
        id="path10"
        style="fill:#f0f0f0;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:23.3333;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    <text
-       transform="scale(0.9940099,1.0060262)"
-       id="text837"
-       y="166.34094"
-       x="34.076904"
-       style="font-style:normal;font-weight:normal;font-size:153.756px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.167633;stroke-miterlimit:4;stroke-dasharray:none"
-       xml:space="preserve"><tspan
+    <g
+       aria-label="+"
+       transform="matrix(0.9940099,0,0,1.0060262,1.5875,-0.52916667)"
+       id="text845"
+       style="font-style:normal;font-weight:normal;font-size:74.0833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.167633;stroke-miterlimit:4;stroke-dasharray:none">
+      <path
+         d="m 123.89754,100.80319 h -19.28046 v 19.0996 h -9.911539 v -19.0996 H 75.425073 v -9.694498 h 19.280468 v -19.0996 h 9.911539 v 19.0996 h 19.28046 z"
          style="font-weight:bold;stroke-width:0.167633;stroke-miterlimit:4;stroke-dasharray:none"
-         y="166.34094"
-         x="34.076904"
-         id="tspan835"
-         sodipodi:role="line">+</tspan></text>
+         id="path847"
+         inkscape:connector-curvature="0" />
+    </g>
   </g>
-  <text
-     transform="scale(0.98751748,1.0126403)"
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:14.8417px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.371043"
-     x="112.32876"
-     y="108.71648"
-     id="text20"><tspan
-       sodipodi:role="line"
-       id="tspan18"
-       x="112.32876"
-       y="108.71648"
-       style="font-weight:bold;font-size:79.156px;fill:#000000;fill-opacity:1;stroke-width:0.371043">*</tspan></text>
 </svg>

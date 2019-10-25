@@ -22,7 +22,7 @@ function varargout = AnnotationUI(varargin)
 
 % Edit the above text to modify the response to help AnnotationUI
 
-% Last Modified by GUIDE v2.5 18-Mar-2019 13:50:43
+% Last Modified by GUIDE v2.5 25-Oct-2019 12:56:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -289,3 +289,26 @@ function showEventsCheckBox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of showEventsCheckBox
+
+
+% --- Executes on button press in visualizeButton.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to visualizeButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in addSignalButton.
+function addSignalButton_Callback(hObject, eventdata, handles)
+% hObject    handle to addSignalButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in selectAllCheckBox.
+function selectAllCheckBox_Callback(hObject, eventdata, handles)
+% hObject    handle to selectAllCheckBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of selectAllCheckBox

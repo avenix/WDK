@@ -18,6 +18,11 @@ classdef Constants < handle
         kFeatureBytes = 4;%float
         kClassificationResultBytes = 9;%ts: 8 bytes, label: 1 byte
         
+        kUIColors = {[191,108,0] / 255, [13,45,126] / 255, [25,110,16] / 255};
+        
+        kPlotColors = {[31,119,180] / 255,[255,127,14] / 255,[44,160,44] / 255,...
+            [214,39,40] / 255,[148,103,189] / 255,[140,86,75] / 255};
+        
         kCorrectColor = [25,110,16]/255;
         kWrongColor = 'red';
         kMissedEventColor = [1,0.5,0];
