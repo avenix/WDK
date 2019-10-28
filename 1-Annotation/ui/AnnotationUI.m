@@ -22,7 +22,7 @@ function varargout = AnnotationUI(varargin)
 
 % Edit the above text to modify the response to help AnnotationUI
 
-% Last Modified by GUIDE v2.5 25-Oct-2019 12:56:10
+% Last Modified by GUIDE v2.5 28-Oct-2019 08:37:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -312,3 +312,28 @@ function selectAllCheckBox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of selectAllCheckBox
+
+
+% --- Executes on button press in loadVideoCheckBox.
+function loadVideoCheckBox_Callback(hObject, eventdata, handles)
+% hObject    handle to loadVideoCheckBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of loadVideoCheckBox
+
+
+% --- Executes on button press in videoSynchronizationButton.
+function videoSynchronizationButton_Callback(hObject, eventdata, handles)
+% hObject    handle to videoSynchronizationButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in synchronizeVideoCheckBox.
+function synchronizeVideoCheckBox_Callback(hObject, eventdata, handles)
+% hObject    handle to synchronizeVideoCheckBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of synchronizeVideoCheckBox

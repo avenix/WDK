@@ -41,5 +41,4 @@ classdef AnnotationSynchronisationFile < handle
         end
     end
     
-    
 end

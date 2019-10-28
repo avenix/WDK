@@ -35,7 +35,7 @@ classdef AnnotationEventAnnotationsPlotter < handle
             obj.initAnnotationsMap();
         end
         
-        function plotAnnotations(obj, plotAxes, eventAnnotations)
+        function addAnnotations(obj, plotAxes, eventAnnotations)
             for i = 1 : length(eventAnnotations)
                 eventAnnotation = eventAnnotations(i);
                 x = eventAnnotation.sample;
@@ -45,15 +45,23 @@ classdef AnnotationEventAnnotationsPlotter < handle
             obj.setAnnotationVisibility(obj.shouldShowAnnotations);
         end
         
-        function addAnnotation(obj, plotAxes, x, class)
+        function didAddAnnotation = addAnnotation(obj, plotAxes, x, class)
+            
+            didAddAnnotation = false;
+            
             if ~obj.annotationsMap.isKey(x)
                 eventAnnotation = EventAnnotation(x,class);
                 [symbolHandle,textHandle] = obj.plotLineAndLabel(plotAxes,x,class);
                 obj.annotationsMap(x) = AnnotationEventPlotHandle(eventAnnotation,symbolHandle,textHandle);
+                
+                didAddAnnotation = true;
             end
         end
                    
-        function modifyAnnotationToClass(obj,annotationKey,class)
+        function didModifyAnnotation = modifyAnnotationToClass(obj,annotationKey,class)
+            
+            didModifyAnnotation = false;
+            
             if isKey(obj.annotationsMap,annotationKey)
                 
                 annotation = obj.annotationsMap(annotationKey);
@@ -64,20 +72,28 @@ classdef AnnotationEventAnnotationsPlotter < handle
                     annotation.annotation.label = class;
                     annotation.sampleSymbolUI.Color = color;
                     annotation.textSymbolUI.String = obj.labeling.stringForClassAtIdx(class);
+                    
+                    didModifyAnnotation = true;
                 end
             end
         end
         
-        function deleteAnnotationAtSampleIdx(obj,sampleIdx)
+        function didDeleteAnnotation = deleteAnnotationAtSampleIdx(obj,sampleIdx)
+            
+            didDeleteAnnotation = false;
+            
             key = uint32(sampleIdx);
             if obj.annotationsMap.isKey(key)
                 plotHandle = obj.annotationsMap(key);
                 obj.deletePlotHandle(plotHandle);
                 obj.annotationsMap.remove(key);
+                
+                didDeleteAnnotation = true;
             end
         end
         
         function clearAnnotations(obj)
+                        
             if ~isempty(obj.annotationsMap)
                 plotHandles = values(obj.annotationsMap);
                 for i = 1 : length(plotHandles)

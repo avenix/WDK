@@ -78,7 +78,7 @@ classdef DataLoader < handle
             
             synchronisationFileNames = Helper.ListSynchronisationFileNames();
             nSynchronisationFiles = length(synchronisationFileNames);
-            synchronisationFiles = repmat(AnnotationSynchronisationFile,1,synchronisationFileNames);
+            synchronisationFiles = repmat(SynchronizationFile,1,synchronisationFileNames);
             
             for i = 1 : nSynchronisationFiles
                 synchronisationFiles(i) = obj.loadSynchronisationFile(fullFileName);
@@ -91,32 +91,23 @@ classdef DataLoader < handle
             file = fopen(fullFileName);
             
             if file > 0
-                sample1 = obj.readFileLineSecondColumn(file);
-                sample2 = obj.readFileLineSecondColumn(file);
-                frame1 = obj.readFileLineSecondColumn(file);
-                frame2 = obj.readFileLineSecondColumn(file);
-                synchronisationFile = AnnotationSynchronisationFile(sample1,sample2,frame1,frame2);
+                synchronisationFile = SynchronizationFile();
+                while ~feof(file)
+                    line = fgetl(file);
+                    if line(1) ~= '#'
+                        str = split(line,', ');
+                        sample = str2double(str{1});
+                        frame = str2double(str{2});
+                        synchronisationFile.setSynchronizationPoint(sample,frame);
+                    end
+                end
                 fclose(file);
             end
         end
         
-        function saveSynchronisationFile(~,synchronisationFile,fileName)
-            
-            file = fopen(fileName,'w');
-            fprintf(file,'sample1: %d\n',synchronisationFile.sample1);
-            fprintf(file,'sample2: %d\n',synchronisationFile.sample2);
-            fprintf(file,'frame1: %d\n',synchronisationFile.frame1);
-            fprintf(file,'frame2: %d\n',synchronisationFile.frame2);
-            fclose(file);
-        end
     end
     
     methods (Access = private)
-        function value = readFileLineSecondColumn(~,file)
-            line = fgets(file);
-            str = split(line);
-            value = str2double(str{2});
-        end
         
         function printEventToFile(~,fileID, event,labeling)
             labelStr = labeling.stringForClassAtIdx(event.label);

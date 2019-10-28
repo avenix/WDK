@@ -67,6 +67,10 @@ classdef VideoPlayer < handle
         function close(obj)
             close(obj.figureHandle);
         end
+        
+        function makeForeGround(obj)
+            figure(obj.videoPlayerHandle.Parent);
+        end
     end
     
     methods (Access = private)

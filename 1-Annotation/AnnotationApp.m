@@ -27,10 +27,7 @@ classdef AnnotationApp < handle
         videoPlayer;
         videoFileNames;
         videoFileNamesNoExtension;
-        
-        %ui images
-        uiImages;
-       
+               
         %data
         dataFile;
         preprocessedSignals;
@@ -53,8 +50,13 @@ classdef AnnotationApp < handle
         timeLineMarker;
         timeLineMarkerHandle;
         
+        %state
+        didAnnotationsChange; %indicates whether there were changes to the annotations
+        
         %ui
+        uiImages;
         preprocessingDialog;
+        videoSynchronizationDialog;
         videoFigure;
         plottedSignalYRange;
         state AnnotationState = AnnotationState.kSetTimelineState;    
@@ -87,23 +89,30 @@ classdef AnnotationApp < handle
             obj.rangeAnnotationsPlotter.delegate = obj;
             
             obj.loadUI();
-          
         end
 
         function handleAnnotationClicked(obj,source,~)
             tag = str2double(source.Tag);
+            
             if obj.state == AnnotationState.kDeleteAnnotationState
-                obj.eventAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
-                obj.rangeAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
+                
+                didDeleteRangeAnnotation = obj.eventAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
+                didDeleteEventAnnotation = obj.rangeAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
+                
+                obj.didAnnotationsChange = (didDeleteRangeAnnotation || didDeleteEventAnnotation);
+                
             elseif obj.state == AnnotationState.kModifyAnnotationState
+                
                 currentClass = obj.uiHandles.classesList.Value;
-                obj.eventAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
-                obj.rangeAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
+                didModifyRangeAnnotation = obj.eventAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
+                didModifyEventAnnotation = obj.rangeAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
+                
+                obj.didAnnotationsChange = (didModifyRangeAnnotation || didModifyEventAnnotation);
             end
         end
         
         function handleFrameChanged(obj,~)
-            if ~isempty(obj.synchronisationFile)
+            if obj.getShouldSynchronizeVideo() && ~isempty(obj.synchronisationFile)
                 obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
                 if ~isempty(obj.timeLineMarkerHandle)
                     obj.updateTimelineMarker();
@@ -118,13 +127,48 @@ classdef AnnotationApp < handle
         
         function handleVideoPlayerWindowClosed(obj)
             obj.deleteVideoPlayer();
+            
+            obj.disableVideoSynchronizationButton();
+            figure(obj.uiHandles.mainFigure);%set focus to current figure
+            
+            obj.disableVideoSynchronizationButton();
         end
         
         function handlePreprocessingDialogClosed(obj,~)
             delete(obj.preprocessingDialog);
             obj.uiHandles.addSignalsButton.enable = 'on';
             obj.preprocessingDialog = [];
+            figure(obj.uiHandles.mainFigure);
         end
+        
+        %% synchronization dialog delegate
+        function handleSynchronizationPointAdded(obj,~)
+            sample = obj.timeLineMarker;
+            frame = obj.videoPlayer.currentFrame;
+            obj.videoSynchronizationDialog.addSynchronizationPoint(sample,frame);
+            
+            if obj.synchronisationFile.count >= 2
+                obj.enableSynchronizeVideo();
+            end
+        end
+        
+        function handleSynchronizationDialogClosed(obj,~)
+            delete(obj.videoSynchronizationDialog);
+            
+            obj.videoSynchronizationDialog = [];
+            figure(obj.uiHandles.mainFigure);
+            
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.makeForeGround();
+            end
+        end
+        
+        function handleSynchronizationPointDeleted(obj,~)
+            if obj.synchronisationFile.count < 2
+                obj.disableSynchronizeVideo();
+            end
+        end
+        
     end
     
     methods (Access = private)
@@ -137,8 +181,13 @@ classdef AnnotationApp < handle
             obj.loadUIImages();
             obj.setUIImages();
             
+            obj.uiHandles.loadVideoCheckBox.Value = true;
+            
             obj.uiHandles.signalsTable.Data = [];
             
+            obj.uiHandles.synchronizeVideoCheckBox.Value = true;
+            
+            obj.disableVideoSynchronizationButton();
             obj.uiHandles.addSignalButton.Enable = 'off';
             
             obj.uiHandles.mainFigure.Visible = false;
@@ -152,6 +201,7 @@ classdef AnnotationApp < handle
             obj.uiHandles.showEventsCheckBox.Callback = @obj.handleShowEventsToggled;
             obj.uiHandles.showRangesCheckBox.Callback = @obj.handleShowRangesToggled;
             obj.uiHandles.addSignalButton.Callback = @obj.handleAddSignalsClicked;
+            obj.uiHandles.videoSynchronizationButton.Callback = @obj.handleVideoSynchronizationClicked;
             
             obj.uiHandles.selectAllCheckBox.Callback = @obj.handleSelectAllToggled;
             
@@ -159,8 +209,8 @@ classdef AnnotationApp < handle
             obj.uiHandles.findButton.Callback = @obj.handleFindPeaksClicked;
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
-            obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
-            obj.uiHandles.mainFigure.DeleteFcn = @obj.handleWindowClosed;
+            %obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
+            obj.uiHandles.mainFigure.CloseRequestFcn = @obj.handleWindowCloseRequested;
             
             obj.resetUI();
             obj.loadPlotAxes();
@@ -256,7 +306,9 @@ classdef AnnotationApp < handle
                 obj.loadAnnotations();
                 obj.loadSynchronisationFile();
                 obj.loadMarkers();
-                obj.loadVideo();
+                if obj.getShouldLoadVideo()
+                    obj.loadVideo();
+                end
                 obj.uiHandles.addSignalButton.Enable = 'on';
             end
         end
@@ -386,6 +438,8 @@ classdef AnnotationApp < handle
             obj.eventAnnotationsPlotter.clearAnnotations();
             obj.rangeAnnotationsPlotter.clearAnnotations();
             cla(obj.plotAxes);
+            zoom out
+            zoom reset
         end
         
         function deleteAll(obj)
@@ -419,7 +473,8 @@ classdef AnnotationApp < handle
             end
         end
         
-        function loadVideo(obj)
+        function didLoadVideo = loadVideo(obj)
+            didLoadVideo = false;
             
             videoFileName = obj.getVideoFileName();
             
@@ -433,6 +488,8 @@ classdef AnnotationApp < handle
                 
                 obj.videoPlayer = VideoPlayer(videoFileName,obj,videoPlayerWindowPosition);
                 obj.updateVideoFrame();
+                
+                didLoadVideo = true;
             end
         end
         
@@ -530,7 +587,7 @@ classdef AnnotationApp < handle
                 label = obj.getSelectedClass();
                 rangeAnnotation = RangeAnnotation(obj.rangeSelection.sample1,...
                     obj.rangeSelection.sample2,label);
-                obj.rangeAnnotationsPlotter.plotAnnotation(obj.plotAxes, rangeAnnotation);
+                obj.rangeAnnotationsPlotter.addAnnotation(obj.plotAxes, rangeAnnotation);
             end
         end
         
@@ -595,6 +652,9 @@ classdef AnnotationApp < handle
         function loadSynchronisationFile(obj)
             fileName = obj.getSynchronisationFileName();
             obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(fileName);
+            if isempty(obj.synchronisationFile)
+                obj.synchronisationFile = SynchronizationFile();
+            end
         end
         
         function computePlottedSignalYRanges(obj)
@@ -621,8 +681,8 @@ classdef AnnotationApp < handle
                 obj.plottedSignalYRange * AnnotationApp.kRangeAnnotationRectangleYPosToDataRatio;
             
             if ~isempty(obj.annotationSet)
-                obj.eventAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations);
-                obj.rangeAnnotationsPlotter.plotAnnotations(obj.plotAxes,obj.annotationSet.rangeAnnotations);
+                obj.eventAnnotationsPlotter.addAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations);
+                obj.rangeAnnotationsPlotter.addAnnotations(obj.plotAxes,obj.annotationSet.rangeAnnotations);
             end
         end
 
@@ -645,7 +705,42 @@ classdef AnnotationApp < handle
             end
         end
         
+        function closeWindow(obj)
+            
+            if ~isempty(obj.videoPlayer)
+                obj.videoPlayer.close();
+                obj.deleteVideoPlayer();
+            end
+            
+            if ~isempty(obj.preprocessingDialog)
+                delete(obj.preprocessingDialog);
+            end
+            
+            if ~isempty(obj.videoSynchronizationDialog)
+                delete(obj.videoSynchronizationDialog);
+            end
+           
+            delete(obj.uiHandles.mainFigure);
+        end
+        
         %% UI
+        function enableSynchronizeVideo(obj)
+            obj.uiHandles.synchronizeVideoCheckBox.Enable = 'on';
+        end
+        
+        function disableSynchronizeVideo(obj)
+            obj.uiHandles.synchronizeVideoCheckBox.Value = false;
+            obj.uiHandles.synchronizeVideoCheckBox.Enable = 'off';
+        end
+        
+        function b = getShouldSynchronizeVideo(obj)
+            b = obj.uiHandles.synchronizeVideoCheckBox.Value;
+        end
+        
+        function b = getShouldLoadVideo(obj)
+            b = obj.uiHandles.loadVideoCheckBox.Value;
+        end
+        
         function class = getSelectedClass(obj)
             class = int8(obj.uiHandles.classesList.Value);
             if (class == length(obj.uiHandles.classesList.String))
@@ -681,6 +776,14 @@ classdef AnnotationApp < handle
             obj.uiHandles.signalsTable.Data = tableData;
         end
         
+        function enableVideoSynchronizationButton(obj)
+            obj.uiHandles.videoSynchronizationButton.Enable = 'on';
+        end
+        
+        function disableVideoSynchronizationButton(obj)
+            obj.uiHandles.videoSynchronizationButton.Enable = 'off';
+        end
+        
         %% Delegates
         function handleDidUpdatepreprocessedSignals(obj,~,signals)
             obj.preprocessedSignals = signals;
@@ -707,7 +810,9 @@ classdef AnnotationApp < handle
             elseif obj.state == AnnotationState.kSetTimelineState
                 obj.timeLineMarker = x;
                 obj.updateTimelineMarker();
-                obj.updateVideoFrame();
+                if obj.getShouldSynchronizeVideo()
+                    obj.updateVideoFrame();
+                end
             elseif obj.state == AnnotationState.kAddRangeState
                 obj.selectRangeAtLocation(x);
             end
@@ -736,6 +841,10 @@ classdef AnnotationApp < handle
                     obj.plotMarkers();
                     obj.plotTimelineMarker();
                     obj.setPlotLegend();
+                    
+                    if ~isempty(obj.timeLineMarkerHandle)
+                        obj.enableVideoSynchronizationButton();
+                    end
                 end
             end
         end
@@ -935,7 +1044,7 @@ classdef AnnotationApp < handle
         function handleAddSignalsClicked(obj,~,~)
             
             if isempty(obj.preprocessingDialog)
-                obj.preprocessingDialog = PreprocessingDialog(obj,obj.dataFile);
+                obj.preprocessingDialog = PreprocessingDialog(obj.dataFile,obj);
                 
                 positionX = obj.uiHandles.mainFigure.Position(1) + obj.uiHandles.addSignalButton.Position(1);
                 positionY = obj.uiHandles.mainFigure.Position(2) + obj.uiHandles.addSignalButton.Position(2);
@@ -943,6 +1052,22 @@ classdef AnnotationApp < handle
                 obj.preprocessingDialog.Figure.Position(2) = positionY;
             else
                 figure(obj.preprocessingDialog.Figure)
+            end
+        end
+        
+        function handleVideoSynchronizationClicked(obj,~,~)
+            
+            if isempty(obj.videoSynchronizationDialog)
+                obj.videoSynchronizationDialog = SynchronizationDialog(obj.synchronisationFile,obj);
+                
+                obj.videoSynchronizationDialog.setSynchronizationFile(obj.synchronisationFile);
+                
+                positionX = obj.uiHandles.mainFigure.Position(1) + obj.uiHandles.videoSynchronizationButton.Position(1);
+                positionY = obj.uiHandles.mainFigure.Position(2) + obj.uiHandles.videoSynchronizationButton.Position(2);
+                obj.videoSynchronizationDialog.Figure.Position(1) = positionX;
+                obj.videoSynchronizationDialog.Figure.Position(2) = positionY;
+            else
+                figure(obj.videoSynchronizationDialog.Figure);
             end
         end
         
@@ -956,6 +1081,7 @@ classdef AnnotationApp < handle
             end
         end
         
+        %{
         function handleKeyPress(obj, source, event)
             switch event.Key
                 case 'uparrow'
@@ -968,23 +1094,38 @@ classdef AnnotationApp < handle
                 obj.videoPlayer.handleKeyPress(source,event);
             end
         end
+        %}
         
         function handleFigureClick(obj,~,event)
             x = event.IntersectionPoint(1);
             obj.timeLineMarker = x;
             obj.updateTimelineMarker();
-            obj.updateVideoFrame();
+            if obj.getShouldSynchronizeVideo()
+                obj.updateVideoFrame();
+            end
         end
         
-        
-        function handleWindowClosed(obj,~,~)
-            if ~isempty(obj.videoPlayer)
-                obj.videoPlayer.close();
-                obj.deleteVideoPlayer();
+        function handleWindowCloseRequested(obj,~,~)
+            
+            shouldClose = true;
+            if obj.didAnnotationsChange
+                
+                shouldClose = false;
+                answer = questdlg('Do you want to save the annotations?', ...
+                    'Save Annotations', ...
+                    'Save','Discard','Cancel','Cancel');
+                
+                switch answer
+                    case 'Save'
+                        obj.saveAnnotations();
+                        shouldClose = true;
+                    case 'Discard'
+                        shouldClose = true;
+                end
             end
             
-            if ~isempty(obj.preprocessingDialog)
-                delete(obj.preprocessingDialog);
+            if shouldClose
+                obj.closeWindow();
             end
         end
         

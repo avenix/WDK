@@ -1,4 +1,3 @@
-sample1: 49727
-sample2: 450209
-frame1: 3302
-frame2: 45284
+#sample, frame
+49727, 3302
+450209, 45284
