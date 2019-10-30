@@ -1,35 +1,19 @@
-%# Use it to save and load data for a file.
+% Use it to save and load WDK files (data, annotations, markers,
+% synchronisation and algorithms)
 classdef DataLoader < handle
     
-    methods (Access = public)
+    methods (Static, Access = public)
         
-        %% Data Files
-        function data = loadAllDataFiles(obj)
-            fileNames = Helper.listDataFiles();
-            data = obj.loadDataFiles(fileNames);
-        end
+        %% Data files
         
-        function dataFile = loadDataFileWithFullPath(~,fullPath)
+        %loads a binary data file. Full path should be specified
+        function dataFile = LoadDataFileBinaryWithFullPath(fullPath)
             dataFile = load(fullPath);
             dataFile = dataFile.dataFile;
         end
         
-        function dataFiles = loadDataFiles(obj,fileNames)
-            nDataFiles = length(fileNames);
-            dataFiles = repmat(DataFile,1,nDataFiles);
-            
-            for i = 1 : length(fileNames)
-                fileName = fileNames{i};
-                dataFiles(i) = obj.loadDataFile(fileName);
-            end
-        end
-        
-        function dataFile = loadDataFile(obj,fileName)
-            fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
-            dataFile = obj.loadDataFileWithFullPath(fileName);
-        end
-        
-        function dataFile = loadTextData(~,fileName)
+        %loads a text data file. Full path should be specified
+        function dataFile = LoadDataFileTextWithFullPath(fileName)
             tableImporter = TableImporter();
             data = tableImporter.importTable(fileName);
             columnNames = data.Properties.VariableNames;
@@ -37,23 +21,43 @@ classdef DataLoader < handle
             dataFile = DataFile(fileName,data,columnNames);
         end
         
-        function dataFile = loadData(obj,fileName)
+        %loads a data file in text or binary format.
+        function dataFile = LoadDataFileBinary(fileName)
+            fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
+            dataFile = obj.LoadDataFileBinaryWithFullPath(fileName);
+        end
+        
+        %loads a data file in text or binary format. Full path should be specified
+        function dataFile = LoadDataFile(fileName)
             fileExtension = Helper.getFileExtension(fileName);
             fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
             if strcmp(fileExtension, ".mat")
-                dataFile = obj.loadDataFileWithFullPath(fileName);
+                dataFile = DataLoader.LoadDataFileBinaryWithFullPath(fileName);
             elseif strcmp(fileExtension, ".txt")
-                dataFile = obj.loadTextData(fileName);
+                dataFile = DataLoader.LoadDataFileTextWithFullPath(fileName);
             else
                 dataFile = [];
             end
         end
         
-        function saveDataFile(~,dataFile)
+        %loads several data files
+        function dataFiles = LoadDataFiles(fileNames)
+            nDataFiles = length(fileNames);
+            dataFiles = repmat(DataFile,1,nDataFiles);
+            
+            for i = 1 : length(fileNames)
+                fileName = fileNames{i};
+                dataFiles(i) = DataLoader.LoadDataFile(fileName);
+            end
+        end
+        
+        %saves a data file in binary format
+        function SaveDataFileBinary(dataFile)
             save(dataFile.fileName,'dataFile');
         end
         
-        function data = saveTextData(~,data,varNames,fileName)
+        %saves a data file in text format
+        function data = SaveDataFileText(data,varNames,fileName)
             fileName = sprintf('%s.txt',fileName);
             
             tableExporter = TableExporter();
@@ -63,90 +67,6 @@ classdef DataLoader < handle
             end
             tableExporter.exportTable(table,fileName);
         end
-        
-        
-        %% Markers
-        function markers = loadMarkers(~,markerFileName)
-            markersLoader = MarkersLoader();
-            
-            markerFileName = sprintf('%s/%s',Constants.kMarkersPath,markerFileName);
-            markers = markersLoader.loadMarkers(markerFileName);
-        end
-        
-        %% Synchronisation Files
-        function synchronisationFiles = loadAllSynchronisationFiles(obj)
-            
-            synchronisationFileNames = Helper.ListSynchronisationFileNames();
-            nSynchronisationFiles = length(synchronisationFileNames);
-            synchronisationFiles = repmat(SynchronizationFile,1,synchronisationFileNames);
-            
-            for i = 1 : nSynchronisationFiles
-                synchronisationFiles(i) = obj.loadSynchronisationFile(fullFileName);
-            end
-        end
-        
-        function synchronisationFile = loadSynchronisationFile(obj,fileName)
-            synchronisationFile = [];
-            fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
-            file = fopen(fullFileName);
-            
-            if file > 0
-                synchronisationFile = SynchronizationFile();
-                while ~feof(file)
-                    line = fgetl(file);
-                    if line(1) ~= '#'
-                        str = split(line,', ');
-                        sample = str2double(str{1});
-                        frame = str2double(str{2});
-                        synchronisationFile.setSynchronizationPoint(sample,frame);
-                    end
-                end
-                fclose(file);
-            end
-        end
-        
-    end
-    
-    methods (Access = private)
-        
-        function printEventToFile(~,fileID, event,labeling)
-            labelStr = labeling.stringForClassAtIdx(event.label);
-            fprintf(fileID, '%s, %d',labelStr,event.sample);
-        end
-    end
-    
-    methods (Static)
-        function defaultLabeling = LoadDefaultLabeling()
-            classesList = DataLoader.LoadClassesFile();
-            defaultLabeling = Labeling(classesList);
-        end
-        
-        %% Label Mappings
-        function labelMappers = LoadAllLabelMappings()
-            fileNames = Helper.listLabelGroupings();
-            
-            nLabelGroupings = length(fileNames);
-            labelMappers = repmat(LabelMapper,1,nLabelGroupings+1);
-            
-            %default label mapping
-            defaultLabeling = DataLoader.LoadDefaultLabeling();
-            labelMappers(1) = LabelMapper.CreateLabelMapperWithLabeling(defaultLabeling,'defaultLabeling');
-            
-            if ~isempty(fileNames)
-                for i = 1 : nLabelGroupings
-                    fileName = fileNames{i};
-                    labelMappers(i+1) = DataLoader.LoadLabelMapping(defaultLabeling,fileName);
-                end
-            end
-        end
-        
-        function labelMapper = LoadLabelMapping(defaultLabeling,fileName)
-            fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
-            labelGroups = LabelGroupsLoader.LoadLabelGroups(fullFileName);
-            name = Helper.removeFileExtension(fileName);
-            labelMapper = LabelMapper.CreateLabelMapperWithGroups(defaultLabeling,labelGroups,name);
-        end
-        
         
         %% Annotations
         %returns an array of AnnotationSet.
@@ -179,45 +99,9 @@ classdef DataLoader < handle
             annotationsParser = AnnotationsParser(labeling);
             annotationsParser.saveAnnotations(annotationsSet,annotationsFileName);
         end
+
         
-        function SaveEvents(events, fileName, labeling)
-            if ~isempty(events) && ~isempty(fileName)
-                fileID = fopen(fileName,'w');
-                
-                for i = 1 : length(events)-1
-                    event = events(i);
-                    obj.printEventToFile(fileID,event,labeling);
-                    fprintf(fileID, '\n');
-                end
-                event = events(end);
-                obj.printEventToFile(fileID,event,labeling);
-                fclose(fileID);
-            end
-        end
-        
-        %% Classes File
-        function classesList = LoadClassesFile()
-            [fileID,~] = fopen(Constants.kLabelsPath);
-            if (fileID < 0)
-                fprintf('file not found: %s\n',Constants.kLabelsPath);
-                classesList = [];
-            else
-                startRow = 1;
-                endRow = inf;
-                formatSpec = '%s%[^\n\r]';
-                classesList = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
-                classesList = classesList{1};
-                fclose(fileID);
-            end
-        end
-        
-        %% Video
-        function b = CheckVideoFileExists(fileName)
-            fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
-            b = DataLoader.CheckFileExists(fullFileName);
-        end
-        
-        %% Computers
+        %% Algorithms
         function computer = LoadJSONComputerFromFile(fileName)
             fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
             text = fileread(fullPath);
@@ -245,16 +129,95 @@ classdef DataLoader < handle
         end
         
         
-        %% Other
-        function b = CheckFileExists(fullPath)
-            b = exist(fullPath,'file');
+         %% Classes File
+         
+         %loads the labels.txt file in 
+        function classesList = LoadLabelsFile()
+            [fileID,~] = fopen(Constants.kLabelsPath);
+            if (fileID < 0)
+                fprintf('file not found: %s\n',Constants.kLabelsPath);
+                classesList = [];
+            else
+                startRow = 1;
+                endRow = inf;
+                formatSpec = '%s%[^\n\r]';
+                classesList = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
+                classesList = classesList{1};
+                fclose(fileID);
+            end
         end
         
-        function printRawData(fileHandle, sample)
-            for i = 1 : length(sample)-1
-                fprintf(fileHandle,'%d\t',sample(i));
+        %% Markers
+        %loads every marker
+        function markers = LoadMarkers(markerFileName)
+            markersLoader = MarkersLoader();
+            
+            markerFileName = sprintf('%s/%s',Constants.kMarkersPath,markerFileName);
+            markers = markersLoader.loadMarkers(markerFileName);
+        end
+        
+        %% Synchronization files
+        %loads every video synchronization file in the videos directory
+        function synchronisationFiles = LoadAllSynchronisationFiles()
+            
+            synchronisationFileNames = Helper.ListSynchronisationFileNames();
+            nSynchronisationFiles = length(synchronisationFileNames);
+            synchronisationFiles = repmat(SynchronizationFile,1,synchronisationFileNames);
+            
+            for i = 1 : nSynchronisationFiles
+                synchronisationFiles(i) = DataLoader.LoadSynchronisationFile(fullFileName);
             end
-            fprintf(fileHandle,'%d',sample(end));
+        end
+        
+        %loads a video synchronization file with the name of the file
+        function synchronizationFile = LoadSynchronisationFile(fileName)
+            synchronizationFile = [];
+            fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
+            file = fopen(fullFileName);
+            
+            if file > 0
+                synchronizationFile = SynchronizationFile();
+                synchronizationFile.fileName = fileName;
+                while ~feof(file)
+                    line = fgetl(file);
+                    if line(1) ~= '#'
+                        str = split(line,',');
+                        sample = str2double(str{1});
+                        frame = str2double(str{2});
+                        synchronizationFile.setSynchronizationPoint(sample,frame);
+                    end
+                end
+                fclose(file);
+            end
+        end
+        
+        %saves a synchronization file to the current path
+        function SaveSynchronizationFile(synchronizationFile,fileName)
+            
+            file = fopen(fileName,'w');
+            if file > 0
+                
+                samples = synchronizationFile.synchronizationPointsMap.keys;
+                frames = synchronizationFile.synchronizationPointsMap.values;
+                
+                fprintf(file,'#sample, frame\n');
+                for i = 1 : length(samples)
+                    fprintf(file,'%d, %d\n',samples{i},frames{i});
+                end
+                fclose(file);
+            end
+        end
+        
+        %% Other
+        %checks if a video file exists
+        function b = CheckVideoFileExists(fileName)
+            fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
+            b = DataLoader.CheckFileExists(fullFileName);
+        end
+        
+        %checks if a file exists
+        function b = CheckFileExists(fullPath)
+            b = exist(fullPath,'file');
         end
     end
 end

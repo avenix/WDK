@@ -1,7 +1,8 @@
 classdef SynchronizationFile < handle
     properties (Access = public)
         synchronizationPointsMap;
-        count;
+        fileName;
+        count;%dependent property
     end
     
     methods
@@ -28,11 +29,11 @@ classdef SynchronizationFile < handle
         end
         
         function videoFrame = sampleToVideoFrame(obj, sample)
-            [frame1, sample1] = obj.getFirstSynchronizationPoint();
-            [frame2, sample2] = obj.getLastSynchronizationPoint();
+            [sample1, frame1] = obj.getFirstSynchronizationPoint();
+            [sample2, frame2] = obj.getLastSynchronizationPoint();
             
             a = double(frame2 - frame1) / double(sample2 - sample1);
-            videoFrame = a * double(sample - sample1) + double(frame1);
+            videoFrame = a * (sample - double(sample1)) + double(frame1);
             
             if videoFrame < 1
                 videoFrame = 1;
@@ -42,11 +43,11 @@ classdef SynchronizationFile < handle
         end
         
         function sample = videoFrameToSample(obj, videoFrame)
-            [frame1, sample1] = obj.getFirstSynchronizationPoint();
-            [frame2, sample2] = obj.getLastSynchronizationPoint();
+            [sample1, frame1] = obj.getFirstSynchronizationPoint();
+            [sample2, frame2] = obj.getLastSynchronizationPoint();
             
-            a = double(sample2 - sample1) / double((frame2 - frame1));
-            sample = a * double(videoFrame - frame1) + double(sample1);
+            a = (double(sample2) - double(sample1)) / (double(frame2) - double(frame1));
+            sample = a * (double(videoFrame) - double(frame1)) + double(sample1);
             
             if sample < 1
                 sample = 1;

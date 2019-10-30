@@ -22,7 +22,7 @@ function varargout = AnnotationUI(varargin)
 
 % Edit the above text to modify the response to help AnnotationUI
 
-% Last Modified by GUIDE v2.5 28-Oct-2019 08:37:16
+% Last Modified by GUIDE v2.5 29-Oct-2019 07:27:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -337,3 +337,26 @@ function synchronizeVideoCheckBox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of synchronizeVideoCheckBox
+
+
+
+function currentSampleText_Callback(hObject, eventdata, handles)
+% hObject    handle to currentSampleText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of currentSampleText as text
+%        str2double(get(hObject,'String')) returns contents of currentSampleText as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function currentSampleText_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to currentSampleText (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

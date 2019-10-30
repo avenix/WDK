@@ -1,4 +1,4 @@
-%Singleton class, use instance() to instantiate.
+%maps label strings to integers
 classdef Labeling < handle
     
     properties (Access = public, Constant)

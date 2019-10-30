@@ -23,7 +23,6 @@ classdef AnnotationApp < handle
         
         %data loading
         currentFile = 1;
-        dataLoader;
         videoPlayer;
         videoFileNames;
         videoFileNamesNoExtension;
@@ -74,7 +73,6 @@ classdef AnnotationApp < handle
         
         function obj =  AnnotationApp()
             close all;
-            obj.dataLoader = DataLoader();
             obj.loadLabeling();
             
             obj.videoFileNames = Helper.listVideoFiles();
@@ -178,22 +176,17 @@ classdef AnnotationApp < handle
         function loadUI(obj)
             obj.uiHandles = guihandles(AnnotationUI);
             
+            obj.loadPlotAxes();
             obj.loadUIImages();
             obj.setUIImages();
-            
-            obj.uiHandles.loadVideoCheckBox.Value = true;
-            
-            obj.uiHandles.signalsTable.Data = [];
-            
-            obj.uiHandles.synchronizeVideoCheckBox.Value = true;
-            
-            obj.disableVideoSynchronizationButton();
-            obj.uiHandles.addSignalButton.Enable = 'off';
-            
+                       
+            %configure figure
+            set(obj.uiHandles.mainFigure,'defaultLegendAutoUpdate','off')
             obj.uiHandles.mainFigure.Visible = false;
             movegui(obj.uiHandles.mainFigure,'center');
             obj.uiHandles.mainFigure.Visible = true;
             
+            %callbacks
             obj.uiHandles.fileNamesList.Callback = @obj.handleSelectionChanged;
             obj.uiHandles.loadDataButton.Callback = @obj.handleLoadDataClicked;
             obj.uiHandles.visualizeButton.Callback = @obj.handleVisualizeClicked;
@@ -202,25 +195,21 @@ classdef AnnotationApp < handle
             obj.uiHandles.showRangesCheckBox.Callback = @obj.handleShowRangesToggled;
             obj.uiHandles.addSignalButton.Callback = @obj.handleAddSignalsClicked;
             obj.uiHandles.videoSynchronizationButton.Callback = @obj.handleVideoSynchronizationClicked;
-            
             obj.uiHandles.selectAllCheckBox.Callback = @obj.handleSelectAllToggled;
-            
             obj.uiHandles.stateButtonGroup.SelectionChangedFcn = @obj.handleStateChanged;
             obj.uiHandles.findButton.Callback = @obj.handleFindPeaksClicked;
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
-            %obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
             obj.uiHandles.mainFigure.CloseRequestFcn = @obj.handleWindowCloseRequested;
+            obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
+            %obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
             
             obj.resetUI();
-            obj.loadPlotAxes();
             obj.setUserClickHandle();
             obj.populateFileNamesList();
             obj.populateClassesList();
-
-            obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
         end
-
+        
         function loadUIImages(obj)    
             fileNames = {{'zoomIn','zoomInSelected'},{'zoomOut','zoomOutSelected'},...
                 {'pan','panSelected'},{'setTimeline','setTimelineSelected'},...
@@ -287,11 +276,25 @@ classdef AnnotationApp < handle
         end
         
         function loadLabeling(obj)
-            classesList = obj.dataLoader.LoadClassesFile();
+            classesList = DataLoader.LoadLabelsFile();
             obj.labeling = Labeling(classesList);
         end
         
         function resetUI(obj)
+            
+            obj.uiHandles.setTimelineRadio.Value = true;
+            
+            obj.uiHandles.loadVideoCheckBox.Value = true;
+            
+            obj.uiHandles.signalsTable.Data = [];
+            
+            obj.uiHandles.synchronizeVideoCheckBox.Value = true;
+            
+            obj.uiHandles.currentSampleText.String = '';
+            
+            obj.disableVideoSynchronizationButton();
+            obj.disableAddSignalButton();
+            
             obj.uiHandles.loadDataTextbox.String = "";
             obj.uiHandles.showMarkersCheckBox.Value = true;
             obj.uiHandles.showEventsCheckBox.Value = true;
@@ -348,6 +351,7 @@ classdef AnnotationApp < handle
         
         function updateTimelineMarker(obj)
             if ~isempty(obj.timeLineMarkerHandle) && isvalid(obj.timeLineMarkerHandle)
+                obj.setCurrentSampleTextToSample(obj.timeLineMarker);
                 set(obj.timeLineMarkerHandle,'XData',[obj.timeLineMarker, obj.timeLineMarker]);
                 drawnow;
             end
@@ -356,14 +360,14 @@ classdef AnnotationApp < handle
         function loadData(obj)
             fileName = obj.getCurrentFileName();
             if ~isempty(fileName)
-                obj.dataFile = obj.dataLoader.loadDataFile(fileName);
+                obj.dataFile = DataLoader.LoadDataFile(fileName);
             end
         end
         
         function loadMarkers(obj)
             if ~isempty(obj.synchronisationFile) && ~isempty(obj.annotationSet)
                 markersFileName = obj.getMarkersFileName();
-                obj.markers = obj.dataLoader.loadMarkers(markersFileName);
+                obj.markers = DataLoader.LoadMarkers(markersFileName);
                 
                 if ~isempty(obj.markers)               
                     
@@ -651,7 +655,7 @@ classdef AnnotationApp < handle
         
         function loadSynchronisationFile(obj)
             fileName = obj.getSynchronisationFileName();
-            obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(fileName);
+            obj.synchronisationFile = DataLoader.LoadSynchronisationFile(fileName);
             if isempty(obj.synchronisationFile)
                 obj.synchronisationFile = SynchronizationFile();
             end
@@ -724,6 +728,19 @@ classdef AnnotationApp < handle
         end
         
         %% UI
+        
+        function disableAddSignalButton(obj)
+            obj.uiHandles.addSignalButton.Enable = 'off';
+        end
+        
+        function enableAddSignalButton(obj)
+            obj.uiHandles.addSignalButton.Enable = 'on';
+        end
+        
+        function setCurrentSampleTextToSample(obj,sample)
+            obj.uiHandles.currentSampleText.String = sprintf('%16.f',sample);
+        end
+        
         function enableSynchronizeVideo(obj)
             obj.uiHandles.synchronizeVideoCheckBox.Enable = 'on';
         end
@@ -1097,11 +1114,13 @@ classdef AnnotationApp < handle
         %}
         
         function handleFigureClick(obj,~,event)
-            x = event.IntersectionPoint(1);
-            obj.timeLineMarker = x;
-            obj.updateTimelineMarker();
-            if obj.getShouldSynchronizeVideo()
-                obj.updateVideoFrame();
+            if obj.state == AnnotationState.kSetTimelineState
+                x = event.IntersectionPoint(1);
+                obj.timeLineMarker = x;
+                obj.updateTimelineMarker();
+                if obj.getShouldSynchronizeVideo()
+                    obj.updateVideoFrame();
+                end
             end
         end
         

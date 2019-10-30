@@ -42,11 +42,14 @@ classdef VideoPlayer < handle
             start(obj.timer);
         end
         
-        function displayFrame(obj,frame)
-            if frame < obj.numFrames
-                obj.videoPlayerHandle.DataSource.Controls.jumpTo(double(frame));
-                obj.previousFrame = frame;
+        function frame = displayFrame(obj,frame)
+            if frame > obj.numFrames
+                frame = obj.numFrames;
+            elseif frame < 1
+                frame = 1;
             end
+            obj.videoPlayerHandle.DataSource.Controls.jumpTo(double(frame));
+            obj.previousFrame = frame;
         end
         
         function handleKeyPress(obj, ~, event)
