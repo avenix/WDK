@@ -4,7 +4,7 @@ classdef Palette < handle
             preprocessingComputers = {NoOp,...
                 LowPassFilter, HighPassFilter,...
                 Derivative,S1,S2,...
-                Magnitude, MagnitudeSquared};
+                Norm,Magnitude, MagnitudeSquared,Resampler};
         end
         
         function eventDetectionComputers = EventDetectionComputers()
@@ -63,6 +63,42 @@ classdef Palette < handle
                 Palette.ClassificationComputers(),...
                 Palette.OtherComputers()];
         end
+        
+        %returns the algorithms that take a specific input type
+        function algorithms = AlgorithmsWithInputType(inputType)
+            allAlgorithms = Palette.AllComputers();
+            
+            algorithms = Palette.FilterAlgorithmsToInputType(allAlgorithms,inputType);
+        end
+        
+        %filters an array of algorithms to those algorithms that take a
+        %specific input type
+        function outputAlgorithms = FilterAlgorithmsToInputType(algorithms,inputType)
+            nOutputAlgorithms = Palette.CountNumComputersForInputType(algorithms,inputType);
+            outputAlgorithms = cell(1,nOutputAlgorithms);
+            algorithmCount = 0;
+            for i = 1 : length(algorithms)
+                algorithm = algorithms{i};
+                if algorithm.inputPort == DataType.kAny || ...
+                        algorithm.inputPort == inputType || ...
+                        inputType == DataType.kAny
+                    
+                    algorithmCount = algorithmCount + 1;
+                    outputAlgorithms{algorithmCount} = algorithm;
+                end
+            end
+        end
     end
     
+    methods (Static, Access = private)
+        function nAlgorithms = CountNumComputersForInputType(algorithms,inputType)
+            nAlgorithms = 0;
+            for i = 1 : length(algorithms)
+                algorithm = algorithms{i};
+                if algorithm.inputPort == DataType.kAny || algorithm.inputPort == inputType
+                    nAlgorithms = nAlgorithms + 1;
+                end
+            end
+        end
+    end
 end

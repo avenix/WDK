@@ -4,6 +4,8 @@ classdef NoOp < Computer
         
         function obj = NoOp()
             obj.name = 'none';
+            obj.inputPort = DataType.kAny;
+            obj.outputPort = DataType.kAny;
         end
         
         function out = compute(~, dataIn)

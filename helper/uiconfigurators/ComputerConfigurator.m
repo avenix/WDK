@@ -9,16 +9,23 @@ classdef ComputerConfigurator < handle
     
     properties (Access = public)    
         computers;
+        delegate;
     end
     
     methods (Access = public)
-        function obj = ComputerConfigurator(computers, computersList,computersPropertiesTable)
+        function obj = ComputerConfigurator(computers, computersList,...
+                computersPropertiesTable, delegate)
+            
             obj.computers = computers;
             obj.computersList = computersList;
             obj.computersPropertiesTable = computersPropertiesTable;
             
             obj.computersPropertiesTable.CellEditCallback = @obj.handlePropertiesTableEditFinished;
             obj.computersList.ValueChangedFcn = @obj.handleSelectionChanged;
+            
+            if nargin > 3
+                obj.delegate = delegate;
+            end
             
             if ~isempty(obj.computers)
                 obj.reloadUI();
@@ -58,7 +65,11 @@ classdef ComputerConfigurator < handle
 
         function computer = getSelectedComputer(obj)
             idx = obj.getSelectedComputerIdx();
-            computer = obj.computers{idx};
+            if isempty(idx)
+                computer = [];
+            else
+                computer = obj.computers{idx};
+            end
         end
         
         function addComputer(obj,computer)
@@ -66,7 +77,7 @@ classdef ComputerConfigurator < handle
         end
         
         function removeSelectedComputer(obj)
-            idx = obj.getSelectedComputer;
+            idx = obj.getSelectedComputerIdx();
             obj.computers{idx} = [];
             obj.reloadUI();
         end
@@ -77,15 +88,20 @@ classdef ComputerConfigurator < handle
         function handlePropertiesTableEditFinished(obj,~,callbackData)            
             row = callbackData.Indices(1);
             computer = obj.getSelectedComputer();
-            property = obj.currentComputerProperties(row);
-            property.value = callbackData.NewData;
-            computer.setProperty(property);
+            if ~isempty(computer)
+                property = obj.currentComputerProperties(row);
+                property.value = callbackData.NewData;
+                computer.setProperty(property);
+            end
         end
         
         function handleSelectionChanged(obj,~,~)
             computer = obj.getSelectedComputer();
-            obj.currentComputerProperties = computer.getEditableProperties();
-            obj.updatePropertiesTable();
+            if ~isempty(computer)
+                obj.currentComputerProperties = computer.getEditableProperties();
+                obj.updatePropertiesTable();
+            end
+            obj.delegate.handleAlgorithmChanged(computer,obj);
         end
         
         function fillComputersList(obj)            

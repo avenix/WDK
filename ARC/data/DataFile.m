@@ -34,11 +34,13 @@ classdef DataFile < Data
             obj.type = DataType.kDataFile;
         end
         
+        %creates a table from the data contained in the DataFile instance
         function table = convertToTable(obj)
             table = array2table(obj.data);
             table.Properties.VariableNames = obj.columnNames;
         end
         
+        %creates a copy of the DataFile instance that contains less columns
         function file = createFileWithColumnIndices(obj,columnIndices)
             file = DataFile(obj.fileName,obj.data(:,columnIndices),obj.columnNames(columnIndices));
         end

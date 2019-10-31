@@ -2,11 +2,11 @@
 classdef Labeling < handle
     
     properties (Access = public, Constant)
-        kSynchronisationClass = -2;
+        kIgnoreClass = -2;
         kInvalidClass = -1;
         kNullClass = 0;
         kNullClassStr = 'NULL';
-        kSynchronisationStr = 'synchronisation';
+        kIgnoreStr = 'ignore';
     end
     
     properties (GetAccess = public)
@@ -34,8 +34,8 @@ classdef Labeling < handle
         function classStr = stringForClassAtIdx(obj,idx)
             if idx == Labeling.kNullClass
                 classStr = Labeling.kNullClassStr;
-            elseif idx == Labeling.kSynchronisationClass
-                classStr = Labeling.kSynchronisationStr;
+            elseif idx == Labeling.kIgnoreClass
+                classStr = Labeling.kIgnoreStr;
             else
                 classStr = obj.classNames{idx};
             end
@@ -57,7 +57,7 @@ classdef Labeling < handle
     
     methods (Static)
         function b = ShouldIgnoreLabels(labels)
-            b = (labels == Labeling.kSynchronisationClass | labels == Labeling.kInvalidClass);
+            b = (labels == Labeling.kIgnoreClass | labels == Labeling.kInvalidClass);
         end
     end
     
@@ -66,7 +66,7 @@ classdef Labeling < handle
             if ~isempty(classNames)
                 nClasses = length(classNames);
                 obj.classesMap = containers.Map(classNames,int8(1:nClasses));
-                obj.classesMap(Labeling.kSynchronisationStr) = Labeling.kSynchronisationClass;
+                obj.classesMap(Labeling.kIgnoreStr) = Labeling.kIgnoreClass;
                 obj.classesMap(Labeling.kNullClassStr) = Labeling.kNullClass;
             end
         end

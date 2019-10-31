@@ -45,6 +45,10 @@ classdef AssessmentClassificationResultsViewer < handle
             obj.loadUI();
         end
 
+        function setFocus(obj)
+           figure(obj.uiHandles.mainFigure); 
+        end
+        
         function handleFrameChanged(obj,~)
             if ~isempty(obj.synchronisationFile)
                 obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);

@@ -567,7 +567,7 @@ classdef AnnotationApp < handle
  
         function populateClassesList(obj)
             classes = obj.labeling.classNames;
-            classes{end+1} = Labeling.kSynchronisationStr;
+            classes{end+1} = Labeling.kIgnoreStr;
             obj.uiHandles.classesList.String = classes;
         end
         

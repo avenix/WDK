@@ -16,22 +16,30 @@ classdef PreprocessingConfigurator < handle
         
         %state
         currentSignalComputerVariables;
+        
+        %observer
+        delegate;
     end
     
     methods (Access = public)
         function obj = PreprocessingConfigurator(signals,signalComputers, signalsList,...
-                signalComputersList,signalComputerVariablesTable)
+                signalComputersList,signalComputerVariablesTable,delegate)
             
             obj.signals = signals;
             obj.signalComputers = signalComputers;
             obj.signalsList = signalsList;
             obj.signalComputersList = signalComputersList;
             obj.signalComputerVariablesTable = signalComputerVariablesTable;
+            obj.signalsList.ValueChangedFcn = @obj.handleSelectedSignalChanged;
             obj.signalComputersList.ValueChangedFcn = @obj.handleSelectedSignalComputerChanged;
+            
+            if nargin > 5
+                obj.delegate = delegate;
+            end
             
             if ~isempty(obj.signalComputersList)
                 obj.updateSignalsList();
-                obj.fillSignalComputersList();
+                obj.updateSignalComputersList();
                 obj.selectFirstSignalComputer();
                 
                 obj.updateSelectedSignalComputer();
@@ -138,14 +146,34 @@ classdef PreprocessingConfigurator < handle
         end
         
         %methods
-        function fillSignalComputersList(obj)
-            obj.signalComputersList.Items = Helper.generateComputerNamesArray(obj.signalComputers);
+        function updateSignalComputersList(obj)
+            nSelectedSignals = length(obj.signalsList.Value);
+            switch nSelectedSignals
+                case 1
+                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignal);
+                case 2
+                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignal2);
+                case 3
+                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignal3);
+                otherwise
+                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignalN);
+            end
+            
+            obj.signalComputersList.Items = Helper.generateComputerNamesArray(algorithms);
         end
         
-        %handles
+        
+        %% handles
+        function handleSelectedSignalChanged(obj,~,~)
+            obj.updateSignalComputersList();
+        end
+        
         function handleSelectedSignalComputerChanged(obj,~,~)
             obj.updateSelectedSignalComputer();
             obj.updateSignalComputerVariablesTable();
+            
+            selectedSignalComputer = obj.getCurrentSignalComputer();
+            obj.delegate.handlePreprocessingAlgorithmChanged(selectedSignalComputer,obj);
         end
     end
 end

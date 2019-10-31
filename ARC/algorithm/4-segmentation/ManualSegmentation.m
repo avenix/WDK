@@ -69,7 +69,7 @@ classdef ManualSegmentation < Computer
             %eliminate invalid
             eventAnnotations = obj.manualAnnotations.eventAnnotations;
             labels = [eventAnnotations.label];
-            validIdxs = (labels ~= Labeling.kSynchronisationClass & labels ~= Labeling.kInvalidClass);
+            validIdxs = (labels ~= Labeling.kIgnoreClass & labels ~= Labeling.kInvalidClass);
             labels = labels(validIdxs);
             eventLocations = [eventAnnotations(validIdxs).sample];
             

@@ -1,3 +1,5 @@
+%Enumerates the different types of data in the WDK and provides
+%functionality to convert them to strings
 classdef DataType
     properties (Access = public, Constant)
         kDataFile = 0;

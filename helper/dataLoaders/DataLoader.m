@@ -30,11 +30,12 @@ classdef DataLoader < handle
         %loads a data file in text or binary format. Full path should be specified
         function dataFile = LoadDataFile(fileName)
             fileExtension = Helper.getFileExtension(fileName);
-            fileName = sprintf('%s/%s',Constants.kDataPath,fileName);
+            fullPath = sprintf('%s/%s',Constants.kDataPath,fileName);
             if strcmp(fileExtension, ".mat")
-                dataFile = DataLoader.LoadDataFileBinaryWithFullPath(fileName);
+                dataFile = DataLoader.LoadDataFileBinaryWithFullPath(fullPath);
             elseif strcmp(fileExtension, ".txt")
-                dataFile = DataLoader.LoadDataFileTextWithFullPath(fileName);
+                dataFile = DataLoader.LoadDataFileTextWithFullPath(fullPath);
+                dataFile.fileName = fileName;
             else
                 dataFile = [];
             end

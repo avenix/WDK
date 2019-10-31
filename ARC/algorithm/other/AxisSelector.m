@@ -12,14 +12,14 @@ classdef AxisSelector < Computer
             end
             obj.name = 'AxisSelector';
             obj.inputPort = DataType.kSignalN;
-            obj.outputPort = DataType.kSignal;
+            obj.outputPort = DataType.kSignalN;
         end
         
         function computedSignal = compute(obj,signal)
             nCols = size(signal,2);
             maxExpectedAxes = max(obj.axes);
             if nCols < maxExpectedAxes
-                fprintf('AxisSelector - %s. input size has: %d columns but should have up to %d columns',Constants.kInvalidInputError,nCols,maxExpectedAxes);
+                fprintf('AxisSelector - %s. input size has: %d columns but should have up to %d columns\n',Constants.kInvalidInputError,nCols,maxExpectedAxes);
             end
             computedSignal = signal(:,obj.axes);
         end
