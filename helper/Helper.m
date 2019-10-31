@@ -195,12 +195,11 @@ classdef Helper < handle
         end
         
         function signals = LoadSignalNames()
-            dataLoader = DataLoader();
             dataFiles = Helper.listDataFiles();
             signals = [];
             if ~isempty(dataFiles)
                 fileName = dataFiles{1};
-                dataFile = dataLoader.loadData(fileName);
+                dataFile = DataLoader.LoadDataFile(fileName);
                 signals = dataFile.columnNames;
             end
         end

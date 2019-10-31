@@ -5,10 +5,6 @@ classdef FileLoader < Computer
         loadedFile;
     end
     
-    properties (Access = private)
-        dataLoader;
-    end
-    
     methods (Access = public)
         function obj = FileLoader(fileName,selectedSignalIndices)
             if nargin > 0
@@ -21,7 +17,6 @@ classdef FileLoader < Computer
             obj.name = 'fileLoader';
             obj.inputPort = ComputerDataType.kNull;
             obj.outputPort = ComputerDataType.kDataFile;
-            obj.dataLoader = DataLoader();
         end
         
         function file = compute(obj,~)
@@ -30,7 +25,7 @@ classdef FileLoader < Computer
         end
                 
         function file = loadFile(obj)
-            file = obj.dataLoader.loadDataFile(obj.fileName);
+            file = DataLoader.LoadDataFile(obj.fileName);
             if ~isempty(obj.selectedSignalIndices)
                 file = file.createFileWithColumnIndices(obj.selectedSignalIndices);
             end

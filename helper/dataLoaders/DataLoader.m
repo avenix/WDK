@@ -130,7 +130,6 @@ classdef DataLoader < handle
         
         
          %% Classes File
-         
          %loads the labels.txt file in 
         function classesList = LoadLabelsFile()
             [fileID,~] = fopen(Constants.kLabelsPath);
@@ -206,6 +205,42 @@ classdef DataLoader < handle
                 end
                 fclose(file);
             end
+        end
+        
+        %% Label Mappings
+        %loads the labels.txt file and generates a Labeling
+        function defaultLabeling = LoadDefaultLabeling()
+            classesList = DataLoader.LoadLabelsFile();
+            defaultLabeling = Labeling(classesList);
+        end
+        
+        %returns an array of LabelMappings based on the mappings defined in the
+        %/labeling directory
+        function labelMappers = LoadAllLabelMappings()
+            fileNames = Helper.listLabelGroupings();
+            
+            nLabelGroupings = length(fileNames);
+            labelMappers = repmat(LabelMapper,1,nLabelGroupings+1);
+            
+            %default label mapping
+            defaultLabeling = DataLoader.LoadDefaultLabeling();
+            labelMappers(1) = LabelMapper.CreateLabelMapperWithLabeling(defaultLabeling,'defaultLabeling');
+            
+            if ~isempty(fileNames)
+                for i = 1 : nLabelGroupings
+                    fileName = fileNames{i};
+                    labelMappers(i+1) = DataLoader.LoadLabelMapping(defaultLabeling,fileName);
+                end
+            end
+        end
+        
+        %loads the LabelMapping in the /labeling directory with a specific
+        %file name
+        function labelMapper = LoadLabelMapping(defaultLabeling,fileName)
+            fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
+            labelGroups = LabelGroupsLoader.LoadLabelGroups(fullFileName);
+            name = Helper.removeFileExtension(fileName);
+            labelMapper = LabelMapper.CreateLabelMapperWithGroups(defaultLabeling,labelGroups,name);
         end
         
         %% Other
