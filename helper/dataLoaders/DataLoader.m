@@ -13,12 +13,12 @@ classdef DataLoader < handle
         end
         
         %loads a text data file. Full path should be specified
-        function dataFile = LoadDataFileTextWithFullPath(fileName)
+        function dataFile = LoadDataFileTextWithFullPath(fullPath)
             tableImporter = TableImporter();
-            data = tableImporter.importTable(fileName);
+            data = tableImporter.importTable(fullPath);
             columnNames = data.Properties.VariableNames;
             data = table2array(data);
-            dataFile = DataFile(fileName,data,columnNames);
+            dataFile = DataFile(fullPath,data,columnNames);
         end
         
         %loads a data file in text or binary format.

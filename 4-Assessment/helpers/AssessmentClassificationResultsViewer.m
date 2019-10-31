@@ -10,7 +10,6 @@ classdef AssessmentClassificationResultsViewer < handle
     
     properties (Access = private)
         %data
-        dataLoader;
         dataFile;
         magnitude;
         
@@ -43,7 +42,6 @@ classdef AssessmentClassificationResultsViewer < handle
             obj.videoFileNames = Helper.listVideoFiles();
             obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
             obj.timeLineMarker = 1;
-            obj.dataLoader = DataLoader();
             obj.loadUI();
         end
 
@@ -277,13 +275,13 @@ classdef AssessmentClassificationResultsViewer < handle
         %% loading        
         function loadSynchronisationFile(obj)
             fileName = obj.getSynchronisationFileName();
-            obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(fileName);
+            obj.synchronisationFile = DataLoader.LoadSynchronisationFile(fileName);
         end
         
         function loadData(obj)
             fileName = obj.getCurrentFileName();
             if ~isempty(fileName)
-                obj.dataFile = obj.dataLoader.loadDataFile(fileName);
+                obj.dataFile = DataLoader.LoadDataFile(fileName);
             end
         end
         

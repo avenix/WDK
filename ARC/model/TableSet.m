@@ -1,5 +1,5 @@
 %contains a set of tales (cell array) and operations to merge them
-classdef TableSet < handle
+classdef TableSet < Data
     
     properties (Access = public)
         tables;
