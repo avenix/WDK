@@ -16,8 +16,8 @@ classdef AxisMerger < Computer
                 obj.nAxes = nAxes;
             end
             obj.name = 'AxisMerger';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kSignalN;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kSignalN;
         end
         
         function outputSignal = compute(obj,signal)

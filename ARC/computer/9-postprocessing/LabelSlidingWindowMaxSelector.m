@@ -22,8 +22,8 @@ classdef LabelSlidingWindowMaxSelector < Computer
             end
             
             obj.name = 'labelSlidingWindowMaxSelector';
-            obj.inputPort = ComputerDataType.kLabels;
-            obj.outputPort = ComputerDataType.kLabels;
+            obj.inputPort = DataType.kLabels;
+            obj.outputPort = DataType.kLabels;
         end
         
         function classificationResults = compute(obj, classificationResults)

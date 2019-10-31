@@ -5,8 +5,8 @@ classdef FFT < Computer
         
         function obj = FFT()
             obj.name = 'FFT';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kSignal;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kSignal;
         end
         
         function Y = compute(~,x)

@@ -15,8 +15,8 @@ classdef ManualSegmentation < Computer
             end
             
             obj.name = 'manualSegmentation';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kSegment;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kSegment;
         end
         
         function segments = compute(obj,data)

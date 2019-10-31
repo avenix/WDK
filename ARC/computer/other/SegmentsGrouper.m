@@ -8,8 +8,8 @@ classdef SegmentsGrouper < Computer
         
         function obj = SegmentsGrouper()            
             obj.name = 'SegmentsGrouper';
-            obj.inputPort = ComputerDataType.kSegment;
-            obj.outputPort = ComputerDataType.kAny;
+            obj.inputPort = DataType.kSegment;
+            obj.outputPort = DataType.kAny;
         end
         
         function groupedSegments = compute(obj,segments)

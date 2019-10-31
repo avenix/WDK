@@ -17,8 +17,8 @@ classdef LeaveOneOutCrossValidator < Computer
             obj.featureNormalizer = FeatureNormalizer();
             
             obj.name = 'leaveOneOutValidator';
-            obj.inputPort = ComputerDataType.kTableSet;
-            obj.outputPort = ComputerDataType.kLabels;
+            obj.inputPort = DataType.kTableSet;
+            obj.outputPort = DataType.kLabels;
         end
         
         function classificationResults = compute(obj,tableSet)

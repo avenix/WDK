@@ -10,8 +10,8 @@ classdef Quantile < Computer
                 obj.numQuantileParts = numQuantileParts;
             end
             obj.name = 'Quantile';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kFeature;
         end
         
         function result = compute(obj,data)

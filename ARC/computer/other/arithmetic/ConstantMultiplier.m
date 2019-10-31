@@ -11,8 +11,8 @@ classdef ConstantMultiplier < Computer
                 obj.constant = constant;
             end
             obj.name = 'ConstantMultiplier';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kSignal;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kSignal;
         end
         
         function computedSignal = compute(obj,signal)

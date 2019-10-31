@@ -5,8 +5,8 @@ classdef SpectralEnergy < Computer
         
         function obj = SpectralEnergy()
             obj.name = 'SpectralEnergy';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kFeature;
         end
         
         %receives a fourier transform

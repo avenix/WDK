@@ -4,8 +4,8 @@ classdef Magnitude < Computer
         
         function obj = Magnitude()
             obj.name = 'Magnitude';
-            obj.inputPort = ComputerDataType.kSignal3;
-            obj.outputPort = ComputerDataType.kSignal;
+            obj.inputPort = DataType.kSignal3;
+            obj.outputPort = DataType.kSignal;
         end
         
         function dataOut = compute(~,x)

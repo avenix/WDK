@@ -13,8 +13,8 @@ classdef EnsembleClassifier < Computer
         
         function obj = EnsembleClassifier()
             obj.name = 'Ensemble';
-            obj.inputPort = ComputerDataType.kTable;
-            obj.outputPort = ComputerDataType.kTable;
+            obj.inputPort = DataType.kTable;
+            obj.outputPort = DataType.kTable;
         end
         
         function dataOut = compute(obj,data)

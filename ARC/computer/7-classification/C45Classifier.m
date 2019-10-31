@@ -14,8 +14,8 @@ classdef C45Classifier < Computer
         
         function obj = C45Classifier()
             obj.name = 'Ensemble';
-            obj.inputPort = ComputerDataType.kTable;
-            obj.outputPort = ComputerDataType.kTable;
+            obj.inputPort = DataType.kTable;
+            obj.outputPort = DataType.kTable;
         end
         
         function dataOut = compute(obj,data)

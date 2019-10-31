@@ -27,8 +27,8 @@ classdef AnnotationLoader < Computer
             end
             
             obj.name = 'annotationsLoader';
-            obj.inputPort = ComputerDataType.kNull;
-            obj.outputPort = ComputerDataType.kAnnotation;
+            obj.inputPort = DataType.kNull;
+            obj.outputPort = DataType.kAnnotation;
         end
         
         function annotation = compute(obj,~)

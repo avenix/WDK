@@ -4,8 +4,8 @@ classdef Subtractor < Computer
         
         function obj = Subtractor()
             obj.name = 'subtractor';
-            obj.inputPort = ComputerDataType.kSignal2;
-            obj.outputPort = ComputerDataType.kSignal;
+            obj.inputPort = DataType.kSignal2;
+            obj.outputPort = DataType.kSignal;
         end
         
         function computedSignal = compute(~,dataIn)

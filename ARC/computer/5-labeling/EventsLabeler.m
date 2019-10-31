@@ -9,13 +9,22 @@ classdef EventsLabeler < Computer
         
         function obj = EventsLabeler()
             obj.name = 'eventsLabeler';
-            obj.inputPort = ComputerDataType.kEvent;
-            obj.outputPort = ComputerDataType.kEvent;
+            obj.inputPort = DataType.kEvent;
+            obj.outputPort = DataType.kEvent;
         end
         
         function labeledEvents = compute(obj, events)
             if isempty(events)
                 labeledEvents = [];
+            elseif ~isa(events(1),'Data') || events(1).type ~= DataType.kEvent
+                labeledEvents = [];
+                expectedStr = DataType.DataTypeToString(DataType.kEvent);
+                if isa(events(1),'Data')
+                    Helper.PrintWrongDataTypeMessage(DataType.DataTypeToString(events(1).type),...
+                        expectedStr,obj.toString());
+                else
+                    Helper.PrintWrongDataTypeMessage(class(events(1)),expectedStr,obj.toString());
+                end
             else
                 labels = obj.labelEventIdxs([events.sample],obj.manualAnnotations.eventAnnotations);
                 labeledEvents = Helper.LabelEventsWithValidLabels(events,labels);

@@ -16,7 +16,6 @@ classdef DetectionEventsPlotter < handle
         showingFalsePositiveEventsPrivate = true;
         
         %data
-        dataLoader;
         fileNames;
         signalsPerFile;
         resultsPerFile;
@@ -86,8 +85,6 @@ classdef DetectionEventsPlotter < handle
             obj.signalsPerFile = signalsPerFile;
             obj.resultsPerFile = resultsPerFile;
             obj.fileNames = fileNames;
-            
-            obj.dataLoader = DataLoader();
             
             obj.videoFileNames = Helper.listVideoFiles();
             obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
@@ -221,7 +218,7 @@ classdef DetectionEventsPlotter < handle
             
             [videoFileName, synchronisationFileName] = obj.getVideoAndSynchronisationFileName(fileName);
             
-            obj.synchronisationFile = obj.dataLoader.loadSynchronisationFile(synchronisationFileName);
+            obj.synchronisationFile = DataLoader.LoadSynchronisationFile(synchronisationFileName);
             
             if ~isempty(videoFileName)
                 if ~isempty(obj.videoPlayer)

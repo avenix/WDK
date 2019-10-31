@@ -12,8 +12,8 @@ classdef EventSegmentation < Computer
             end
             
             obj.name = 'eventSegmentation';
-            obj.inputPort = ComputerDataType.kEvent;
-            obj.outputPort = ComputerDataType.kSegment;
+            obj.inputPort = DataType.kEvent;
+            obj.outputPort = DataType.kSegment;
         end
 
         function segments = compute(obj,events)

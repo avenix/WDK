@@ -5,8 +5,8 @@ classdef SMA < Computer
         
         function obj = SMA()
             obj.name = 'SMA';
-            obj.inputPort = ComputerDataType.kSignalN;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignalN;
+            obj.outputPort = DataType.kFeature;
         end
         
         function result = compute(~,signal)

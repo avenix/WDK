@@ -10,8 +10,8 @@ classdef S2 < Computer
                 obj.k = k;
             end
             obj.name = 'S2';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kSignal;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kSignal;
         end
         
         function computedSignal = compute(obj,signal)

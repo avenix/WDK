@@ -15,8 +15,8 @@ classdef FileLoader < Computer
             end
             
             obj.name = 'fileLoader';
-            obj.inputPort = ComputerDataType.kNull;
-            obj.outputPort = ComputerDataType.kDataFile;
+            obj.inputPort = DataType.kNull;
+            obj.outputPort = DataType.kDataFile;
         end
         
         function file = compute(obj,~)

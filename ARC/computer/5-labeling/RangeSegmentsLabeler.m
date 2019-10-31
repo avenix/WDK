@@ -19,8 +19,8 @@ classdef RangeSegmentsLabeler < Computer
             end
             
             obj.name = 'rangeSegmentsLabeler';
-            obj.inputPort = ComputerDataType.kSegment;
-            obj.outputPort = ComputerDataType.kSegment;
+            obj.inputPort = DataType.kSegment;
+            obj.outputPort = DataType.kSegment;
         end
         
         function labeledSegments = compute(obj,segments)

@@ -54,8 +54,8 @@ classdef LabelMapper < Computer
                 obj.name = 'labelMapper';
             end
             
-            obj.inputPort = ComputerDataType.kLabels;
-            obj.outputPort = ComputerDataType.kLabels;
+            obj.inputPort = DataType.kLabels;
+            obj.outputPort = DataType.kLabels;
         end
         
         %receives an array of instances of ClassificationResult or

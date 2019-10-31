@@ -243,6 +243,22 @@ classdef DataLoader < handle
             labelMapper = LabelMapper.CreateLabelMapperWithGroups(defaultLabeling,labelGroups,name);
         end
         
+        %% Events
+        function SaveEvents(events, fileName, labeling)
+            if ~isempty(events) && ~isempty(fileName)
+                fileID = fopen(fileName,'w');
+                
+                for i = 1 : length(events)-1
+                    event = events(i);
+                    DataLoader.PrintEventToFile(fileID,event,labeling);
+                    fprintf(fileID, '\n');
+                end
+                event = events(end);
+                DataLoader.PrintEventToFile(fileID,event,labeling);
+                fclose(fileID);
+            end
+        end
+        
         %% Other
         %checks if a video file exists
         function b = CheckVideoFileExists(fileName)
@@ -253,6 +269,13 @@ classdef DataLoader < handle
         %checks if a file exists
         function b = CheckFileExists(fullPath)
             b = exist(fullPath,'file');
+        end
+    end
+    
+    methods (Static, Access = private)
+        function PrintEventToFile(fileID, event,labeling)
+            labelStr = labeling.stringForClassAtIdx(event.label);
+            fprintf(fileID, '%s, %d',labelStr,event.sample);
         end
     end
 end

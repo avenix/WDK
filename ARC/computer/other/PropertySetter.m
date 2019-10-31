@@ -8,8 +8,8 @@ classdef PropertySetter < Computer
     methods (Access = public)
         function obj = PropertySetter()
             obj.name = 'propertySetter';
-            obj.inputPort = ComputerDataType.kAny;
-            obj.outputPort = ComputerDataType.kNull;
+            obj.inputPort = DataType.kAny;
+            obj.outputPort = DataType.kNull;
         end
         
         function computedSignal = compute(obj,data)

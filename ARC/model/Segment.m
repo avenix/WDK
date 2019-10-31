@@ -1,4 +1,4 @@
-classdef Segment < handle
+classdef Segment < Data
     
     properties (Access = public)
         file;
@@ -23,6 +23,7 @@ classdef Segment < handle
                     end
                 end
             end
+            obj.type = DataType.kSegment;
         end
     end
     

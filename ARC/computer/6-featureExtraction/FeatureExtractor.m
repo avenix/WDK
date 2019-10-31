@@ -15,8 +15,8 @@ classdef FeatureExtractor < Computer
                 end
             end
             obj.name = 'FeatureExtractor';
-            obj.inputPort = ComputerDataType.kSegment;
-            obj.outputPort = ComputerDataType.kTable;
+            obj.inputPort = DataType.kSegment;
+            obj.outputPort = DataType.kTable;
         end
         
         %creates a table from a set of segments

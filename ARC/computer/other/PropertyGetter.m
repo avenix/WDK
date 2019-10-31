@@ -11,8 +11,8 @@ classdef PropertyGetter < Computer
             end
             
             obj.name = 'getter';
-            obj.inputPort = ComputerDataType.kAny;
-            obj.outputPort = ComputerDataType.kAny;
+            obj.inputPort = DataType.kAny;
+            obj.outputPort = DataType.kAny;
         end
         
         function computedSignal = compute(obj,data)

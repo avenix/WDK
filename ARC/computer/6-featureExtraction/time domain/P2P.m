@@ -4,8 +4,8 @@ classdef P2P < Computer
         
         function obj = P2P()
             obj.name = 'P2P';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kFeature;
         end
         
         function result = compute(~,signal)

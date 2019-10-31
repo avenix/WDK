@@ -1,4 +1,4 @@
-classdef Table < handle
+classdef Table < Data
     
     properties (Access = public)
         file;
@@ -51,6 +51,7 @@ classdef Table < handle
                     end
                 end
             end
+            obj.type = DataType.kTable;
         end
         
         function filterTableToLabelFlags(obj,labelFlags)

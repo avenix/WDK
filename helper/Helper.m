@@ -181,6 +181,10 @@ classdef Helper < handle
         end
         
         %% Helper methods
+        function PrintWrongDataTypeMessage(receivedType,expectedType,currentObject)
+            fprintf('Wrong input data type received: %s. Expected: %s. In Algorithm: %s\n',receivedType,expectedType,currentObject);
+        end
+        
         function labeler = FindLabelerInUserChain(classificationChain)
             
             labeler = [];

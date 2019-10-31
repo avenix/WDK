@@ -4,8 +4,8 @@ classdef MagnitudeSquared < Computer
         
         function obj = MagnitudeSquared()
             obj.name = 'E';
-            obj.inputPort = ComputerDataType.kSignal3;
-            obj.outputPort = ComputerDataType.kSignal;
+            obj.inputPort = DataType.kSignal3;
+            obj.outputPort = DataType.kSignal;
         end
         
         function dataOut = compute(~,x)

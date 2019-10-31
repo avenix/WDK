@@ -52,7 +52,7 @@ classdef DetectionResult < handle
     
     methods (Access = public)
         function obj = DetectionResult(goodEvents,missedEvents,badEvents)
-            if nargin>1
+            if nargin > 0
                 obj.goodEvents = goodEvents;
                 obj.missedEvents = missedEvents;
                 obj.badEvents = badEvents;
@@ -60,21 +60,36 @@ classdef DetectionResult < handle
         end
         
         function goodEventsPerClass = numGoodEventsPerClass(obj,nClasses)
-            goodEventsPerClass = DetectionResult.numEventsPerClass(obj.goodEvents,nClasses);
+            goodEventsPerClass = DetectionResult.NumEventsPerClass(obj.goodEvents,nClasses);
         end
         
         function missedEventsPerClass = numMissedEventsPerClass(obj,nClasses)
-            missedEventsPerClass = DetectionResult.numEventsPerClass(obj.missedEvents,nClasses);
+            missedEventsPerClass = DetectionResult.NumEventsPerClass(obj.missedEvents,nClasses);
         end
     end
     
     methods (Static, Access = private)
-        function numEventsPerClass = numEventsPerClass(events,nClasses)
-            numEventsPerClass = zeros(1,nClasses);
+        function eventsPerClass = NumEventsPerClass(events,nClasses)
+            countMap = containers.Map('KeyType','double','ValueType','double');
+            
             for i = 1 : length(events)
                 event = events(i);
                 label = event.label;
-                numEventsPerClass(label) = numEventsPerClass(label) + 1;
+                if isKey(countMap,label)
+                    countMap(label) = countMap(label) + 1;
+                else
+                    countMap(label) = 1;
+                end
+            end
+            eventsPerClass = DetectionResult.CreateEventsPerClassArray(countMap,nClasses);
+        end
+        
+        function eventsPerClass = CreateEventsPerClassArray(countMap,nClasses)
+            eventsPerClass = zeros(1,nClasses);
+            for i = 1 : nClasses
+                if isKey(countMap,i)
+                    eventsPerClass(i) = countMap(i);
+                end
             end
         end
     end

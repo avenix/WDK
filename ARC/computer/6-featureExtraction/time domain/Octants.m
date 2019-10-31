@@ -4,8 +4,8 @@ classdef Octants < Computer
         
         function obj = Octants()
             obj.name = 'Octants';
-            obj.inputPort = ComputerDataType.kSignal3;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignal3;
+            obj.outputPort = DataType.kFeature;
         end
         
         function octants = compute(~,signal)

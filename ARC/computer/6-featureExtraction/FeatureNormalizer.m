@@ -9,8 +9,8 @@ classdef FeatureNormalizer < Computer
     methods (Access = public)
         function obj = FeatureNormalizer()    
             obj.name = 'FeatureNormalizer';
-            obj.inputPort = ComputerDataType.kTable;
-            obj.outputPort = ComputerDataType.kTable;
+            obj.inputPort = DataType.kTable;
+            obj.outputPort = DataType.kTable;
         end
         
         function fit(obj,table)

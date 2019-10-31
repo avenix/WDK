@@ -13,8 +13,8 @@ classdef HoldOutValidator < Computer
         
         function obj = HoldOutValidator()
             obj.name = 'holdOutValidator';
-            obj.inputPort = ComputerDataType.kTableSet;
-            obj.outputPort = ComputerDataType.kLabels;
+            obj.inputPort = DataType.kTableSet;
+            obj.outputPort = DataType.kLabels;
             obj.featureNormalizer = FeatureNormalizer();
         end
         

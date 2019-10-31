@@ -11,8 +11,8 @@ classdef Resampler < Computer
                 obj.samplingInterval = samplingInterval;
             end
             obj.name = 'resampler';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kSignal;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kSignal;
         end
         
         function dataFiltered = compute(obj,data)

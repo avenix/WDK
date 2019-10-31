@@ -23,6 +23,7 @@ classdef TableSet < handle
     methods (Access = public)
         function obj = TableSet(tables)
             obj.tables = tables;
+            obj.type = DataType.kTableSet;
         end
         
         function table = tableAtIndex(obj,index)

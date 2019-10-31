@@ -1,4 +1,4 @@
-classdef DataFile < handle
+classdef DataFile < Data
     properties (Access = public)
         fileName;
         columnNames;
@@ -31,6 +31,7 @@ classdef DataFile < handle
                     end
                 end
             end
+            obj.type = DataType.kDataFile;
         end
         
         function table = convertToTable(obj)

@@ -4,8 +4,8 @@ classdef Correlation < Computer
         
         function obj = Correlation()
             obj.name = 'Correlation';
-            obj.inputPort = ComputerDataType.kSignal2;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignal2;
+            obj.outputPort = DataType.kFeature;
         end
         
         %input signal is nx2

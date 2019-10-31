@@ -11,8 +11,8 @@ classdef TableRowSelector < Computer
                 obj.selectedLabels = selectedLabels;
             end
             obj.name = 'TableRowSelector';
-            obj.inputPort = ComputerDataType.kTable;
-            obj.outputPort = ComputerDataType.kTable;
+            obj.inputPort = DataType.kTable;
+            obj.outputPort = DataType.kTable;
         end
         
         function table = compute(obj,table)

@@ -4,8 +4,8 @@ classdef Energy < Computer
         
         function obj = Energy()
             obj.name = 'Energy';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kFeature;
         end
         
         function result = compute(~,signal)

@@ -3,7 +3,7 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
     properties (Access = public)
         inputPort; % describes the type of the input this computer takes
         outputPort; % describes the type of the output this computer produces
-        name; 
+        name;
     end
     
     properties (Access = public)

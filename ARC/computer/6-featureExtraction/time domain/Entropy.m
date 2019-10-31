@@ -4,8 +4,8 @@ classdef Entropy < Computer
         
         function obj = Entropy()
             obj.name = 'Entropy';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = DataType.kSignal;
+            obj.outputPort = DataType.kFeature;
         end
         
         function result = compute(~,signal)

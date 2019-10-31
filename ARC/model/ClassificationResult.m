@@ -1,4 +1,4 @@
-classdef ClassificationResult < handle
+classdef ClassificationResult < Data
     properties (Access = public)
         predictedClasses;
         table;
@@ -33,6 +33,7 @@ classdef ClassificationResult < handle
                 obj.predictedClasses = predictedClasses;
                 obj.table = table;
             end
+            obj.type = DataType.kClassificationResult;
         end
     end
 end
