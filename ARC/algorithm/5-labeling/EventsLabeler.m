@@ -1,4 +1,4 @@
-classdef EventsLabeler < Computer
+classdef EventsLabeler < Algorithm
     
     properties (Access = public)
         tolerance = 10;

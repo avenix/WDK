@@ -1,4 +1,4 @@
-classdef Skewness < Computer
+classdef Skewness < Algorithm
     
     methods (Access = public)
         
@@ -9,8 +9,8 @@ classdef Skewness < Computer
         end
         
         function result = compute(~,signal)
-            %meanComputer = dsp.Mean('RunningMean',false,'Dimension','All');
-            %signalMean = step(meanComputer,signal);
+            %meanAlgorithm = dsp.Mean('RunningMean',false,'Dimension','All');
+            %signalMean = step(meanAlgorithm,signal);
             signalMean = mean(signal);
             
             n = single(length(signal));

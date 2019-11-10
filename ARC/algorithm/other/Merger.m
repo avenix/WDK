@@ -1,4 +1,4 @@
-classdef Merger < Computer
+classdef Merger < Algorithm
 
     properties (Access = public)
         numMessages;

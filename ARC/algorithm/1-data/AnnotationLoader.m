@@ -1,4 +1,4 @@
-classdef AnnotationLoader < Computer
+classdef AnnotationLoader < Algorithm
     properties (Access = public)
         fileName;
     end

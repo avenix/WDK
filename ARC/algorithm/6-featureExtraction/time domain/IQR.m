@@ -1,4 +1,4 @@
-classdef IQR < Computer
+classdef IQR < Algorithm
     
     methods (Access = public)
         

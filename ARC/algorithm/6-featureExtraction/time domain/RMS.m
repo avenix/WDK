@@ -1,4 +1,4 @@
-classdef RMS < Computer
+classdef RMS < Algorithm
     
     methods (Access = public)
         

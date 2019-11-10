@@ -1,4 +1,4 @@
-classdef AxisSelector < Computer
+classdef AxisSelector < Algorithm
     
     properties (Access = public)
         axes;

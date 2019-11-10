@@ -1,4 +1,4 @@
-classdef C45Classifier < Computer
+classdef C45Classifier < Algorithm
     
     properties (Access = public)
         shouldTrain = false;

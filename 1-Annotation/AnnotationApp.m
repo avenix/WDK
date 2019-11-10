@@ -304,7 +304,7 @@ classdef AnnotationApp < handle
         
         function loadAll(obj)
              obj.loadData();
-            if obj.labeling.numClasses > 0 && ~isempty(obj.dataFile)
+            if (~isempty(obj.labeling.numClasses) && obj.labeling.numClasses > 0) && ~isempty(obj.dataFile)
                 obj.timeLineMarker = 1;
                 obj.loadAnnotations();
                 obj.loadSynchronisationFile();
@@ -384,6 +384,14 @@ classdef AnnotationApp < handle
             selectedSignals = cell2mat(obj.uiHandles.signalsTable.Data(:,2));
         end
         
+        %{
+        function firstNSelectedSignals = getFirstNSelectedSignals(obj,n)
+            selectedSignals = obj.getSelectedSignals();
+            nSignals = 
+            firstNSelectedSignals = 
+        end
+        %}
+        
         function isDataPlotted = plotData(obj)
             isDataPlotted = false;
             if ~isempty(obj.dataFile)
@@ -393,8 +401,10 @@ classdef AnnotationApp < handle
                 
                 %allocate plot handles
                 nSignals = sum(signalsSelected);
-                
+
                 if nSignals > 0
+                    nSignals = min(nSignals,AnnotationApp.kMaxPlots);
+                    
                     isDataPlotted = true;
                     obj.plotHandles = gobjects(1,nSignals);
                     
@@ -415,7 +425,7 @@ classdef AnnotationApp < handle
                                     'LineWidth', AnnotationApp.PlotLineWidth,...
                                     'Color', Constants.kPlotColors{signalCount});
                             end
-                            if signalCount > AnnotationApp.kMaxPlots
+                            if signalCount >= AnnotationApp.kMaxPlots
                                 break;
                             end
                         end
@@ -507,7 +517,9 @@ classdef AnnotationApp < handle
         function updateVideoFrame(obj)
             if ~isempty(obj.synchronisationFile) && ~isempty(obj.videoPlayer)
                 videoFrame = obj.synchronisationFile.sampleToVideoFrame(obj.timeLineMarker);
-                obj.videoPlayer.displayFrame(videoFrame);
+                if ~isempty(videoFrame)
+                    obj.videoPlayer.displayFrame(videoFrame);
+                end
             end
         end
         
@@ -642,10 +654,11 @@ classdef AnnotationApp < handle
             eventAnnotations = obj.eventAnnotationsPlotter.getAnnotations();
             rangeAnnotations = obj.rangeAnnotationsPlotter.getAnnotations();
             annotations = AnnotationSet(eventAnnotations,rangeAnnotations);
-            if ~isempty(eventAnnotations)
+            if ~isempty(eventAnnotations) || ~isempty(rangeAnnotations)
                 fileName = obj.getAnnotationsFileName();
                 DataLoader.SaveAnnotations(annotations,fileName,obj.labeling);
             end
+            obj.didAnnotationsChange = false;
         end
         
         function loadAnnotations(obj)
@@ -785,7 +798,7 @@ classdef AnnotationApp < handle
             tableData(1:nRawSignals,1) = obj.dataFile.columnNames;
             
             %fill in preprocessed signal names
-            tableData(nRawSignals+1:end,1) = Helper.ComputersToStringsArray(obj.preprocessingAlgorithms);
+            tableData(nRawSignals+1:end,1) = Helper.AlgorithmsToStringsArray(obj.preprocessingAlgorithms);
             
             %fill in second column
             tableData(:,2) = num2cell(false(nTotalSignals,1));

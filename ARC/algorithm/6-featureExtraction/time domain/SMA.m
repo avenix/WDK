@@ -1,5 +1,5 @@
 %computes the normalized sum of absolute values of signal components
-classdef SMA < Computer
+classdef SMA < Algorithm
     
     methods (Access = public)
         

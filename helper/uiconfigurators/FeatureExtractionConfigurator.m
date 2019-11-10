@@ -1,8 +1,8 @@
-%this class retrieves a preprocessing computer from the UI
+%this class retrieves a preprocessing algorithm from the UI
 classdef FeatureExtractionConfigurator < handle
     
     properties (Access = private)
-        computerConfigurator;
+        algorithmConfigurator;
         
         uiElements FeatureExtractionConfiguratorUIElements;
         
@@ -55,7 +55,7 @@ classdef FeatureExtractionConfigurator < handle
             else
                 fileIdx = obj.getSelectedLoadedFileIdx();
                 featureExtractionFile = obj.loadedFeatureExtractionFiles{fileIdx};
-                featureExtractor = DataLoader.LoadComputer(featureExtractionFile);
+                featureExtractor = DataLoader.LoadAlgorithm(featureExtractionFile);
             end
         end
         
@@ -89,7 +89,7 @@ classdef FeatureExtractionConfigurator < handle
         function updateSelectedFeatureUI(obj)
             if ~isempty(obj.currentSelectedFeature)
                 axisSelector = obj.currentSelectedFeature.root;
-                rangeSelector = axisSelector.nextComputers{1};
+                rangeSelector = axisSelector.nextAlgorithms{1};
                 
                 if isempty(rangeSelector.rangeEnd)
                     obj.uiElements.featureStartRangeEditText.Visible = false;
@@ -113,11 +113,11 @@ classdef FeatureExtractionConfigurator < handle
             obj.uiElements.selectedFeaturesList.Value = obj.uiElements.selectedFeaturesList.Items{idx};
         end
         
-        function addFeatureToSelectedList(obj, computer)
-            obj.selectedFeatures{end+1} = computer;
-            obj.uiElements.selectedFeaturesList.Items{end+1} = FeatureExtractionConfigurator.StringForFeature(computer);
+        function addFeatureToSelectedList(obj, algorithm)
+            obj.selectedFeatures{end+1} = algorithm;
+            obj.uiElements.selectedFeaturesList.Items{end+1} = FeatureExtractionConfigurator.StringForFeature(algorithm);
             obj.uiElements.selectedFeaturesList.Value = obj.uiElements.selectedFeaturesList.Items(end);
-            obj.currentSelectedFeature = computer;
+            obj.currentSelectedFeature = algorithm;
             obj.updateSelectedFeatureUI();
         end
         
@@ -153,12 +153,12 @@ classdef FeatureExtractionConfigurator < handle
             rangeSelector = RangeSelector();
             featureExtractor = obj.getDefaultSelectedFeature();
             
-            Computer.ComputerWithSequence({axisSelector,rangeSelector,featureExtractor});
+            Algorithm.AlgorithmWithSequence({axisSelector,rangeSelector,featureExtractor});
             
-            compositeComputer = CompositeComputer(axisSelector,featureExtractor);
-            compositeComputer.name = featureExtractor.name;
+            compositeAlgorithm = CompositeAlgorithm(axisSelector,featureExtractor);
+            compositeAlgorithm.name = featureExtractor.name;
             
-            obj.addFeatureToSelectedList(compositeComputer);
+            obj.addFeatureToSelectedList(compositeAlgorithm);
         end
         
         function handleRemoveButtonClicked(obj,~,~)
@@ -180,7 +180,7 @@ classdef FeatureExtractionConfigurator < handle
         end
         
         function fillDefaultFeaturesList(obj)
-            obj.uiElements.defaultFeaturesList.Items = Helper.generateComputerNamesArray(obj.defaultFeatures);
+            obj.uiElements.defaultFeaturesList.Items = Helper.generateAlgorithmNamesArray(obj.defaultFeatures);
         end
         
         function handleSelectedFeatureChanged(obj,~,~)
@@ -192,7 +192,7 @@ classdef FeatureExtractionConfigurator < handle
             obj.currentSelectedFeature = obj.getSelectedFeature();
             
             if ~isempty(obj.currentSelectedFeature)
-                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                rangeSelector = obj.currentSelectedFeature.root.nextAlgorithms{1};
                 rangeSelector.rangeStart = obj.uiElements.featureStartRangeEditText.Value;
                 obj.updateCurrentSelectedFeatureName();
             end
@@ -202,7 +202,7 @@ classdef FeatureExtractionConfigurator < handle
             obj.currentSelectedFeature = obj.getSelectedFeature();
             
             if ~isempty(obj.currentSelectedFeature)
-                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                rangeSelector = obj.currentSelectedFeature.root.nextAlgorithms{1};
                 rangeSelector.rangeEnd = obj.uiElements.featureEndRangeEditText.Value;
                 obj.updateCurrentSelectedFeatureName();
             end
@@ -223,7 +223,7 @@ classdef FeatureExtractionConfigurator < handle
             
             obj.currentSelectedFeature = obj.getSelectedFeature();
             if ~isempty(obj.currentSelectedFeature)
-                rangeSelector = obj.currentSelectedFeature.root.nextComputers{1};
+                rangeSelector = obj.currentSelectedFeature.root.nextAlgorithms{1};
                 
                 value = obj.uiElements.featureFullSegmentCheckBox.Value;
                 if (value)
@@ -238,10 +238,10 @@ classdef FeatureExtractionConfigurator < handle
     end
     
     methods (Access = private, Static)
-        function str = StringForFeature(featureComputer)
-            axisSelector = featureComputer.root;
-            rangeSelector = axisSelector.nextComputers{1};
-            featureExtractor = rangeSelector.nextComputers{1};
+        function str = StringForFeature(featureAlgorithm)
+            axisSelector = featureAlgorithm.root;
+            rangeSelector = axisSelector.nextAlgorithms{1};
+            featureExtractor = rangeSelector.nextAlgorithms{1};
             
             str = sprintf('%s_%s',featureExtractor.name,Helper.arrayToString(axisSelector.axes,' '));
             if ~isempty(rangeSelector.rangeEnd)

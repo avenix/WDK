@@ -1,4 +1,4 @@
-classdef NoOp < Computer
+classdef NoOp < Algorithm
 
     methods (Access = public)
         

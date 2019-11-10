@@ -1,4 +1,4 @@
-classdef PowerSpectrum < Computer
+classdef PowerSpectrum < Algorithm
     
     methods (Access = public)
         

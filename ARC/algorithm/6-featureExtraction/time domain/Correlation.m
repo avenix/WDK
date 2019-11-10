@@ -1,4 +1,4 @@
-classdef Correlation < Computer
+classdef Correlation < Algorithm
     
     methods (Access = public)
         

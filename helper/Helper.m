@@ -64,7 +64,7 @@ classdef Helper < handle
         end
         
         function fileName = addSynchronisationFileExtension(fileName)
-            fileName = sprintf('%s-synchronisation.txt',fileName);
+            fileName = sprintf('%s-synchronization.txt',fileName);
         end
         
         function fileName = addVideoFileExtension(fileName)
@@ -188,11 +188,11 @@ classdef Helper < handle
         function labeler = FindLabelerInUserChain(classificationChain)
             
             labeler = [];
-            graph = ComputerGraph.CreateGraph(classificationChain);
+            graph = AlgorithmGraph.CreateGraph(classificationChain);
             for i = 1 : length(graph.nodes)
-                computer = graph.nodes{i};
-                if isa(computer,'EventsLabeler') || isa(computer,'EventSegmentsLabeler') || isa(computer,'RangeSegmentsLabeler')
-                    labeler = computer;
+                algorithm = graph.nodes{i};
+                if isa(algorithm,'EventsLabeler') || isa(algorithm,'EventSegmentsLabeler') || isa(algorithm,'RangeSegmentsLabeler')
+                    labeler = algorithm;
                     break;
                 end
             end
@@ -327,27 +327,27 @@ classdef Helper < handle
             end
         end
         
-        function PlotComputerGraph(computer)
+        function PlotAlgorithmGraph(algorithm)
             
-            computerGraph = ComputerGraph.CreateGraph(computer);
-            nEdges = length(computerGraph.edges);
-            graph = digraph([computerGraph.edges.source],[computerGraph.edges.target],ones(1,nEdges),computerGraph.nodeNames);
+            algorithmGraph = AlgorithmGraph.CreateGraph(algorithm);
+            nEdges = length(algorithmGraph.edges);
+            graph = digraph([algorithmGraph.edges.source],[algorithmGraph.edges.target],ones(1,nEdges),algorithmGraph.nodeNames);
             plotHandle = plot(graph,'NodeFontSize',20,'LineWidth',3,'MarkerSize',10,'NodeColor','red','ArrowSize',15,'ArrowPosition',1);
             layout(plotHandle,'layered','Direction','right');
         end
         
-        function PrintComputerChain(computer)
+        function PrintAlgorithmChain(algorithm)
             stack = Stack();
-            stack.push({computer,0});
+            stack.push({algorithm,0});
             
             while(~stack.isempty())
-                computerAndSpaces = stack.pop();
-                computer = computerAndSpaces{1};
-                nSpaces = computerAndSpaces{2};
-                fprintf('%s%s\n',repmat(' ',1,nSpaces),computer.toString());
+                algorithmAndSpaces = stack.pop();
+                algorithm = algorithmAndSpaces{1};
+                nSpaces = algorithmAndSpaces{2};
+                fprintf('%s%s\n',repmat(' ',1,nSpaces),algorithm.toString());
                 nSpaces = nSpaces+1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push({computer.nextComputers{i},nSpaces});
+                for i = 1 : length(algorithm.nextAlgorithms)
+                    stack.push({algorithm.nextAlgorithms{i},nSpaces});
                 end
             end
         end
@@ -523,19 +523,19 @@ classdef Helper < handle
             end
         end 
         
-        function stringArray = ComputersToStringsArray(computers)
-            numComputers = length(computers);
-            stringArray = cell(1,numComputers);
-            for i = 1 : numComputers
-                stringArray{i} = computers{i}.toString();
+        function stringArray = AlgorithmsToStringsArray(algorithms)
+            numAlgorithms = length(algorithms);
+            stringArray = cell(1,numAlgorithms);
+            for i = 1 : numAlgorithms
+                stringArray{i} = algorithms{i}.toString();
             end
         end
         
-        function names = generateComputerNamesArray(computers)
-            numComputers = length(computers);
-            names = cell(1,numComputers);
-            for i = 1 : numComputers
-                names{i} = computers{i}.name;
+        function names = generateAlgorithmNamesArray(algorithms)
+            numAlgorithms = length(algorithms);
+            names = cell(1,numAlgorithms);
+            for i = 1 : numAlgorithms
+                names{i} = algorithms{i}.name;
             end
         end
         

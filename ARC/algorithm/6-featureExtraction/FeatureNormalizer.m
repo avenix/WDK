@@ -1,4 +1,4 @@
-classdef FeatureNormalizer < Computer
+classdef FeatureNormalizer < Algorithm
     
     properties (Access = public)
         means;

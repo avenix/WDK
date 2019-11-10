@@ -1,4 +1,4 @@
-classdef Max < Computer
+classdef Max < Algorithm
     
     methods (Access = public)
         

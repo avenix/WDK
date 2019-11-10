@@ -1,4 +1,4 @@
-classdef LowPassFilter < Computer
+classdef LowPassFilter < Algorithm
     
     properties (Access = public)
         samplingFrequency = 200;

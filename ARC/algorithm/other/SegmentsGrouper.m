@@ -1,4 +1,4 @@
-classdef SegmentsGrouper < Computer
+classdef SegmentsGrouper < Algorithm
         
     properties (Access = public)
         numClasses;

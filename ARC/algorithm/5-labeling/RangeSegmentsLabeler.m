@@ -4,7 +4,7 @@
 %if the shouldContainEntireSegment is not set, segments are labeled as the
 %rangeAnnotation that contains the middle point of the segment.
 
-classdef RangeSegmentsLabeler < Computer
+classdef RangeSegmentsLabeler < Algorithm
     
     properties (Access = public)
         shouldContainEntireSegment = true;

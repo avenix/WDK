@@ -1,4 +1,4 @@
-classdef TreeClassifier < Computer
+classdef TreeClassifier < Algorithm
     
     properties (Access = public)
         shouldTrain = false;

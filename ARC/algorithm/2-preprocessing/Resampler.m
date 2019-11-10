@@ -1,4 +1,4 @@
-classdef Resampler < Computer
+classdef Resampler < Algorithm
     
     properties (Access = public)
         samplingInterval = 1;

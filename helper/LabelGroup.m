@@ -4,7 +4,7 @@ classdef LabelGroup < handle
         labelName;
         groupsMap;
     end
-        
+
     methods (Access = public)
         function obj = LabelGroup(labelName)
             if nargin > 0

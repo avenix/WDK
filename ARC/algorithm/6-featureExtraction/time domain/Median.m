@@ -1,4 +1,4 @@
-classdef Median < Computer
+classdef Median < Algorithm
     
     methods (Access = public)
         

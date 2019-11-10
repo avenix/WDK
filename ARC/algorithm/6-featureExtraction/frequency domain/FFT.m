@@ -1,5 +1,5 @@
 %returns the FFT
-classdef FFT < Computer
+classdef FFT < Algorithm
     
     methods (Access = public)
         

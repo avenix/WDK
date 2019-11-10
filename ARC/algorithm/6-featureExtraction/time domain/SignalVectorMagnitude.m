@@ -1,4 +1,4 @@
-classdef SignalVectorMagnitude < Computer
+classdef SignalVectorMagnitude < Algorithm
     
     methods (Access = public)
         

@@ -1,4 +1,4 @@
-classdef PropertyGetter < Computer
+classdef PropertyGetter < Algorithm
     
     properties (Access = public)
         property; % a string representing the property to access

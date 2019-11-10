@@ -1,4 +1,4 @@
-classdef Norm < Computer
+classdef Norm < Algorithm
     
     methods (Access = public)
         

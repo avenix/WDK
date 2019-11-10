@@ -188,6 +188,10 @@ classdef DataLoader < handle
                     end
                 end
                 fclose(file);
+                
+                if ~synchronizationFile.isValidSynchronizationFile()
+                    fprintf('%s - %s\n',Constants.kInvalidSynchronizationFileWarning,fileName);
+                end
             end
         end
         

@@ -1,4 +1,4 @@
-classdef S1 < Computer
+classdef S1 < Algorithm
     properties (Access = public)
         k = 30;
     end

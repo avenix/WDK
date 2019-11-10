@@ -32,7 +32,7 @@ classdef DetectionEventsPlotter < handle
         
         %video
         videoPlayer;
-        synchronisationFile;
+        synchronizationFile;
         videoFileNames;
         videoFileNamesNoExtension;
         
@@ -99,8 +99,8 @@ classdef DetectionEventsPlotter < handle
         end
         
         function handleFrameChanged(obj,~)
-            if ~isempty(obj.synchronisationFile)
-                obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
+            if ~isempty(obj.synchronizationFile)
+                obj.timeLineMarker = obj.synchronizationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
                 if ~isempty(obj.timeLineMarkerHandle)
                     obj.updateTimelineMarker();
                 end
@@ -216,9 +216,9 @@ classdef DetectionEventsPlotter < handle
             fileIdx = obj.uiHandles.filesList.Value;
             fileName = obj.uiHandles.filesList.String{fileIdx};
             
-            [videoFileName, synchronisationFileName] = obj.getVideoAndSynchronisationFileName(fileName);
+            [videoFileName, synchronizationFileName] = obj.getVideoAndSynchronizationFileName(fileName);
             
-            obj.synchronisationFile = DataLoader.LoadSynchronisationFile(synchronisationFileName);
+            obj.synchronizationFile = DataLoader.LoadSynchronizationFile(synchronizationFileName);
             
             if ~isempty(videoFileName)
                 if ~isempty(obj.videoPlayer)
@@ -249,22 +249,22 @@ classdef DetectionEventsPlotter < handle
             end
         end
         
-        function [videoFileName, synchronisationFileName] = getVideoAndSynchronisationFileName(obj,fileName)
+        function [videoFileName, synchronizationFileName] = getVideoAndSynchronizationFileName(obj,fileName)
             fileName = Helper.removeFileExtension(fileName);
             [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
             if idx > 0
                 videoFileName = obj.videoFileNames{idx};
-                synchronisationFileName = Helper.addSynchronisationFileExtension(fileName);
+                synchronizationFileName = Helper.addSynchronizationFileExtension(fileName);
             else
                 videoFileName = [];
-                synchronisationFileName = [];
+                synchronizationFileName = [];
             end
         end
         
         
         function updateVideoFrame(obj)
-            if ~isempty(obj.synchronisationFile) && ~isempty(obj.videoPlayer)
-                videoFrame = obj.synchronisationFile.sampleToVideoFrame(obj.timeLineMarker);
+            if ~isempty(obj.synchronizationFile) && ~isempty(obj.videoPlayer)
+                videoFrame = obj.synchronizationFile.sampleToVideoFrame(obj.timeLineMarker);
                 obj.videoPlayer.displayFrame(videoFrame);
             end
         end

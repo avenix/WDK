@@ -1,4 +1,4 @@
-classdef Kurtosis < Computer
+classdef Kurtosis < Algorithm
     
     methods (Access = public)
         
@@ -10,8 +10,8 @@ classdef Kurtosis < Computer
         
         function result = compute(~,signal)
             
-            %meanComputer = dsp.Mean('RunningMean',false,'Dimension','All');
-            %signalMean = step(meanComputer,signal);
+            %meanAlgorithm = dsp.Mean('RunningMean',false,'Dimension','All');
+            %signalMean = step(meanAlgorithm,signal);
             signalMean = mean(signal);
             
             upper = single(0);

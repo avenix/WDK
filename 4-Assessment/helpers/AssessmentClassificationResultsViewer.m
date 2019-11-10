@@ -19,7 +19,7 @@ classdef AssessmentClassificationResultsViewer < handle
 
         %video
         videoPlayer;
-        synchronisationFile;
+        synchronizationFile;
         videoFileNames;
         videoFileNamesNoExtension;
         
@@ -50,8 +50,8 @@ classdef AssessmentClassificationResultsViewer < handle
         end
         
         function handleFrameChanged(obj,~)
-            if ~isempty(obj.synchronisationFile)
-                obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
+            if ~isempty(obj.synchronizationFile)
+                obj.timeLineMarker = obj.synchronizationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
                 if ~isempty(obj.timeLineMarkerHandle)
                     obj.updateTimelineMarker();
                 end
@@ -147,9 +147,9 @@ classdef AssessmentClassificationResultsViewer < handle
             end
         end
         
-        function fileName = getSynchronisationFileName(obj)
+        function fileName = getSynchronizationFileName(obj)
             fileName = obj.getCurrentFileNameNoExtension();
-            fileName = Helper.addSynchronisationFileExtension(fileName);
+            fileName = Helper.addSynchronizationFileExtension(fileName);
         end
         
         function fileName = getVideoFileName(obj)
@@ -168,15 +168,15 @@ classdef AssessmentClassificationResultsViewer < handle
             fileName = Helper.removeFileExtension(dataFileName);
         end
         
-        function [videoFileName, synchronisationFileName] = getVideoAndSynchronisationFileName(obj,fileName)
+        function [videoFileName, synchronizationFileName] = getVideoAndSynchronizationFileName(obj,fileName)
             fileName = Helper.removeFileExtension(fileName);
             [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
             if idx > 0
                 videoFileName = obj.videoFileNames{idx};
-                synchronisationFileName = Helper.addSynchronisationFileExtension(fileName);
+                synchronizationFileName = Helper.addSynchronizationFileExtension(fileName);
             else
                 videoFileName = [];
-                synchronisationFileName = [];
+                synchronizationFileName = [];
             end
         end
         
@@ -220,8 +220,8 @@ classdef AssessmentClassificationResultsViewer < handle
         end
         
         function updateVideoFrame(obj)
-            if ~isempty(obj.synchronisationFile) && ~isempty(obj.videoPlayer)
-                videoFrame = obj.synchronisationFile.sampleToVideoFrame(obj.timeLineMarker);
+            if ~isempty(obj.synchronizationFile) && ~isempty(obj.videoPlayer)
+                videoFrame = obj.synchronizationFile.sampleToVideoFrame(obj.timeLineMarker);
                 obj.videoPlayer.displayFrame(videoFrame);
             end
         end
@@ -277,9 +277,9 @@ classdef AssessmentClassificationResultsViewer < handle
         end
         
         %% loading        
-        function loadSynchronisationFile(obj)
-            fileName = obj.getSynchronisationFileName();
-            obj.synchronisationFile = DataLoader.LoadSynchronisationFile(fileName);
+        function loadSynchronizationFile(obj)
+            fileName = obj.getSynchronizationFileName();
+            obj.synchronizationFile = DataLoader.LoadSynchronizationFile(fileName);
         end
         
         function loadData(obj)
@@ -317,7 +317,7 @@ classdef AssessmentClassificationResultsViewer < handle
             if ~isempty(obj.dataFile)
                 obj.timeLineMarker = 1;
             end
-            obj.loadSynchronisationFile();
+            obj.loadSynchronizationFile();
             obj.loadVideo();
             
             if ~isempty(obj.dataFile)

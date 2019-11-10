@@ -1,4 +1,4 @@
-classdef P2P < Computer
+classdef P2P < Algorithm
     
     methods (Access = public)
         

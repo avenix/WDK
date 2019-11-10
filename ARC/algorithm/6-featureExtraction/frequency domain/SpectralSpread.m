@@ -1,5 +1,5 @@
 %returns the first component of the frequency representation of the signal
-classdef SpectralSpread < Computer
+classdef SpectralSpread < Algorithm
     
     methods (Access = public)
         

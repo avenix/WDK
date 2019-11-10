@@ -1,4 +1,4 @@
-classdef SVMClassifier < Computer
+classdef SVMClassifier < Algorithm
     
     properties (Access = public)
         order = 1;

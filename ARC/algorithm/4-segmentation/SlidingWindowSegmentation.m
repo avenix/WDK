@@ -1,4 +1,4 @@
-classdef SlidingWindowSegmentation < Computer
+classdef SlidingWindowSegmentation < Algorithm
     properties (Access = public)
         windowSize = 512;
         iterationSize = 256;
@@ -19,7 +19,7 @@ classdef SlidingWindowSegmentation < Computer
         end
         
         function segments = compute(obj,data)
-            file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
+            file = Algorithm.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             nSamples = length(data);
             nSegments = int32 ((nSamples - obj.windowSize + 1) / obj.iterationSize);
             segments = repmat(Segment,1,nSegments);
@@ -39,7 +39,7 @@ classdef SlidingWindowSegmentation < Computer
         end
         
         function metrics = computeMetrics(obj,input)
-            file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
+            file = Algorithm.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             nSamples = length(input);
             nSegments = int32 ((nSamples - obj.windowSize + 1) / obj.iterationSize);
             flops = (nSamples - obj.windowSize ) / obj.iterationSize;

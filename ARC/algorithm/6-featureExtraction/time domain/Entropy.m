@@ -1,4 +1,4 @@
-classdef Entropy < Computer
+classdef Entropy < Algorithm
     
     methods (Access = public)
         

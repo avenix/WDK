@@ -1,4 +1,4 @@
-classdef FileLoader < Computer
+classdef FileLoader < Algorithm
     properties (Access = public)
         fileName;
         selectedSignalIndices;
@@ -21,7 +21,7 @@ classdef FileLoader < Computer
         
         function file = compute(obj,~)
             file = obj.loadFile();
-            Computer.SetSharedContextVariable(Constants.kSharedVariableCurrentDataFile,file);
+            Algorithm.SetSharedContextVariable(Constants.kSharedVariableCurrentDataFile,file);
         end
                 
         function file = loadFile(obj)

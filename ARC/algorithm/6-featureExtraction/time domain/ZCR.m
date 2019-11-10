@@ -1,4 +1,4 @@
-classdef ZCR < Computer
+classdef ZCR < Algorithm
     
     methods (Access = public)
         

@@ -1,4 +1,4 @@
-classdef MatlabPeakDetector < Computer
+classdef MatlabPeakDetector < Algorithm
     
     properties (Access = public)
         minPeakHeight = single(0.8);

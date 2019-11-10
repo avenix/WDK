@@ -1,5 +1,5 @@
 %returns the first component of the frequency representation of the signal
-classdef FFTDC < Computer
+classdef FFTDC < Algorithm
     
     methods (Access = public)
         

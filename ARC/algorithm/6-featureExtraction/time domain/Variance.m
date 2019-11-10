@@ -1,4 +1,4 @@
-classdef Variance < Computer
+classdef Variance < Algorithm
     
     methods (Access = public)
         

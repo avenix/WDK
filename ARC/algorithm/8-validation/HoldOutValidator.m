@@ -1,5 +1,5 @@
 %performs leave one subject out cross validation
-classdef HoldOutValidator < Computer
+classdef HoldOutValidator < Algorithm
     properties (Access = public)
         testIndices;
         trainIndices;

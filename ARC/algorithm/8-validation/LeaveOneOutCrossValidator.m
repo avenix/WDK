@@ -1,5 +1,5 @@
 %performs leave one subject out cross validation
-classdef LeaveOneOutCrossValidator < Computer
+classdef LeaveOneOutCrossValidator < Algorithm
     properties (Access = public)
         classifier;
         shouldNormalizeFeatures = false;

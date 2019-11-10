@@ -1,12 +1,12 @@
 
-classdef SpectralCentroid < Computer
+classdef SpectralCentroid < Algorithm
     
     methods (Access = public)
         
         function obj = SpectralCentroid()
             obj.name = 'SpectralCentroid';
-            obj.inputPort = ComputerDataType.kSignal;
-            obj.outputPort = ComputerDataType.kFeature;
+            obj.inputPort = AlgorithmDataType.kSignal;
+            obj.outputPort = AlgorithmDataType.kFeature;
         end
         
         %receives a fourier transform

@@ -1,72 +1,72 @@
 classdef Palette < handle
     methods (Static)
-        function preprocessingComputers = PreprocessingComputers()
-            preprocessingComputers = {NoOp,...
+        function preprocessingAlgorithms = PreprocessingAlgorithms()
+            preprocessingAlgorithms = {NoOp,...
                 LowPassFilter, HighPassFilter,...
                 Derivative,S1,S2,...
                 Norm,Magnitude, MagnitudeSquared,Resampler};
         end
         
-        function eventDetectionComputers = EventDetectionComputers()
-            eventDetectionComputers = {NoOp, SimplePeakDetector,MatlabPeakDetector};
+        function eventDetectionAlgorithms = EventDetectionAlgorithms()
+            eventDetectionAlgorithms = {NoOp, SimplePeakDetector,MatlabPeakDetector};
         end
         
-        function segmentationComputers = SegmentationComputers()
-            segmentationComputers = {NoOp,EventSegmentation, SlidingWindowSegmentation};
+        function segmentationAlgorithms = SegmentationAlgorithms()
+            segmentationAlgorithms = {NoOp,EventSegmentation, SlidingWindowSegmentation};
         end
         
-        function labelingStrategyComputers = LabelingStrategyComputers()
-            labelingStrategyComputers = {EventsLabeler, EventSegmentsLabeler, RangeSegmentsLabeler};
+        function labelingStrategyAlgorithms = LabelingStrategyAlgorithms()
+            labelingStrategyAlgorithms = {EventsLabeler, EventSegmentsLabeler, RangeSegmentsLabeler};
         end
         
         
-        function featureExtractionComputers = TimeDomainFeatureExtractionComputers()
-            featureExtractionComputers = {Min,Max,Mean,Median,Variance,STD,ZCR,...
+        function featureExtractionAlgorithms = TimeDomainFeatureExtractionAlgorithms()
+            featureExtractionAlgorithms = {Min,Max,Mean,Median,Variance,STD,ZCR,...
                 Skewness,Kurtosis,IQR,AUC,AAV,Correlation,...
                 Energy,MAD,MaxCrossCorr,Octants,P2P,Quantile,RMS,SignalVectorMagnitude,SMA, Entropy};
         end
         
-        function featureExtractionComputers = FrequencyDomainFeatureExtractionComputers()
-            featureExtractionComputers = {FFT,FFTDC,MaxFrequency,PowerSpectrum,SpectralCentroid,SpectralEnergy,SpectralEntropy,SpectralFlatness,...
+        function featureExtractionAlgorithms = FrequencyDomainFeatureExtractionAlgorithms()
+            featureExtractionAlgorithms = {FFT,FFTDC,MaxFrequency,PowerSpectrum,SpectralCentroid,SpectralEnergy,SpectralEntropy,SpectralFlatness,...
                 SpectralSpread};
         end
         
-        function featureExtractionComputers = FeatureExtractionComputers()
-            timeDomainFeatures = Helper.TimeDomainFeatureExtractionComputers();
-            frequencyDomainFeatures = Helper.FrequencyDomainFeatureExtractionComputers();
-            featureExtractionComputers = [timeDomainFeatures; frequencyDomainFeatures];
+        function featureExtractionAlgorithms = FeatureExtractionAlgorithms()
+            timeDomainFeatures = Helper.TimeDomainFeatureExtractionAlgorithms();
+            frequencyDomainFeatures = Helper.FrequencyDomainFeatureExtractionAlgorithms();
+            featureExtractionAlgorithms = [timeDomainFeatures; frequencyDomainFeatures];
         end
         
-        function classificationComputers = ClassificationComputers()
-            classificationComputers = {SVMClassifier,KNNClassifier,TreeClassifier,LDClassifier,EnsembleClassifier};
+        function classificationAlgorithms = ClassificationAlgorithms()
+            classificationAlgorithms = {SVMClassifier,KNNClassifier,TreeClassifier,LDClassifier,EnsembleClassifier};
         end
         
-        function validationComputers = ValidationComputers()
-            validationComputers = {HoldOutValidator()};
+        function validationAlgorithms = ValidationAlgorithms()
+            validationAlgorithms = {HoldOutValidator()};
         end
         
-        function postprocessingComputers = PostprocessingComputers()
-            postprocessingComputers = {NoOp, LabelMapper(), LabelSlidingWindowMaxSelector()};
+        function postprocessingAlgorithms = PostprocessingAlgorithms()
+            postprocessingAlgorithms = {NoOp, LabelMapper(), LabelSlidingWindowMaxSelector()};
         end
         
-        function otherComputers = OtherComputers()
-            otherComputers = {AxisSelector};
+        function otherAlgorithms = OtherAlgorithms()
+            otherAlgorithms = {AxisSelector};
         end
         
-        function allComputers = AllComputers()
-            preprocessingComputers = Palette.PreprocessingComputers();
-            eventDetectionComputers = Palette.EventDetectionComputers();
+        function allAlgorithms = AllAlgorithms()
+            preprocessingAlgorithms = Palette.PreprocessingAlgorithms();
+            eventDetectionAlgorithms = Palette.EventDetectionAlgorithms();
             
-            allComputers = [preprocessingComputers(2:end),...
-                eventDetectionComputers(2:end),...
-                Palette.SegmentationComputers(),...
-                Palette.ClassificationComputers(),...
-                Palette.OtherComputers()];
+            allAlgorithms = [preprocessingAlgorithms(2:end),...
+                eventDetectionAlgorithms(2:end),...
+                Palette.SegmentationAlgorithms(),...
+                Palette.ClassificationAlgorithms(),...
+                Palette.OtherAlgorithms()];
         end
         
         %returns the algorithms that take a specific input type
         function algorithms = AlgorithmsWithInputType(inputType)
-            allAlgorithms = Palette.AllComputers();
+            allAlgorithms = Palette.AllAlgorithms();
             
             algorithms = Palette.FilterAlgorithmsToInputType(allAlgorithms,inputType);
         end
@@ -74,7 +74,7 @@ classdef Palette < handle
         %filters an array of algorithms to those algorithms that take a
         %specific input type
         function outputAlgorithms = FilterAlgorithmsToInputType(algorithms,inputType)
-            nOutputAlgorithms = Palette.CountNumComputersForInputType(algorithms,inputType);
+            nOutputAlgorithms = Palette.CountNumAlgorithmsForInputType(algorithms,inputType);
             outputAlgorithms = cell(1,nOutputAlgorithms);
             algorithmCount = 0;
             for i = 1 : length(algorithms)
@@ -91,7 +91,7 @@ classdef Palette < handle
     end
     
     methods (Static, Access = private)
-        function nAlgorithms = CountNumComputersForInputType(algorithms,inputType)
+        function nAlgorithms = CountNumAlgorithmsForInputType(algorithms,inputType)
             nAlgorithms = 0;
             for i = 1 : length(algorithms)
                 algorithm = algorithms{i};

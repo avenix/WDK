@@ -1,4 +1,4 @@
-classdef Magnitude < Computer
+classdef Magnitude < Algorithm
         
     methods (Access = public)
         

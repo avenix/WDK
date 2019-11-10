@@ -1,4 +1,4 @@
-classdef STD < Computer
+classdef STD < Algorithm
     
     methods (Access = public)
         

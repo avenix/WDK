@@ -1,29 +1,29 @@
-classdef CompositeComputer < Computer
+classdef CompositeAlgorithm < Algorithm
     
     properties (Access = public)
         root;
-        lastComputers;
+        lastAlgorithms;
     end
 
     properties (Dependent)
-        nComputers;
+        nAlgorithms;
     end
     
     methods
-        function n = get.nComputers(obj)
-            n = length(obj.allComputers);
+        function n = get.nAlgorithms(obj)
+            n = length(obj.allAlgorithms);
         end
     end
     
     methods (Access = public)
-        function obj = CompositeComputer(firstElement,lastComputers)
+        function obj = CompositeAlgorithm(firstElement,lastAlgorithms)
 
             if nargin > 0
                 obj.root = firstElement;
-                obj.lastComputers = lastComputers;
+                obj.lastAlgorithms = lastAlgorithms;
             else
                 obj.root = NoOp();
-                obj.lastComputers = {obj.root};
+                obj.lastAlgorithms = {obj.root};
             end
             
             obj.name = "Composite";
@@ -34,16 +34,16 @@ classdef CompositeComputer < Computer
             stack = Stack();
             stack.push(obj.root);
             
-            nStrings = Computer.CountComputers(obj.root);
+            nStrings = Algorithm.CountAlgorithms(obj.root);
             
             strings = cell(1,nStrings);
             count = 1;
             while ~stack.isempty()
-                computer = stack.pop();
-                strings{count} = computer.toString();
+                algorithm = stack.pop();
+                strings{count} = algorithm.toString();
                 count = count + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers{i});
+                for i = 1 : length(algorithm.nextAlgorithms)
+                    stack.push(algorithm.nextAlgorithms{i});
                 end
             end
             
@@ -51,11 +51,11 @@ classdef CompositeComputer < Computer
         end
         
         function dataOut = compute(obj,dataIn)
-            dataOut = Computer.ExecuteChain(obj.root,dataIn);
+            dataOut = Algorithm.ExecuteChain(obj.root,dataIn);
         end
         
         function metrics = computeMetrics(obj,dataIn)
-            [~,metrics] = Computer.ExecuteChain(obj.root,dataIn);
+            [~,metrics] = Algorithm.ExecuteChain(obj.root,dataIn);
         end
         
         function properties = getEditableProperties(obj)
@@ -68,11 +68,11 @@ classdef CompositeComputer < Computer
             
             counter = 1;
             while ~stack.isempty()
-                computer = stack.pop();
-                properties{counter} = computer.getEditableProperties();
+                algorithm = stack.pop();
+                properties{counter} = algorithm.getEditableProperties();
                 counter = counter + 1;
-                for i = 1 : length(computer.nextComputers)
-                    stack.push(computer.nextComputers(i));
+                for i = 1 : length(algorithm.nextAlgorithms)
+                    stack.push(algorithm.nextAlgorithms(i));
                 end
             end
         end

@@ -1,4 +1,4 @@
-classdef HighPassFilter < Computer
+classdef HighPassFilter < Algorithm
     
     properties (Access = public)    
         samplingFrequency = 200;

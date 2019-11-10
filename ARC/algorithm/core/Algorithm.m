@@ -1,13 +1,13 @@
-classdef (Abstract) Computer < matlab.mixin.Copyable
+classdef (Abstract) Algorithm < matlab.mixin.Copyable
 
     properties (Access = public)
-        inputPort; % describes the type of the input this computer takes
-        outputPort; % describes the type of the output this computer produces
+        inputPort; % describes the type of the input this algorithm takes
+        outputPort; % describes the type of the output this algorithm produces
         name;
     end
     
     properties (Access = public)
-        nextComputers; % array of computers this computer is connected to
+        nextAlgorithms; % array of algorithms this algorithm is connected to
         tag;
     end
     
@@ -27,13 +27,13 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             end
         end
         
-        function addNextComputer(obj, computer)
-            obj.nextComputers{end+1} = computer;
+        function addNextAlgorithm(obj, algorithm)
+            obj.nextAlgorithms{end+1} = algorithm;
         end
         
-        function addNextComputers(obj, computers)
-            for i = 1 : length(computers)
-                obj.addNextComputer(computers{i});
+        function addNextAlgorithms(obj, algorithms)
+            for i = 1 : length(algorithms)
+                obj.addNextAlgorithm(algorithms{i});
             end
         end
         
@@ -52,31 +52,31 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
     
     methods (Static, Access = private)
         
-        function computers = ListAllComputers(computer)
-            nComputers = Computer.CountComputers(computer);
-            if nComputers == 0
-                computers = [];
+        function algorithms = ListAllAlgorithms(algorithm)
+            nAlgorithms = Algorithm.CountAlgorithms(algorithm);
+            if nAlgorithms == 0
+                algorithms = [];
             else
                 stack = Stack();
-                stack.push(computer);
+                stack.push(algorithm);
                 
-                computers = cell(1,nComputers);
+                algorithms = cell(1,nAlgorithms);
                 
                 count = 1;
                 while ~stack.isempty()
-                    computer = stack.pop();
-                    computers{count} = computer;
+                    algorithm = stack.pop();
+                    algorithms{count} = algorithm;
                     count = count + 1;
-                    for i = 1 : length(computer.nextComputers)
-                        stack.push(computer.nextComputers{i});
+                    for i = 1 : length(algorithm.nextAlgorithms)
+                        stack.push(algorithm.nextAlgorithms{i});
                     end
                 end
             end
         end
         
-        function str = GraphToString(computer)
-            computers = Computer.ListAllComputers(computer);
-            strings = cellfun(@(x) x.toString(),computers,'UniformOutput',false);
+        function str = GraphToString(algorithm)
+            algorithms = Algorithm.ListAllAlgorithms(algorithm);
+            strings = cellfun(@(x) x.toString(),algorithms,'UniformOutput',false);
             str = Helper.cellArrayToString(strings);
         end
         
@@ -103,12 +103,12 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
     methods (Static)
         
         function SetSharedContextVariable(variableName,variable)
-            dict = Computer.SharedContext();
+            dict = Algorithm.SharedContext();
             dict(variableName) = variable;
         end
         
         function var = GetSharedContextVariable(variableName)
-            dict = Computer.SharedContext();
+            dict = Algorithm.SharedContext();
             if isKey(dict,variableName)
                 var = dict(variableName);
             else
@@ -124,56 +124,56 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             dict = currentContext;
         end
         
-        function nComputers = CountComputers(computer)
-            if isempty(computer)
-                nComputers = 0;
+        function nAlgorithms = CountAlgorithms(algorithm)
+            if isempty(algorithm)
+                nAlgorithms = 0;
             else
                 stack = Stack();
-                stack.push(computer);
+                stack.push(algorithm);
                 
-                nComputers = 0;
+                nAlgorithms = 0;
                 while ~stack.isempty()
-                    computer = stack.pop();
-                    nComputers = nComputers + 1;
-                    for i = 1 : length(computer.nextComputers)
-                        stack.push(computer.nextComputers{i});
+                    algorithm = stack.pop();
+                    nAlgorithms = nAlgorithms + 1;
+                    for i = 1 : length(algorithm.nextAlgorithms)
+                        stack.push(algorithm.nextAlgorithms{i});
                     end
                 end
             end
         end
         
         %converts composites in flat hierarchy
-        function FlattenChain(computer)
+        function FlattenChain(algorithm)
             stack = Stack();
             
-            stack.push(computer);
+            stack.push(algorithm);
             
             while ~stack.isempty()
-                computer = stack.pop();
+                algorithm = stack.pop();
                 
-                for i = 1 : length(computer.nextComputers)
-                    nextComputer = computer.nextComputers{i};
+                for i = 1 : length(algorithm.nextAlgorithms)
+                    nextAlgorithm = algorithm.nextAlgorithms{i};
                     
-                    if isa(nextComputer, 'CompositeComputer')
-                        computer.nextComputers{i} = nextComputer.root;
-                        nextComputerIdx = 1;
-                        for j = 1 : length(nextComputer.lastComputers{i})
-                            nextComputer.lastComputers{i}.nextComputers{j} = nextComputer.nextComputers{nextComputerIdx};
-                            nextComputerIdx = nextComputerIdx + 1;
+                    if isa(nextAlgorithm, 'CompositeAlgorithm')
+                        algorithm.nextAlgorithms{i} = nextAlgorithm.root;
+                        nextAlgorithmIdx = 1;
+                        for j = 1 : length(nextAlgorithm.lastAlgorithms{i})
+                            nextAlgorithm.lastAlgorithms{i}.nextAlgorithms{j} = nextAlgorithm.nextAlgorithms{nextAlgorithmIdx};
+                            nextAlgorithmIdx = nextAlgorithmIdx + 1;
                         end
-                        nextComputer = nextComputer.root;
+                        nextAlgorithm = nextAlgorithm.root;
                     end
-                    stack.push(nextComputer);
+                    stack.push(nextAlgorithm);
                 end
             end
         end
         
-        function [data, metricSum, graphString] = ExecuteChain(computer, data, shouldCache, dataCacheIdentifier, outputComputer)
-            if isempty(computer)
+        function [data, metricSum, graphString] = ExecuteChain(algorithm, data, shouldCache, dataCacheIdentifier, outputAlgorithm)
+            if isempty(algorithm)
                 metricSum = [];
             else
                 if nargin < 5
-                    outputComputer = [];
+                    outputAlgorithm = [];
                     if nargin < 4
                         dataCacheIdentifier = '';
                         if nargin < 3
@@ -184,9 +184,9 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 
                 isDataLoaded = false;
                 if shouldCache
-                    graphString = Computer.GraphToString(computer);
+                    graphString = Algorithm.GraphToString(algorithm);
                     graphString = [dataCacheIdentifier graphString];
-                    [isDataLoaded, loadedData, metricSum] = Computer.LoadCacheDataForGraphString(graphString);
+                    [isDataLoaded, loadedData, metricSum] = Algorithm.LoadCacheDataForGraphString(graphString);
                     
                     if isDataLoaded
                         data = loadedData;
@@ -196,50 +196,50 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
                 end
                 
                 if ~isDataLoaded
-                    [data, metricSum] = Computer.ExecuteChainNoCache(computer,data,outputComputer);
+                    [data, metricSum] = Algorithm.ExecuteChainNoCache(algorithm,data,outputAlgorithm);
                     if shouldCache
-                        Computer.SaveGraphToCache(data,metricSum,graphString);
+                        Algorithm.SaveGraphToCache(data,metricSum,graphString);
                     end
                 end
             end
         end
         
-        function [data, metricSum] = ExecuteChainNoCache(computer, data,outputComputer)
+        function [data, metricSum] = ExecuteChainNoCache(algorithm, data,outputAlgorithm)
             
-            Computer.ResetComputerTags(computer);
+            Algorithm.ResetAlgorithmTags(algorithm);
             
             stack = Stack();
             dataStack = Stack();
             
-            stack.push(computer);
+            stack.push(algorithm);
             dataStack.push(data);
             
             metricSum = Metric();
             
             while ~stack.isempty()
-                computer = stack.pop();
+                algorithm = stack.pop();
                 data = dataStack.pop();
                 
-                metric = computeMetrics(computer,data);
+                metric = computeMetrics(algorithm,data);
                 if ~isempty(metric)
                     metricSum.flops = metricSum.flops + metric.flops;
-                    if isempty(outputComputer) || computer == outputComputer
+                    if isempty(outputAlgorithm) || algorithm == outputAlgorithm
                         metricSum.outputSize = metric.outputSize;
                     end
                     
-                    %count the memory once per computer using the tag
-                    if isempty(computer.tag)
+                    %count the memory once per algorithm using the tag
+                    if isempty(algorithm.tag)
                         metricSum.memory = metricSum.memory + metric.memory;
-                        computer.tag = true;
+                        algorithm.tag = true;
                     end
                 end
                 
-                data = computer.compute(data);
+                data = algorithm.compute(data);
                 
                 if ~isempty(data)
-                    for i = 1 : length(computer.nextComputers)
-                        nextComputer = computer.nextComputers{i};
-                        stack.push(nextComputer);
+                    for i = 1 : length(algorithm.nextAlgorithms)
+                        nextAlgorithm = algorithm.nextAlgorithms{i};
+                        stack.push(nextAlgorithm);
                         dataStack.push(data);
                     end
                 end
@@ -247,33 +247,33 @@ classdef (Abstract) Computer < matlab.mixin.Copyable
             
         end
         
-        function ResetComputerTags(computer)
+        function ResetAlgorithmTags(algorithm)
             stack = Stack();
-            stack.push(computer);
+            stack.push(algorithm);
                         
             while ~stack.isempty()
-                computer = stack.pop();
-                computer.tag = [];
-                for i = 1 : length(computer.nextComputers)
-                    nextComputer = computer.nextComputers{i};
-                    stack.push(nextComputer);
+                algorithm = stack.pop();
+                algorithm.tag = [];
+                for i = 1 : length(algorithm.nextAlgorithms)
+                    nextAlgorithm = algorithm.nextAlgorithms{i};
+                    stack.push(nextAlgorithm);
                 end
             end
         end
         
         
-        function root = ComputerWithFork(computers)
+        function root = AlgorithmWithFork(algorithms)
             root = NoOp();
-            root.nextComputers = computers;
+            root.nextAlgorithms = algorithms;
         end
         
-        function root = ComputerWithSequence(sequence)
+        function root = AlgorithmWithSequence(sequence)
             if isempty(sequence)
                 root = [];
             else
                 root = sequence{1};
                 for i = 1 : length(sequence)-1
-                    sequence{i}.addNextComputer(sequence{i+1});
+                    sequence{i}.addNextAlgorithm(sequence{i+1});
                 end
             end
         end

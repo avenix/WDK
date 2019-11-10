@@ -1,19 +1,19 @@
 classdef PostProcessingConfiguratorUIElements < handle
     properties (Access = public)
-        computersList;
-        computersPropertiesTable;
+        algorithmsList;
+        algorithmsPropertiesTable;
         annotationsPanel;
         annotationMappingList;
         annotationMappingTable;
     end
     
     methods (Access = public)
-        function obj = PostProcessingConfiguratorUIElements(computersList,...
-                computersPropertiesTable, annotationsPanel, annotationMappingList,...
+        function obj = PostProcessingConfiguratorUIElements(algorithmsList,...
+                algorithmsPropertiesTable, annotationsPanel, annotationMappingList,...
             annotationMappingTable)
-            obj.computersList = computersList;
+            obj.algorithmsList = algorithmsList;
             obj.annotationsPanel = annotationsPanel;
-            obj.computersPropertiesTable = computersPropertiesTable;
+            obj.algorithmsPropertiesTable = algorithmsPropertiesTable;
             obj.annotationMappingList = annotationMappingList;
             obj.annotationMappingTable = annotationMappingTable;
         end

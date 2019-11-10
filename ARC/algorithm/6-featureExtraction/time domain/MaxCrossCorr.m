@@ -1,4 +1,4 @@
-classdef MaxCrossCorr < Computer
+classdef MaxCrossCorr < Algorithm
     
     methods (Access = public)
         

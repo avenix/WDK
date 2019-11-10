@@ -1,4 +1,4 @@
-classdef LDClassifier < Computer
+classdef LDClassifier < Algorithm
     
     properties (Access = public)
         shouldTrain = false;

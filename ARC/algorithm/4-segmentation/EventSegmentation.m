@@ -1,4 +1,4 @@
-classdef EventSegmentation < Computer
+classdef EventSegmentation < Algorithm
     properties (Access = public)
         segmentSizeLeft = 200;
         segmentSizeRight = 30;
@@ -17,7 +17,7 @@ classdef EventSegmentation < Computer
         end
 
         function segments = compute(obj,events)
-            file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
+            file = Algorithm.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             segments = Helper.CreateSegmentsWithEvents(events,file,obj.segmentSizeLeft,obj.segmentSizeRight);
         end
         
@@ -27,7 +27,7 @@ classdef EventSegmentation < Computer
         
         function metrics = computeMetrics(obj,events)
             
-            file = Computer.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
+            file = Algorithm.GetSharedContextVariable(Constants.kSharedVariableCurrentDataFile);
             nSamples = file.numRows;
             nSegments = Helper.CountNumValidSegments(events,obj.segmentSizeLeft,obj.segmentSizeRight,nSamples);
             

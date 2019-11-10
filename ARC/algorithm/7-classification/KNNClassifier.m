@@ -1,4 +1,4 @@
-classdef KNNClassifier < Computer
+classdef KNNClassifier < Algorithm
     
     properties (Access = public)
         shouldTrain = false;

@@ -1,4 +1,4 @@
-classdef EnsembleClassifier < Computer
+classdef EnsembleClassifier < Algorithm
         
     properties (Access = public)
         shouldTrain = false;

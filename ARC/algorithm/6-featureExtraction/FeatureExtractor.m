@@ -1,4 +1,4 @@
-classdef FeatureExtractor < Computer
+classdef FeatureExtractor < Algorithm
 
     properties (Access = public)
         computers;
@@ -9,7 +9,7 @@ classdef FeatureExtractor < Computer
         function obj = FeatureExtractor(computers,signalIndices)
             if nargin > 0
                 if nargin > 1
-                    obj.computers = FeatureExtractor.CreateFeatureExtractionComputers(signalIndices,computers);
+                    obj.computers = FeatureExtractor.CreateFeatureExtractionAlgorithms(signalIndices,computers);
                 else
                     obj.computers = computers;
                 end
@@ -30,7 +30,7 @@ classdef FeatureExtractor < Computer
             for i = 1 : nSegments
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
-                    featureVectors(i,j) = Computer.ExecuteChain(obj.computers{j},segment.data);
+                    featureVectors(i,j) = Algorithm.ExecuteChain(obj.computers{j},segment.data);
                 end
             end
             
@@ -49,10 +49,10 @@ classdef FeatureExtractor < Computer
         end
         
         function names = getFeatureNames(obj)
-            nComputers = length(obj.computers);
-            names = cell(1,nComputers);
+            nAlgorithms = length(obj.computers);
+            names = cell(1,nAlgorithms);
             
-            for i = 1 : nComputers
+            for i = 1 : nAlgorithms
                 featureStr = obj.computers{i}.toString();
                 maxChars = min(Constants.kMaxFeatureNameCharacters,length(featureStr));
                 featureStr = featureStr(1:maxChars);
@@ -81,7 +81,7 @@ classdef FeatureExtractor < Computer
                 segment = segments(i);
                 for j = 1 : length(obj.computers)
                     computer = obj.computers{j};
-                    [~, metrics] = Computer.ExecuteChain(computer,segment.data);
+                    [~, metrics] = Algorithm.ExecuteChain(computer,segment.data);
                     metricSum.flops = metricSum.flops + metrics.flops;
                     if isempty(computer.tag)
                         metricSum.memory = metricSum.memory + metrics.memory;
@@ -107,25 +107,25 @@ classdef FeatureExtractor < Computer
     methods (Static)
         
         function featureExtractor = CreateFeatureExtractor(signalIndices,featureExtractors)
-            featureExtractionComputers = FeatureExtractor.CreateFeatureExtractionComputers(signalIndices,featureExtractors);
-            featureExtractor = FeatureExtractor(featureExtractionComputers);
+            featureExtractionAlgorithms = FeatureExtractor.CreateFeatureExtractionAlgorithms(signalIndices,featureExtractors);
+            featureExtractor = FeatureExtractor(featureExtractionAlgorithms);
         end
         
-        function featureExtractionComputers = CreateFeatureExtractionComputers(signalIndices,featureExtractors)
+        function featureExtractionAlgorithms = CreateFeatureExtractionAlgorithms(signalIndices,featureExtractors)
             
             nFeatureExtractors = length(featureExtractors);
             axisSelectors = FeatureExtractor.AxisSelectorsForSignalIndices(signalIndices);
             
             nAxisSelectors = length(axisSelectors);
-            featureExtractionComputers = cell(1,nFeatureExtractors * nAxisSelectors);
+            featureExtractionAlgorithms = cell(1,nFeatureExtractors * nAxisSelectors);
             
             count = 1;
             for i = 1 : length(featureExtractors)
                 for j = 1 : length(axisSelectors)
                     featureExtractor = featureExtractors{i}.copy();
                     axisSelector = axisSelectors(j).copy();
-                    featureExtractionComputer = Computer.ComputerWithSequence({axisSelector,featureExtractor});
-                    featureExtractionComputers{count} = featureExtractionComputer;
+                    featureExtractionAlgorithm = Algorithm.AlgorithmWithSequence({axisSelector,featureExtractor});
+                    featureExtractionAlgorithms{count} = featureExtractionAlgorithm;
                     count = count + 1;
                 end
             end

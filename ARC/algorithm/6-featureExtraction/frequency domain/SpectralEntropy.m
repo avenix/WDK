@@ -1,5 +1,5 @@
 %returns the first component of the frequency representation of the signal
-classdef SpectralEntropy < Computer
+classdef SpectralEntropy < Algorithm
     
     methods (Access = public)
         

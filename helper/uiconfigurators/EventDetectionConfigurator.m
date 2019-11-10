@@ -2,21 +2,21 @@
 classdef EventDetectionConfigurator < handle
     properties (Access = public)
         uiElements EventDetectionConfiguratorUIElements;
-        computerConfigurator;
+        algorithmConfigurator;
         preprocessingConfigurator;
         delegate;
     end
     
     properties (Access = private)
-        eventDetectionComputers;
+        eventDetectionAlgorithms;
     end
     
     methods (Access = public)
-        function obj = EventDetectionConfigurator(signals, preprocessingSignalComputers,...
-                eventDetectionComputers, uiElements,delegate)
+        function obj = EventDetectionConfigurator(signals, preprocessingSignalAlgorithms,...
+                eventDetectionAlgorithms, uiElements,delegate)
             
             obj.uiElements = uiElements;
-            obj.eventDetectionComputers = eventDetectionComputers;
+            obj.eventDetectionAlgorithms = eventDetectionAlgorithms;
             
             if nargin > 4
                 obj.delegate = delegate;
@@ -24,36 +24,36 @@ classdef EventDetectionConfigurator < handle
             
             obj.preprocessingConfigurator = PreprocessingConfigurator(...
                 signals,...
-                preprocessingSignalComputers,...
+                preprocessingSignalAlgorithms,...
                 uiElements.preprocessingSignalsList,...
-                uiElements.preprocessingSignalComputerList,...
-                uiElements.preprocessingSignalComputerVariablesTable,...
+                uiElements.preprocessingAlgorithmsList,...
+                uiElements.preprocessingAlgorithmVariablesTable,...
                 obj);
             
-            obj.computerConfigurator = ComputerConfigurator(...
-                eventDetectionComputers,...
+            obj.algorithmConfigurator = AlgorithmConfigurator(...
+                eventDetectionAlgorithms,...
                 uiElements.eventDetectionList,...
                 uiElements.eventDetectionVariablesTable,...
                 obj);
         end
         
-        function computer = createEventDetectorWithUIParameters(obj)
-            preprocessingAlgorithm = obj.createPreprocessingComputerWithUIParameters();
+        function algorithm = createEventDetectorWithUIParameters(obj)
+            preprocessingAlgorithm = obj.createPreprocessingAlgorithmWithUIParameters();
             if isempty(preprocessingAlgorithm)
-                computer = [];
+                algorithm = [];
             else
-                eventDetector = obj.computerConfigurator.createComputerWithUIParameters();
+                eventDetector = obj.algorithmConfigurator.createAlgorithmWithUIParameters();
                 if isa(eventDetector,'NoOp')
-                    computer = [];
+                    algorithm = [];
                 else
-                    preprocessingAlgorithm.lastComputers{1}.addNextComputer(eventDetector);
-                    computer = preprocessingAlgorithm;
+                    preprocessingAlgorithm.lastAlgorithms{1}.addNextAlgorithm(eventDetector);
+                    algorithm = preprocessingAlgorithm;
                 end
             end
         end
         
-        function computer = createPreprocessingComputerWithUIParameters(obj)
-            computer = obj.preprocessingConfigurator.createPreprocessingComputerWithUIParameters();
+        function algorithm = createPreprocessingAlgorithmWithUIParameters(obj)
+            algorithm = obj.preprocessingConfigurator.createPreprocessingAlgorithmWithUIParameters();
         end
         
         function setSignals(obj,signals)
@@ -63,10 +63,10 @@ classdef EventDetectionConfigurator < handle
         %% handles
         function handlePreprocessingAlgorithmChanged(obj,preprocessingAlgorithm,~)
             outputType = preprocessingAlgorithm.outputPort;
-            obj.computerConfigurator.computers = ...
-                Palette.FilterAlgorithmsToInputType(obj.eventDetectionComputers,outputType);
+            obj.algorithmConfigurator.algorithms = ...
+                Palette.FilterAlgorithmsToInputType(obj.eventDetectionAlgorithms,outputType);
             
-            obj.computerConfigurator.reloadUI();
+            obj.algorithmConfigurator.reloadUI();
         end
         
         function handleAlgorithmChanged(obj,algorithm,~)

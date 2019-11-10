@@ -1,6 +1,6 @@
 %replaces every label at index labelIndex in an array of predicted labels with the most frequent label in the range [labelIndex −windowSize/2,labelIndex +windowSize/2, or with the NULL-class if no label occurs at least minimumCount times in the range
 
-classdef LabelSlidingWindowMaxSelector < Computer
+classdef LabelSlidingWindowMaxSelector < Algorithm
     
     properties (Access = public)
         windowSize = 1;

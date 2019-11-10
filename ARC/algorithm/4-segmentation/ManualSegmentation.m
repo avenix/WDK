@@ -1,4 +1,4 @@
-classdef ManualSegmentation < Computer
+classdef ManualSegmentation < Algorithm
 
     properties (Access = public)
         manualAnnotations;

@@ -1,4 +1,4 @@
-classdef RangeSelector < Computer
+classdef RangeSelector < Algorithm
     
     properties (Access = public)
         rangeStart;

@@ -1,4 +1,4 @@
-classdef PropertySetter < Computer
+classdef PropertySetter < Algorithm
     
     properties (Access = public)
         node;

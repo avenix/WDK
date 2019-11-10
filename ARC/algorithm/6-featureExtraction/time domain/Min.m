@@ -1,4 +1,4 @@
-classdef Min < Computer
+classdef Min < Algorithm
     
     methods (Access = public)
         

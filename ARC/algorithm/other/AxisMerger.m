@@ -1,4 +1,4 @@
-classdef AxisMerger < Computer
+classdef AxisMerger < Algorithm
     
     properties (Access = public)
         nAxes = 2;

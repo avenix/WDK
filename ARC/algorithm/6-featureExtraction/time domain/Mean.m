@@ -1,4 +1,4 @@
-classdef Mean < Computer
+classdef Mean < Algorithm
     
     methods (Access = public)
         

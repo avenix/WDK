@@ -1,4 +1,4 @@
-classdef MAD < Computer
+classdef MAD < Algorithm
     
     methods (Access = public)
         

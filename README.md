@@ -50,7 +50,7 @@ An annotated data set is needed to train a machine learning algorithm and to ass
 
 ### Annotating with video (optional)
 
-The *Data Annotation App* can load and display videos next to the data. The video is synchronised to the data by matching two data samples to two video frames as defined in a synchronisation file. The format of a synchronisation file is:
+The *Data Annotation App* can load and display videos next to the data. The video is synchronised to the data by matching two data samples to two video frames as defined in a synchronization file. The format of a synchronization file is:
 
 ```
 sample1: 49727
@@ -63,27 +63,27 @@ The exact frames of a specific event in a video are displayed on the Movie Playe
 
 ![Movie Player](doc/images/1-VideoPlayer.png)
 
-In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). We visualized the peak energy (i.e. squared magnitude) of the accelerometer signal and annotated each applause with the *synchronisation* label. When a data samples is selected on the plot, its timestamp is printed on Matlab's console. We copy the first synchronisation timestamp to the sample1 field of the synchronisation file. We do the same for the sample with timestamp *450209*. The respective annotated synchronisation events are shown in the following image:
+In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). We visualized the peak energy (i.e. squared magnitude) of the accelerometer signal and annotated each applause with the *synchronization* label. When a data samples is selected on the plot, its timestamp is printed on Matlab's console. We copy the first synchronization timestamp to the sample1 field of the synchronization file. We do the same for the sample with timestamp *450209*. The respective annotated synchronization events are shown in the following image:
 
-![Event Annotations](doc/images/1-synchronisation.png)
+![Event Annotations](doc/images/1-synchronization.png)
 
 Please note:
 
-1. The *Data Annotation App* synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronisation points to take place in the beginning and end of a recording.
-2. Annotation, marker, synchronisation and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named '*S1-annotations.txt*', its marker file '*S1-markers.edl*', its synchronisation file '*S1-synchronisation.txt*' and the video '*S1-video.videoFormat*'.
-3. By default, the *Data Annotation App* loads annotation files from the '*./data/annotations/*', video and synchronisation files from '*./data/videos*' directory. Saved annotation files are located in the root '*./*' directory.
+1. The *Data Annotation App* synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronization points to take place in the beginning and end of a recording.
+2. Annotation, marker, synchronization and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named '*S1-annotations.txt*', its marker file '*S1-markers.edl*', its synchronization file '*S1-synchronization.txt*' and the video '*S1-video.videoFormat*'.
+3. By default, the *Data Annotation App* loads annotation files from the '*./data/annotations/*', video and synchronization files from '*./data/videos*' directory. Saved annotation files are located in the root '*./*' directory.
 4. The labels to annotate should be defined in the '*labels.txt*' file beforehand.
 5. You can use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.
 
 ### Importing external markers (optional)
 The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
 
-In order to synchronise video markers and time series data, the *.edl* file should contain a synchronisation marker in the beginning and another one in the end of the file. Currently, the first and last green marker are matched to the first and last event annotation with the label *synchronisaton*. In order to annotate data:
+In order to synchronise video markers and time series data, the *.edl* file should contain a synchronization marker in the beginning and another one in the end of the file. Currently, the first and last green marker are matched to the first and last event annotation with the label *synchronisaton*. In order to annotate data:
 
 1. Annotate the video using DaVinci Resolve. Use a green marker to annotate a special event, ideally in the beginning and end of the file. (e.g. the user shakes the sensor three times in front of the camera).
 2. Export the markers to an *.edl* file.
 3. Copy the *.edl* file to the *data/markers/* directory.
-4. Open the *Data Annotation App* and add an event annotation of the class *synchronisation* to the timestamp that corresponds .
+4. Open the *Data Annotation App* and add an event annotation of the class *synchronization* to the timestamp that corresponds .
 5. Reopen the *Data Annotation App*. This time the markers should be properly aligned with the data.
 6. Annotate the time series data.
 

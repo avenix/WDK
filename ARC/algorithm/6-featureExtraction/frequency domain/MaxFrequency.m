@@ -1,5 +1,5 @@
 %returns the frequency band with highest value
-classdef MaxFrequency < Computer
+classdef MaxFrequency < Algorithm
     
     methods (Access = public)
         

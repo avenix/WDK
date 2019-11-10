@@ -1,4 +1,4 @@
-classdef Derivative < Computer
+classdef Derivative < Algorithm
     
     properties (Access = public)    
         order = 1;

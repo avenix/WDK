@@ -1,4 +1,4 @@
-classdef TableRowSelector < Computer
+classdef TableRowSelector < Algorithm
     
     properties (Access = public)
         selectedLabels;

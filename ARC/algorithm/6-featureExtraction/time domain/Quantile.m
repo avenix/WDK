@@ -1,4 +1,4 @@
-classdef Quantile < Computer
+classdef Quantile < Algorithm
     properties (Access = public)
         numQuantileParts = 3;
     end

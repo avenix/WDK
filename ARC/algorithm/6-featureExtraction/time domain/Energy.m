@@ -1,4 +1,4 @@
-classdef Energy < Computer
+classdef Energy < Algorithm
     
     methods (Access = public)
         

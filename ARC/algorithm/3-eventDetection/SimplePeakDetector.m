@@ -1,4 +1,4 @@
-classdef SimplePeakDetector < Computer
+classdef SimplePeakDetector < Algorithm
     
     properties (Access = public)
         minPeakHeight = single(0.8);

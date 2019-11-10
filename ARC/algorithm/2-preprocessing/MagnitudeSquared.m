@@ -1,4 +1,4 @@
-classdef MagnitudeSquared < Computer
+classdef MagnitudeSquared < Algorithm
     
     methods (Access = public)
         

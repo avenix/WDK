@@ -1,6 +1,6 @@
 %maps labels. Can be used when the annotations contain a greater level of
 %detail than needed by the application
-classdef LabelMapper < Computer
+classdef LabelMapper < Algorithm
 
     properties (Access = public)
         sourceLabeling;

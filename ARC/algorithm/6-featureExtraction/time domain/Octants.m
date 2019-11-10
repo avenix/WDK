@@ -1,4 +1,4 @@
-classdef Octants < Computer
+classdef Octants < Algorithm
     
     methods (Access = public)
         

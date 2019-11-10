@@ -1,4 +1,4 @@
-classdef AUC < Computer
+classdef AUC < Algorithm
     
     properties (Access = public)
         windowSize;

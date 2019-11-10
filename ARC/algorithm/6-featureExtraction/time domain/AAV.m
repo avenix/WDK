@@ -1,4 +1,4 @@
-classdef AAV < Computer
+classdef AAV < Algorithm
     
     methods (Access = public)
         

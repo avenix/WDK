@@ -3,62 +3,63 @@ classdef PreprocessingConfigurator < handle
     
     properties (Access = private)
         %data
-        signals;
+        signalNames;
         
-        %computers
-        signalComputers;
-        signalComputerStrings;
+        %algorithms
+        algorithms;
+        currentAlgorithms;
+        algorithmStrings;
         
         %ui
         signalsList;
-        signalComputersList;
-        signalComputerVariablesTable;
+        algorithmsList;
+        algorithmVariablesTable;
         
         %state
-        currentSignalComputerVariables;
+        currentAlgorithmVariables;
         
         %observer
         delegate;
     end
     
     methods (Access = public)
-        function obj = PreprocessingConfigurator(signals,signalComputers, signalsList,...
-                signalComputersList,signalComputerVariablesTable,delegate)
+        function obj = PreprocessingConfigurator(signalNames,algorithms, signalsList,...
+                algorithmsList,algorithmVariablesTable,delegate)
             
-            obj.signals = signals;
-            obj.signalComputers = signalComputers;
+            obj.signalNames = signalNames;
+            obj.algorithms = algorithms;
             obj.signalsList = signalsList;
-            obj.signalComputersList = signalComputersList;
-            obj.signalComputerVariablesTable = signalComputerVariablesTable;
+            obj.algorithmsList = algorithmsList;
+            obj.algorithmVariablesTable = algorithmVariablesTable;
             obj.signalsList.ValueChangedFcn = @obj.handleSelectedSignalChanged;
-            obj.signalComputersList.ValueChangedFcn = @obj.handleSelectedSignalComputerChanged;
+            obj.algorithmsList.ValueChangedFcn = @obj.handleSelectedAlgorithmChanged;
             
             if nargin > 5
                 obj.delegate = delegate;
             end
             
-            if ~isempty(obj.signalComputersList)
+            if ~isempty(obj.algorithmsList)
                 obj.updateSignalsList();
-                obj.updateSignalComputersList();
-                obj.selectFirstSignalComputer();
+                obj.updateAlgorithmsList();
+                obj.selectFirstAlgorithm();
                 
-                obj.updateSelectedSignalComputer();
-                obj.updateSignalComputerVariablesTable();
+                obj.updateSelectedAlgorithm();
+                obj.updateAlgorithmVariablesTable();
             end
         end
         
         function setSignals(obj,signals)
-            obj.signals = signals;
+            obj.signalNames = signals;
             obj.updateSignalsList();
         end
         
-        function signalComputer = getCurrentSignalComputer(obj)
-            idxStr = obj.signalComputersList.Value;
-            [~,idx] = ismember(idxStr,obj.signalComputersList.Items);
+        function algorithm = getCurrentAlgorithm(obj)
+            idxStr = obj.algorithmsList.Value;
+            [~,idx] = ismember(idxStr,obj.algorithmsList.Items);
             if isempty(idx)
-                signalComputer = [];
+                algorithm = [];
             else
-                signalComputer = obj.signalComputers{idx};
+                algorithm = obj.currentAlgorithms{idx};
             end
         end
         
@@ -67,17 +68,17 @@ classdef PreprocessingConfigurator < handle
             [~,signalIdxs] = ismember(idxStr,obj.signalsList.Items);
         end
         
-        function computer = createPreprocessingComputerWithUIParameters(obj)
+        function algorithm = createPreprocessingAlgorithmWithUIParameters(obj)
             axisSelector = obj.createAxisSelectorWithUIParameters();
             if isempty(axisSelector)
-                computer = [];
+                algorithm = [];
             else
-                signalComputer = obj.createSignalComputerWithUIParameters();
-                if isempty(signalComputer)
-                    computer = [];
+                algorithm = obj.createAlgorithmWithUIParameters();
+                if isempty(algorithm)
+                    algorithm = [];
                 else
-                    axisSelector.addNextComputer(signalComputer);
-                    computer = CompositeComputer(axisSelector,{signalComputer});
+                    axisSelector.addNextAlgorithm(algorithm);
+                    algorithm = CompositeAlgorithm(axisSelector,{algorithm});
                 end
             end
         end
@@ -92,18 +93,18 @@ classdef PreprocessingConfigurator < handle
             end
         end
         
-        function signalComputer = createSignalComputerWithUIParameters(obj)
-            signalComputer = obj.getCurrentSignalComputer();
-            if isa(signalComputer,'NoOp')
-                signalComputer = [];
-            elseif ~isempty(signalComputer)
-                signalComputer = signalComputer.copy();
-                data = obj.signalComputerVariablesTable.Data;
+        function algorithm = createAlgorithmWithUIParameters(obj)
+            algorithm = obj.getCurrentAlgorithm();
+            if isa(algorithm,'NoOp')
+                algorithm = [];
+            elseif ~isempty(algorithm)
+                algorithm = algorithm.copy();
+                data = obj.algorithmVariablesTable.Data;
                 for i = 1 : size(data,1)
                     variableName = data{i,1};
                     variableValue = data{i,2};
                     property = Property(variableName,variableValue);
-                    signalComputer.setProperty(property);
+                    algorithm.setProperty(property);
                 end
             end
         end
@@ -114,7 +115,7 @@ classdef PreprocessingConfigurator < handle
         
         %ui
         function updateSignalsList(obj)
-            obj.signalsList.Items = obj.signals;
+            obj.signalsList.Items = obj.signalNames;
         end
         
         function signals = getSelectedSignals(obj)
@@ -124,56 +125,60 @@ classdef PreprocessingConfigurator < handle
             signals = obj.signalsList.Items(signalIndices);
         end
         
-        function selectFirstSignalComputer(obj)
-            obj.signalComputersList.Value = obj.signalComputersList.Items{1};
+        function selectFirstAlgorithm(obj)
+            if ~isempty(obj.algorithmsList.Items)
+                obj.algorithmsList.Value = obj.algorithmsList.Items{1};
+            end
         end
         
         function selectFirstSignal(obj)
             obj.signalsList.Value = obj.signalsList.Items{1};
         end
         
-        function updateSignalComputerVariablesTable(obj)
-            obj.signalComputerVariablesTable.Data = Helper.propertyArrayToCellArray(obj.currentSignalComputerVariables);
+        function updateAlgorithmVariablesTable(obj)
+            obj.algorithmVariablesTable.Data = Helper.propertyArrayToCellArray(obj.currentAlgorithmVariables);
         end
         
-        function updateSelectedSignalComputer(obj)
-            signalComputer = obj.getCurrentSignalComputer();
-            if isempty(signalComputer)
-                obj.currentSignalComputerVariables = [];
+        function updateSelectedAlgorithm(obj)
+            algorithm = obj.getCurrentAlgorithm();
+            if isempty(algorithm)
+                obj.currentAlgorithmVariables = [];
             else
-                obj.currentSignalComputerVariables = signalComputer.getEditableProperties();
+                obj.currentAlgorithmVariables = algorithm.getEditableProperties();
             end
         end
         
         %methods
-        function updateSignalComputersList(obj)
+        function updateAlgorithmsList(obj)
             nSelectedSignals = length(obj.signalsList.Value);
             switch nSelectedSignals
                 case 1
-                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignal);
+                    obj.currentAlgorithms = Palette.FilterAlgorithmsToInputType(obj.algorithms, DataType.kSignal);
                 case 2
-                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignal2);
+                    obj.currentAlgorithms = Palette.FilterAlgorithmsToInputType(obj.algorithms, DataType.kSignal2);
                 case 3
-                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignal3);
+                    obj.currentAlgorithms = Palette.FilterAlgorithmsToInputType(obj.algorithms, DataType.kSignal3);
                 otherwise
-                    algorithms = Palette.FilterAlgorithmsToInputType(obj.signalComputers, DataType.kSignalN);
+                    obj.currentAlgorithms = Palette.FilterAlgorithmsToInputType(obj.algorithms, DataType.kSignalN);
             end
             
-            obj.signalComputersList.Items = Helper.generateComputerNamesArray(algorithms);
+            obj.algorithmsList.Items = Helper.generateAlgorithmNamesArray(obj.currentAlgorithms);
         end
         
         
         %% handles
         function handleSelectedSignalChanged(obj,~,~)
-            obj.updateSignalComputersList();
+            obj.updateAlgorithmsList();
         end
         
-        function handleSelectedSignalComputerChanged(obj,~,~)
-            obj.updateSelectedSignalComputer();
-            obj.updateSignalComputerVariablesTable();
+        function handleSelectedAlgorithmChanged(obj,~,~)
+            obj.updateSelectedAlgorithm();
+            obj.updateAlgorithmVariablesTable();
             
-            selectedSignalComputer = obj.getCurrentSignalComputer();
-            obj.delegate.handlePreprocessingAlgorithmChanged(selectedSignalComputer,obj);
+            selectedAlgorithm = obj.getCurrentAlgorithm();
+            if ~isempty(obj.delegate)
+                obj.delegate.handlePreprocessingAlgorithmChanged(selectedAlgorithm,obj);
+            end
         end
     end
 end
