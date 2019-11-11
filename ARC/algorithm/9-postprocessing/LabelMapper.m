@@ -102,8 +102,8 @@ classdef LabelMapper < Algorithm
             mapKeys = keys(obj.hashMap);
             mapValues = values(obj.hashMap);
             hashMapStr = sprintf('[%s],[%s]',...
-                Helper.arrayToString(cell2mat(mapKeys),' '),...
-                Helper.arrayToString(cell2mat(mapValues),' '));
+                Helper.ArrayToString(cell2mat(mapKeys),' '),...
+                Helper.ArrayToString(cell2mat(mapValues),' '));
             
             str = sprintf('%s_%s',obj.name,hashMapStr);
         end

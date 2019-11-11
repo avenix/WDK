@@ -7,35 +7,35 @@ classdef PreprocessingConfiguratorGuide < handle
         %data
         columnNames;
         
-        %computers
-        signalComputers;
+        %algorithms
+        algorithms;
         
         %ui
         signalsList;
-        signalComputersList;
-        signalComputerVariablesTable;
+        algorithmsList;
+        algorithmVariablesTable;
         
         %state
-        currentSignalComputerVariables;
+        currentAlgorithmVariables;
     end
     
     methods (Access = public)
-        function obj = PreprocessingConfiguratorGuide(signalComputers, signalsList,signalComputersList,signalComputerVariablesTable)
-            obj.signalComputers = signalComputers;
+        function obj = PreprocessingConfiguratorGuide(algorithms, signalsList,algorithmsList,algorithmVariablesTable)
+            obj.algorithms = algorithms;
             obj.signalsList = signalsList;
-            obj.signalComputersList = signalComputersList;
-            obj.signalComputerVariablesTable = signalComputerVariablesTable;
+            obj.algorithmsList = algorithmsList;
+            obj.algorithmVariablesTable = algorithmVariablesTable;
             
-            obj.signalComputersList.Callback = @obj.handleSelectedSignalComputerChanged;
+            obj.algorithmsList.Callback = @obj.handleSelectedAlgorithmChanged;
             
-            obj.fillSignalComputersList();
-            obj.updateSelectedSignalComputer();
-            obj.updateSignalComputerVariablesTable();
+            obj.fillAlgorithmsList();
+            obj.updateSelectedAlgorithm();
+            obj.updateAlgorithmVariablesTable();
         end
         
         function setDefaultSignals(obj)
             dataLoader = DataLoader();
-            dataFiles = Helper.listDataFiles();
+            dataFiles = Helper.ListDataFiles();
             if ~isempty(dataFiles)
                 fileName = dataFiles{1};
                 [~, obj.columnNames] = dataLoader.loadData(fileName);
@@ -48,55 +48,53 @@ classdef PreprocessingConfiguratorGuide < handle
             obj.fillSignalsList();
         end
         
-        function signalComputer = getCurrentSignalComputer(obj)
-            idx = obj.signalComputersList.Value;
-            signalComputer = obj.signalComputers{idx};
+        function algorithm = getCurrentAlgorithm(obj)
+            idx = obj.algorithmsList.Value;
+            algorithm = obj.algorithms{idx};
         end
         
         function signalIdxs = getSelectedSignalIdxs(obj)
             signalIdxs = obj.signalsList.Value;
         end
         
-        function computer = createSignalComputerWithUIParameters(obj)
-            signalComputer = obj.getCurrentSignalComputer();
+        function algorithm = createAlgorithmWithUIParameters(obj)
+            algorithm = obj.getCurrentAlgorithm();
             
-            data = obj.signalComputerVariablesTable.Data;
+            data = obj.algorithmVariablesTable.Data;
             for i = 1 : size(data,1)
                 variableName = data{i,1};
                 variableValue = data{i,2};
                 property = Property(variableName,variableValue);
-                signalComputer.setProperty(property);
+                algorithm.setProperty(property);
             end
             
             selectedSignals = obj.getSelectedSignalIdxs();
             axisSelector = AxisSelector();
             axisSelector.axes = selectedSignals;
             
-            axisSelector.addNextComputer(signalComputer);
-            computer = CompositeComputer(axisSelector,{signalComputer});
-            
-            %computer = CompositeComputer.ComputerWithSequence({axisSelector, signalComputer});
+            axisSelector.addNextAlgorithm(algorithm);
+            algorithm = CompositeAlgorithm(axisSelector,{algorithm});
         end
     end
     
     methods (Access = private)
         
         %ui
-        function fillSignalComputersList(obj)
-            obj.signalComputersList.String = Helper.generateComputerNamesArray(obj.signalComputers);
+        function fillAlgorithmsList(obj)
+            obj.algorithmsList.String = Helper.GenerateAlgorithmNamesArray(obj.algorithms);
         end
         
         function fillSignalsList(obj)
             obj.signalsList.String = obj.columnNames;
         end
         
-        function updateSignalComputerVariablesTable(obj)
-            obj.signalComputerVariablesTable.Data = Helper.propertyArrayToCellArray(obj.currentSignalComputerVariables);
+        function updateAlgorithmVariablesTable(obj)
+            obj.algorithmVariablesTable.Data = Helper.PropertyArrayToCellArray(obj.currentAlgorithmVariables);
         end
         
-        function updateSelectedSignalComputer(obj)
-            signalComputer = obj.getCurrentSignalComputer();
-            obj.currentSignalComputerVariables = signalComputer.getEditableProperties();
+        function updateSelectedAlgorithm(obj)
+            algorithm = obj.getCurrentAlgorithm();
+            obj.currentAlgorithmVariables = algorithm.getEditableProperties();
         end
         
         %methods
@@ -106,9 +104,9 @@ classdef PreprocessingConfiguratorGuide < handle
         end        
         
         %handles
-        function handleSelectedSignalComputerChanged(obj,~,~)
-            obj.updateSelectedSignalComputer();
-            obj.updateSignalComputerVariablesTable();
+        function handleSelectedAlgorithmChanged(obj,~,~)
+            obj.updateSelectedAlgorithm();
+            obj.updateAlgorithmVariablesTable();
         end
     end
 end

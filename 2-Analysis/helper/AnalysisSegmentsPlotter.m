@@ -31,7 +31,7 @@ classdef AnalysisSegmentsPlotter < handle
         end
         
         function setZoom(obj,b)
-            str = Helper.getOnOffStringLowerCase(b);
+            str = Helper.GetOnOffStringLowerCase(b);
             for i = 1 : length(obj.axesHandles)
                 zoom(obj.axesHandles(i),str);
             end
@@ -39,7 +39,7 @@ classdef AnalysisSegmentsPlotter < handle
         end
         
         function resetZoom(obj)
-            str = Helper.getOnOffStringLowerCase(false);
+            str = Helper.GetOnOffStringLowerCase(false);
             for i = 1 : length(obj.axesHandles)
                 zoom(obj.axesHandles(i),str);
                 obj.axesHandles(i).XLimMode = 'auto';
@@ -53,7 +53,7 @@ classdef AnalysisSegmentsPlotter < handle
         end
         
         function setPan(obj,b)
-            str = Helper.getOnOffStringLowerCase(b);
+            str = Helper.GetOnOffStringLowerCase(b);
             for i = 1 : length(obj.axesHandles)
                 pan(obj.axesHandles(i),str);
             end

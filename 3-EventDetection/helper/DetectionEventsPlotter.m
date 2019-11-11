@@ -86,8 +86,8 @@ classdef DetectionEventsPlotter < handle
             obj.resultsPerFile = resultsPerFile;
             obj.fileNames = fileNames;
             
-            obj.videoFileNames = Helper.listVideoFiles();
-            obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
+            obj.videoFileNames = Helper.ListVideoFiles();
+            obj.videoFileNamesNoExtension = Helper.RemoveVideoExtensionForFiles(obj.videoFileNames);
             
             obj.timeLineMarker = 1;
             
@@ -98,7 +98,8 @@ classdef DetectionEventsPlotter < handle
             end
         end
         
-        function handleFrameChanged(obj,~)
+        %% Video player
+        function handleVideoPlayerFrameChanged(obj,~)
             if ~isempty(obj.synchronizationFile)
                 obj.timeLineMarker = obj.synchronizationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
                 if ~isempty(obj.timeLineMarkerHandle)
@@ -170,7 +171,7 @@ classdef DetectionEventsPlotter < handle
         function plotAllEvents(obj,signal,currentFileResults)
             
             obj.detectedEventHandles = obj.plotEvents(currentFileResults.goodEvents,signal,Constants.kCorrectColor);
-            obj.missedEventHandles = obj.plotEvents(currentFileResults.missedEvents,signal,Constants.kMissedEventColor);
+            obj.missedEventHandles = obj.plotEvents(currentFileResults.missedEvents,signal,Constants.kMissedColor);
             obj.falsePositiveEventHandles = obj.plotEvents(currentFileResults.badEvents,signal,Constants.kWrongColor);
             
             if ~obj.showingDetectedEventsPrivate
@@ -250,11 +251,11 @@ classdef DetectionEventsPlotter < handle
         end
         
         function [videoFileName, synchronizationFileName] = getVideoAndSynchronizationFileName(obj,fileName)
-            fileName = Helper.removeFileExtension(fileName);
+            fileName = Helper.RemoveFileExtension(fileName);
             [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
             if idx > 0
                 videoFileName = obj.videoFileNames{idx};
-                synchronizationFileName = Helper.addSynchronizationFileExtension(fileName);
+                synchronizationFileName = Helper.AddSynchronizationFileExtension(fileName);
             else
                 videoFileName = [];
                 synchronizationFileName = [];

@@ -1,5 +1,9 @@
 classdef FeatureExtractor < Algorithm
 
+    properties (Access = public, Constant)
+        kMaxFeatureNameCharacters = 15;
+    end
+    
     properties (Access = public)
         computers;
     end
@@ -54,7 +58,7 @@ classdef FeatureExtractor < Algorithm
             
             for i = 1 : nAlgorithms
                 featureStr = obj.computers{i}.toString();
-                maxChars = min(Constants.kMaxFeatureNameCharacters,length(featureStr));
+                maxChars = min(FeatureExtractor.kMaxFeatureNameCharacters,length(featureStr));
                 featureStr = featureStr(1:maxChars);
                 featureName = sprintf('%s_%d',featureStr,i);
                 featureName = strrep(featureName,', ','_');

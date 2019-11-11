@@ -54,19 +54,19 @@ classdef HoldOutValidator < Algorithm
         end
         
         function str = toString(obj)            
-            testIndicesStr = sprintf('[%s]',Helper.arrayToString(obj.obj.testIndices,','));
-            trainIndicesStr = sprintf('[%s]',Helper.arrayToString(obj.obj.trainIndices,','));
+            testIndicesStr = sprintf('[%s]',Helper.ArrayToString(obj.obj.testIndices,','));
+            trainIndicesStr = sprintf('[%s]',Helper.ArrayToString(obj.obj.trainIndices,','));
             str = sprintf('%s_%s_%s_%s_%d',obj.name,trainIndicesStr,testIndicesStr,...
                 obj.classifier.toString(),obj.shouldNormalizeFeatures);
         end
         
         function editableProperties = getEditableProperties(obj)
             
-            testIndicesStr = sprintf('[%s]',Helper.arrayToString(obj.obj.testIndices,','));
+            testIndicesStr = sprintf('[%s]',Helper.ArrayToString(obj.obj.testIndices,','));
             property1 = Property('testIndices',testIndicesStr);
             property1.type = PropertyType.kArray;
             
-            trainIndicesStr = sprintf('[%s]',Helper.arrayToString(obj.obj.trainIndices,','));
+            trainIndicesStr = sprintf('[%s]',Helper.ArrayToString(obj.obj.trainIndices,','));
             property2 = Property('trainIndices',trainIndicesStr);
             property2.type = PropertyType.kArray;
             

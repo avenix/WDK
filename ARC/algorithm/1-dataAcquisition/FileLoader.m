@@ -40,7 +40,7 @@ classdef FileLoader < Algorithm
         end
         
         function str = toString(obj)
-            selectedSignalsStr = sprintf('[%s]',Helper.arrayToString(obj.selectedSignalIndices,','));
+            selectedSignalsStr = sprintf('[%s]',Helper.ArrayToString(obj.selectedSignalIndices,','));
             str = sprintf('%s_%s_%s',obj.name, obj.fileName,selectedSignalsStr);
         end
         

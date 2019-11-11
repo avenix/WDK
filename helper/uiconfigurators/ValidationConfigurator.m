@@ -43,7 +43,9 @@ classdef ValidationConfigurator < handle
         
         function valid = isValidConfiguration(obj)
             valid = true;
-            if(isempty(obj.uiElements.trainFilesList.Items) || (obj.isHoldOutValidation() && isempty(obj.uiElements.testFilesList.Items)))
+            if(isempty(obj.uiElements.trainFilesList.Items) ||...
+                    (obj.isHoldOutValidation() && isempty(obj.uiElements.testFilesList.Items)) || ...
+                    (~obj.isHoldOutValidation() && length(obj.uiElements.trainFilesList.Items) < 2))
                 valid = false;
             end
         end

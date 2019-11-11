@@ -102,7 +102,7 @@ classdef FeatureExtractionConfigurator < handle
                     obj.uiElements.featureStartRangeEditText.Value = rangeSelector.rangeStart;
                     obj.uiElements.featureEndRangeEditText.Value = rangeSelector.rangeEnd;
                 end
-                obj.uiElements.featureAxisEditText.Value = Helper.arrayToString(axisSelector.axes,' ');
+                obj.uiElements.featureAxisEditText.Value = Helper.ArrayToString(axisSelector.axes,' ');
             end
         end
         
@@ -180,7 +180,7 @@ classdef FeatureExtractionConfigurator < handle
         end
         
         function fillDefaultFeaturesList(obj)
-            obj.uiElements.defaultFeaturesList.Items = Helper.generateAlgorithmNamesArray(obj.defaultFeatures);
+            obj.uiElements.defaultFeaturesList.Items = Helper.GenerateAlgorithmNamesArray(obj.defaultFeatures);
         end
         
         function handleSelectedFeatureChanged(obj,~,~)
@@ -234,7 +234,6 @@ classdef FeatureExtractionConfigurator < handle
                 obj.updateCurrentSelectedFeatureName();
             end
         end
-        
     end
     
     methods (Access = private, Static)
@@ -243,7 +242,7 @@ classdef FeatureExtractionConfigurator < handle
             rangeSelector = axisSelector.nextAlgorithms{1};
             featureExtractor = rangeSelector.nextAlgorithms{1};
             
-            str = sprintf('%s_%s',featureExtractor.name,Helper.arrayToString(axisSelector.axes,' '));
+            str = sprintf('%s_%s',featureExtractor.name,Helper.ArrayToString(axisSelector.axes,' '));
             if ~isempty(rangeSelector.rangeEnd)
                 str = sprintf('%s (%d-%d)',str,rangeSelector.rangeStart,rangeSelector.rangeEnd);
             end

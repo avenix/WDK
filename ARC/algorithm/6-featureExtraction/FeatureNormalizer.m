@@ -14,9 +14,13 @@ classdef FeatureNormalizer < Algorithm
         end
         
         function fit(obj,table)
-            dataArray = table2array(table.features);
-            obj.means = mean(dataArray);
-            obj.stds = std(dataArray,0,1);
+            if isempty(table)
+                fprintf('%s. A table is required. - FeatureNormalizer\n',Constants.kEmptyInputError);
+            else
+                dataArray = table2array(table.features);
+                obj.means = mean(dataArray);
+                obj.stds = std(dataArray,0,1);
+            end
         end
         
         function table = compute(obj,table)

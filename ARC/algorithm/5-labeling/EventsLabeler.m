@@ -27,7 +27,7 @@ classdef EventsLabeler < Algorithm
                 end
             else
                 labels = obj.labelEventIdxs([events.sample],obj.manualAnnotations.eventAnnotations);
-                labeledEvents = Helper.LabelEventsWithValidLabels(events,labels);
+                labeledEvents = EventsLabeler.LabelEventsWithValidLabels(events,labels);
             end
         end
         
@@ -50,9 +50,27 @@ classdef EventsLabeler < Algorithm
             end
         end
     end
-
-    methods (Static)
+    
+    methods (Access = private, Static)
         
+        function labeledEvents = LabelEventsWithValidLabels(events,labels)
+            isValidLabel = ~Labeling.ShouldIgnoreLabels(labels);
+            
+            nValidEvents = sum(isValidLabel);
+            labeledEvents = repmat(Event,1,nValidEvents);
+            eventCounter = 1;
+            for i = 1 : length(events)
+                if isValidLabel(i)
+                    event = events(i);
+                    event.label = labels(i);
+                    labeledEvents(eventCounter) = event;
+                    eventCounter = eventCounter + 1;
+                end
+            end
+        end
+    end
+    
+    methods (Static)
         
         function idx = findIdxOfSampleNearEventAnnotations(sample,eventAnnotations,tolerance)
             idx = -1;

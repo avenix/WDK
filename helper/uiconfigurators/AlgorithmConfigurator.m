@@ -107,11 +107,11 @@ classdef AlgorithmConfigurator < handle
         end
         
         function fillAlgorithmsList(obj)            
-            obj.algorithmsList.Items = Helper.generateAlgorithmNamesArray(obj.algorithms);
+            obj.algorithmsList.Items = Helper.GenerateAlgorithmNamesArray(obj.algorithms);
         end
                 
         function updatePropertiesTable(obj)
-            obj.algorithmsPropertiesTable.Data = Helper.propertyArrayToCellArray(obj.currentAlgorithmProperties);
+            obj.algorithmsPropertiesTable.Data = Helper.PropertyArrayToCellArray(obj.currentAlgorithmProperties);
         end
         
         function nProperties = countNProperties(~,propertiesCell)

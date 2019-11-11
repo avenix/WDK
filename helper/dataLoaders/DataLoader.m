@@ -29,7 +29,7 @@ classdef DataLoader < handle
         
         %loads a data file in text or binary format. Full path should be specified
         function dataFile = LoadDataFile(fileName)
-            fileExtension = Helper.getFileExtension(fileName);
+            fileExtension = Helper.GetFileExtension(fileName);
             fullPath = sprintf('%s/%s',Constants.kDataPath,fileName);
             if strcmp(fileExtension, ".mat")
                 dataFile = DataLoader.LoadDataFileBinaryWithFullPath(fullPath);
@@ -69,12 +69,25 @@ classdef DataLoader < handle
             tableExporter.exportTable(table,fileName);
         end
         
+        %convenience method to load the column names of the data file
+        %the column names are supposed to be consistent across data files
+        function signals = LoadSignalNames()
+            dataFiles = Helper.ListDataFiles();
+            signals = [];
+            if ~isempty(dataFiles)
+                fileName = dataFiles{1};
+                dataFile = DataLoader.LoadDataFile(fileName);
+                signals = dataFile.columnNames;
+            end
+        end
+        
         %% Annotations
-        %returns an array of AnnotationSet.
+        %loads every annotation set in the annotations/ directory and 
+        %returns an array of AnnotationSets.
         function annotations = LoadAllAnnotations(defaultLabeling)
-            dataFileNames = Helper.listDataFiles();
-            dataFileNames = Helper.removeFileExtensionForFiles(dataFileNames);
-            annotationFiles = Helper.addAnnotationsFileExtensionForFiles(dataFileNames);
+            dataFileNames = Helper.ListDataFiles();
+            dataFileNames = Helper.RemoveFileExtensionForFiles(dataFileNames);
+            annotationFiles = Helper.AddAnnotationsFileExtensionForFiles(dataFileNames);
             
             nAnnotationFiles = length(annotationFiles);
             annotations = repmat(AnnotationSet,1,nAnnotationFiles);
@@ -86,16 +99,19 @@ classdef DataLoader < handle
             end
         end
         
+        %loads an annotation set with a file name
         function annotationSet = LoadAnnotationSet(annotationsFileName,labeling)
             annotationsFileName = sprintf('%s/%s',Constants.kAnnotationsPath,annotationsFileName);
             annotationSet = DataLoader.LoadAnnotationSetFullPath(annotationsFileName,labeling);
         end
         
+        %loads an annotation set with the full path to the annotation file
         function annotationSet = LoadAnnotationSetFullPath(annotationsFileName,labeling)
             annotationsParser = AnnotationsParser(labeling);
             annotationSet = annotationsParser.loadAnnotations(annotationsFileName);
         end
         
+        %saves an annotation in the current path
         function SaveAnnotations(annotationsSet,annotationsFileName,labeling)
             annotationsParser = AnnotationsParser(labeling);
             annotationsParser.saveAnnotations(annotationsSet,annotationsFileName);
@@ -222,7 +238,7 @@ classdef DataLoader < handle
         %returns an array of LabelMappings based on the mappings defined in the
         %/labeling directory
         function labelMappers = LoadAllLabelMappings()
-            fileNames = Helper.listLabelGroupings();
+            fileNames = Helper.ListLabelGroupings();
             
             nLabelGroupings = length(fileNames);
             labelMappers = repmat(LabelMapper,1,nLabelGroupings+1);
@@ -244,7 +260,7 @@ classdef DataLoader < handle
         function labelMapper = LoadLabelMapping(defaultLabeling,fileName)
             fullFileName = sprintf('%s/%s',Constants.kLabelGroupingsPath,fileName);
             labelGroups = LabelGroupsLoader.LoadLabelGroups(fullFileName);
-            name = Helper.removeFileExtension(fileName);
+            name = Helper.RemoveFileExtension(fileName);
             labelMapper = LabelMapper.CreateLabelMapperWithGroups(defaultLabeling,labelGroups,name);
         end
         

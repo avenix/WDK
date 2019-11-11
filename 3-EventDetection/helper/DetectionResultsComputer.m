@@ -119,7 +119,7 @@ classdef DetectionResultsComputer < handle
                 for i = 1 : length(annotations)
                     if obj.isRelevantLabel(annotations(i).label)
                         eventLocation = annotations(i).sample;
-                        contained = Helper.isPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
+                        contained = DetectionResultsComputer.IsPointContainedInSegments(eventLocation,segmentStartings,segmentEndings);
                         if ~contained
                             didMissEvent(i) = true;
                         end
@@ -128,5 +128,28 @@ classdef DetectionResultsComputer < handle
             end
         end
     end
+    
+    methods (Access = private, Static)
+        %returns true if an event value is contained within a range
+        function b = IsPointContainedInSegment(point, segmentStarting, segmentEnding)
+            b = (point <= segmentEnding && point >= segmentStarting);
+        end
+        
+        %segments and points should be sorted
+        function contained = IsPointContainedInSegments(point,segmentStartings,segmentEndings)
+            contained = false;
+            for i = 1 : length(segmentStartings)
+                segmentStarting = segmentStartings(i);
+                segmentEnding = segmentEndings(i);
+                if DetectionResultsComputer.IsPointContainedInSegment(point,segmentStarting,segmentEnding)
+                    contained = true;
+                end
+                if point < segmentStarting
+                    break;
+                end
+            end
+        end
+    end
+    
 end
 

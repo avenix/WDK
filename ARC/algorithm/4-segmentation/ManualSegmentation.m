@@ -73,7 +73,7 @@ classdef ManualSegmentation < Algorithm
             labels = labels(validIdxs);
             eventLocations = [eventAnnotations(validIdxs).sample];
             
-            segments = Helper.CreateSegmentsWithEventLocations(eventLocations,...
+            segments = EventSegmentation.CreateSegmentsWithEventLocations(eventLocations,...
                 dataFile,obj.segmentSizeLeft,obj.segmentSizeRight);  
             
             %label segments

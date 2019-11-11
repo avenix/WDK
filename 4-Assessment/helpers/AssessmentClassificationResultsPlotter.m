@@ -81,7 +81,7 @@ classdef AssessmentClassificationResultsPlotter < handle
         end
         
         function textStr = getTextForPrediction(obj,truthClass,predictedClass)
-            predictedClassStr = Helper.StringForClass(predictedClass,obj.classNames);
+            predictedClassStr = Labeling.StringForClass(predictedClass,obj.classNames);
             
             if truthClass ~= predictedClass
                 truthClassStr = Helper.StringForClass(truthClass,obj.classNames);
@@ -115,7 +115,7 @@ classdef AssessmentClassificationResultsPlotter < handle
             
             classStr = Helper.StringForClass(class,obj.classNames);
             
-            plot(obj.plotAxes,eventX,eventY,'*','Color',Constants.kMissedEventColor,'LineWidth',AssessmentClassificationResultsPlotter.MissedEventSymbolSize);
+            plot(obj.plotAxes,eventX,eventY,'*','Color',Constants.kMissedColor,'LineWidth',AssessmentClassificationResultsPlotter.MissedEventSymbolSize);
             textHandle = text(obj.plotAxes,double(eventX),double(eventY), classStr,'FontSize',AssessmentClassificationResultsPlotter.FontSize);
             set(textHandle, 'Clipping', 'on');
         end

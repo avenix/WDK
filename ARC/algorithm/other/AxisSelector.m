@@ -25,12 +25,12 @@ classdef AxisSelector < Algorithm
         end
         
         function str = toString(obj)
-            axesStr = Helper.arrayToString(obj.axes,'');
+            axesStr = Helper.ArrayToString(obj.axes,'');
             str = sprintf('%s%s',obj.name,axesStr);
         end
         
         function editableProperties = getEditableProperties(obj)
-            axesStr = sprintf('[%s]',Helper.arrayToString(obj.axes,','));
+            axesStr = sprintf('[%s]',Helper.ArrayToString(obj.axes,','));
             editableProperties = Property('axes',axesStr);
             editableProperties.type = PropertyType.kArray;
         end

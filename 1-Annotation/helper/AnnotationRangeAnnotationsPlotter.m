@@ -114,7 +114,7 @@ classdef AnnotationRangeAnnotationsPlotter < handle
         end
         
         function setAnnotationVisibility(obj,visible)
-            visibleStr = Helper.GetVisibleStr(visible);
+            visibleStr = Helper.GetOnOffString(visible);
             plotHandles = obj.annotationsMap.values;
             
             for i = 1 : length(plotHandles)
@@ -169,7 +169,9 @@ classdef AnnotationRangeAnnotationsPlotter < handle
         end
         
         function handleAnnotationClicked(obj,source,target)
-            obj.delegate.handleAnnotationClicked(source,target);
+            if ~isempty(obj.delegate)
+                obj.delegate.handleAnnotationClicked(source,target);
+            end
         end
         
         function initAnnotationsMap(obj)

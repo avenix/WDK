@@ -63,7 +63,7 @@ classdef VideoPlayer < handle
             end
             obj.previousFrame = obj.currentFrame;
             if ~isempty(obj.delegate)
-                obj.delegate.handleFrameChanged(obj.currentFrame);
+                obj.delegate.handleVideoPlayerFrameChanged(obj.currentFrame);
             end
         end
         
@@ -82,7 +82,7 @@ classdef VideoPlayer < handle
             if(obj.currentFrame ~= obj.previousFrame)
                 obj.previousFrame = obj.currentFrame;
                 if ~isempty(obj.delegate)
-                    obj.delegate.handleFrameChanged(obj.previousFrame);
+                    obj.delegate.handleVideoPlayerFrameChanged(obj.previousFrame,obj);
                 end
             end
         end
@@ -92,7 +92,7 @@ classdef VideoPlayer < handle
             delete(obj.timer);
             delete(obj.figureHandle);
             if ~isempty(obj.delegate)
-                obj.delegate.handleVideoPlayerWindowClosed();
+                obj.delegate.handleVideoPlayerWindowClosed(obj);
             end
         end
     end

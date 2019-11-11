@@ -39,8 +39,8 @@ classdef AssessmentClassificationResultsViewer < handle
         function  obj = AssessmentClassificationResultsViewer(delegate,detailedClassificationResults)
             obj.delegate = delegate;
             obj.detailedClassificationResults = detailedClassificationResults;
-            obj.videoFileNames = Helper.listVideoFiles();
-            obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
+            obj.videoFileNames = Helper.ListVideoFiles();
+            obj.videoFileNamesNoExtension = Helper.RemoveVideoExtensionForFiles(obj.videoFileNames);
             obj.timeLineMarker = 1;
             obj.loadUI();
         end
@@ -49,7 +49,7 @@ classdef AssessmentClassificationResultsViewer < handle
            figure(obj.uiHandles.mainFigure); 
         end
         
-        function handleFrameChanged(obj,~)
+        function handleVideoPlayerFrameChanged(obj,~,~)
             if ~isempty(obj.synchronizationFile)
                 obj.timeLineMarker = obj.synchronizationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
                 if ~isempty(obj.timeLineMarkerHandle)
@@ -58,7 +58,7 @@ classdef AssessmentClassificationResultsViewer < handle
             end
         end
         
-        function handleVideoPlayerWindowClosed(obj)
+        function handleVideoPlayerWindowClosed(obj,~)
             obj.deleteVideoPlayer();
         end
         
@@ -92,12 +92,12 @@ classdef AssessmentClassificationResultsViewer < handle
             obj.uiHandles.filesList.String = {obj.detailedClassificationResults.fileName};
             obj.uiHandles.mainFigure.DeleteFcn = @obj.handleWindowClosed;
             
-            signalComputers = Palette.PreprocessingComputers();
+            preprocessingAlgorithms = Palette.PreprocessingAlgorithms();
             obj.preprocessingConfigurator = PreprocessingConfiguratorGuide(...
-                signalComputers,...
+                preprocessingAlgorithms,...
                 obj.uiHandles.signalsList,...
-                obj.uiHandles.signalComputerList,...
-                obj.uiHandles.signalComputerVariablesTable);
+                obj.uiHandles.algorithmsList,...
+                obj.uiHandles.algorithmsVariablesTable);
             
             if ~isempty(obj.detailedClassificationResults)
                 classNames = obj.detailedClassificationResults(1).classificationResult.classNames;
@@ -149,7 +149,7 @@ classdef AssessmentClassificationResultsViewer < handle
         
         function fileName = getSynchronizationFileName(obj)
             fileName = obj.getCurrentFileNameNoExtension();
-            fileName = Helper.addSynchronizationFileExtension(fileName);
+            fileName = Helper.AddSynchronizationFileExtension(fileName);
         end
         
         function fileName = getVideoFileName(obj)
@@ -165,15 +165,15 @@ classdef AssessmentClassificationResultsViewer < handle
         
         function fileName = getCurrentFileNameNoExtension(obj)
             dataFileName = obj.getCurrentFileName();
-            fileName = Helper.removeFileExtension(dataFileName);
+            fileName = Helper.RemoveFileExtension(dataFileName);
         end
         
         function [videoFileName, synchronizationFileName] = getVideoAndSynchronizationFileName(obj,fileName)
-            fileName = Helper.removeFileExtension(fileName);
+            fileName = Helper.RemoveFileExtension(fileName);
             [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
             if idx > 0
                 videoFileName = obj.videoFileNames{idx};
-                synchronizationFileName = Helper.addSynchronizationFileExtension(fileName);
+                synchronizationFileName = Helper.AddSynchronizationFileExtension(fileName);
             else
                 videoFileName = [];
                 synchronizationFileName = [];
@@ -232,10 +232,10 @@ classdef AssessmentClassificationResultsViewer < handle
         end
         
         function computeMagnitude(obj)
-            signalComputer = obj.preprocessingConfigurator.createSignalComputerWithUIParameters();
+            algorithm = obj.preprocessingConfigurator.createAlgorithmWithUIParameters();
             
-            if ~isempty(signalComputer)
-                obj.magnitude = signalComputer.compute(obj.dataFile.data);
+            if ~isempty(algorithm)
+                obj.magnitude = algorithm.compute(obj.dataFile.data);
             end
         end
         

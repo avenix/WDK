@@ -77,7 +77,7 @@ classdef (Abstract) Algorithm < matlab.mixin.Copyable
         function str = GraphToString(algorithm)
             algorithms = Algorithm.ListAllAlgorithms(algorithm);
             strings = cellfun(@(x) x.toString(),algorithms,'UniformOutput',false);
-            str = Helper.cellArrayToString(strings);
+            str = Helper.CellArrayToString(strings);
         end
         
         function [isDataCached, data, metricSum] = LoadCacheDataForGraphString(graphString)

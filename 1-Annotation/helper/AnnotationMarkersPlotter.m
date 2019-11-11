@@ -63,7 +63,7 @@ classdef AnnotationMarkersPlotter < handle
         end
         
         function setMarkersVisibility(obj,visible)
-            visibleStr = Helper.GetVisibleStr(visible);
+            visibleStr = Helper.GetOnOffString(visible);
             for i = 1 : length(obj.markerHandles)
                 markerHandle = obj.markerHandles(i);
                 markerHandle.visible = visibleStr;

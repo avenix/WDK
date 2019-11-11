@@ -113,12 +113,12 @@ classdef PostprocessingConfigurator < handle
         end
         
         function fillAlgorithmsList(obj)
-            obj.uiElements.algorithmsList.Items = Helper.generateAlgorithmNamesArray(obj.algorithms);
+            obj.uiElements.algorithmsList.Items = Helper.GenerateAlgorithmNamesArray(obj.algorithms);
         end
         
         function updatePropertiesTable(obj)
             obj.uiElements.algorithmsPropertiesTable.ColumnName = {'Algorithm','Variable'};
-            obj.uiElements.algorithmsPropertiesTable.Data = Helper.propertyArrayToCellArray(obj.currentAlgorithmProperties);
+            obj.uiElements.algorithmsPropertiesTable.Data = Helper.PropertyArrayToCellArray(obj.currentAlgorithmProperties);
         end
     end
 end

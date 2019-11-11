@@ -30,8 +30,8 @@ classdef Cache < handle
     
     methods (Access = private)
         function obj = Cache()
-            files = Helper.listFilesInDirectory(Constants.kCachePath,{'*.mat'});
-            files = Helper.removeFileExtensionForFiles(files);
+            files = Helper.ListFilesInDirectory(Constants.kCachePath,{'*.mat'});
+            files = Helper.RemoveFileExtensionForFiles(files);
             
             if isempty(files)
                 obj.filesMap = containers.Map('KeyType','char','ValueType','logical');
@@ -62,7 +62,7 @@ classdef Cache < handle
         end
         
         function ClearAllCacheFiles()            
-            cacheFileNames = Helper.listFilesInDirectory(Constants.kCachePath,{'*.mat'});
+            cacheFileNames = Helper.ListFilesInDirectory(Constants.kCachePath,{'*.mat'});
             for i = 1:length(cacheFileNames)
                 fileName = cacheFileNames{i};
                 fileName = sprintf('%s/%s',Constants.kCachePath,fileName);

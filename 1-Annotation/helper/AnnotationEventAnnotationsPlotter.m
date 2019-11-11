@@ -117,7 +117,7 @@ classdef AnnotationEventAnnotationsPlotter < handle
         end
         
         function setAnnotationVisibility(obj,visible)
-            visibleStr = Helper.GetVisibleStr(visible);
+            visibleStr = Helper.GetOnOffString(visible);
             eventAnnotations = obj.annotationsMap.values;
             
             for i = 1 : length(eventAnnotations)
@@ -130,7 +130,9 @@ classdef AnnotationEventAnnotationsPlotter < handle
     methods (Access = private)
         
         function handleAnnotationClicked(obj,source,target)
-            obj.delegate.handleAnnotationClicked(source,target);
+            if ~isempty(obj.delegate)
+                obj.delegate.handleAnnotationClicked(source,target);
+            end
         end
         
         %adds an object so the map knows it's storing these objects

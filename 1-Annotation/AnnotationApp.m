@@ -26,7 +26,7 @@ classdef AnnotationApp < handle
         videoPlayer;
         videoFileNames;
         videoFileNamesNoExtension;
-               
+        
         %data
         dataFile;
         preprocessedSignals;
@@ -34,12 +34,12 @@ classdef AnnotationApp < handle
         
         %synchronization
         synchronizationFile;
-                        
+        
         %annotations
         annotationSet;
         eventAnnotationsPlotter;
         rangeAnnotationsPlotter;
-
+        
         %markers
         markers;
         markerHandles;
@@ -58,7 +58,7 @@ classdef AnnotationApp < handle
         videoSynchronizationDialog;
         videoFigure;
         plottedSignalYRange;
-        state AnnotationState = AnnotationState.kSetTimelineState;    
+        state AnnotationState = AnnotationState.kSetTimelineState;
         uiHandles;
         plotAxes;
         rangeSelectionAxis = [];
@@ -75,8 +75,8 @@ classdef AnnotationApp < handle
             close all;
             obj.loadLabeling();
             
-            obj.videoFileNames = Helper.listVideoFiles();
-            obj.videoFileNamesNoExtension = Helper.removeVideoExtensionForFiles(obj.videoFileNames);
+            obj.videoFileNames = Helper.ListVideoFiles();
+            obj.videoFileNamesNoExtension = Helper.RemoveVideoExtensionForFiles(obj.videoFileNames);
             
             obj.markersPlotter = AnnotationMarkersPlotter();
             
@@ -88,7 +88,8 @@ classdef AnnotationApp < handle
             
             obj.loadUI();
         end
-
+        
+        %% annotation plotter delegate
         function handleAnnotationClicked(obj,source,~)
             tag = str2double(source.Tag);
             
@@ -109,7 +110,8 @@ classdef AnnotationApp < handle
             end
         end
         
-        function handleFrameChanged(obj,~)
+        %% video player delegate
+        function handleVideoPlayerFrameChanged(obj,~,~)
             if obj.getShouldSynchronizeVideo() && ~isempty(obj.synchronizationFile)
                 obj.timeLineMarker = obj.synchronizationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
                 if ~isempty(obj.timeLineMarkerHandle)
@@ -118,18 +120,19 @@ classdef AnnotationApp < handle
             end
         end
         
-        function handlePreprocessedSignalsComputed(obj,preprocessingAlgorithms,~)
-            obj.preprocessingAlgorithms = preprocessingAlgorithms;
-            obj.updateSignalsTable();
-        end
-        
-        function handleVideoPlayerWindowClosed(obj)
+        function handleVideoPlayerWindowClosed(obj,~)
             obj.deleteVideoPlayer();
             
             obj.disableVideoSynchronizationButton();
             figure(obj.uiHandles.mainFigure);%set focus to current figure
             
             obj.disableVideoSynchronizationButton();
+        end
+        
+        %% preprocessing dialog delegate
+        function handlePreprocessedSignalsComputed(obj,preprocessingAlgorithms,~)
+            obj.preprocessingAlgorithms = preprocessingAlgorithms;
+            obj.updateSignalsTable();
         end
         
         function handlePreprocessingDialogClosed(obj,~)
@@ -170,16 +173,15 @@ classdef AnnotationApp < handle
     end
     
     methods (Access = private)
-
-        %% methods
         
+        %% Load UI
         function loadUI(obj)
             obj.uiHandles = guihandles(AnnotationUI);
             
             obj.loadPlotAxes();
             obj.loadUIImages();
             obj.setUIImages();
-                       
+            
             %configure figure
             set(obj.uiHandles.mainFigure,'defaultLegendAutoUpdate','off')
             obj.uiHandles.mainFigure.Visible = false;
@@ -210,7 +212,7 @@ classdef AnnotationApp < handle
             obj.populateClassesList();
         end
         
-        function loadUIImages(obj)    
+        function loadUIImages(obj)
             fileNames = {{'zoomIn','zoomInSelected'},{'zoomOut','zoomOutSelected'},...
                 {'pan','panSelected'},{'setTimeline','setTimelineSelected'},...
                 {'addEvent','addEventSelected'},{'addRange','addRangeSelected'},...
@@ -234,7 +236,7 @@ classdef AnnotationApp < handle
                 obj.uiHandles.addEventRadio, obj.uiHandles.addRangeRadio,...
                 obj.uiHandles.modifyAnnotationRadio, obj.uiHandles.deleteAnnotationRadio};
             
-            obj.layoutTools(uiObjects);            
+            obj.layoutTools(uiObjects);
             
             obj.layoutToolLabels(uiObjects);
             obj.enableSetTimelineMode();
@@ -257,7 +259,6 @@ classdef AnnotationApp < handle
                 prevObject = uiObjects{i-1};
                 object.Position(1) = prevObject.Position(1) + AnnotationApp.kToolWidth + AnnotationApp.kToolPadding;
             end
-            
         end
         
         function layoutToolLabels(obj,uiObjects)
@@ -268,16 +269,11 @@ classdef AnnotationApp < handle
             
             nObjects = length(uiObjects);
             
-            for i = 1 : nObjects    
+            for i = 1 : nObjects
                 object = uiObjects{i};
                 label = uiLabels{i};
                 label.Position(1) = object.Position(1) - 15;
             end
-        end
-        
-        function loadLabeling(obj)
-            classesList = DataLoader.LoadLabelsFile();
-            obj.labeling = Labeling(classesList);
         end
         
         function resetUI(obj)
@@ -302,8 +298,19 @@ classdef AnnotationApp < handle
             obj.updateSelectingPeaksCheckBox();
         end
         
+        function populateFileNamesList(obj)
+            extensions = {'*.mat','*.txt'};
+            files = Helper.ListDataFiles(extensions);
+            if isempty(files)
+                fprintf('%s - AnnotationApp',Constants.kNoDataFileFoundWarning);
+            else
+                obj.uiHandles.fileNamesList.String = files;
+            end
+        end
+        
+        %% Loading
         function loadAll(obj)
-             obj.loadData();
+            obj.loadData();
             if (~isempty(obj.labeling.numClasses) && obj.labeling.numClasses > 0) && ~isempty(obj.dataFile)
                 obj.timeLineMarker = 1;
                 obj.loadAnnotations();
@@ -316,14 +323,9 @@ classdef AnnotationApp < handle
             end
         end
         
-        function populateFileNamesList(obj)
-            extensions = {'*.mat','*.txt'};
-            files = Helper.listDataFiles(extensions);
-            if isempty(files)
-                fprintf('%s - AnnotationApp',Constants.kNoDataFileFoundWarning);
-            else
-                obj.uiHandles.fileNamesList.String = files;
-            end
+        function loadLabeling(obj)
+            classesList = DataLoader.LoadLabelsFile();
+            obj.labeling = Labeling(classesList);
         end
         
         function loadPlotAxes(obj)
@@ -340,6 +342,8 @@ classdef AnnotationApp < handle
             set(dataCursorMode,'UpdateFcn',@obj.handleUserClick);
         end
         
+        
+        %% Timeline marker
         function plotTimelineMarker(obj)
             if ~isempty(obj.timeLineMarker)
                 obj.timeLineMarkerHandle = line(obj.plotAxes,[obj.timeLineMarker, obj.timeLineMarker],...
@@ -357,40 +361,25 @@ classdef AnnotationApp < handle
             end
         end
         
+        function deleteTimelineMarker(obj)
+            obj.timeLineMarker = [];
+            delete(obj.timeLineMarkerHandle);
+            obj.timeLineMarkerHandle = [];
+        end
+        
+        
+        %% UI
+        function selectedSignals = getSelectedSignals(obj)
+            selectedSignals = cell2mat(obj.uiHandles.signalsTable.Data(:,2));
+        end
+        
+        %% Data
         function loadData(obj)
             fileName = obj.getCurrentFileName();
             if ~isempty(fileName)
                 obj.dataFile = DataLoader.LoadDataFile(fileName);
             end
         end
-        
-        function loadMarkers(obj)
-            if ~isempty(obj.synchronizationFile) && ~isempty(obj.annotationSet)
-                markersFileName = obj.getMarkersFileName();
-                obj.markers = DataLoader.LoadMarkers(markersFileName);
-                
-                if ~isempty(obj.markers)               
-                    
-                    for i = 1 : length(obj.markers)
-                        currentMarker = obj.markers(i);
-                        currentMarker.sample = obj.synchronizationFile.videoFrameToSample(currentMarker.sample);
-                        obj.markers(i) = currentMarker;
-                    end
-                end
-            end
-        end
-
-        function selectedSignals = getSelectedSignals(obj)
-            selectedSignals = cell2mat(obj.uiHandles.signalsTable.Data(:,2));
-        end
-        
-        %{
-        function firstNSelectedSignals = getFirstNSelectedSignals(obj,n)
-            selectedSignals = obj.getSelectedSignals();
-            nSignals = 
-            firstNSelectedSignals = 
-        end
-        %}
         
         function isDataPlotted = plotData(obj)
             isDataPlotted = false;
@@ -401,7 +390,7 @@ classdef AnnotationApp < handle
                 
                 %allocate plot handles
                 nSignals = sum(signalsSelected);
-
+                
                 if nSignals > 0
                     nSignals = min(nSignals,AnnotationApp.kMaxPlots);
                     
@@ -432,6 +421,19 @@ classdef AnnotationApp < handle
                     end
                 end
             end
+        end
+        
+        function fileName = getCurrentFileName(obj)
+            if isempty(obj.uiHandles.fileNamesList.String)
+                fileName = [];
+            else
+                fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
+            end
+        end
+        
+        function fileName = getCurrentFileNameNoExtension(obj)
+            dataFileName = obj.getCurrentFileName();
+            fileName = Helper.RemoveFileExtension(dataFileName);
         end
         
         function setPlotLegend(obj)
@@ -480,13 +482,7 @@ classdef AnnotationApp < handle
             obj.plotHandles = [];
         end
         
-        function plotMarkers(obj)
-            if ~isempty(obj.markers)
-                obj.markersPlotter.markerYRange = obj.plottedSignalYRange;
-                obj.markersPlotter.plotMarkers(obj.markers,obj.plotAxes);
-            end
-        end
-        
+        %% Video
         function didLoadVideo = loadVideo(obj)
             didLoadVideo = false;
             
@@ -507,6 +503,17 @@ classdef AnnotationApp < handle
             end
         end
         
+        function fileName = getVideoFileName(obj)
+            fileName = obj.getCurrentFileNameNoExtension();
+            
+            [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
+            if idx > 0
+                fileName = obj.videoFileNames{idx};
+            else
+                fileName = [];
+            end
+        end
+        
         function videoPlayerWindowPosition = getVideoPlayerWindowPosition(obj)
             currentWindowPosition = obj.uiHandles.mainFigure.OuterPosition;
             currentHeight = currentWindowPosition(4);
@@ -523,8 +530,32 @@ classdef AnnotationApp < handle
             end
         end
         
+        function deleteVideoPlayer(obj)
+            delete(obj.videoPlayer);
+            obj.videoPlayer = [];
+        end
+        
+        
+        %% Events
+        function addPeakEventAtLocation(obj,x)
+            
+            %find peak idex around x
+            [~, peakIdx] = max(obj.magnitude(x-obj.FindPeaksRadius:x+obj.FindPeaksRadius));
+            peakIdx = int32(peakIdx + x - obj.FindPeaksRadius - 1);
+            
+            if peakIdx > 0
+                obj.addEventAtLocation(peakIdx);
+            end
+        end
+        
+        function addEventAtLocation(obj,x)
+            currentClass = obj.getSelectedClass();
+            obj.eventAnnotationsPlotter.addAnnotation(obj.plotAxes,x,currentClass);
+        end
+        
+        %% Ranges
         function selectRangeAtLocation(obj,x)
-                       
+            
             if isempty(obj.rangeSelection)
                 obj.rangeSelection = AnnotationSampleRange(x);
             else
@@ -535,7 +566,7 @@ classdef AnnotationApp < handle
             obj.updateRangeSelection();
         end
         
-        function cancelCurrentRangeSelection(obj)    
+        function cancelCurrentRangeSelection(obj)
             if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
                 obj.deleteRangeSelection();
             end
@@ -549,38 +580,58 @@ classdef AnnotationApp < handle
             end
         end
         
-        function deleteVideoPlayer(obj)
-            delete(obj.videoPlayer);
-            obj.videoPlayer = [];
-        end
-        
-        function deleteTimelineMarker(obj)
-            obj.timeLineMarker = [];
-            delete(obj.timeLineMarkerHandle);
-            obj.timeLineMarkerHandle = [];
-        end
-        
-        function addPeakEventAtLocation(obj,x)
-            peakIdx = obj.findPeakIdxNearLocation(x);
-            
-            if peakIdx > 0
-                obj.addEventAtLocation(peakIdx);
+        function addCurrentRange(obj)
+            if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
+                label = obj.getSelectedClass();
+                rangeAnnotation = RangeAnnotation(obj.rangeSelection.sample1,...
+                    obj.rangeSelection.sample2,label);
+                obj.rangeAnnotationsPlotter.addAnnotation(obj.plotAxes, rangeAnnotation);
             end
         end
         
-        function addEventAtLocation(obj,x)
-            currentClass = obj.getSelectedClass();
-            obj.eventAnnotationsPlotter.addAnnotation(obj.plotAxes,x,currentClass);
-        end
         
+        %% UI
         function updateLoadDataTextbox(obj,~,~)
             obj.uiHandles.loadDataTextbox.String = sprintf('data size:\n %d x %d',obj.dataFile.numRows,obj.dataFile.numColumns);
         end
- 
+        
         function populateClassesList(obj)
             classes = obj.labeling.classNames;
             classes{end+1} = Labeling.kIgnoreStr;
             obj.uiHandles.classesList.String = classes;
+        end
+        
+        function updateFileName(obj)
+            obj.currentFile = obj.uiHandles.fileNamesList.Value;
+        end
+        
+        %% Markers
+        function loadMarkers(obj)
+            if ~isempty(obj.synchronizationFile) && ~isempty(obj.annotationSet)
+                markersFileName = obj.getMarkersFileName();
+                obj.markers = DataLoader.LoadMarkers(markersFileName);
+                
+                if ~isempty(obj.markers)
+                    
+                    for i = 1 : length(obj.markers)
+                        currentMarker = obj.markers(i);
+                        currentMarker.sample = obj.synchronizationFile.videoFrameToSample(currentMarker.sample);
+                        obj.markers(i) = currentMarker;
+                    end
+                end
+            end
+        end
+        
+        function plotMarkers(obj)
+            if ~isempty(obj.markers)
+                obj.markersPlotter.markerYRange = obj.plottedSignalYRange;
+                obj.markersPlotter.plotMarkers(obj.markers,obj.plotAxes);
+            end
+        end
+        
+        function fileName = getMarkersFileName(obj)
+            fileName = obj.getCurrentFileNameNoExtension();
+            fileName = Helper.AddMarkersFileExtension(fileName);
         end
         
         function deleteAllMarkers(obj)
@@ -592,62 +643,26 @@ classdef AnnotationApp < handle
             obj.markersPlotter.deleteMarkers();
         end
         
-        function deleteAllAnnotations(obj)
-            obj.eventAnnotationsPlotter.clearAnnotations();
-            obj.rangeAnnotationsPlotter.clearAnnotations();
-            obj.annotationSet = [];
-        end
-
-        function addCurrentRange(obj)
-            if ~isempty(obj.rangeSelection) && obj.rangeSelection.isValidRange()
-                label = obj.getSelectedClass();
-                rangeAnnotation = RangeAnnotation(obj.rangeSelection.sample1,...
-                    obj.rangeSelection.sample2,label);
-                obj.rangeAnnotationsPlotter.addAnnotation(obj.plotAxes, rangeAnnotation);
-            end
-        end
-        
-        function updateFileName(obj)
-            obj.currentFile = obj.uiHandles.fileNamesList.Value;
-        end
-        
-        function fileName = getMarkersFileName(obj)
-            fileName = obj.getCurrentFileNameNoExtension();
-            fileName = Helper.addMarkersFileExtension(fileName);
-        end
-        
-        function fileName = getSynchronizationFileName(obj)
-            fileName = obj.getCurrentFileNameNoExtension();
-            fileName = Helper.addSynchronizationFileExtension(fileName);
-        end
-        
-        function fileName = getVideoFileName(obj)
-            fileName = obj.getCurrentFileNameNoExtension();
-            
-            [~,idx] = ismember(fileName,obj.videoFileNamesNoExtension);
-            if idx > 0
-                fileName = obj.videoFileNames{idx};
-            else
-                fileName = [];
-            end
+        %% Annotations
+        function loadAnnotations(obj)
+            fileName = obj.getAnnotationsFileName();
+            obj.annotationSet = DataLoader.LoadAnnotationSet(fileName,obj.labeling);
         end
         
         function annotationsFileName = getAnnotationsFileName(obj)
             fileName = obj.getCurrentFileNameNoExtension();
-            annotationsFileName = Helper.addAnnotationsFileExtension(fileName);
+            annotationsFileName = Helper.AddAnnotationsFileExtension(fileName);
         end
         
-        function fileName = getCurrentFileName(obj)
-            if isempty(obj.uiHandles.fileNamesList.String)
-                fileName = [];
-            else
-                fileName = obj.uiHandles.fileNamesList.String{obj.currentFile};
+        function plotAnnotations(obj)
+            obj.eventAnnotationsPlotter.verticalLineYRange = obj.plottedSignalYRange;
+            obj.rangeAnnotationsPlotter.rectanglesYRange = ...
+                obj.plottedSignalYRange * AnnotationApp.kRangeAnnotationRectangleYPosToDataRatio;
+            
+            if ~isempty(obj.annotationSet)
+                obj.eventAnnotationsPlotter.addAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations);
+                obj.rangeAnnotationsPlotter.addAnnotations(obj.plotAxes,obj.annotationSet.rangeAnnotations);
             end
-        end
-        
-        function fileName = getCurrentFileNameNoExtension(obj)
-            dataFileName = obj.getCurrentFileName();
-            fileName = Helper.removeFileExtension(dataFileName);
         end
         
         function saveAnnotations(obj)
@@ -661,11 +676,13 @@ classdef AnnotationApp < handle
             obj.didAnnotationsChange = false;
         end
         
-        function loadAnnotations(obj)
-            fileName = obj.getAnnotationsFileName();
-            obj.annotationSet = DataLoader.LoadAnnotationSet(fileName,obj.labeling);
+        function deleteAllAnnotations(obj)
+            obj.eventAnnotationsPlotter.clearAnnotations();
+            obj.rangeAnnotationsPlotter.clearAnnotations();
+            obj.annotationSet = [];
         end
         
+        %% Synchronization files
         function loadSynchronizationFile(obj)
             fileName = obj.getSynchronizationFileName();
             obj.synchronizationFile = DataLoader.LoadSynchronizationFile(fileName);
@@ -674,6 +691,12 @@ classdef AnnotationApp < handle
             end
         end
         
+        function fileName = getSynchronizationFileName(obj)
+            fileName = obj.getCurrentFileNameNoExtension();
+            fileName = Helper.AddSynchronizationFileExtension(fileName);
+        end
+        
+        %% Methods
         function computePlottedSignalYRanges(obj)
             nPlots = length(obj.plotHandles);
             
@@ -690,23 +713,6 @@ classdef AnnotationApp < handle
             
             obj.plottedSignalYRange(1) = totalMinY;
             obj.plottedSignalYRange(2) = totalMaxY;
-        end
-        
-        function plotAnnotations(obj)
-            obj.eventAnnotationsPlotter.verticalLineYRange = obj.plottedSignalYRange;
-            obj.rangeAnnotationsPlotter.rectanglesYRange = ...
-                obj.plottedSignalYRange * AnnotationApp.kRangeAnnotationRectangleYPosToDataRatio;
-            
-            if ~isempty(obj.annotationSet)
-                obj.eventAnnotationsPlotter.addAnnotations(obj.plotAxes,obj.annotationSet.eventAnnotations);
-                obj.rangeAnnotationsPlotter.addAnnotations(obj.plotAxes,obj.annotationSet.rangeAnnotations);
-            end
-        end
-
-        function peakIdx = findPeakIdxNearLocation(obj,idx)
-            
-            [~, peakIdx] = max(obj.magnitude(idx-obj.FindPeaksRadius:idx+obj.FindPeaksRadius));
-            peakIdx = int32(peakIdx + idx - obj.FindPeaksRadius - 1);
         end
         
         function computePreprocessedSignals(obj)
@@ -736,11 +742,106 @@ classdef AnnotationApp < handle
             if ~isempty(obj.videoSynchronizationDialog)
                 delete(obj.videoSynchronizationDialog);
             end
-           
+            
             delete(obj.uiHandles.mainFigure);
         end
         
         %% UI
+        function enableZoomInMode(obj)
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'on';
+            zoomModeHandle.Direction = 'in';
+            obj.uiHandles.zoomInRadio.CData = obj.uiImages{AnnotationState.kZoomInState,2};
+        end
+        
+        function disableZoomInMode(obj)
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'off';
+            obj.uiHandles.zoomInRadio.CData = obj.uiImages{AnnotationState.kZoomInState,1};
+        end
+        
+        function enableZoomOutMode(obj)
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'on';
+            zoomModeHandle.Direction = 'out';
+            obj.uiHandles.zoomOutRadio.CData = obj.uiImages{AnnotationState.kZoomOutState,2};
+        end
+        
+        function disableZoomOutMode(obj)
+            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
+            zoomModeHandle.Enable = 'off';
+            obj.uiHandles.zoomOutRadio.CData = obj.uiImages{AnnotationState.kZoomOutState,1};
+        end
+        
+        function enablePanMode(obj)
+            panModeHandle = pan(obj.uiHandles.mainFigure);
+            panModeHandle.Enable = 'on';
+            obj.uiHandles.panRadio.CData = obj.uiImages{AnnotationState.kPanState,2};
+        end
+        
+        function disablePanMode(obj)
+            panModeHandle = pan(obj.uiHandles.mainFigure);
+            panModeHandle.Enable = 'off';
+            obj.uiHandles.panRadio.CData = obj.uiImages{AnnotationState.kPanState,1};
+        end
+        
+        function enableSetTimelineMode(obj)
+            obj.uiHandles.setTimelineRadio.CData = obj.uiImages{AnnotationState.kSetTimelineState,2};
+        end
+        
+        function disableSetTimelineMode(obj)
+            obj.uiHandles.setTimelineRadio.CData = obj.uiImages{AnnotationState.kSetTimelineState,1};
+        end
+        
+        function enableAddEventMode(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'on';
+            obj.uiHandles.addEventRadio.CData = obj.uiImages{AnnotationState.kAddEventState,2};
+            
+            obj.uiHandles.showEventsCheckBox.Value = true;
+            obj.handleShowEventsToggled();
+        end
+        
+        function disableAddEventMode(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.addEventRadio.CData = obj.uiImages{AnnotationState.kAddEventState,1};
+        end
+        
+        function enableAddRangeState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'on';
+            obj.uiHandles.addRangeRadio.CData = obj.uiImages{AnnotationState.kAddRangeState,2};
+            
+            obj.uiHandles.showRangesCheckBox.Value = true;
+            obj.handleShowRangesToggled();
+        end
+        
+        function disableAddRangeState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.addRangeRadio.CData = obj.uiImages{AnnotationState.kAddRangeState,1};
+        end
+        
+        function enableModifyAnnotationState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.modifyAnnotationRadio.CData = obj.uiImages{AnnotationState.kModifyAnnotationState,2};
+        end
+        
+        function disableModifyAnnotationState(obj)
+            obj.uiHandles.modifyAnnotationRadio.CData = obj.uiImages{AnnotationState.kModifyAnnotationState,1};
+        end
+        
+        function enableDeleteAnnotationState(obj)
+            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
+            cursorModeHandle.Enable = 'off';
+            obj.uiHandles.deleteAnnotationRadio.CData = obj.uiImages{AnnotationState.kDeleteAnnotationState,2};
+        end
+        
+        function disableDeleteAnnotationState(obj)
+            obj.uiHandles.deleteAnnotationRadio.CData = obj.uiImages{AnnotationState.kDeleteAnnotationState,1};
+        end
         
         function disableAddSignalButton(obj)
             obj.uiHandles.addSignalButton.Enable = 'off';
@@ -777,7 +878,7 @@ classdef AnnotationApp < handle
                 class = Labeling.kSynchronizationClass;
             end
         end
-
+        
         function updateSelectingPeaksCheckBox(obj)
             obj.uiHandles.peaksCheckBox.Value = obj.isSelectingPeaks;
         end
@@ -814,14 +915,9 @@ classdef AnnotationApp < handle
             obj.uiHandles.videoSynchronizationButton.Enable = 'off';
         end
         
-        %% Delegates
-        function handleDidUpdatepreprocessedSignals(obj,~,signals)
-            obj.preprocessedSignals = signals;
-        end
-        
-        %% Handles
+        %% UI Handles
         function outputTxt = handleUserClick(obj,src,~)
-
+            
             pos = get(src,'Position');
             x = pos(1);
             y = pos(2);
@@ -880,7 +976,7 @@ classdef AnnotationApp < handle
         end
         
         function handleStateChanged(obj,~,~)
-                        
+            
             obj.disableCurrentState();
             
             switch obj.uiHandles.stateButtonGroup.SelectedObject
@@ -930,102 +1026,6 @@ classdef AnnotationApp < handle
                 case (AnnotationState.kDeleteAnnotationState)
                     obj.disableDeleteAnnotationState();
             end
-        end
-        
-        function enableZoomInMode(obj)    
-            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
-            zoomModeHandle.Enable = 'on';
-            zoomModeHandle.Direction = 'in';
-            obj.uiHandles.zoomInRadio.CData = obj.uiImages{AnnotationState.kZoomInState,2};
-        end
-        
-        function disableZoomInMode(obj)
-            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
-            zoomModeHandle.Enable = 'off';
-            obj.uiHandles.zoomInRadio.CData = obj.uiImages{AnnotationState.kZoomInState,1};
-        end
-        
-        function enableZoomOutMode(obj)    
-            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
-            zoomModeHandle.Enable = 'on';
-            zoomModeHandle.Direction = 'out';
-            obj.uiHandles.zoomOutRadio.CData = obj.uiImages{AnnotationState.kZoomOutState,2};
-        end
-                
-        function disableZoomOutMode(obj)
-            zoomModeHandle = zoom(obj.uiHandles.mainFigure);
-            zoomModeHandle.Enable = 'off';
-            obj.uiHandles.zoomOutRadio.CData = obj.uiImages{AnnotationState.kZoomOutState,1};
-        end
-        
-        function enablePanMode(obj)
-            panModeHandle = pan(obj.uiHandles.mainFigure);
-            panModeHandle.Enable = 'on';
-            obj.uiHandles.panRadio.CData = obj.uiImages{AnnotationState.kPanState,2};
-        end
-        
-        function disablePanMode(obj)
-            panModeHandle = pan(obj.uiHandles.mainFigure);
-            panModeHandle.Enable = 'off';
-            obj.uiHandles.panRadio.CData = obj.uiImages{AnnotationState.kPanState,1};
-        end
-        
-        function enableSetTimelineMode(obj)
-            obj.uiHandles.setTimelineRadio.CData = obj.uiImages{AnnotationState.kSetTimelineState,2};
-        end
-        
-        function disableSetTimelineMode(obj)    
-            obj.uiHandles.setTimelineRadio.CData = obj.uiImages{AnnotationState.kSetTimelineState,1};
-        end
-        
-        function enableAddEventMode(obj)
-            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
-            cursorModeHandle.Enable = 'on';
-            obj.uiHandles.addEventRadio.CData = obj.uiImages{AnnotationState.kAddEventState,2};
-            
-            obj.uiHandles.showEventsCheckBox.Value = true;
-            obj.handleShowEventsToggled();
-        end
-        
-        function disableAddEventMode(obj)
-            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
-            cursorModeHandle.Enable = 'off';
-            obj.uiHandles.addEventRadio.CData = obj.uiImages{AnnotationState.kAddEventState,1};
-        end
-        
-        function enableAddRangeState(obj)
-            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
-            cursorModeHandle.Enable = 'on';
-            obj.uiHandles.addRangeRadio.CData = obj.uiImages{AnnotationState.kAddRangeState,2};
-            
-            obj.uiHandles.showRangesCheckBox.Value = true;
-            obj.handleShowRangesToggled();
-        end
-        
-        function disableAddRangeState(obj)
-            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
-            cursorModeHandle.Enable = 'off';
-            obj.uiHandles.addRangeRadio.CData = obj.uiImages{AnnotationState.kAddRangeState,1};
-        end
-        
-        function enableModifyAnnotationState(obj)
-            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
-            cursorModeHandle.Enable = 'off';
-            obj.uiHandles.modifyAnnotationRadio.CData = obj.uiImages{AnnotationState.kModifyAnnotationState,2};
-        end
-        
-        function disableModifyAnnotationState(obj)
-            obj.uiHandles.modifyAnnotationRadio.CData = obj.uiImages{AnnotationState.kModifyAnnotationState,1};
-        end
-        
-        function enableDeleteAnnotationState(obj)
-            cursorModeHandle = datacursormode(obj.uiHandles.mainFigure);
-            cursorModeHandle.Enable = 'off';
-            obj.uiHandles.deleteAnnotationRadio.CData = obj.uiImages{AnnotationState.kDeleteAnnotationState,2};
-        end
-        
-        function disableDeleteAnnotationState(obj)    
-            obj.uiHandles.deleteAnnotationRadio.CData = obj.uiImages{AnnotationState.kDeleteAnnotationState,1};
         end
         
         function handleSelectingPeaksSelected(obj,~,~)
@@ -1111,21 +1111,6 @@ classdef AnnotationApp < handle
             end
         end
         
-        %{
-        function handleKeyPress(obj, source, event)
-            switch event.Key
-                case 'uparrow'
-                    datacursormode toggle;
-                case 'downarrow'
-                    datacursormode toggle;
-            end
-            
-            if ~isempty(obj.videoPlayer)
-                obj.videoPlayer.handleKeyPress(source,event);
-            end
-        end
-        %}
-        
         function handleFigureClick(obj,~,event)
             if obj.state == AnnotationState.kSetTimelineState
                 x = event.IntersectionPoint(1);
@@ -1161,15 +1146,5 @@ classdef AnnotationApp < handle
             end
         end
         
-        %% Helper methods
-        function idx = findIdxOfValue(~,valueArray,startIdx,value)
-            idx = uint32(-1);
-            for i = startIdx : length(valueArray)
-                if value == valueArray(i)
-                    idx = i;
-                    break;
-                end
-            end
-        end
     end
 end

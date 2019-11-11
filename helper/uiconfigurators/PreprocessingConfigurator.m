@@ -136,7 +136,7 @@ classdef PreprocessingConfigurator < handle
         end
         
         function updateAlgorithmVariablesTable(obj)
-            obj.algorithmVariablesTable.Data = Helper.propertyArrayToCellArray(obj.currentAlgorithmVariables);
+            obj.algorithmVariablesTable.Data = Helper.PropertyArrayToCellArray(obj.currentAlgorithmVariables);
         end
         
         function updateSelectedAlgorithm(obj)
@@ -162,7 +162,7 @@ classdef PreprocessingConfigurator < handle
                     obj.currentAlgorithms = Palette.FilterAlgorithmsToInputType(obj.algorithms, DataType.kSignalN);
             end
             
-            obj.algorithmsList.Items = Helper.generateAlgorithmNamesArray(obj.currentAlgorithms);
+            obj.algorithmsList.Items = Helper.GenerateAlgorithmNamesArray(obj.currentAlgorithms);
         end
         
         

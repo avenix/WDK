@@ -47,7 +47,7 @@ classdef CompositeAlgorithm < Algorithm
                 end
             end
             
-            str = Helper.cellArrayToString(strings,', ');
+            str = Helper.CellArrayToString(strings,', ');
         end
         
         function dataOut = compute(obj,dataIn)

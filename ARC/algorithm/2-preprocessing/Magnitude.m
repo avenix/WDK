@@ -10,7 +10,7 @@ classdef Magnitude < Algorithm
         
         function dataOut = compute(~,x)
             if size(x,2) < 3
-                fprintf('%s\n',Constants.kInvalidInputMagnitude);
+                fprintf('%s\n',Constants.kInvalidInputMagnitudeError);
             else
                 dataOut = sqrt(x(:,1).^2 + x(:,2).^2 + x(:,3).^2);
             end

@@ -59,6 +59,14 @@ classdef Labeling < handle
         function b = ShouldIgnoreLabels(labels)
             b = (labels == Labeling.kIgnoreClass | labels == Labeling.kInvalidClass);
         end
+        
+        function classStr = StringForClass(class, classNames)
+            if class == Labeling.kNullClass
+                classStr = Labeling.kNullClassStr;
+            else
+                classStr = classNames{class};
+            end
+        end
     end
     
     methods (Access = private)

@@ -32,7 +32,7 @@ classdef AnnotationLoader < Algorithm
         end
         
         function annotation = compute(obj,~)
-            annotationFileName = Helper.removeFileExtension(obj.fileName);
+            annotationFileName = Helper.RemoveFileExtension(obj.fileName);
             if isempty(obj.annotationsMap)
                 defaultLabeling = DataLoader.LoadDefaultLabeling();
                 annotation = DataLoader.LoadAnnotationSetFullPath(obj.fileName,defaultLabeling);
@@ -60,7 +60,7 @@ classdef AnnotationLoader < Algorithm
             for i = 1 : nAnnotations
                 annotation = annotations(i);
                 annotationName = annotation.fileName;
-                annotationNames{i} = Helper.removeAnnotationsExtension(annotationName);
+                annotationNames{i} = Helper.RemoveAnnotationsExtension(annotationName);
                 annotationCells{i} = AnnotationSet(annotation.eventAnnotations,annotation.rangeAnnotations);
             end
             obj.annotationsMap = containers.Map(annotationNames,annotationCells);

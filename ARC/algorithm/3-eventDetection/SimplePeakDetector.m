@@ -29,7 +29,7 @@ classdef SimplePeakDetector < Algorithm
         
         function events = compute(obj,signal)
             eventLocations = obj.detectEvents(signal);
-            events = Helper.CreateEventsWithEventLocations(eventLocations);
+            events = Event.EventsArrayWithEventLocations(eventLocations);
         end
         
         function metrics = computeMetrics(~,input)
@@ -38,7 +38,6 @@ classdef SimplePeakDetector < Algorithm
             outputSize = 0;
             metrics = Metric(flops,memory,outputSize);
         end
-        
     end
     
     methods (Access = private)

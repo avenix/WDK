@@ -21,7 +21,7 @@ classdef TableRowSelector < Algorithm
         end
         
         function str = toString(obj)
-            selectedLabelsStr = Helper.arrayToString(obj.selectedLabels);
+            selectedLabelsStr = Helper.ArrayToString(obj.selectedLabels);
             selectedLabelsStr = strrep(selectedLabelsStr,'\n','');
             str = sprintf('%s%s',obj.name,selectedLabelsStr);
         end
