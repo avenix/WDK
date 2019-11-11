@@ -55,7 +55,7 @@ classdef Helper < handle
             files = Helper.listFilesInDirectory(Constants.kAnnotationsPath, {'*.txt'});
         end
         
-        function files = listSynchronisationFileNames()
+        function files = listSynchronizationFileNames()
             files = Helper.listFilesInDirectory(Constants.kVideosPath, {'*.txt'});
         end
         
@@ -63,7 +63,7 @@ classdef Helper < handle
             files = Helper.listFilesInDirectory(Constants.kVideosPath, {'*.mov','*.MP4','*.avi'});
         end
         
-        function fileName = addSynchronisationFileExtension(fileName)
+        function fileName = addSynchronizationFileExtension(fileName)
             fileName = sprintf('%s-synchronization.txt',fileName);
         end
         

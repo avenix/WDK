@@ -50,27 +50,28 @@ An annotated data set is needed to train a machine learning algorithm and to ass
 
 ### Annotating with video (optional)
 
-The *Data Annotation App* can load and display videos next to the data. The video is synchronised to the data by matching two data samples to two video frames as defined in a synchronization file. The format of a synchronization file is:
+The *Data Annotation App* can load and display videos next to the data. The video is synchronised to the data by matching at least two data samples to two video frames as defined in a synchronization file. The format of a synchronization file is:
 
 ```
-sample1: 49727
-sample2: 450209
-frame1: 3302
-frame2: 45284
+#sample, frame
+8127, 642
+17277, 1601
+48190, 4842
+
 ```
 
-The exact frames of a specific event in a video are displayed on the Movie Player at the bottom right of the window:
+The frames in the video file are displayed by the Movie Player at the bottom right of the window:
 
 ![Movie Player](doc/images/1-VideoPlayer.png)
 
-In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). We visualized the peak energy (i.e. squared magnitude) of the accelerometer signal and annotated each applause with the *synchronization* label. When a data samples is selected on the plot, its timestamp is printed on Matlab's console. We copy the first synchronization timestamp to the sample1 field of the synchronization file. We do the same for the sample with timestamp *450209*. The respective annotated synchronization events are shown in the following image:
+In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). We matched the samples at the peak of squared magnitude of acceleration to the video frames where the subject's hands make contact with each other. The squared magnitude of acceleration corresponding to three applauses by the subject are shown below:
 
 ![Event Annotations](doc/images/1-synchronization.png)
 
 Please note:
 
-1. The *Data Annotation App* synchronises video and data at two points and interpolates linearly inbetween. We recommend the synchronization points to take place in the beginning and end of a recording.
-2. Annotation, marker, synchronization and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named '*S1-annotations.txt*', its marker file '*S1-markers.edl*', its synchronization file '*S1-synchronization.txt*' and the video '*S1-video.videoFormat*'.
+1. The *Data Annotation App* synchronises video and data at two points and interpolates linearly inbetween. I recommend the synchronization points to take place in the beginning and end of a recording.
+2. Annotation, marker, synchronization and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named '*S1-annotations.txt*', its marker file '*S1-markers.edl*', its synchronization file '*S1-synchronization.txt*' and the video '*S1-video.<extension>*'.
 3. By default, the *Data Annotation App* loads annotation files from the '*./data/annotations/*', video and synchronization files from '*./data/videos*' directory. Saved annotation files are located in the root '*./*' directory.
 4. The labels to annotate should be defined in the '*labels.txt*' file beforehand.
 5. You can use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.

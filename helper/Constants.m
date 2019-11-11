@@ -49,6 +49,7 @@ classdef Constants < handle
         kConstantFeaturesWarning = 'Warning - FeatureSelector - every segment has same value. Feature selection might fail';
         kAlgorithmExecutionFailedWarning = 'Warning - Algorithm execution failed';
         kInvalidSynchronizationFileWarning = 'Warning - Invalid synchronization file loaded';
+        kInvalidInputMagnitude = 'Warning - Invalid input Signal. It should have 3 columnns';
         
         kLoadingVideoMessage = 'Message - AnnotationVideoPlayer - loading video ';
         

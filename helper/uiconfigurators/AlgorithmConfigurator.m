@@ -101,7 +101,9 @@ classdef AlgorithmConfigurator < handle
                 obj.currentAlgorithmProperties = algorithm.getEditableProperties();
                 obj.updatePropertiesTable();
             end
-            obj.delegate.handleAlgorithmChanged(algorithm,obj);
+            if ~isempty(obj.delegate)
+                obj.delegate.handleAlgorithmChanged(algorithm,obj);
+            end
         end
         
         function fillAlgorithmsList(obj)            

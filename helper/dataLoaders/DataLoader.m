@@ -1,5 +1,5 @@
 % Use it to save and load WDK files (data, annotations, markers,
-% synchronisation and algorithms)
+% synchronization and algorithms)
 classdef DataLoader < handle
     
     methods (Static, Access = public)
@@ -103,30 +103,30 @@ classdef DataLoader < handle
 
         
         %% Algorithms
-        function computer = LoadJSONComputerFromFile(fileName)
+        function algorithm = LoadJSONAlgorithmFromFile(fileName)
             fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
             text = fileread(fullPath);
-            computer = jsondecode(text);
-            computer = Computer.CreateWithStruct(computer);
+            algorithm = jsondecode(text);
+            algorithm = Algorithm.CreateWithStruct(algorithm);
         end
         
-        function SaveComputerAsJSON(computer, fileName)
+        function SaveAlgorithmAsJSON(algorithm, fileName)
             fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
-            jsonFile = jsonencode(computer);
+            jsonFile = jsonencode(algorithm);
             fileID = fopen(fullPath,'w');
             fprintf(fileID,'%s\n',jsonFile);
             fclose(fileID);
         end
         
-        function computer = LoadComputer(fileName)
+        function algorithm = LoadAlgorithm(fileName)
             fullPath = sprintf('%s/%s',Constants.kARChainsPath,fileName);
-            computer = load(fullPath);
-            computer = computer.computer;
+            algorithm = load(fullPath);
+            algorithm = algorithm.algorithm;
         end
         
-        function SaveComputer(computer, fileName)
+        function SaveAlgorithm(algorithm, fileName)
             fullPath = sprintf('%s',fileName);
-            save(fullPath,'computer');
+            save(fullPath,'algorithm');
         end
         
         
@@ -158,19 +158,19 @@ classdef DataLoader < handle
         
         %% Synchronization files
         %loads every video synchronization file in the videos directory
-        function synchronisationFiles = LoadAllSynchronisationFiles()
+        function synchronizationFiles = LoadAllSynchronizationFiles()
             
-            synchronisationFileNames = Helper.ListSynchronisationFileNames();
-            nSynchronisationFiles = length(synchronisationFileNames);
-            synchronisationFiles = repmat(SynchronizationFile,1,synchronisationFileNames);
+            synchronizationFileNames = Helper.ListSynchronizationFileNames();
+            nSynchronizationFiles = length(synchronizationFileNames);
+            synchronizationFiles = repmat(SynchronizationFile,1,synchronizationFileNames);
             
-            for i = 1 : nSynchronisationFiles
-                synchronisationFiles(i) = DataLoader.LoadSynchronisationFile(fullFileName);
+            for i = 1 : nSynchronizationFiles
+                synchronizationFiles(i) = DataLoader.LoadSynchronizationFile(fullFileName);
             end
         end
         
         %loads a video synchronization file with the name of the file
-        function synchronizationFile = LoadSynchronisationFile(fileName)
+        function synchronizationFile = LoadSynchronizationFile(fileName)
             synchronizationFile = [];
             fullFileName = sprintf('%s/%s',Constants.kVideosPath,fileName);
             file = fopen(fullFileName);

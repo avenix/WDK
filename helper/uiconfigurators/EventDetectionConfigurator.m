@@ -27,7 +27,7 @@ classdef EventDetectionConfigurator < handle
                 preprocessingSignalAlgorithms,...
                 uiElements.preprocessingSignalsList,...
                 uiElements.preprocessingAlgorithmsList,...
-                uiElements.preprocessingAlgorithmVariablesTable,...
+                uiElements.preprocessingAlgorithmsVariablesTable,...
                 obj);
             
             obj.algorithmConfigurator = AlgorithmConfigurator(...
@@ -70,7 +70,9 @@ classdef EventDetectionConfigurator < handle
         end
         
         function handleAlgorithmChanged(obj,algorithm,~)
-            obj.delegate.handleAlgorithmChanged(algorithm,obj);
+            if ~isempty(obj.delegate)
+                obj.delegate.handleAlgorithmChanged(algorithm,obj);
+            end
         end
         
     end

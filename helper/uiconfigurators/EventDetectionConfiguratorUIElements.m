@@ -2,7 +2,7 @@ classdef EventDetectionConfiguratorUIElements < handle
     properties
         preprocessingSignalsList;
         preprocessingAlgorithmsList;
-        preprocessingAlgorithmVariablesTable;
+        preprocessingAlgorithmsVariablesTable;
         eventDetectionList;
         eventDetectionVariablesTable;
     end

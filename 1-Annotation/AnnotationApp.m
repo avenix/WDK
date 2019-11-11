@@ -32,8 +32,8 @@ classdef AnnotationApp < handle
         preprocessedSignals;
         preprocessingAlgorithms;
         
-        %synchronisation
-        synchronisationFile;
+        %synchronization
+        synchronizationFile;
                         
         %annotations
         annotationSet;
@@ -110,8 +110,8 @@ classdef AnnotationApp < handle
         end
         
         function handleFrameChanged(obj,~)
-            if obj.getShouldSynchronizeVideo() && ~isempty(obj.synchronisationFile)
-                obj.timeLineMarker = obj.synchronisationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
+            if obj.getShouldSynchronizeVideo() && ~isempty(obj.synchronizationFile)
+                obj.timeLineMarker = obj.synchronizationFile.videoFrameToSample(obj.videoPlayer.currentFrame);
                 if ~isempty(obj.timeLineMarkerHandle)
                     obj.updateTimelineMarker();
                 end
@@ -145,7 +145,7 @@ classdef AnnotationApp < handle
             frame = obj.videoPlayer.currentFrame;
             obj.videoSynchronizationDialog.addSynchronizationPoint(sample,frame);
             
-            if obj.synchronisationFile.count >= 2
+            if obj.synchronizationFile.count >= 2
                 obj.enableSynchronizeVideo();
             end
         end
@@ -162,7 +162,7 @@ classdef AnnotationApp < handle
         end
         
         function handleSynchronizationPointDeleted(obj,~)
-            if obj.synchronisationFile.count < 2
+            if obj.synchronizationFile.count < 2
                 obj.disableSynchronizeVideo();
             end
         end
@@ -307,7 +307,7 @@ classdef AnnotationApp < handle
             if (~isempty(obj.labeling.numClasses) && obj.labeling.numClasses > 0) && ~isempty(obj.dataFile)
                 obj.timeLineMarker = 1;
                 obj.loadAnnotations();
-                obj.loadSynchronisationFile();
+                obj.loadSynchronizationFile();
                 obj.loadMarkers();
                 if obj.getShouldLoadVideo()
                     obj.loadVideo();
@@ -365,7 +365,7 @@ classdef AnnotationApp < handle
         end
         
         function loadMarkers(obj)
-            if ~isempty(obj.synchronisationFile) && ~isempty(obj.annotationSet)
+            if ~isempty(obj.synchronizationFile) && ~isempty(obj.annotationSet)
                 markersFileName = obj.getMarkersFileName();
                 obj.markers = DataLoader.LoadMarkers(markersFileName);
                 
@@ -373,7 +373,7 @@ classdef AnnotationApp < handle
                     
                     for i = 1 : length(obj.markers)
                         currentMarker = obj.markers(i);
-                        currentMarker.sample = obj.synchronisationFile.videoFrameToSample(currentMarker.sample);
+                        currentMarker.sample = obj.synchronizationFile.videoFrameToSample(currentMarker.sample);
                         obj.markers(i) = currentMarker;
                     end
                 end
@@ -515,8 +515,8 @@ classdef AnnotationApp < handle
         end
         
         function updateVideoFrame(obj)
-            if ~isempty(obj.synchronisationFile) && ~isempty(obj.videoPlayer)
-                videoFrame = obj.synchronisationFile.sampleToVideoFrame(obj.timeLineMarker);
+            if ~isempty(obj.synchronizationFile) && ~isempty(obj.videoPlayer)
+                videoFrame = obj.synchronizationFile.sampleToVideoFrame(obj.timeLineMarker);
                 if ~isempty(videoFrame)
                     obj.videoPlayer.displayFrame(videoFrame);
                 end
@@ -616,9 +616,9 @@ classdef AnnotationApp < handle
             fileName = Helper.addMarkersFileExtension(fileName);
         end
         
-        function fileName = getSynchronisationFileName(obj)
+        function fileName = getSynchronizationFileName(obj)
             fileName = obj.getCurrentFileNameNoExtension();
-            fileName = Helper.addSynchronisationFileExtension(fileName);
+            fileName = Helper.addSynchronizationFileExtension(fileName);
         end
         
         function fileName = getVideoFileName(obj)
@@ -666,11 +666,11 @@ classdef AnnotationApp < handle
             obj.annotationSet = DataLoader.LoadAnnotationSet(fileName,obj.labeling);
         end
         
-        function loadSynchronisationFile(obj)
-            fileName = obj.getSynchronisationFileName();
-            obj.synchronisationFile = DataLoader.LoadSynchronisationFile(fileName);
-            if isempty(obj.synchronisationFile)
-                obj.synchronisationFile = SynchronizationFile();
+        function loadSynchronizationFile(obj)
+            fileName = obj.getSynchronizationFileName();
+            obj.synchronizationFile = DataLoader.LoadSynchronizationFile(fileName);
+            if isempty(obj.synchronizationFile)
+                obj.synchronizationFile = SynchronizationFile();
             end
         end
         
@@ -774,7 +774,7 @@ classdef AnnotationApp < handle
         function class = getSelectedClass(obj)
             class = int8(obj.uiHandles.classesList.Value);
             if (class == length(obj.uiHandles.classesList.String))
-                class = Labeling.kSynchronisationClass;
+                class = Labeling.kSynchronizationClass;
             end
         end
 
@@ -1088,9 +1088,9 @@ classdef AnnotationApp < handle
         function handleVideoSynchronizationClicked(obj,~,~)
             
             if isempty(obj.videoSynchronizationDialog)
-                obj.videoSynchronizationDialog = SynchronizationDialog(obj.synchronisationFile,obj);
+                obj.videoSynchronizationDialog = SynchronizationDialog(obj.synchronizationFile,obj);
                 
-                obj.videoSynchronizationDialog.setSynchronizationFile(obj.synchronisationFile);
+                obj.videoSynchronizationDialog.setSynchronizationFile(obj.synchronizationFile);
                 
                 positionX = obj.uiHandles.mainFigure.Position(1) + obj.uiHandles.videoSynchronizationButton.Position(1);
                 positionY = obj.uiHandles.mainFigure.Position(2) + obj.uiHandles.videoSynchronizationButton.Position(2);

@@ -261,7 +261,6 @@ classdef DetectionEventsPlotter < handle
             end
         end
         
-        
         function updateVideoFrame(obj)
             if ~isempty(obj.synchronizationFile) && ~isempty(obj.videoPlayer)
                 videoFrame = obj.synchronizationFile.sampleToVideoFrame(obj.timeLineMarker);

@@ -9,7 +9,11 @@ classdef MagnitudeSquared < Algorithm
         end
         
         function dataOut = compute(~,x)
-            dataOut = x(:,1).^2 + x(:,2).^2 + x(:,3).^2;
+            if size(x,2) < 3
+                fprintf('%s\n',Constants.kInvalidInputMagnitude);
+            else
+                dataOut = x(:,1).^2 + x(:,2).^2 + x(:,3).^2;
+            end
         end
         
         function metrics = computeMetrics(~,input)
