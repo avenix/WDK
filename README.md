@@ -64,9 +64,7 @@ The frames in the video file are displayed by the Movie Player at the bottom rig
 
 ![Movie Player](doc/images/1-VideoPlayer.png)
 
-In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). We matched the samples at the peak of squared magnitude of acceleration to the video frames where the subject's hands make contact with each other. The squared magnitude of acceleration corresponding to three applauses by the subject are shown below:
-
-![Event Annotations](doc/images/1-synchronization.png)
+In this application, we asked the subject to applaud three times in front of the camera while wearing an armband with an Inertial Measurement Unit (IMU). We matched the samples at the peak of squared magnitude of acceleration to the video frames where the subject's hands make contact with each other.
 
 Please note:
 
