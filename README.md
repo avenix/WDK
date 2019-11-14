@@ -76,20 +76,6 @@ Please note:
 4. The labels to annotate should be defined in the '*labels.txt*' file beforehand.
 5. You can use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.
 
-### Importing external markers (optional)
-The *Data Annotation App* can import and display reference markers on top of the time series data. Currently, the *Data Annotation App* supports marker files created with the video annotation tool [DaVinciResolve](https://www.blackmagicdesign.com/products/davinciresolve/) in *.edl* format. Markers added to a timeline in DaVinciResolve can be exported by: right-clicking on the *Timeline -> timelines -> export -> Timeline markers to .EDL...*:
-
-In order to synchronise video markers and time series data, the *.edl* file should contain a synchronization marker in the beginning and another one in the end of the file. Currently, the first and last green marker are matched to the first and last event annotation with the label *synchronisaton*. In order to annotate data:
-
-1. Annotate the video using DaVinci Resolve. Use a green marker to annotate a special event, ideally in the beginning and end of the file. (e.g. the user shakes the sensor three times in front of the camera).
-2. Export the markers to an *.edl* file.
-3. Copy the *.edl* file to the *data/markers/* directory.
-4. Open the *Data Annotation App* and add an event annotation of the class *synchronization* to the timestamp that corresponds .
-5. Reopen the *Data Annotation App*. This time the markers should be properly aligned with the data.
-6. Annotate the time series data.
-
-*Note: markers in .edl format are read from the './data/markers' directory*.
-
 ## 2- Data Analysis
 The *Data Analysis App* displays segments of data grouped by class. This is useful to study the differences across classes (e.g. to design an event detection or feature extraction algorithm). Segments can be plotted either on top of each other or sequentially (i.e. after each other). In order to visualize data:
 
