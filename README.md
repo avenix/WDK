@@ -395,8 +395,10 @@ Applications developed with the WDK:
 2. https://dl.acm.org/citation.cfm?id=3267267
 
 ## About
-My name is Juan Haladjian. I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with questions or feature requests. The project is under an MIT license. You are welcome to use the WDK, extend it and redistribute it for any purpose, as long as you give credit for it by copying the *LICENSE.txt* file to any copy of this software.
+My name is Juan Haladjian. I developed the Wearables Development Toolkit as part of my post-doc at the Technical University of Munich. Feel free to contact me with questions or feature requests. The project is under an MIT license. You are welcome to use the WDK, extend it and redistribute it for any purpose, as long as you give credit for it by copying the *LICENSE.txt* file to any copy you make.
 
+Website: [www.jhaladjian.com](www.jhaladjian.com)
+Academic Website: [http://in.tum.de/~haladjia](http://home.in.tum.de/~haladjia/)
+LinkedIn: [www.linkedin.com/in/juan-haladjian](www.linkedin.com/in/juan-haladjian)
 Email: [haladjia@in.tum.de](mailto:haladjia@in.tum.de)
 
-Website: [http://in.tum.de/~haladjia](http://in.tum.de/~haladjia)
