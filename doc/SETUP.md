@@ -1,4 +1,4 @@
-# Setup
+# Wearables Development Toolkit (WDK) Setup Guide
 
 ## Requirements
 * Matlab 2019a or greater. *Note: if you have an older Matlab version, you might need to do minor changes to some source files due to changes in Matlab's syntax.*
@@ -7,7 +7,7 @@
 ## Installation
 * ```git clone https://github.com/avenix/WDK.git```
 * in Matlab, open the WDK's repository and add its root to Matlab's path:  `addpath(genpath('./'))` in the console:
-![Checking Matlab Path](doc/images/matlabPath.png)
+![Checking Matlab Path](images/matlabPath.png)
 * use the Apps in each directory (e.g. *AnnotationApp* in *1-Annotation/*).
 * the '*./data*' directory should contain the following files and directories defined in the *Constants.m* file:
 
