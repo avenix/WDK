@@ -52,7 +52,7 @@ The *Data Analysis App* displays segments of data grouped by class. This is usef
 4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Create* button. At this point the segments are created. A grouping strategy maps annotated labels to classes, usually by grouping different labels into classes.
 5. Select signals and classes to visualize and a plot style (i.e. overlapping or sequential). 
 
-![Data Annotation App](doc/images/2-VisualizationApp.png)
+![Data Annotation App](doc/images/2-AnalysisApp.png)
 
 ## 3- Algorithm Implementation
 
