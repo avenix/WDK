@@ -2,25 +2,12 @@
 
 The Wearables Development Toolkit (WDK) is a framework and set of tools to facilitate the iterative development of activity recognition applications with wearable and IoT devices. It supports the annotation of time series data, the analysis and visualization of data to identify patterns and the development and performance assessment of activity recognition algorithms. At the core of the WDK is a repository of high-level components that encapsulate functionality used across activity recognition applications. These components can be used within a Matlab script or within a visual flo-based programming platform (i.e. Node-RED). 
 
-<div style="text-align:center">
-<img src="doc/images/ARCDevelopment.png" alt="Development Lifecycle" width="700" margin-left="auto" margin-right="auto" align="middle"/>
-</div>
 
-To get a first insight into the WDK, watch this demo video:
+<p align="center">
+  <img width="700" src="doc/images/ARCDevelopment.png">
+</p>
 
-
-<!-- blank line -->
-<figure class="video_container">
-  <iframe src="https://www.youtube.com/embed/Ow0b0vkciDs" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
-<!-- blank line -->
-
-
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Ow0b0vkciDs" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-
-
-and read my [paper](https://www.jhaladjian.com/publications/haladjian19WDK.pdf).
+To get a first insight into the WDK, watch this demo video: [https://www.youtube.com/embed/Ow0b0vkciDs](https://www.youtube.com/embed/Ow0b0vkciDs) and read my [paper](https://www.jhaladjian.com/publications/haladjian19WDK.pdf).
 
 To install and use the WDK, refer to the [Documentation](doc/SETUP.md).
 
