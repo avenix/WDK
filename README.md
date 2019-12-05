@@ -2,7 +2,7 @@
 
 The Wearables Development Toolkit (WDK) is a framework and set of tools to facilitate the iterative development of activity recognition applications with wearable and IoT devices. It supports the annotation of time series data, the analysis and visualization of data to identify patterns and the development and performance assessment of activity recognition algorithms. At the core of the WDK is a repository of high-level components that encapsulate functionality used across activity recognition applications. These components can be used within a Matlab script or within a visual flo-based programming platform (i.e. Node-RED). 
 
-<img src="doc/images/ARCDevelopment.png" alt="Development Lifecycle" width="700" align="middle"/>
+<img src="doc/images/ARCDevelopment.png" alt="Development Lifecycle" width="700" margin-left="auto" margin-right="auto" align="middle"/>
 
 To get a first insight into the WDK, watch this [demo video:](https://www.youtube.com/watch?v=Ow0b0vkciDs&t=1s)
 
