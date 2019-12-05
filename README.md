@@ -67,7 +67,7 @@ Activity recognition applications can be developed directly in Matlab using the 
 
 The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file.
 
-```Matlab
+```matlab
 %select first three axes of acceleration
 axisSelector = AxisSelector(1:3);%AX AY AZ
 
