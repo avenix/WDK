@@ -84,7 +84,7 @@ classdef AssessmentClassificationResultsPlotter < handle
             predictedClassStr = Labeling.StringForClass(predictedClass,obj.classNames);
             
             if truthClass ~= predictedClass
-                truthClassStr = Helper.StringForClass(truthClass,obj.classNames);
+                truthClassStr = Labeling.StringForClass(truthClass,obj.classNames);
                 textStr = sprintf('%s\n (truth: %s)',predictedClassStr,truthClassStr);
             else
                 textStr = predictedClassStr;

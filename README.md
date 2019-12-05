@@ -133,7 +133,7 @@ The image below shows the configuration and classification results of an algorit
 
 The *Performance Asessment Detail View* displays the classification results on top of the data and next to the corresponding video. Green overlays indicate correctly classified segments and red overlays indicate misclassified segments.
 
-![Event Detection App Detail View](doc/images/3-EventDetectionAppDetail.png)
+![Assessment Detail View](doc/images/4-AssessmentAppDetail.png)
 
 *Note: Feature tables generated with a particular activity recognition algorithm can be exported to *.txt* formats to study the classification on other platforms such as Python / tensorFlow and WEKA.*
 

@@ -284,7 +284,13 @@ classdef AssessmentClassificationResultsViewer < handle
         
         function loadData(obj)
             fileName = obj.getCurrentFileName();
+                        
             if ~isempty(fileName)
+                
+                fileExtension = Helper.GetFileExtension(fileName);
+                if isempty(fileExtension)
+                    fileName = sprintf('%s.mat',fileName);
+                end
                 obj.dataFile = DataLoader.LoadDataFile(fileName);
             end
         end
