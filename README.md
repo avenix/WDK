@@ -61,9 +61,48 @@ Most wearable device applications execute a chain (i.e. sequence) of computation
 
 Applications in the WDK can be developed visually over [WDK-RED](https://github.com/avenix/WDK-RED), via the user interface provided by the different WDK Apps, or directly via code. 
 
-### Visual Programming
+### Programming
 
-Activity recognition applications can be developed visually in Node-RED using the nodes available in the [WDK-RED platform](https://github.com/avenix/wearable-prototyping). The following image shows an activity recognition chain for detecting and classifying soccer goalkeeper training exercises using a wearable motion sensor attached to a glove worn by a goalkeeper:
+Activity recognition applications can be developed directly in Matlab using the WDK's framework of reusable components. 
+
+The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file.
+
+```Matlab
+%select first three axes of acceleration
+axisSelector = AxisSelector(1:3);%AX AY AZ
+
+%compute the magnitude of acceleration
+magnitudeSquared = MagnitudeSquared();
+
+%detect peaks on the magnitude of acceleration
+simplePeakDetector = SimplePeakDetector();
+simplePeakDetector.minPeakHeight = single(0.8);
+simplePeakDetector.minPeakDistance  = int32(100);
+
+%create segments around detected peaks
+eventSegmentation = EventSegmentation();
+eventSegmentation.segmentSizeLeft = 200;
+eventSegmentation.segmentSizeRight = 30;
+
+%label created segments
+labeler = EventSegmentsLabeler();
+
+%load feature extraction algorithm
+featureExtractor = DataLoader.LoadComputer('goalkeeperFeatureChain.mat');
+
+%create the recognition algorithm
+arcChain = Computer.ComputerWithSequence({FileLoader(),PropertyGetter('data'),...
+axisSelector,magnitudeSquared,simplePeakDetector,eventSegmentation,labeler,...
+featureExtractor});
+
+%export the recognition algorithm
+DataLoader.SaveComputer(arcChain,'goalkeeperChain.mat');
+```
+This chain of computations produces a feature table that can be used within the *Assessment App* to study the performance of different machine learning algorithms.
+
+### Visual Programming (optional)
+
+Activity recognition applications can be developed visually in Node-RED using the nodes available in the [WDK-RED platform](https://github.com/avenix/WDK-RED). The following image shows an activity recognition chain for detecting and classifying soccer goalkeeper training exercises using a wearable motion sensor attached to a glove worn by a goalkeeper:
 
 ![Activity Recognition Chain](doc/images/WDK-RED.png)
 
@@ -72,44 +111,6 @@ Activity Recognition Chains can be imported and executed in the WDK as follows:
 - Export the Activity Recognition Chains as described [here](https://github.com/avenix/WDK-RED#exporting).
 - Execute the *convertJSONToWDK.m* script.
 - Use the *Execute from File* button in each App.
-
-
-### Text-based Programming
-
-Activity recognition applications can be developed directly in Matlab as long as the WDK is in Matlab's path. The *Computer* class is the superclass of every reusable component. Every *Computer* has the following properties and methods:
-
-```Matlab
-inputPort; %type of the input this computer takes
-outputPort; %type of the output this computer produces
-nextComputers; %array of computers this computer is connected to
-output = compute(obj,input); %the method executed when this computer is visited (implemented in each subclass) 
-```
-
-The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file.
-
-```Matlab
-axisSelector = AxisSelector(1:3);%AX AY AZ
-magnitudeSquared = MagnitudeSquared();
-
-simplePeakDetector = SimplePeakDetector();
-simplePeakDetector.minPeakHeight = single(0.8);
-simplePeakDetector.minPeakDistance  = int32(100);
-
-eventSegmentation = EventSegmentation();
-eventSegmentation.segmentSizeLeft = 200;
-eventSegmentation.segmentSizeRight = 30;
-
-labeler = EventSegmentsLabeler();
-
-featureExtractor = DataLoader.LoadComputer('goalkeeperFeatureChain.mat');
-
-arcChain = Computer.ComputerWithSequence({FileLoader(),PropertyGetter('data'),...
-axisSelector,magnitudeSquared,simplePeakDetector,eventSegmentation,labeler,...
-featureExtractor});
-
-DataLoader.SaveComputer(arcChain,'goalkeeperChain.mat');
-```
-This chain of computations produces a feature table that can be used within the *Assessment App* to study the performance of different machine learning algorithms.
 
 ## 4- Algorithm Assessment
 
