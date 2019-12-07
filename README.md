@@ -19,17 +19,7 @@ An annotated data set is needed to train a machine learning algorithm and to ass
 
 ### Annotating with video (optional)
 
-The *Data Annotation App* can load and display videos next to the data. The video is synchronised to the data by matching at least two data samples to two video frames as defined in a synchronization file. The format of a synchronization file is:
-
-```
-#sample, frame
-8127, 642
-17277, 1601
-48190, 4842
-
-```
-
-The frames in the video file are displayed by the Movie Player at the bottom right of the window:
+The *Data Annotation App* can load and display videos next to the data wich is synchronized by specifying at least two data samples and two video frames that correspond to the same event in time. The frames in the video file are displayed by the Movie Player at the bottom right of the window:
 
 ![Movie Player](doc/images/1-VideoPlayer.png)
 
@@ -38,34 +28,34 @@ In this application, we asked the subject to applaud three times in front of the
 Please note:
 
 1. The *Data Annotation App* synchronises video and data at two points and interpolates linearly inbetween. I recommend the synchronization points to take place in the beginning and end of a recording.
-2. Annotation, marker, synchronization and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named '*S1-annotations.txt*', its marker file '*S1-markers.edl*', its synchronization file '*S1-synchronization.txt*' and the video '*S1-video.<extension>*'.
+2. Annotation, marker, synchronization and video files should be consistent with the data files. If a data file is named 'S1.mat', its annotation file should be named '*S1-annotations.txt*', its synchronization file '*S1-synchronization.txt*' and the video '*S1-video.<extension>*'.
 3. By default, the *Data Annotation App* loads annotation files from the '*./data/annotations/*', video and synchronization files from '*./data/videos*' directory. Saved annotation files are located in the root '*./*' directory.
 4. The labels to annotate should be defined in the '*labels.txt*' file beforehand.
-5. You can use the keyboard shortcuts arrow-right, arrow-left and spacebar to iterate through data and video.
+5. You can use the keyboard shortcuts **arrow-right**, **arrow-left** and **spacebar** to iterate through data and video.
 
 ## 2- Data Analysis
-The *Data Analysis App* displays segments of data grouped by class. This is useful to study the differences across classes (e.g. to design an event detection or feature extraction algorithm). Segments can be plotted either on top of each other or sequentially (i.e. after each other). In order to visualize data:
+The *Data Analysis App* displays segments of data grouped by class. This is useful to study the differences across classes to design a recognition algorithm able to discriminate between classes. Segments can be plotted either on top of each other or sequentially (i.e. after each other). 
+
+![Data Annotation App](doc/images/2-AnalysisApp.png)
+
+In order to visualize data:
 
 1. Select one or more input data files.
 2. Select where the segments should come from. *Manual annotations* creates segments from the range annotations and loads event annotations to create segments using the *ManualSegmentationStrategy*. The *Automatic segmentation* uses a preprocessing, event detection and segmentation algorithms selected over the user interface to create segments.
 3. (in Automatic segmentation mode) Select the signals to use, a preprocessing algorithm and (optionally) an event detection algorithm.
-4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Create* button. At this point the segments are created. A grouping strategy maps annotated labels to classes, usually by grouping different labels into classes.
+4. Select a segmentation strategy and (optionally) a grouping strategy. Click the *Execute* button. At this point the segments are created. A grouping strategy maps annotated labels to classes, usually by grouping different labels into classes.
 5. Select signals and classes to visualize and a plot style (i.e. overlapping or sequential). 
-
-![Data Annotation App](doc/images/2-AnalysisApp.png)
 
 ## 3- Algorithm Implementation
 
-Most wearable device applications execute a chain (i.e. sequence) of computations in order to detect specific patterns based on sensor signals. This chain of computations is called the Activity Recognition Chain and consists of the following *stages*:
-![Activity Recognition Chain](doc/images/ARC.png)
-
-Applications in the WDK can be developed visually over [WDK-RED](https://github.com/avenix/WDK-RED), via the user interface provided by the different WDK Apps, or directly via code. 
+Most wearable device applications execute a sequence of computations to recognize specific patterns based on sensor signals. This sequence of computations is called the Activity Recognition Chain and consists of the following *stages*:
+![Activity Recognition Chain](doc/images/ARC.png) 
 
 ### Programming
 
 Activity recognition applications can be developed directly in Matlab using the WDK's framework of reusable components. 
 
-The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude (sometimes called *energy*) of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file.
+The following text snippet creates a chain of computations and saves it to the *goalkeeperChain.mat* file. This chain of computations detects events using a peak detector on the squared magnitude of the accelerometer signal, segments the data around the detected events (200 samples to the left of the event and 30 sampels to the right) and extracts the features defined in the *goalkeeperFeatureChain.mat* file.
 
 ```matlab
 %select first three axes of acceleration
@@ -102,15 +92,15 @@ This chain of computations produces a feature table that can be used within the 
 
 ### Visual Programming (optional)
 
-Activity recognition applications can be developed visually in Node-RED using the nodes available in the [WDK-RED platform](https://github.com/avenix/WDK-RED). The following image shows an activity recognition chain for detecting and classifying soccer goalkeeper training exercises using a wearable motion sensor attached to a glove worn by a goalkeeper:
+Activity recognition applications can also be developed visually in Node-RED using the nodes available in the [WDK-RED platform](https://github.com/avenix/WDK-RED). The following image shows an activity recognition chain for detecting and classifying soccer goalkeeper training exercises using a wearable motion sensor attached to a glove worn by a goalkeeper:
 
 ![Activity Recognition Chain](doc/images/WDK-RED.png)
 
 Activity Recognition Chains can be imported and executed in the WDK as follows:
 
-- Export the Activity Recognition Chains as described [here](https://github.com/avenix/WDK-RED#exporting).
+- Create and export the Activity Recognition Chains as described [in the WDK-RED repository](https://github.com/avenix/WDK-RED#exporting).
 - Execute the *convertJSONToWDK.m* script.
-- Use the *Execute from File* button in each App.
+- Use the *Execute from File* button in each App of the WDK.
 
 ## 4- Algorithm Assessment
 
@@ -127,7 +117,7 @@ and the computational performance metrics are:
 - Memory: amount of memory consumed by the algorithm (in bytes) for the input data set
 - Communication: amount of bytes generated by the last component in the recognition chain 
 
-The image below shows the configuration and classification results of an algorithm to detect and classify exercises performed by patients after a hip replacement surgery.
+The following image shows the configuration and classification results of an algorithm to detect and classify exercises performed by patients after a hip replacement surgery.
 
 ![Assessment App](doc/images/4-AssessmentApp.png)
 
