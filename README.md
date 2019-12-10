@@ -294,3 +294,14 @@ Academic Website: [http://in.tum.de/~haladjia](http://home.in.tum.de/~haladjia/)
 LinkedIn: [www.linkedin.com/in/juan-haladjian](https://www.linkedin.com/in/juan-haladjian)
 
 Email: [haladjia@in.tum.de](mailto:haladjia@in.tum.de)
+
+## Cite this project
+
+```bash
+@misc{haladjian2019,
+  author =       {Juan Haladjian},
+  title =        {{The Wearables Development Toolkit (WDK)}},
+  howpublished = {\url{https://github.com/avenix/WDK}},
+  year =         {2019}
+}
+```
