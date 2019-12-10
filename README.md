@@ -271,11 +271,12 @@ The amount of memory and output size of the *PropertyGetter* and *NoOp* modules 
 
 ## References
 
-1. Matlab tutorial on Activity Recognition for wearables: https://github.com/avenix/ARC-Tutorial/
-2. Andreas Bulling's tutorial on Activity Recognition: https://dl.acm.org/citation.cfm?id=2499621
-3. [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
-4. [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
-5. [Nick Gillian's Gesture Recognition Toolki](https://github.com/nickgillian/grt)
+- My paper describing the Wearables Development Toolkit [WDK paper](https://www.jhaladjian.com/publications/haladjian19WDK.pdf) and [BibTeX file](https://www.jhaladjian.com/publications/haladjian19WDK.bib))
+- My Matlab tutorial on Activity Recognition for wearables: https://github.com/avenix/ARC-Tutorial/
+- [Andreas Bulling's tutorial on Activity Recognition](https://dl.acm.org/citation.cfm?id=2499621)
+- [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)
+- [mRMR feature selection by Peng](http://home.penglab.com/proj/mRMR/)
+- [Nick Gillian's Gesture Recognition Toolki](https://github.com/nickgillian/grt)
 
 Applications developed with the WDK:
 
