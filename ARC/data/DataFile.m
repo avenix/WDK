@@ -44,5 +44,9 @@ classdef DataFile < Data
         function file = createFileWithColumnIndices(obj,columnIndices)
             file = DataFile(obj.fileName,obj.data(:,columnIndices),obj.columnNames(columnIndices));
         end
+        
+        function rawData = rawDataForRowsAndColumns(obj,startRow,endRow,startColumn,endColumn)
+            rawData = obj.data(startRow:endRow,startColumn:endColumn);
+        end
     end
 end

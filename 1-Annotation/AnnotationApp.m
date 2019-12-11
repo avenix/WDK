@@ -39,6 +39,7 @@ classdef AnnotationApp < handle
         annotationSet;
         eventAnnotationsPlotter;
         rangeAnnotationsPlotter;
+        annotationSuggestionPlotter;
         
         %markers
         markers;
@@ -85,6 +86,9 @@ classdef AnnotationApp < handle
             
             obj.rangeAnnotationsPlotter = AnnotationRangeAnnotationsPlotter(obj.labeling);
             obj.rangeAnnotationsPlotter.delegate = obj;
+            
+            obj.annotationSuggestionPlotter = AnnotationSuggestionPlotter(obj.labeling);
+            obj.annotationSuggestionPlotter.delegate = obj;
             
             obj.loadUI();
         end
@@ -586,11 +590,43 @@ classdef AnnotationApp < handle
                 rangeAnnotation = RangeAnnotation(obj.rangeSelection.sample1,...
                     obj.rangeSelection.sample2,label);
                 obj.rangeAnnotationsPlotter.addAnnotation(obj.plotAxes, rangeAnnotation);
+                
+                if obj.getSuggestAnnotations()
+                    suggestedAnnotations = obj.generateAnnotationSuggestionsWithRange(rangeAnnotation);
+                    obj.plotSuggestedAnnotations(suggestedAnnotations);
+                end
             end
         end
         
+        function suggestedAnnotations = generateAnnotationSuggestionsWithRange(obj,rangeAnnotation)
+            numColumns = obj.dataFile.numColumns;
+            templateData = obj.dataFile.rawDataForRowsAndColumns(rangeAnnotation.startSample,rangeAnnotation.endSample,1,numColumns);
+            nSamples = obj.dataFile.numRows;
+            rangeSize = rangeAnnotation.endSample - rangeAnnotation.startSample;
+            
+            DTW_SIMILARITY_THRESHOLD = 100;
+            suggestedAnnotations = [];
+            
+            for sample = rangeAnnotation.endSample : nSamples
+                windowData = obj.dataFile.rawDataForRowsAndColumns(sample,sample+rangeSize,1,numColumns);
+                dist = dtw(templateData,windowData);
+                if dist < DTW_SIMILARITY_THRESHOLD
+                    suggestedAnnotations(end+1) = RangeAnnotation(sample,sample+rangeSize,rangeAnnotation.label);
+                end
+            end
+            
+        end
+        
+        function plotSuggestedAnnotations(obj,suggestedAnnotations)
+            annotationSuggestionPlotter.addAnnotations(suggestedAnnotations);
+        end
         
         %% UI
+        
+        function b = getSuggestAnnotations(obj)
+            b = obj.uiHandles.suggestAnnotationsCheckBox.Value;
+        end
+        
         function updateLoadDataTextbox(obj,~,~)
             obj.uiHandles.loadDataTextbox.String = sprintf('data size:\n %d x %d',obj.dataFile.numRows,obj.dataFile.numColumns);
         end

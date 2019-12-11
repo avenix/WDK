@@ -1,10 +1,9 @@
-classdef AnnotationRangeAnnotationsPlotter < handle
+classdef AnnotationSuggestionPlotter < handle
     
     properties (Access = private,Constant)
-        AnnotationColor = 'black';
-        kAnnotationLineWidth = 3;
+        AnnotationColor = [100,100,100] / 255;
+        kAnnotationLineWidth = 2;
         FontSize = 20;
-        RectangleCurvature = 0.1;
         
         AnnotationLabelStairsCount = 10;
         AnnotationLabelStairsYDiff = 0.05;
