@@ -45,8 +45,8 @@ classdef DataFile < Data
             file = DataFile(obj.fileName,obj.data(:,columnIndices),obj.columnNames(columnIndices));
         end
         
-        function rawData = rawDataForRowsAndColumns(obj,startRow,endRow,startColumn,endColumn)
-            rawData = obj.data(startRow:endRow,startColumn:endColumn);
+        function rawData = rawDataForRowsAndColumns(obj,startRow,endRow,columns)
+            rawData = obj.data(startRow:endRow,columns);
         end
     end
 end

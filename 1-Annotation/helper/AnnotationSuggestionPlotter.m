@@ -1,9 +1,10 @@
 classdef AnnotationSuggestionPlotter < handle
     
     properties (Access = private,Constant)
-        AnnotationColor = [100,100,100] / 255;
+        kAnnotationColor = [200,200,200] / 255;
         kAnnotationLineWidth = 2;
         FontSize = 20;
+        RectangleCurvature = 0.1;
         
         AnnotationLabelStairsCount = 10;
         AnnotationLabelStairsYDiff = 0.05;
@@ -19,7 +20,6 @@ classdef AnnotationSuggestionPlotter < handle
         annotationsMap;
         labeling;
         shouldPlotUpperYLabel = false;
-        
         currentAnnotationLabelStairs = 1;
     end
     
@@ -31,7 +31,7 @@ classdef AnnotationSuggestionPlotter < handle
     end
     
     methods (Access = public)
-        function obj = AnnotationRangeAnnotationsPlotter(labeling)
+        function obj = AnnotationSuggestionPlotter(labeling)
             if nargin > 0
                 obj.labeling = labeling;
             end
@@ -45,7 +45,7 @@ classdef AnnotationSuggestionPlotter < handle
             end
             obj.setAnnotationVisibility(obj.shouldShowAnnotations);
         end
-        
+
         function addAnnotation(obj, plotAxes, rangeAnnotation)
             %plot rectangle
             rectangleHandle = obj.plotRectangle(plotAxes,rangeAnnotation);
@@ -58,7 +58,7 @@ classdef AnnotationSuggestionPlotter < handle
             
             obj.annotationsMap(rangeAnnotation.startSample) = annotationHandle;
         end
-               
+
         function didModifyAnnotation = modifyAnnotationToClass(obj,key,class)
             
             didModifyAnnotation = false;
@@ -90,6 +90,25 @@ classdef AnnotationSuggestionPlotter < handle
             end
         end
         
+        function annotations = getAnnotationsWithLabel(obj,label)
+            
+            values = obj.annotationsMap.values;
+            
+            nAnnotationsOfClass = obj.countAnnotationsWithLabel(label);
+            
+            annotations = repmat(RangeAnnotation,1,nAnnotationsOfClass);
+            annotationCount = 1;
+            
+            for i = 1 : length(values)
+                annotationHandle = values{i};
+                annotation = annotationHandle.annotation;
+                if annotation.label == label
+                    annotations(annotationCount) = annotation;
+                    annotationCount = annotationCount + 1;
+                end
+            end
+        end
+        
         function clearAnnotations(obj)
             
             plotHandles = values(obj.annotationsMap);
@@ -100,17 +119,6 @@ classdef AnnotationSuggestionPlotter < handle
             remove(obj.annotationsMap, keys(obj.annotationsMap));
         end
 
-        function annotationsArray = getAnnotations(obj)
-            annotationKeys = keys(obj.annotationsMap);
-            nAnnotations = length(annotationKeys);
-            annotationsArray = repmat(RangeAnnotation,1,nAnnotations);
-            
-            for i = 1 : nAnnotations
-                key = annotationKeys{i};
-                annotationHandle = obj.annotationsMap(key);
-                annotationsArray(i) = annotationHandle.annotation;
-            end
-        end
         
         function setAnnotationVisibility(obj,visible)
             visibleStr = Helper.GetOnOffString(visible);
@@ -122,9 +130,30 @@ classdef AnnotationSuggestionPlotter < handle
             end
         end
         
+        function annotation = getAnnotationWithKey(obj,key)
+            if ~isKey(obj.annotationsMap,key)
+                annotation = [];
+            else
+                annotationHandle = obj.annotationsMap(key);
+                annotation = annotationHandle.annotation;
+            end
+        end
     end
     
     methods (Access = private)
+        
+        function count = countAnnotationsWithLabel(obj,label)
+            count = 0;
+            
+            values = obj.annotationsMap.values;
+            for i = 1 : length(values)
+                annotationHandle = values{i};
+                annotation = annotationHandle.annotation;
+                if annotation.label == label
+                    count = count + 1;
+                end
+            end
+        end
         
         function deletePlotHandle(~,annotationHandle)
             delete(annotationHandle.rectangleUI);
@@ -140,7 +169,8 @@ classdef AnnotationSuggestionPlotter < handle
                 single(rectangleWidth), single(rectangleHeight)];
             
             rectangleHandle = rectangle(plotAxes,'Position',rectanglePosition,'Curvature',...
-                [obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.kAnnotationLineWidth);
+                [obj.RectangleCurvature obj.RectangleCurvature],'LineWidth',obj.kAnnotationLineWidth,...
+                'LineStyle','--','EdgeColor',AnnotationSuggestionPlotter.kAnnotationColor);
         end
         
         function textHandle = plotText(obj,plotAxes, rangeAnnotation )
@@ -160,7 +190,9 @@ classdef AnnotationSuggestionPlotter < handle
             
             %plot text label
             textHandle = text(plotAxes,xPosition,yPosition,classStr,...
-                'FontSize',obj.FontSize,'HorizontalAlignment','center');
+                'FontSize',obj.FontSize,'HorizontalAlignment','center',...
+                'Color',AnnotationSuggestionPlotter.kAnnotationColor);
+            
             set(textHandle, 'Clipping', 'on');
             textHandle.Tag = int2str(rangeAnnotation.startSample);
             textHandle.ButtonDownFcn = @obj.handleAnnotationClicked;

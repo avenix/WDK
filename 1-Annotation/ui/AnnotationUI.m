@@ -22,7 +22,7 @@ function varargout = AnnotationUI(varargin)
 
 % Edit the above text to modify the response to help AnnotationUI
 
-% Last Modified by GUIDE v2.5 11-Dec-2019 10:16:39
+% Last Modified by GUIDE v2.5 13-Dec-2019 11:20:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -369,3 +369,10 @@ function suggestAnnotationsCheckBox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of suggestAnnotationsCheckBox
+
+
+% --- Executes on button press in autoAnnotateButton.
+function autoAnnotateButton_Callback(hObject, eventdata, handles)
+% hObject    handle to autoAnnotateButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

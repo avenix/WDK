@@ -39,7 +39,13 @@ classdef AnnotationApp < handle
         annotationSet;
         eventAnnotationsPlotter;
         rangeAnnotationsPlotter;
-        annotationSuggestionPlotter;
+        
+        %auto annotate
+        shouldSuggestAnnotations = false;
+        autoAnnotateDialog;
+        suggestedAnnotationPlotter;
+        suggestedClustersPlotter;
+        annotationSuggester;
         
         %markers
         markers;
@@ -87,8 +93,15 @@ classdef AnnotationApp < handle
             obj.rangeAnnotationsPlotter = AnnotationRangeAnnotationsPlotter(obj.labeling);
             obj.rangeAnnotationsPlotter.delegate = obj;
             
-            obj.annotationSuggestionPlotter = AnnotationSuggestionPlotter(obj.labeling);
-            obj.annotationSuggestionPlotter.delegate = obj;
+            
+            obj.suggestedAnnotationPlotter = AnnotationSuggestionPlotter(obj.labeling);
+            obj.suggestedAnnotationPlotter.delegate = obj;
+            
+            clusterLabeling = obj.generateClusterLabeling();
+            obj.suggestedClustersPlotter = AnnotationSuggestionPlotter(clusterLabeling);
+            obj.suggestedClustersPlotter.delegate = obj;
+            
+            obj.annotationSuggester = AnnotationsSuggester();
             
             obj.loadUI();
         end
@@ -101,6 +114,8 @@ classdef AnnotationApp < handle
                 
                 didDeleteRangeAnnotation = obj.eventAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
                 didDeleteEventAnnotation = obj.rangeAnnotationsPlotter.deleteAnnotationAtSampleIdx(tag);
+                obj.suggestedAnnotationPlotter.deleteAnnotationAtSampleIdx(tag);
+                obj.suggestedClustersPlotter.deleteAnnotationAtSampleIdx(tag);
                 
                 obj.didAnnotationsChange = (didDeleteRangeAnnotation || didDeleteEventAnnotation);
                 
@@ -110,8 +125,42 @@ classdef AnnotationApp < handle
                 didModifyRangeAnnotation = obj.eventAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
                 didModifyEventAnnotation = obj.rangeAnnotationsPlotter.modifyAnnotationToClass(uint32(tag),currentClass);
                 
+                obj.confirmSuggestedAnnotationAtSampleIdx(uint32(tag),obj.suggestedAnnotationPlotter);
+                obj.modifyAnnotationClusters(uint32(tag));
+                
                 obj.didAnnotationsChange = (didModifyRangeAnnotation || didModifyEventAnnotation);
+            else
+                
+                obj.confirmSuggestedAnnotationAtSampleIdx(uint32(tag),obj.suggestedAnnotationPlotter);
+                obj.confirmSuggestedAnnotationAtSampleIdx(uint32(tag),obj.suggestedClustersPlotter);
+                
             end
+        end
+
+        %% automatic annotation delegate
+        function handleDidChangeSuggestAnnotations(obj,shouldSuggestAnnotations)
+            obj.shouldSuggestAnnotations = shouldSuggestAnnotations;
+        end
+        
+        function handleSemiSupervisedSimilarityToleranceChanged(obj,tolerance)
+            obj.annotationSuggester.similarityThreshold = tolerance;
+        end
+        
+        function handleAnnotationClustersClicked(obj,annotationClusterer)
+            
+            annotationClusters = annotationClusterer.clusterAnnotations(obj.dataFile);
+            obj.plotAnnotationClusters(annotationClusters);
+        end
+        
+        function handleAutoAnnotationsReseted(obj)
+            obj.suggestedAnnotationPlotter.clearAnnotations();
+            obj.suggestedClustersPlotter.clearAnnotations();
+        end
+        
+        function handleAutoAnnotateDialogClosed(obj)
+            delete(obj.autoAnnotateDialog);
+            obj.autoAnnotateDialog = [];
+            figure(obj.uiHandles.mainFigure);
         end
         
         %% video player delegate
@@ -129,8 +178,6 @@ classdef AnnotationApp < handle
             
             obj.disableVideoSynchronizationButton();
             figure(obj.uiHandles.mainFigure);%set focus to current figure
-            
-            obj.disableVideoSynchronizationButton();
         end
         
         %% preprocessing dialog delegate
@@ -200,10 +247,10 @@ classdef AnnotationApp < handle
             obj.uiHandles.showEventsCheckBox.Callback = @obj.handleShowEventsToggled;
             obj.uiHandles.showRangesCheckBox.Callback = @obj.handleShowRangesToggled;
             obj.uiHandles.addSignalButton.Callback = @obj.handleAddSignalsClicked;
+            obj.uiHandles.autoAnnotateButton.Callback = @obj.handleAutoAnnotateClicked;
             obj.uiHandles.videoSynchronizationButton.Callback = @obj.handleVideoSynchronizationClicked;
             obj.uiHandles.selectAllCheckBox.Callback = @obj.handleSelectAllToggled;
             obj.uiHandles.stateButtonGroup.SelectionChangedFcn = @obj.handleStateChanged;
-            obj.uiHandles.findButton.Callback = @obj.handleFindPeaksClicked;
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
             obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
             obj.uiHandles.mainFigure.CloseRequestFcn = @obj.handleWindowCloseRequested;
@@ -287,9 +334,7 @@ classdef AnnotationApp < handle
             obj.uiHandles.loadVideoCheckBox.Value = true;
             
             obj.uiHandles.signalsTable.Data = [];
-            
-            obj.uiHandles.synchronizeVideoCheckBox.Value = true;
-            
+                        
             obj.uiHandles.currentSampleText.String = '';
             
             obj.disableVideoSynchronizationButton();
@@ -457,6 +502,7 @@ classdef AnnotationApp < handle
             obj.clearDataPlots();
             obj.eventAnnotationsPlotter.clearAnnotations();
             obj.rangeAnnotationsPlotter.clearAnnotations();
+            obj.suggestedAnnotationPlotter.clearAnnotations();
             cla(obj.plotAxes);
             zoom out
             zoom reset
@@ -593,38 +639,18 @@ classdef AnnotationApp < handle
                 
                 if obj.getSuggestAnnotations()
                     suggestedAnnotations = obj.generateAnnotationSuggestionsWithRange(rangeAnnotation);
-                    obj.plotSuggestedAnnotations(suggestedAnnotations);
+                    %remove
+                    if ~isempty(suggestedAnnotations)
+                        obj.suggestedAnnotationPlotter.addAnnotations(obj.plotAxes,suggestedAnnotations);
+                    end
                 end
             end
         end
         
-        function suggestedAnnotations = generateAnnotationSuggestionsWithRange(obj,rangeAnnotation)
-            numColumns = obj.dataFile.numColumns;
-            templateData = obj.dataFile.rawDataForRowsAndColumns(rangeAnnotation.startSample,rangeAnnotation.endSample,1,numColumns);
-            nSamples = obj.dataFile.numRows;
-            rangeSize = rangeAnnotation.endSample - rangeAnnotation.startSample;
-            
-            DTW_SIMILARITY_THRESHOLD = 100;
-            suggestedAnnotations = [];
-            
-            for sample = rangeAnnotation.endSample : nSamples
-                windowData = obj.dataFile.rawDataForRowsAndColumns(sample,sample+rangeSize,1,numColumns);
-                dist = dtw(templateData,windowData);
-                if dist < DTW_SIMILARITY_THRESHOLD
-                    suggestedAnnotations(end+1) = RangeAnnotation(sample,sample+rangeSize,rangeAnnotation.label);
-                end
-            end
-            
-        end
-        
-        function plotSuggestedAnnotations(obj,suggestedAnnotations)
-            annotationSuggestionPlotter.addAnnotations(suggestedAnnotations);
-        end
         
         %% UI
-        
         function b = getSuggestAnnotations(obj)
-            b = obj.uiHandles.suggestAnnotationsCheckBox.Value;
+            b = obj.shouldSuggestAnnotations;
         end
         
         function updateLoadDataTextbox(obj,~,~)
@@ -692,7 +718,14 @@ classdef AnnotationApp < handle
         
         function plotAnnotations(obj)
             obj.eventAnnotationsPlotter.verticalLineYRange = obj.plottedSignalYRange;
+            
             obj.rangeAnnotationsPlotter.rectanglesYRange = ...
+                obj.plottedSignalYRange * AnnotationApp.kRangeAnnotationRectangleYPosToDataRatio;
+            
+            obj.suggestedAnnotationPlotter.rectanglesYRange = ...
+                obj.plottedSignalYRange * AnnotationApp.kRangeAnnotationRectangleYPosToDataRatio;
+            
+            obj.suggestedClustersPlotter.rectanglesYRange = ...
                 obj.plottedSignalYRange * AnnotationApp.kRangeAnnotationRectangleYPosToDataRatio;
             
             if ~isempty(obj.annotationSet)
@@ -715,7 +748,61 @@ classdef AnnotationApp < handle
         function deleteAllAnnotations(obj)
             obj.eventAnnotationsPlotter.clearAnnotations();
             obj.rangeAnnotationsPlotter.clearAnnotations();
+            obj.suggestedAnnotationPlotter.clearAnnotations();
+            obj.suggestedClustersPlotter.clearAnnotations();
             obj.annotationSet = [];
+        end
+        
+        %% Automatic Annotations
+        function suggestedAnnotations = generateAnnotationSuggestionsWithRange(obj,rangeAnnotation)
+            
+            suggestedAnnotations = obj.annotationSuggester.suggestAnnotationsWithRange(rangeAnnotation,obj.dataFile);
+        end
+                
+        function plotAnnotationClusters(obj,annotationClusters)
+            obj.suggestedClustersPlotter.clearAnnotations();
+            obj.suggestedClustersPlotter.addAnnotations(obj.plotAxes,annotationClusters);
+        end
+        
+        function modifyAnnotationClusters(obj,tag)
+            currentLabel = obj.getSelectedClass();
+            
+            annotation = obj.suggestedClustersPlotter.getAnnotationWithKey(tag);
+            
+            if ~isempty(annotation)
+                label = annotation.label;
+                annotations = obj.suggestedClustersPlotter.getAnnotationsWithLabel(label);
+                
+                for i = 1 : length(annotations)
+                    annotation = annotations(i);
+                    obj.suggestedClustersPlotter.deleteAnnotationAtSampleIdx(annotation.startSample);
+                    annotation.label = currentLabel;
+                end
+                
+                obj.rangeAnnotationsPlotter.addAnnotations(obj.plotAxes,annotations);
+            end
+        end
+                
+        function confirmSuggestedAnnotationAtSampleIdx(obj,tag,plotter)
+            %get the annotation
+            suggestedAnnotation = plotter.getAnnotationWithKey(tag);
+            
+            if ~isempty(suggestedAnnotation)
+                %delete it from suggested plotter
+                plotter.deleteAnnotationAtSampleIdx(tag);
+                
+                %add it to real annotations
+                obj.rangeAnnotationsPlotter.addAnnotation(obj.plotAxes, suggestedAnnotation);
+            end
+        end
+        
+        function clusterLabeling = generateClusterLabeling(obj)
+            clusterLabels = cell(1,obj.labeling.numClasses);
+            for i = 1 : obj.labeling.numClasses
+                clusterLabels{i} = sprintf('cluster-%d',i);
+            end
+            
+            clusterLabeling = Labeling(clusterLabels);
         end
         
         %% Synchronization files
@@ -777,6 +864,10 @@ classdef AnnotationApp < handle
             
             if ~isempty(obj.videoSynchronizationDialog)
                 delete(obj.videoSynchronizationDialog);
+            end
+            
+            if ~isempty(obj.autoAnnotateDialog)
+                delete(obj.autoAnnotateDialog);
             end
             
             delete(obj.uiHandles.mainFigure);
@@ -890,18 +981,9 @@ classdef AnnotationApp < handle
         function setCurrentSampleTextToSample(obj,sample)
             obj.uiHandles.currentSampleText.String = sprintf('%16.f',sample);
         end
-        
-        function enableSynchronizeVideo(obj)
-            obj.uiHandles.synchronizeVideoCheckBox.Enable = 'on';
-        end
-        
-        function disableSynchronizeVideo(obj)
-            obj.uiHandles.synchronizeVideoCheckBox.Value = false;
-            obj.uiHandles.synchronizeVideoCheckBox.Enable = 'off';
-        end
-        
+                
         function b = getShouldSynchronizeVideo(obj)
-            b = obj.uiHandles.synchronizeVideoCheckBox.Value;
+            b = isempty(obj.videoSynchronizationDialog) || obj.videoSynchronizationDialog.shouldSynchronizeVideo();
         end
         
         function b = getShouldLoadVideo(obj)
@@ -911,7 +993,7 @@ classdef AnnotationApp < handle
         function class = getSelectedClass(obj)
             class = int8(obj.uiHandles.classesList.Value);
             if (class == length(obj.uiHandles.classesList.String))
-                class = Labeling.kSynchronizationClass;
+                class = Labeling.kIgnoreClass;
             end
         end
         
@@ -950,6 +1032,7 @@ classdef AnnotationApp < handle
         function disableVideoSynchronizationButton(obj)
             obj.uiHandles.videoSynchronizationButton.Enable = 'off';
         end
+        
         
         %% UI Handles
         function outputTxt = handleUserClick(obj,src,~)
@@ -996,6 +1079,7 @@ classdef AnnotationApp < handle
                 obj.clearAll();
                 obj.computePreprocessedSignals();
                 dataPlotted = obj.plotData();
+                
                 if dataPlotted
                     obj.computePlottedSignalYRanges();
                     obj.setPlotAxes();
@@ -1008,6 +1092,7 @@ classdef AnnotationApp < handle
                         obj.enableVideoSynchronizationButton();
                     end
                 end
+                
             end
         end
         
@@ -1067,26 +1152,7 @@ classdef AnnotationApp < handle
         function handleSelectingPeaksSelected(obj,~,~)
             obj.isSelectingPeaks = obj.getShouldSelectPeaks();
         end
-        
-        function handleFindPeaksClicked(obj,~,~)
-            for i = 1 : length(obj.markers)
-                marker = obj.markers(i);
-                segmentStart = marker.sample - ceil(obj.AutoFindPeakRadius/2);
-                segmentStart = max(1,segmentStart);
-                segmentEnd = marker.sample + ceil(obj.AutoFindPeakRadius/2);
-                segmentEnd = min(segmentEnd,length(obj.magnitude));
                 
-                if segmentStart < segmentEnd
-                    segment = obj.magnitude(segmentStart:segmentEnd);
-                    [~, maxSample] = max(segment);
-                    peakIdx = maxSample + segmentStart - 1;
-                    peakX = peakIdx;
-                    peakY = obj.magnitude(peakIdx);
-                    obj.addPeak(peakX,peakY,1);
-                end
-            end
-        end
-        
         function handleSaveClicked(obj,~,~)
             obj.saveAnnotations();
         end
@@ -1118,6 +1184,20 @@ classdef AnnotationApp < handle
                 obj.preprocessingDialog.Figure.Position(2) = positionY;
             else
                 figure(obj.preprocessingDialog.Figure)
+            end
+        end
+        
+        function handleAutoAnnotateClicked(obj,~,~)
+            if isempty(obj.autoAnnotateDialog)
+                obj.autoAnnotateDialog = AutoAnnotateDialog(obj.labeling.numClasses,obj);
+                obj.autoAnnotateDialog.setShouldSuggestAnnotations(obj.shouldSuggestAnnotations);
+                                
+                positionX = obj.uiHandles.mainFigure.Position(1) + obj.uiHandles.autoAnnotateButton.Position(1);
+                positionY = obj.uiHandles.mainFigure.Position(2) + obj.uiHandles.autoAnnotateButton.Position(2);
+                obj.autoAnnotateDialog.Figure.Position(1) = positionX;
+                obj.autoAnnotateDialog.Figure.Position(2) = positionY;
+            else
+                figure(obj.autoAnnotateDialog.Figure);
             end
         end
         

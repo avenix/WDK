@@ -6,6 +6,16 @@ classdef RangeAnnotation < handle
         label;
     end
     
+    properties (Dependent)
+        nSamples;
+    end
+    
+    methods
+        function n = get.nSamples(obj)
+            n = obj.endSample - obj.startSample + 1;
+        end
+    end
+    
     methods (Access = public)
         function obj = RangeAnnotation(startSample,endSample,label)
             if nargin > 0

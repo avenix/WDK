@@ -1,5 +1,6 @@
 classdef Palette < handle
     methods (Static)
+        %% Leaf / Single Algorithms
         function preprocessingAlgorithms = PreprocessingAlgorithms()
             preprocessingAlgorithms = {NoOp,...
                 LowPassFilter, HighPassFilter,...
@@ -88,6 +89,24 @@ classdef Palette < handle
                 end
             end
         end
+        
+        %% Composite Algorithms
+        function segmentationAlgorithm = CreateEventBasedSegmentationAlgorithm()
+            axisSelector = AxisSelector(1:3);%AX AY AZ
+            magnitudeSquared = Magnitude();
+            
+            simplePeakDetector = SimplePeakDetector();
+            simplePeakDetector.minPeakHeight = single(0.8);
+            simplePeakDetector.minPeakDistance  = int32(100);
+            
+            eventSegmentation = EventSegmentation();
+            eventSegmentation.segmentSizeLeft = 200;
+            eventSegmentation.segmentSizeRight = 100;
+            
+            segmentationAlgorithm =  Algorithm.AlgorithmWithSequence({axisSelector,...
+                magnitudeSquared,simplePeakDetector,eventSegmentation});
+        end
+        
     end
     
     methods (Static, Access = private)
