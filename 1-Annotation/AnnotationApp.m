@@ -142,12 +142,11 @@ classdef AnnotationApp < handle
             obj.shouldSuggestAnnotations = shouldSuggestAnnotations;
         end
         
-        function handleSemiSupervisedSimilarityToleranceChanged(obj,tolerance)
-            obj.annotationSuggester.similarityThreshold = tolerance;
+        function handleAutoAnnotationDesiredSuggestionsChanged(obj,numSuggestions)
+            obj.annotationSuggester.desiredNumberAnnotationSuggestions = numSuggestions;
         end
         
         function handleAnnotationClustersClicked(obj,annotationClusterer)
-            
             annotationClusters = annotationClusterer.clusterAnnotations(obj.dataFile);
             obj.plotAnnotationClusters(annotationClusters);
         end

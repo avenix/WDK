@@ -1,9 +1,10 @@
 classdef AnnotationClusterer < handle
+    
     properties (Access = public)
         segmentationAlgorithm;
         featureExtractionAlgorithm;
         numClasses;
-        distanceThreshold = 25.0;
+        desiredNumberAnnotationSuggestions = 60.0;
     end
     
     methods (Access = public)
@@ -32,6 +33,8 @@ classdef AnnotationClusterer < handle
             [labels,~,~,distances] = kmeans(featuresTable.getDataArray(),obj.numClasses);
             
             nSegments = length(labels);
+            
+            bestDistances = Inf(1,nSegments);
             rangeAnnotations = repmat(RangeAnnotation,1,nSegments);
             
             annotationCount = 1;
@@ -39,17 +42,17 @@ classdef AnnotationClusterer < handle
                 segment = segments(i);
                 label = labels(i);
                 
-                fprintf('%.5f\n',sqrt(distances(i,label)));
+                bestDistances(i) = distances(i,label);
                 
-                if sqrt(distances(i,label)) < obj.distanceThreshold
-                    rangeAnnotation = RangeAnnotation(segment.startSample,segment.endSample,label);
-                    rangeAnnotations(annotationCount) = rangeAnnotation;
-                    annotationCount = annotationCount + 1;
-                end
+                rangeAnnotation = RangeAnnotation(segment.startSample,segment.endSample,label);
+                rangeAnnotations(annotationCount) = rangeAnnotation;
+                annotationCount = annotationCount + 1;
             end
             
-            rangeAnnotations = rangeAnnotations(1:annotationCount-1);
-            fprintf('clustered %d annotations\n',annotationCount-1);
+            [~,idxs] = sort(bestDistances);
+            numAnnotations = min(obj.desiredNumberAnnotationSuggestions,nSegments);
+            idxs = idxs(1:numAnnotations);
+            rangeAnnotations = rangeAnnotations(idxs);
         end
     end
     
