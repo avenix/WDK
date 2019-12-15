@@ -271,7 +271,7 @@ The amount of memory and output size of the *PropertyGetter* and *NoOp* modules 
 
 ## References
 
-- My paper describing the Wearables Development Toolkit [WDK paper](https://www.jhaladjian.com/publications/haladjian19WDK.pdf) and [BibTeX file](https://www.jhaladjian.com/publications/haladjian19WDK.bib))
+- My paper describing the Wearables Development Toolkit [WDK paper](https://www.jhaladjian.com/publications/haladjian19WDK.pdf) and [BibTeX file](https://www.jhaladjian.com/publications/haladjian19WDK.bib)
 - My Matlab tutorial on Activity Recognition for wearables: https://github.com/avenix/ARC-Tutorial/
 - [Andreas Bulling's tutorial on Activity Recognition](https://dl.acm.org/citation.cfm?id=2499621)
 - [Peak detection algorithms by Palshikar](http://constans.pbworks.com/w/file/fetch/120908295/Simple_Algorithms_for_Peak_Detection_in_Time-Serie.pdf)

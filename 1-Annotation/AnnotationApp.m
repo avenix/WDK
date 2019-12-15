@@ -941,6 +941,8 @@ classdef AnnotationApp < handle
             
             obj.uiHandles.showRangesCheckBox.Value = true;
             obj.handleShowRangesToggled();
+            obj.deleteRangeSelection();
+            
         end
         
         function disableAddRangeState(obj)
