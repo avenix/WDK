@@ -49,8 +49,8 @@ classdef AnnotationsSuggester < handle
                 endIterationSample = obj.suggestionSearchEndSample;
             end
             
-            for i = rangeAnnotation.endSample : annotationSize/3 : endIterationSample - annotationSize
-                
+            for i = rangeAnnotation.endSample : int32(annotationSize/3) : int32(endIterationSample - annotationSize)
+                                
                 segment = dataFile.rawDataForRowsAndColumns(int32(i),int32(i + annotationSize),obj.selectedSignals);
                 
                 %run dynamic time warping

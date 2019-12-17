@@ -16,7 +16,7 @@ classdef AnnotationClusterer < handle
             
             featureExtractor = FeatureExtractor.CreateFeatureExtractor(...
                 1:6,FeatureExtractor.DefaultFeatures());
-            
+                        
             featureExtractionAlgorithm = Algorithm.AlgorithmWithSequence({featureExtractor});
             
             obj.featureExtractionAlgorithm = featureExtractionAlgorithm;

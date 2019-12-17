@@ -782,6 +782,11 @@ classdef AnnotationApp < handle
                 end
                 
                 obj.rangeAnnotationsPlotter.addAnnotations(obj.plotAxes,annotations);
+                
+                if ~obj.uiHandles.showRangesCheckBox.Value
+                    obj.uiHandles.showRangesCheckBox.Value = true;
+                    obj.handleShowRangesToggled();
+                end
             end
         end
                 
@@ -945,7 +950,6 @@ classdef AnnotationApp < handle
             obj.uiHandles.showRangesCheckBox.Value = true;
             obj.handleShowRangesToggled();
             obj.deleteRangeSelection();
-            
         end
         
         function disableAddRangeState(obj)
