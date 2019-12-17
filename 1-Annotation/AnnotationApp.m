@@ -42,6 +42,7 @@ classdef AnnotationApp < handle
         
         %auto annotate
         shouldSuggestAnnotations = false;
+        shouldScanUntilTimeline = false;
         autoAnnotateDialog;
         suggestedAnnotationPlotter;
         suggestedClustersPlotter;
@@ -142,6 +143,10 @@ classdef AnnotationApp < handle
             obj.shouldSuggestAnnotations = shouldSuggestAnnotations;
         end
         
+        function handleDidChangeScanUntilTimelineMarker(obj,shouldScanUntilTimeline)
+            obj.shouldScanUntilTimeline = shouldScanUntilTimeline;
+        end
+        
         function handleAutoAnnotationDesiredSuggestionsChanged(obj,numSuggestions)
             obj.annotationSuggester.desiredNumberAnnotationSuggestions = numSuggestions;
         end
@@ -197,10 +202,6 @@ classdef AnnotationApp < handle
             sample = obj.timeLineMarker;
             frame = obj.videoPlayer.currentFrame;
             obj.videoSynchronizationDialog.addSynchronizationPoint(sample,frame);
-            
-            if obj.synchronizationFile.count >= 2
-                obj.enableSynchronizeVideo();
-            end
         end
         
         function handleSynchronizationDialogClosed(obj,~)
@@ -251,7 +252,8 @@ classdef AnnotationApp < handle
             obj.uiHandles.selectAllCheckBox.Callback = @obj.handleSelectAllToggled;
             obj.uiHandles.stateButtonGroup.SelectionChangedFcn = @obj.handleStateChanged;
             obj.uiHandles.saveButton.Callback = @obj.handleSaveClicked;
-            obj.uiHandles.peaksCheckBox.Callback = @obj.handleSelectingPeaksSelected;
+            obj.uiHandles.resetButton.Callback = @obj.handleResetButtonClicked;
+            
             obj.uiHandles.mainFigure.CloseRequestFcn = @obj.handleWindowCloseRequested;
             obj.plotAxes.ButtonDownFcn = @obj.handleFigureClick;
             %obj.uiHandles.mainFigure.KeyPressFcn = @obj.handleKeyPress;
@@ -622,11 +624,7 @@ classdef AnnotationApp < handle
         end
         
         function deleteRangeSelection(obj)
-            if ~isempty(obj.rangeSelectionAxis)
-                delete(obj.rangeSelectionAxis);
-                obj.rangeSelectionAxis = [];
-                obj.rangeSelection = [];
-            end
+            obj.rangeSelection = [];
         end
         
         function addCurrentRange(obj)
@@ -754,6 +752,11 @@ classdef AnnotationApp < handle
         
         %% Automatic Annotations
         function suggestedAnnotations = generateAnnotationSuggestionsWithRange(obj,rangeAnnotation)
+            if(obj.shouldScanUntilTimeline)
+                obj.annotationSuggester.suggestionSearchEndSample = obj.timeLineMarker;
+            else
+                obj.annotationSuggester.suggestionSearchEndSample = -1;
+            end
             
             suggestedAnnotations = obj.annotationSuggester.suggestAnnotationsWithRange(rangeAnnotation,obj.dataFile);
         end
@@ -984,7 +987,7 @@ classdef AnnotationApp < handle
         end
                 
         function b = getShouldSynchronizeVideo(obj)
-            b = isempty(obj.videoSynchronizationDialog) || obj.videoSynchronizationDialog.shouldSynchronizeVideo();
+            b = isempty(obj.videoSynchronizationDialog);
         end
         
         function b = getShouldLoadVideo(obj)
@@ -1205,7 +1208,7 @@ classdef AnnotationApp < handle
         function handleVideoSynchronizationClicked(obj,~,~)
             
             if isempty(obj.videoSynchronizationDialog)
-                obj.videoSynchronizationDialog = SynchronizationDialog(obj.synchronizationFile,obj);
+                obj.videoSynchronizationDialog = SynchronizationDialog(obj,obj.synchronizationFile);
                 
                 obj.videoSynchronizationDialog.setSynchronizationFile(obj.synchronizationFile);
                 
@@ -1216,6 +1219,10 @@ classdef AnnotationApp < handle
             else
                 figure(obj.videoSynchronizationDialog.Figure);
             end
+        end
+        
+        function handleResetButtonClicked(obj,~,~)
+            obj.deleteAllAnnotations();
         end
         
         function handleSelectAllToggled(obj,~,~)

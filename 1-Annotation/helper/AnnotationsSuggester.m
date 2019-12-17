@@ -7,8 +7,9 @@ classdef AnnotationsSuggester < handle
     properties (Access = public)
         dtwWindowSize = 10;
         desiredNumberAnnotationSuggestions = 20;
-        maxRangeSamples = 400;
+        maxRangeSamples = 700;
         selectedSignals = 1:6;
+        suggestionSearchEndSample = -1;
     end
     
     properties(Constant)
@@ -42,9 +43,15 @@ classdef AnnotationsSuggester < handle
                         
             annotationSize = rangeAnnotation.nSamples;
             
-            for i = rangeAnnotation.endSample : annotationSize : numSamples - annotationSize
+            endIterationSample = numSamples;
+            
+            if obj.suggestionSearchEndSample ~= -1
+                endIterationSample = obj.suggestionSearchEndSample;
+            end
+            
+            for i = rangeAnnotation.endSample : annotationSize/3 : endIterationSample - annotationSize
                 
-                segment = dataFile.rawDataForRowsAndColumns(i,i + annotationSize,obj.selectedSignals);
+                segment = dataFile.rawDataForRowsAndColumns(int32(i),int32(i + annotationSize),obj.selectedSignals);
                 
                 %run dynamic time warping
                 distance = dtw(template,segment,obj.dtwWindowSize) / numSamples;
