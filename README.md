@@ -33,6 +33,16 @@ Please note:
 4. The labels to annotate should be defined in the '*labels.txt*' file beforehand.
 5. You can use the keyboard shortcuts **arrow-right**, **arrow-left** and **spacebar** to iterate through data and video.
 
+### Automatic Annotation (optional)
+
+The *Data Annotation App* offers two features to facilitate the annotation of sensor signals. The *unsupervised* feature analyzes the entire data set, clusters similar portions of data and suggests annotations for some of the portions of data. The *supervised* feature searches for portions of data similar to previously added annotations. 
+
+#### Unsupervised automatic annotation
+![Movie Player](doc/images/1-AutomaticAnnotationUnsupervised.gif)
+
+#### Supervised automatic annotation
+![Movie Player](doc/images/1-AutomaticAnnotationSupervised.gif)
+
 ## 2- Data Analysis
 The *Data Analysis App* displays segments of data grouped by class. This is useful to study the differences across classes to design a recognition algorithm able to discriminate between classes. Segments can be plotted either on top of each other or sequentially (i.e. after each other). 
 

@@ -215,12 +215,6 @@ classdef AnnotationApp < handle
             end
         end
         
-        function handleSynchronizationPointDeleted(obj,~)
-            if obj.synchronizationFile.count < 2
-                obj.disableSynchronizeVideo();
-            end
-        end
-        
     end
     
     methods (Access = private)
