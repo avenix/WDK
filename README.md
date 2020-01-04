@@ -39,15 +39,17 @@ The *Data Annotation App* offers two features to facilitate the annotation of se
 
 #### Unsupervised automatic annotation
 
+The *unsupervised* feature analyzes the entire data set, clusters similar portions of data and suggests annotations for some of the portions of data. This feature requires a segmentation algorithm to be provided by application developers. A set of heuristic features are extracted for each segment extracted. Finally *kmeans* is used to cluster the feature vectors using as many labels as defined in the current project. The N feature vectors closest in distance to a centroid are suggested to the user together with a cluster id. With a single click, the user can modify the suggested cluster into the appropriate class. The parameter N is configurable over the user interface.
+
 ![Movie Player](doc/images/1-AutomaticAnnotationUnsupervised.gif)
 
-The *unsupervised* feature analyzes the entire data set, clusters similar portions of data and suggests annotations for some of the portions of data. 
 
 #### Supervised automatic annotation
 
+The *supervised* feature searches for portions of data similar to previously added range annotations. When a *range annotation* is added while the supervised auto-annotation is enabled, the  *Data Annotation App* scans the current file for segments of data of the same length and compares the segments to the *range annotation* using Dynamic Time Warping. The resulting segments are sorted and the N most similar segments are suggested to the user. The parameter N is configurable over the user interface.
+
 ![Movie Player](doc/images/1-AutomaticAnnotationSupervised.gif)
 
-The *supervised* feature searches for portions of data similar to previously added annotations. 
 
 ## 2- Data Analysis
 The *Data Analysis App* displays segments of data grouped by class. This is useful to study the differences across classes to design a recognition algorithm able to discriminate between classes. Segments can be plotted either on top of each other or sequentially (i.e. after each other). 
