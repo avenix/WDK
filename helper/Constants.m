@@ -4,6 +4,8 @@ classdef Constants < handle
     properties (Access = public, Constant)
         
         %% Path files and directory
+        kShouldSetupMatlabPath = true;
+        
         kLabelsPath = './data/annotations/labels.txt';
         kAnnotationsPath = './data/annotations';
         kMarkersPath = './data/markers';

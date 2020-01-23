@@ -51,7 +51,7 @@ classdef AnnotationApp < handle
         %markers
         markers;
         markerHandles;
-        markersPlotter AnnotationMarkersPlotter;
+        markersPlotter;
         
         %timestamp
         timeLineMarker;
@@ -66,7 +66,7 @@ classdef AnnotationApp < handle
         videoSynchronizationDialog;
         videoFigure;
         plottedSignalYRange;
-        state AnnotationState = AnnotationState.kSetTimelineState;
+        state;
         uiHandles;
         plotAxes;
         rangeSelectionAxis = [];
@@ -81,6 +81,10 @@ classdef AnnotationApp < handle
         
         function obj =  AnnotationApp()
             close all;
+            
+            obj.setupPath();
+                        
+            obj.state = AnnotationState.kSetTimelineState;
             obj.loadLabeling();
             
             obj.videoFileNames = Helper.ListVideoFiles();
@@ -218,6 +222,18 @@ classdef AnnotationApp < handle
     end
     
     methods (Access = private)
+        
+        %% Setup path 
+        % checks that the Annotation App is run from the root WDK directory
+        % which it adds to Matlab's path
+        function setupPath(~)
+            fullPath = pwd;
+            directories = split(fullPath,'/');
+            if(strcmp('1-Annotation',directories{end}))
+                cd ..;
+            end
+            addpath(genpath('./'));
+        end
         
         %% Load UI
         function loadUI(obj)

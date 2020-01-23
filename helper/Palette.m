@@ -47,7 +47,7 @@ classdef Palette < handle
         end
         
         function postprocessingAlgorithms = PostprocessingAlgorithms()
-            postprocessingAlgorithms = {NoOp, LabelMapper(), LabelSlidingWindowMaxSelector()};
+            postprocessingAlgorithms = {NoOp, LabelMapper(), LabelSlidingWindowMaxSelector(),HistoryComponent()};
         end
         
         function otherAlgorithms = OtherAlgorithms()
