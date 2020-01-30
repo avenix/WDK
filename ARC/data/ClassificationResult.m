@@ -1,3 +1,4 @@
+% Stores the result of a classifier
 classdef ClassificationResult < Data
     properties (Access = public)
         predictedClasses;

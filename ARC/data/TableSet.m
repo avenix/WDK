@@ -58,18 +58,22 @@ classdef TableSet < Data
                 if nRows > 0
                     firstTable = tables(1).table;
                     mergedTableArray = zeros(nRows,width(firstTable));
+                    mergedTimestamps = zeros(1,nRows);
                     
                     currentRow = 1;
                     for i = 1 : length(tables)
                         currentTable = tables(i).table;
                         nRowsCurrentTable = height(currentTable);
                         mergedTableArray(currentRow : currentRow + nRowsCurrentTable - 1,:) = table2array(currentTable);
+                        mergedTimestamps(currentRow : currentRow + nRowsCurrentTable - 1) = tables(i).timestamps;
+                        
                         currentRow = currentRow + nRowsCurrentTable;
                     end
                     
                     mergedTable = array2table(mergedTableArray);
                     mergedTable.Properties.VariableNames = firstTable.Properties.VariableNames;
                     mergedTable = Table(mergedTable,tables(1).classNames,[tables.file]);
+                    mergedTable.timestamps = mergedTimestamps;
                 end
             end
         end

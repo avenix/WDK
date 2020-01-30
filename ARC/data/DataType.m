@@ -18,12 +18,13 @@ classdef DataType
         kNull = 13;
         kAnnotation = 14;
         kClassificationResult = 15;
+        kRegressionResult = 16;
     end
     
     properties (Access = public, Constant)
         TypeStrings = {'DataFile' , 'Signal (1D)', 'Signal (2D)', 'Signal (3D)',...
             'Signal', 'Event', 'Segment', 'Feature', 'FeatureVector', ...
-            'Table','TableSet', 'Labels', 'Any', 'Null', 'Annotation', 'ClassificationResult'};
+            'Table','TableSet', 'Labels', 'Any', 'Null', 'Annotation', 'ClassificationResult','RegressionResult'};
     end
     
     methods (Access = public, Static)

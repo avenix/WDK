@@ -4,6 +4,7 @@ classdef Table < Data
         file;
         table;
         classNames;
+        timestamps;
     end
     
     properties (Dependent)
@@ -37,7 +38,7 @@ classdef Table < Data
         
         function cn = get.columnNames(obj)
             cn = obj.table.Properties.VariableNames;
-        end
+        end        
     end
     
     methods (Access = public)
