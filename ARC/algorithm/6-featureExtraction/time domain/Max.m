@@ -14,7 +14,7 @@ classdef Max < Algorithm
         
         function metrics = computeMetrics(~,input)
             n = size(input,1);
-            flops = n;
+            flops = 1 * n;
             memory = 1;
             outputSize = Constants.kFeatureBytes;
             metrics = Metric(flops,memory,outputSize);

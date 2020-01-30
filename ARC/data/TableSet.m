@@ -65,7 +65,9 @@ classdef TableSet < Data
                         currentTable = tables(i).table;
                         nRowsCurrentTable = height(currentTable);
                         mergedTableArray(currentRow : currentRow + nRowsCurrentTable - 1,:) = table2array(currentTable);
-                        mergedTimestamps(currentRow : currentRow + nRowsCurrentTable - 1) = tables(i).timestamps;
+                        if ~isempty(tables(i).timestamps)
+                            mergedTimestamps(currentRow : currentRow + nRowsCurrentTable - 1) = tables(i).timestamps;
+                        end
                         
                         currentRow = currentRow + nRowsCurrentTable;
                     end
